@@ -16,11 +16,12 @@ export default function SubmissionButtons({ disabled, alphaJson, selectedOption,
           if (disabled) event.preventDefault();
         }}
       >
-        Email to Tree Dude
+        Preview Email to Tree Dude
       </a>
       <button className="btn-primary" type="button" disabled={disabled || busy} onClick={onSubmit}>
         {busy ? "Submitting..." : "Submit to Contractor"}
       </button>
+      <p className="text-muted full-row">Mock mode: no real SMS or email was sent.</p>
       {disabled && <p className="text-muted">Please select an option and sign.</p>}
     </div>
   );

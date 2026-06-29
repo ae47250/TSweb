@@ -34,9 +34,10 @@ input:focus, textarea:focus, select:focus {
 
 label { display: block; margin-bottom: 6px; font-weight: 600; color: #1f4229; font-size: 14px; }
 
-button, .btn {
+button, .btn, .btn-primary, .btn-secondary, .btn-link {
   padding: 12px 20px; border: none; border-radius: 6px; font-size: 14px;
   font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center;
+  display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
 }
 
 .btn-primary { background-color: #3f7045; color: white; width: 100%; margin-bottom: 12px; }
@@ -44,6 +45,9 @@ button, .btn {
 
 .btn-secondary { background-color: #f0f0f0; color: #222; border: 1px solid #ddd; width: 100%; }
 .btn-secondary:hover { background-color: #e0e0e0; }
+.btn-link { background-color: #eef6ed; color: #1f4229; border: 1px solid #3f7045; }
+.btn-link:hover { background-color: #dfeedd; }
+.btn-fit { width: auto; }
 
 .option-button {
   width: 100%; padding: 14px; margin-bottom: 10px; background-color: #f9f9f9;
@@ -53,7 +57,7 @@ button, .btn {
 
 .option-button:hover { border-color: #3f7045; background-color: #f0f7f0; }
 .option-button.selected { background-color: #eef6ed; border-color: #3f7045; color: #1f4229; }
-.option-button.selected::before { content: "✓ "; color: #3f7045; margin-right: 6px; }
+.option-button.selected::before { content: "Selected "; color: #3f7045; margin-right: 6px; }
 
 .card { background-color: white; border: 1px solid #ddd; border-radius: 8px;
   padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
@@ -75,6 +79,7 @@ button, .btn {
 
 .text-muted { color: #666; font-size: 13px; }
 .text-center { text-align: center; }
+.full-row { grid-column: 1 / -1; margin: 0; }
 .mb-2 { margin-bottom: 12px; }
 .mt-2 { margin-top: 12px; }
 

@@ -1,13 +1,10 @@
 import { readJson, json } from "../../../lib/api.js";
 import { renderCustomerDocument } from "../../../lib/customerDocument.js";
+import { createDownloadFile } from "../../../lib/documentFiles.js";
 import { getEstimate, saveEstimate } from "../../../lib/estimateStore.js";
 import { SIGNATURE_MAX_LENGTH, SIGNATURE_MIN_LENGTH } from "../../../config/constants.js";
 
 export const runtime = "nodejs";
-
-function htmlDataUrl(html) {
-  return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
-}
 
 export async function POST(request) {
   const body = await readJson(request);
@@ -27,6 +24,10 @@ export async function POST(request) {
 
   const signedFullHtml = renderCustomerDocument(alphaJson, { selectedOption, signature, mobile: false });
   const signedMobileHtml = renderCustomerDocument(alphaJson, { selectedOption, signature, mobile: true });
+  const [signedFull, signedMobile] = await Promise.all([
+    createDownloadFile(signedFullHtml, { documentId: alphaJson.document.number, variant: "full", mobile: false, signed: true }),
+    createDownloadFile(signedMobileHtml, { documentId: alphaJson.document.number, variant: "mobile", mobile: true, signed: true }),
+  ]);
   const existing = getEstimate(alphaJson.document.number) || {};
   const record = saveEstimate({
     ...existing,
@@ -36,8 +37,11 @@ export async function POST(request) {
     signature_name: signature,
     signature_date: new Date().toISOString(),
     status: "signed",
-    pdf_url_full: htmlDataUrl(signedFullHtml),
-    pdf_url_mobile: htmlDataUrl(signedMobileHtml),
+    signed: {
+      full: signedFull,
+      mobile: signedMobile,
+    },
+    pdf_url_signed: signedFull.downloadUrl,
   });
 
   return json({
@@ -45,6 +49,7 @@ export async function POST(request) {
     status: record.status,
     selectedOption,
     signatureName: signature,
+    signed: signedFull,
     stored: true,
     mockedStorage: process.env.VERCEL_BLOB_ENABLED !== "true",
   });

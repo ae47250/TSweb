@@ -44,8 +44,10 @@ export default function HomePage() {
       setDocumentResult(null);
       setSelectedOption("");
       setSignature("");
+      setEditMessage("");
     } catch (err) {
       setError(err.message);
+      setEditMessage("Edit the notes above, add the missing information, then click Create AlphaJSON Review again.");
     } finally {
       setBusy(false);
     }
@@ -67,9 +69,11 @@ export default function HomePage() {
       const result = await postJson("/api/pdf", { alphaJson });
       setDocumentResult(result);
       setAlphaJson(result.alphaJson);
+      setEditMessage("");
       setNotice("Documents generated. Customer must select one option and sign before submitting.");
     } catch (err) {
       setError(err.message);
+      setEditMessage("Edit the notes above, add the missing information, then click Create AlphaJSON Review again.");
     } finally {
       setBusy(false);
     }
@@ -86,7 +90,9 @@ export default function HomePage() {
         selectedOption,
         signature,
       });
-      setNotice(`Submitted in mock-safe mode. SMS target: ${notify.intendedRecipients.phone}; email target: ${notify.intendedRecipients.email}.`);
+      setDocumentResult((current) => current ? { ...current, signed: upload.signed } : current);
+      setEditMessage("");
+      setNotice(`Submitted in mock-safe mode. No real SMS or email was sent. SMS target: ${notify.intendedRecipients.phone}; email target: ${notify.intendedRecipients.email}.`);
     } catch (err) {
       setError(err.message);
     } finally {

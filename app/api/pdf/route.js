@@ -1,15 +1,12 @@
 import { readJson, json, requestIp } from "../../../lib/api.js";
 import { renderCustomerDocument } from "../../../lib/customerDocument.js";
+import { createDownloadFile } from "../../../lib/documentFiles.js";
 import { saveEstimate } from "../../../lib/estimateStore.js";
 import { checkRateLimit } from "../../../lib/rateLimiter.js";
 import { validateAlphaJson } from "../../../lib/validateJson.js";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
-
-function htmlDataUrl(html) {
-  return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
-}
 
 export async function POST(request) {
   const limit = checkRateLimit(requestIp(request));
@@ -42,28 +39,32 @@ export async function POST(request) {
   const fullHtml = renderCustomerDocument(alphaJson, { mobile: false });
   const mobileHtml = renderCustomerDocument(alphaJson, { mobile: true });
   const documentId = alphaJson.document.number;
+  const [full, mobile] = await Promise.all([
+    createDownloadFile(fullHtml, { documentId, variant: "full", mobile: false }),
+    createDownloadFile(mobileHtml, { documentId, variant: "mobile", mobile: true }),
+  ]);
+  const customerEstimateUrl = new URL(`/e/${encodeURIComponent(documentId)}`, request.url).toString();
 
   saveEstimate({
     documentId,
     status: "approved",
     alphaJson,
-    pdf_url_full: htmlDataUrl(fullHtml),
-    pdf_url_mobile: htmlDataUrl(mobileHtml),
+    customerEstimateUrl,
+    documents: { full, mobile },
+    pdf_url_full: full.downloadUrl,
+    pdf_url_mobile: mobile.downloadUrl,
   });
 
   return json({
     documentId,
     alphaJson,
-    full: {
-      format: "html-fallback",
-      html: fullHtml,
-      htmlDataUrl: htmlDataUrl(fullHtml),
-    },
-    mobile: {
-      format: "html-fallback",
-      html: mobileHtml,
-      htmlDataUrl: htmlDataUrl(mobileHtml),
-    },
-    note: "HTML customer documents are generated. Puppeteer PDF rendering can be enabled after dependencies and Chromium are installed.",
+    customerEstimateUrl,
+    full,
+    mobile,
+    mockedStorage: process.env.VERCEL_BLOB_ENABLED !== "true",
+    note:
+      full.format === "pdf" && mobile.format === "pdf"
+        ? "PDF customer documents generated."
+        : "HTML fallback generated because Puppeteer PDF rendering was not available.",
   });
 }
