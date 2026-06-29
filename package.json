@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "@sparticuz/chromium": "latest",
+    "@vercel/blob": "^2.5.0",
     "next": "latest",
     "openai": "^4.0.0",
     "puppeteer-core": "latest",
     "react": "latest",
     "react-dom": "latest",
     "zod": "^3.22.0"
-  },
-  "devDependencies": {}
+  }
 }

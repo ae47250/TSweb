@@ -5,12 +5,13 @@ export const dynamic = "force-dynamic";
 
 function fileForVariant(record, variant) {
   if (variant === "signed") return record.signed?.full || null;
+  if (variant === "accepted") return record.accepted?.full || null;
   return record.documents?.[variant] || null;
 }
 
 export async function GET(_request, context) {
   const { documentId, variant } = await context.params;
-  const record = getEstimate(documentId);
+  const record = await getEstimate(documentId);
   const file = record ? fileForVariant(record, variant) : null;
 
   if (!file) {

@@ -19,14 +19,16 @@ async function postJson(url, body) {
 export default function EstimateClient({ record }) {
   const [selectedOption, setSelectedOption] = useState(record.selected_option || "");
   const [signature, setSignature] = useState(record.signature_name || "");
+  const [checkboxAccepted, setCheckboxAccepted] = useState(record.checkboxAccepted || false);
   const [submitted, setSubmitted] = useState(record.status === "signed");
   const [signedFile, setSignedFile] = useState(record.signed?.full || null);
+  const [signedAtDisplay, setSignedAtDisplay] = useState(record.signedAtDisplay || record.signedResult?.signedAtDisplay || "");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const alphaJson = record.alphaJson;
   const signatureValid = signature.trim().length >= 2 && signature.trim().length <= 50;
-  const ready = Boolean(selectedOption && signatureValid);
+  const ready = Boolean(selectedOption && checkboxAccepted && signatureValid);
   const selected = (alphaJson.service_options?.items || []).find((option) => option.label === selectedOption);
 
   async function submitSignature() {
@@ -34,14 +36,16 @@ export default function EstimateClient({ record }) {
     setError("");
     setNotice("");
     try {
-      const upload = await postJson("/api/upload", { alphaJson, selectedOption, signature });
+      const upload = await postJson("/api/upload", { alphaJson, selectedOption, signature, checkboxAccepted });
       const notify = await postJson("/api/notify", {
         documentId: upload.documentId,
         alphaJson,
         selectedOption,
         signature,
+        signedAtDisplay: upload.signedAtDisplay,
       });
       setSignedFile(upload.signed);
+      setSignedAtDisplay(upload.signedAtDisplay);
       setSubmitted(true);
       setNotice(`Submitted in mock-safe mode. No real SMS or email was sent. SMS target: ${notify.intendedRecipients.phone}; email target: ${notify.intendedRecipients.email}.`);
     } catch (err) {
@@ -81,6 +85,7 @@ export default function EstimateClient({ record }) {
             <h2>Signed Estimate Confirmed</h2>
             <p>Selected option: <strong>{selectedOption}</strong>{selected?.price?.display ? `, ${selected.price.display}` : ""}</p>
             <p>Signature: <strong>{signature}</strong></p>
+            {signedAtDisplay && <p>Signed: <strong>{signedAtDisplay}</strong></p>}
             {signedFile && (
               <a className="btn-primary btn-fit" href={signedFile.downloadUrl || signedFile.htmlDataUrl} download={signedFile.filename}>
                 {signedFile.format === "pdf" ? "Download Signed PDF" : "Download Signed HTML"}
@@ -92,11 +97,19 @@ export default function EstimateClient({ record }) {
             <h2>Choose and Sign</h2>
             <OptionSelector options={alphaJson.service_options?.items || []} selectedOption={selectedOption} onSelect={setSelectedOption} />
             <LegalDisclaimer />
+            <label className="checkbox-line">
+              <input
+                type="checkbox"
+                checked={checkboxAccepted}
+                onChange={(event) => setCheckboxAccepted(event.target.checked)}
+              />
+              <span>I agree to receive and sign this estimate electronically, and I understand that typing my name below is my electronic signature.</span>
+            </label>
             <SignatureBlock value={signature} onChange={setSignature} />
             <button className="btn-primary" type="button" disabled={!ready || busy} onClick={submitSignature}>
               {busy ? "Submitting..." : "Submit Signed Estimate"}
             </button>
-            {!ready && <p className="text-muted">Please select one option and type your signature before submitting.</p>}
+            {!ready && <p className="text-muted">Please select one option, accept electronic signature consent, and type your signature before submitting.</p>}
             <p className="text-muted">Mock mode: no real SMS or email was sent.</p>
           </>
         )}

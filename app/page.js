@@ -24,6 +24,7 @@ export default function HomePage() {
   const [documentResult, setDocumentResult] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [signature, setSignature] = useState("");
+  const [checkboxAccepted, setCheckboxAccepted] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [editMessage, setEditMessage] = useState("");
@@ -44,6 +45,7 @@ export default function HomePage() {
       setDocumentResult(null);
       setSelectedOption("");
       setSignature("");
+      setCheckboxAccepted(false);
       setEditMessage("");
     } catch (err) {
       setError(err.message);
@@ -83,14 +85,15 @@ export default function HomePage() {
     setSubmitting(true);
     setError("");
     try {
-      const upload = await postJson("/api/upload", { alphaJson, selectedOption, signature });
+      const upload = await postJson("/api/upload", { alphaJson, selectedOption, signature, checkboxAccepted });
       const notify = await postJson("/api/notify", {
         documentId: upload.documentId,
         alphaJson,
         selectedOption,
         signature,
+        signedAtDisplay: upload.signedAtDisplay,
       });
-      setDocumentResult((current) => current ? { ...current, signed: upload.signed } : current);
+      setDocumentResult((current) => current ? { ...current, signed: upload.signed, signedAtDisplay: upload.signedAtDisplay } : current);
       setEditMessage("");
       setNotice(`Submitted in mock-safe mode. No real SMS or email was sent. SMS target: ${notify.intendedRecipients.phone}; email target: ${notify.intendedRecipients.email}.`);
     } catch (err) {
@@ -119,8 +122,10 @@ export default function HomePage() {
             documentResult={documentResult}
             selectedOption={selectedOption}
             signature={signature}
+            checkboxAccepted={checkboxAccepted}
             onSelectOption={setSelectedOption}
             onSignature={setSignature}
+            onCheckboxAccepted={setCheckboxAccepted}
             onSubmit={submitToContractor}
             submitting={submitting}
           />

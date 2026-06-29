@@ -22,7 +22,7 @@ export default function SubmissionButtons({ disabled, alphaJson, selectedOption,
         {busy ? "Submitting..." : "Submit to Contractor"}
       </button>
       <p className="text-muted full-row">Mock mode: no real SMS or email was sent.</p>
-      {disabled && <p className="text-muted">Please select an option and sign.</p>}
+      {disabled && <p className="text-muted">Please select an option, accept electronic signature consent, and sign.</p>}
     </div>
   );
 }

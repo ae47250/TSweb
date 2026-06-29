@@ -4,9 +4,10 @@ import { SIGNATURE_MAX_LENGTH, SIGNATURE_MIN_LENGTH } from "../config/constants.
 import { createDraftAlphaJson } from "../lib/alphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 
-function canSubmit(selectedOption, signature) {
+function canSubmit(selectedOption, signature, checkboxAccepted = true) {
   return Boolean(
     selectedOption &&
+      checkboxAccepted &&
       signature.trim().length >= SIGNATURE_MIN_LENGTH &&
       signature.trim().length <= SIGNATURE_MAX_LENGTH,
   );
@@ -16,6 +17,7 @@ test("buttons stay disabled until option and valid signature exist", () => {
   assert.equal(canSubmit("", ""), false);
   assert.equal(canSubmit("Option A", ""), false);
   assert.equal(canSubmit("", "John Smith"), false);
+  assert.equal(canSubmit("Option A", "John Smith", false), false);
   assert.equal(canSubmit("Option A", "J"), false);
   assert.equal(canSubmit("Option A", "John Smith"), true);
 });

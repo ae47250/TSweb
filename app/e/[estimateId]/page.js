@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function CustomerEstimatePage({ params }) {
   const { estimateId } = await params;
-  const record = getEstimate(decodeURIComponent(estimateId));
+  const record = await getEstimate(decodeURIComponent(estimateId));
 
   if (!record) {
     return (

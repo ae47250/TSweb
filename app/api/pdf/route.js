@@ -1,4 +1,5 @@
 import { readJson, json, requestIp } from "../../../lib/api.js";
+import { hasBlobConfig } from "../../../lib/blobStore.js";
 import { renderCustomerDocument } from "../../../lib/customerDocument.js";
 import { createDownloadFile } from "../../../lib/documentFiles.js";
 import { saveEstimate } from "../../../lib/estimateStore.js";
@@ -45,7 +46,7 @@ export async function POST(request) {
   ]);
   const customerEstimateUrl = new URL(`/e/${encodeURIComponent(documentId)}`, request.url).toString();
 
-  saveEstimate({
+  const record = await saveEstimate({
     documentId,
     status: "approved",
     alphaJson,
@@ -61,7 +62,8 @@ export async function POST(request) {
     customerEstimateUrl,
     full,
     mobile,
-    mockedStorage: process.env.VERCEL_BLOB_ENABLED !== "true",
+    mockedStorage: !hasBlobConfig(),
+    blobStorage: record.blobStorage,
     note:
       full.format === "pdf" && mobile.format === "pdf"
         ? "PDF customer documents generated."
