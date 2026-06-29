@@ -1,11 +1,15 @@
 "use client";
 
-export default function InputForm({ value, onChange, onSubmit, busy }) {
+import { forwardRef } from "react";
+
+const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, busy, editMessage = "" }, ref) {
   return (
-    <section className="card">
+    <section className="card" data-testid="customer-notes-card">
       <h2>Customer Notes</h2>
+      {editMessage && <div className="alert" data-testid="edit-notes-message">{editMessage}</div>}
       <label htmlFor="customerText">Paste or type the messy job notes</label>
       <textarea
+        ref={ref}
         id="customerText"
         rows={12}
         value={value}
@@ -17,4 +21,6 @@ export default function InputForm({ value, onChange, onSubmit, busy }) {
       </button>
     </section>
   );
-}
+});
+
+export default InputForm;

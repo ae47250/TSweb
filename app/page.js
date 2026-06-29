@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ErrorAlert from "./components/ErrorAlert.jsx";
 import InputForm from "./components/InputForm.jsx";
 import JsonReview from "./components/JsonReview.jsx";
@@ -26,24 +26,38 @@ export default function HomePage() {
   const [signature, setSignature] = useState("");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [editMessage, setEditMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const notesRef = useRef(null);
 
   async function createReview() {
     setBusy(true);
     setError("");
     setNotice("");
+    setEditMessage("");
     try {
       const openai = await postJson("/api/openai", { customer_text: customerText });
       const validated = await postJson("/api/validate", { alphaJson: openai.alphaJson });
       setAlphaJson(validated.alphaJson);
       setValidation(validated);
       setDocumentResult(null);
+      setSelectedOption("");
+      setSignature("");
     } catch (err) {
       setError(err.message);
     } finally {
       setBusy(false);
     }
+  }
+
+  function editNotes() {
+    setDocumentResult(null);
+    setEditMessage("Edit the notes above, add the missing information, then click Create AlphaJSON Review again.");
+    requestAnimationFrame(() => {
+      notesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      notesRef.current?.focus();
+    });
   }
 
   async function generateDocuments() {
@@ -88,12 +102,12 @@ export default function HomePage() {
       </section>
       {notice && <div className="alert alert-success">{notice}</div>}
       {error && <ErrorAlert errors={[error]} />}
-      <div className="app-grid">
+      <div className={`app-grid ${!alphaJson ? "app-grid-initial" : ""}`}>
         <div>
-          <InputForm value={customerText} onChange={setCustomerText} onSubmit={createReview} busy={busy} />
-          <JsonReview alphaJson={alphaJson} validation={validation} onApprove={generateDocuments} onEdit={() => setDocumentResult(null)} />
+          <InputForm ref={notesRef} value={customerText} onChange={setCustomerText} onSubmit={createReview} busy={busy} editMessage={editMessage} />
+          <JsonReview alphaJson={alphaJson} validation={validation} onApprove={generateDocuments} onEdit={editNotes} />
         </div>
-        <div>
+        {alphaJson && <div>
           <PdfGenerator
             alphaJson={alphaJson}
             documentResult={documentResult}
@@ -104,13 +118,7 @@ export default function HomePage() {
             onSubmit={submitToContractor}
             submitting={submitting}
           />
-          {alphaJson && (
-            <section className="card">
-              <h2>AlphaJSON</h2>
-              <pre>{JSON.stringify(alphaJson, null, 2)}</pre>
-            </section>
-          )}
-        </div>
+        </div>}
       </div>
     </main>
   );

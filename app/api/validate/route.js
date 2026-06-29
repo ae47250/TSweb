@@ -1,4 +1,5 @@
 import { readJson, json } from "../../../lib/api.js";
+import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../../../lib/validateJson.js";
 
 export const runtime = "nodejs";
@@ -11,5 +12,5 @@ export async function POST(request) {
     return json({ error: "No AlphaJSON payload was provided." }, { status: 400 });
   }
 
-  return json(validateAlphaJson(alphaJson));
+  return json(validateAlphaJson(normalizeToAlphaJsonV14(alphaJson, body.customer_text || body.customerText || "")));
 }

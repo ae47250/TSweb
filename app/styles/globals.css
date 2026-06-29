@@ -20,6 +20,15 @@ main {
   align-items: start;
 }
 
+.app-grid-initial {
+  display: flex;
+  justify-content: center;
+}
+
+.app-grid-initial > div:first-child {
+  width: min(100%, 720px);
+}
+
 .toolbar {
   display: flex;
   gap: 10px;

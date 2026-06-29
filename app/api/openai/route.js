@@ -1,4 +1,5 @@
 import { createDraftAlphaJson } from "../../../lib/alphaJson.js";
+import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { readJson, json } from "../../../lib/api.js";
 
 export const runtime = "nodejs";
@@ -13,7 +14,7 @@ export async function POST(request) {
 
   if (!process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true") {
     return json({
-      alphaJson: createDraftAlphaJson(customerText),
+      alphaJson: normalizeToAlphaJsonV14(createDraftAlphaJson(customerText), customerText),
       mocked: true,
       note: "OPENAI_API_KEY is not configured, so a local draft parser was used.",
     });
@@ -34,13 +35,13 @@ export async function POST(request) {
         { role: "user", content: customerText },
       ],
     });
-    const alphaJson = JSON.parse(response.choices[0]?.message?.content || "{}");
+    const alphaJson = normalizeToAlphaJsonV14(JSON.parse(response.choices[0]?.message?.content || "{}"), customerText);
     return json({ alphaJson, mocked: false });
   } catch (error) {
     return json(
       {
         error: "OpenAI could not structure the notes. The safe local draft parser was used instead.",
-        alphaJson: createDraftAlphaJson(customerText),
+        alphaJson: normalizeToAlphaJsonV14(createDraftAlphaJson(customerText), customerText),
         detail: error.message,
       },
       { status: 200 },
