@@ -1,0 +1,96 @@
+@import "../../styles-globals.css";
+
+:root {
+  --green-dark: #1f4229;
+  --green: #3f7045;
+  --yellow: #f1ce55;
+  --ink: #222;
+  --paper: #fff;
+  --line: #ddd;
+}
+
+main {
+  max-width: 980px;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.toolbar button {
+  width: auto;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.estimate-preview {
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 18px;
+  min-height: 420px;
+}
+
+.option-row {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) 120px;
+  gap: 10px;
+  align-items: center;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+button:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.mock-pill {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef6ed;
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #f8f8f8;
+  border: 1px solid var(--line);
+  padding: 12px;
+  border-radius: 6px;
+  max-height: 420px;
+  overflow: auto;
+}
+
+@media (max-width: 840px) {
+  .app-grid,
+  .review-grid,
+  .button-row,
+  .option-row {
+    grid-template-columns: 1fr;
+  }
+}

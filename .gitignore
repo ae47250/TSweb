@@ -1,0 +1,9 @@
+.env
+.env.local
+.env.production
+.next/
+node_modules/
+.pnpm-store/
+coverage/
+*.log
+out/

@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AlphaJSON v1.4",
+  "type": "object",
+  "required": [
+    "schema_info",
+    "metadata",
+    "raw_input",
+    "document",
+    "company",
+    "customer",
+    "job",
+    "service_options",
+    "notes",
+    "review",
+    "validation",
+    "layout_flags"
+  ]
+}

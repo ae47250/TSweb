@@ -1,0 +1,22 @@
+{
+  "name": "tsweb-alpha-tree-service",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "@sparticuz/chromium": "latest",
+    "next": "latest",
+    "openai": "^4.0.0",
+    "puppeteer-core": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {}
+}
