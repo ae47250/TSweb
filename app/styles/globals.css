@@ -220,6 +220,45 @@ main {
   cursor: not-allowed;
 }
 
+.btn-neutral,
+.btn-light-orange,
+.btn-light-blue,
+.btn-yellow {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-neutral {
+  background: #eeeeee;
+  border-color: #d6d6d6;
+  color: #222;
+}
+
+.btn-light-orange {
+  background: #fed7aa;
+  border-color: #fdba74;
+  color: #7c2d12;
+}
+
+.btn-light-blue {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e3a8a;
+}
+
+.btn-yellow {
+  background: var(--yellow);
+  border-color: #d9ad21;
+  color: #2b2111;
+}
+
 .btn-blue {
   background: var(--blue);
   color: #fff;
@@ -271,7 +310,11 @@ main {
 
 button:disabled,
 .btn-primary:disabled,
-.btn-secondary:disabled {
+.btn-secondary:disabled,
+.btn-neutral:disabled,
+.btn-light-orange:disabled,
+.btn-light-blue:disabled,
+.btn-yellow:disabled {
   opacity: 0.48;
   cursor: not-allowed;
   transform: none;

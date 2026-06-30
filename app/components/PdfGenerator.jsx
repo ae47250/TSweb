@@ -110,8 +110,8 @@ export default function PdfGenerator({
         <div className="action-card">
           <h3>Inform Customer</h3>
           <div className="button-row">
-            <button className="btn-orange" type="button" disabled={!customerPhone} onClick={() => sendMock("sms")}>Send SMS</button>
-            <button className="btn-orange" type="button" disabled={!customerEmail} onClick={() => sendMock("email")}>Send Email</button>
+            <button className="btn-light-orange" type="button" disabled={!customerPhone} onClick={() => sendMock("sms")}>Send SMS</button>
+            <button className="btn-light-orange" type="button" disabled={!customerEmail} onClick={() => sendMock("email")}>Send Email</button>
           </div>
           {(!customerPhone || !customerEmail) && <p className="text-muted">Missing phone or email disables that send option.</p>}
           {sendStatus && <div className="alert alert-success">{sendStatus}</div>}
@@ -119,11 +119,11 @@ export default function PdfGenerator({
 
         <div className="utility-card">
           {savedFile && (
-            <a className="btn-secondary" href={savedFile.downloadUrl || savedFile.htmlDataUrl} download={savedFile.filename}>
+            <a className="btn-light-blue" href={savedFile.downloadUrl || savedFile.htmlDataUrl} download={savedFile.filename}>
               {savedLabel}
             </a>
           )}
-          <button className="btn-secondary" type="button" onClick={() => copyText(completedLink)}>
+          <button className="btn-light-blue" type="button" onClick={() => copyText(completedLink)}>
             Copy Link to Completed Estimate
           </button>
         </div>
@@ -142,16 +142,16 @@ export default function PdfGenerator({
         Estimate <strong>{documentResult.documentId}</strong> is confirmed. Choose how to inform the customer.
       </p>
       <div className="toolbar action-toolbar">
-        <button className="btn-secondary" type="button" onClick={onReviewQuote}>Review Quote</button>
-        <button className="btn-secondary" type="button" disabled={!customerPhone} onClick={() => showPreview("sms")}>Send SMS</button>
-        <button className="btn-secondary" type="button" disabled={!customerEmail} onClick={() => showPreview("email")}>Send Email</button>
+        <button className="btn-neutral" type="button" onClick={onReviewQuote}>Review Quote</button>
+        <button className="btn-light-orange" type="button" disabled={!customerPhone} onClick={() => showPreview("sms")}>Send SMS</button>
+        <button className="btn-light-orange" type="button" disabled={!customerEmail} onClick={() => showPreview("email")}>Send Email</button>
         {estimateFile && (
-          <a className="btn-secondary" href={estimateFile.downloadUrl || estimateFile.htmlDataUrl} download={estimateFile.filename}>
+          <a className="btn-light-blue" href={estimateFile.downloadUrl || estimateFile.htmlDataUrl} download={estimateFile.filename}>
             {estimateDownloadLabel}
           </a>
         )}
-        <button className="btn-secondary" type="button" onClick={() => copyText(customerUrl)}>Copy Link to Estimate</button>
-        <button className="btn-secondary" type="button" onClick={() => setShowManual((current) => !current)}>Record Manual Acceptance</button>
+        <button className="btn-light-blue" type="button" onClick={() => copyText(customerUrl)}>Copy Link to Estimate</button>
+        <button className="btn-yellow" type="button" onClick={() => setShowManual((current) => !current)}>Record Manual Acceptance</button>
       </div>
       {(!customerPhone || !customerEmail) && (
         <p className="text-muted">
@@ -209,6 +209,9 @@ export default function PdfGenerator({
           </button>
         </section>
       )}
+      <div className="back-home-area">
+        <button className="btn-blue" type="button" onClick={onBackFront}>Back to Front Page</button>
+      </div>
     </section>
   );
 }

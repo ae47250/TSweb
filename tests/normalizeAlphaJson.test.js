@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalizeToAlphaJsonV14, normalizePhone } from "../lib/normalizeAlphaJson.js";
+import { normalizeToAlphaJsonV14, normalizePhone, normalizeTreeServiceText } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 
 const customerCases = [
@@ -137,6 +137,7 @@ test("normalizes phone formats", () => {
   assert.equal(normalizePhone("8125550134"), "812-555-0134");
   assert.equal(normalizePhone("322-4567899"), "322-456-7899");
   assert.equal(normalizePhone("812.555.4410"), "812-555-4410");
+  assert.equal(normalizePhone("812/555/0144"), "812-555-0144");
 });
 
 test("maps client and services shape into canonical AlphaJSON", () => {
@@ -325,4 +326,33 @@ test("vague address fragments are blocked for follow-up", () => {
   const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
   assert.equal(validation.can_generate_pdf, false);
   assert.match(validation.blocking_errors.join(" "), /address/i);
+});
+
+test("email-only customer is a valid contact method", () => {
+  const input =
+    "Terry Cole email terry.cole@example.com; 511 Mulberry Pike Hanover IN. One cherry laying across pasture gate. cut and move off gate 700; haul away brush/logs 1150.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.alphaJson.customer.phone_display, "");
+  assert.equal(validation.alphaJson.customer.email, "terry.cole@example.com");
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.blocking_errors.some((error) => /phone/i.test(error)), false);
+});
+
+test("extracts slash-separated phone numbers from raw notes", () => {
+  const input =
+    "Customer: Malik Stone. call/text 812/555/0144. service 909 Broadway St Madison, IN. two maples close to alley. low price just cut $2200; better price cut+haul+cleanup $3300.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.alphaJson.customer.phone_display, "812-555-0144");
+});
+
+test("common tree service typos are cleaned in reviewable job and option text", () => {
+  const input =
+    "Jaxon Reed 812-555-0137 1414 Lanier Dr Hanover IN. twp trees, one dead pine one maple, tree removel + hall off debree. optA drop n leave 2800 optB drop/hual off/cleanup 3900.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const reviewText = normalizeTreeServiceText(input);
+  assert.match(reviewText, /two trees/i);
+  assert.match(reviewText, /tree removal/i);
+  assert.match(reviewText, /haul off debris/i);
+  assert.equal(/removel|hall off|hual|debree|twp/i.test(reviewText), false);
+  assert.equal(validation.alphaJson.service_options.items.some((option) => /removel|hual|debree/i.test(option.description)), false);
 });

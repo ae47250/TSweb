@@ -20,6 +20,9 @@ test("Edit Notes focuses the textarea and shows a visible retry message", () => 
   assert.match(pageSource, /notesRef\.current\?\.scrollIntoView/);
   assert.match(pageSource, /notesRef\.current\?\.focus/);
   assert.match(inputFormSource, /data-testid="edit-notes-message"/);
+  assert.match(pageSource, /quoteContact/);
+  assert.match(inputFormSource, /contactValue/);
+  assert.match(inputFormSource, /onContactChange/);
 });
 
 test("initial desktop layout centers the Customer Notes card", () => {
@@ -42,6 +45,11 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(pdfGeneratorSource, /Copy Link to Estimate/);
   assert.match(pdfGeneratorSource, /Send Now/);
   assert.match(pdfGeneratorSource, /Copy Link to Completed Estimate/);
+  assert.match(pdfGeneratorSource, /Back to Front Page/);
+  assert.match(pdfGeneratorSource, /btn-neutral/);
+  assert.match(pdfGeneratorSource, /btn-light-orange/);
+  assert.match(pdfGeneratorSource, /btn-light-blue/);
+  assert.match(pdfGeneratorSource, /btn-yellow/);
   assert.equal(existsSync("app/api/estimates/[documentId]/route.js"), true);
   assert.equal(existsSync("app/e/[estimateId]/page.js"), true);
   assert.equal(existsSync("app/e/[estimateId]/EstimateClient.jsx"), true);
@@ -54,6 +62,8 @@ test("confirm quote separates address, notes, and option cards", () => {
   assert.match(reviewSource, /Customer Options/);
   assert.match(reviewSource, /quote-option-card/);
   assert.match(reviewSource, /Option 1/);
+  assert.match(reviewSource, /normalizeTreeServiceText/);
+  assert.match(reviewSource, /orderJobWarningsLast/);
   assert.match(reviewSource, /Go Back to Edit Notes and Add Missing Details/);
 });
 

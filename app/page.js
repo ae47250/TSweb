@@ -41,6 +41,22 @@ const emptyRecentCards = [
   },
 ];
 
+const emptyQuoteContact = {
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+};
+
+function contactFromAlphaJson(alphaJson) {
+  return {
+    name: alphaJson?.customer?.name || "",
+    phone: alphaJson?.customer?.phone_display || alphaJson?.customer?.phone_primary || "",
+    email: alphaJson?.customer?.email || "",
+    address: alphaJson?.job?.service_address?.display || "",
+  };
+}
+
 function FrontPage({ cards, onNewQuote, onOpenEstimate, onManualAcceptance, onCopyLink }) {
   return (
     <section className="front-page">
@@ -94,6 +110,7 @@ export default function HomePage() {
   const [stage, setStage] = useState("front");
   const [recentCards, setRecentCards] = useState([]);
   const [customerText, setCustomerText] = useState("");
+  const [quoteContact, setQuoteContact] = useState(emptyQuoteContact);
   const [submittedText, setSubmittedText] = useState("");
   const [alphaJson, setAlphaJson] = useState(null);
   const [validation, setValidation] = useState(null);
@@ -119,6 +136,14 @@ export default function HomePage() {
   }, []);
 
   function startNewQuote() {
+    if (stage === "front") {
+      setCustomerText("");
+      setQuoteContact(emptyQuoteContact);
+      setSubmittedText("");
+      setAlphaJson(null);
+      setValidation(null);
+      setDocumentResult(null);
+    }
     setStage("new");
     setNotice("");
     setError("");
@@ -203,6 +228,7 @@ export default function HomePage() {
       });
       setValidation({ can_generate_pdf: true, follow_ups: [] });
       setSubmittedText(record.alphaJson?.raw_input?.customer_text || "");
+      setQuoteContact(contactFromAlphaJson(record.alphaJson));
       setStage("inform");
     } catch (err) {
       setError(err.message);
@@ -242,7 +268,16 @@ export default function HomePage() {
       {stage === "new" && (
         <div className="app-grid app-grid-initial">
           <div>
-            <InputForm ref={notesRef} value={customerText} onChange={setCustomerText} onSubmit={createReview} busy={busy} editMessage={editMessage} />
+            <InputForm
+              ref={notesRef}
+              value={customerText}
+              onChange={setCustomerText}
+              contactValue={quoteContact}
+              onContactChange={setQuoteContact}
+              onSubmit={createReview}
+              busy={busy}
+              editMessage={editMessage}
+            />
           </div>
         </div>
       )}

@@ -25,7 +25,7 @@ test("validation blocks missing phone and priced option", () => {
   const alphaJson = createDraftAlphaJson("Remove a tree at 123 Main Street.");
   const result = validateAlphaJson(alphaJson);
   assert.equal(result.can_generate_pdf, false);
-  assert.ok(result.blocking_errors.includes("Missing customer phone."));
+  assert.ok(result.blocking_errors.includes("Missing customer phone or email."));
   assert.ok(result.blocking_errors.includes("Missing priced service option."));
 });
 

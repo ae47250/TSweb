@@ -1,27 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import { forwardRef } from "react";
 
-const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, busy, editMessage = "" }, ref) {
-  const [contact, setContact] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    address: "",
-  });
+const emptyContact = {
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+};
 
+const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, busy, editMessage = "", contactValue = emptyContact, onContactChange }, ref) {
   function updateContact(field, nextValue) {
-    setContact((current) => ({ ...current, [field]: nextValue }));
+    onContactChange?.({ ...contactValue, [field]: nextValue });
   }
 
   function submit(event) {
     event.preventDefault();
     const contactText = [
-      contact.name ? `Customer name: ${contact.name}` : "",
-      contact.phone ? `Customer phone: ${contact.phone}` : "",
-      contact.email ? `Customer email: ${contact.email}` : "",
-      contact.address ? `Service address: ${contact.address}` : "",
+      contactValue.name ? `Customer name: ${contactValue.name}` : "",
+      contactValue.phone ? `Customer phone: ${contactValue.phone}` : "",
+      contactValue.email ? `Customer email: ${contactValue.email}` : "",
+      contactValue.address ? `Service address: ${contactValue.address}` : "",
     ].filter(Boolean).join("\n");
     onSubmit([contactText, value].filter(Boolean).join("\n\n"));
   }
@@ -37,19 +36,19 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, bus
         <div className="compact-fields">
           <label htmlFor="customerName">
             Customer
-            <input id="customerName" value={contact.name} onChange={(event) => updateContact("name", event.target.value)} placeholder="Maria Lopez" />
+            <input id="customerName" value={contactValue.name} onChange={(event) => updateContact("name", event.target.value)} placeholder="Maria Lopez" />
           </label>
           <label htmlFor="customerPhone">
             Phone
-            <input id="customerPhone" value={contact.phone} onChange={(event) => updateContact("phone", event.target.value)} placeholder="812-555-0134" />
+            <input id="customerPhone" value={contactValue.phone} onChange={(event) => updateContact("phone", event.target.value)} placeholder="812-555-0134" />
           </label>
           <label htmlFor="customerEmail">
             Email
-            <input id="customerEmail" value={contact.email} onChange={(event) => updateContact("email", event.target.value)} placeholder="maria@example.com" />
+            <input id="customerEmail" value={contactValue.email} onChange={(event) => updateContact("email", event.target.value)} placeholder="maria@example.com" />
           </label>
           <label htmlFor="serviceAddress">
             Service address
-            <input id="serviceAddress" value={contact.address} onChange={(event) => updateContact("address", event.target.value)} placeholder="805 2nd Street, Madison, IN" />
+            <input id="serviceAddress" value={contactValue.address} onChange={(event) => updateContact("address", event.target.value)} placeholder="805 2nd Street, Madison, IN" />
           </label>
         </div>
         <label htmlFor="customerText">Job notes</label>

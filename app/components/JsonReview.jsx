@@ -1,7 +1,41 @@
 "use client";
 
+import { normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
+
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const warningPattern = /\b(aggressive\s+dogs?|dogs?|warning|hazard|power\s*lines?|wires?|unsafe|locked\s+gate|gate\s+code|access|poison\s+ivy|bees?|wasps?)\b/i;
+const treePattern = /\b(trees?|limbs?|branches?|stumps?|oak|pine|maple|ash|elm|cedar|sycamore|trim|remove|removal|cut|drop|haul|cleanup|grind)\b/i;
+
+function splitNoteParts(text) {
+  return normalizeTreeServiceText(text)
+    .split(/(?<=[.!?])\s+|;\s+|,\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function extractWarningParts(text) {
+  return splitNoteParts(text).filter((part) => warningPattern.test(part));
+}
+
+function orderJobWarningsLast(text) {
+  const normalized = normalizeTreeServiceText(text);
+  const parts = splitNoteParts(normalized);
+
+  if (parts.length < 2) return normalized;
+
+  const jobParts = parts.filter((part) => !warningPattern.test(part));
+  const warningParts = parts.filter((part) => warningPattern.test(part));
+
+  if (!warningParts.length || !jobParts.some((part) => treePattern.test(part))) return normalized;
+
+  return [...jobParts, ...warningParts.map((part) => /^warning:/i.test(part) ? part : `Warning: ${part}`)]
+    .join(". ")
+    .replace(/\s+\./g, ".")
+    .replace(/\.+/g, ".")
+    .trim();
 }
 
 function cleanJobNotesForReview(sourceNotes, alphaJson) {
@@ -25,8 +59,9 @@ function cleanJobNotesForReview(sourceNotes, alphaJson) {
     .replace(/\bCustomer\s+phone\s*:\s*/gi, " ")
     .replace(/\bCustomer\s+email\s*:\s*/gi, " ")
     .replace(/\bService\s+address\s*:\s*/gi, " ")
-    .replace(/\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g, " ")
+    .replace(/\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-./\s]?\d{3}[-./\s]?\d{4}\b/g, " ")
     .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, " ");
+  const warningParts = extractWarningParts(text);
 
   const optionIndex = text.search(/\bOption\s*(?:[A-E]|[1-5])\b/i);
   if (optionIndex > -1) text = text.slice(0, optionIndex);
@@ -40,7 +75,10 @@ function cleanJobNotesForReview(sourceNotes, alphaJson) {
     .replace(/\s+/g, " ")
     .trim();
 
-  return text || alphaJson.job?.description || "No job notes supplied.";
+  const cleanedText = normalizeTreeServiceText(text);
+  const extraWarnings = warningParts.filter((part) => !cleanedText.toLowerCase().includes(normalizeTreeServiceText(part).toLowerCase()));
+  const notesWithWarnings = [cleanedText, ...extraWarnings].filter(Boolean).join(". ");
+  return orderJobWarningsLast(notesWithWarnings || alphaJson.job?.description || "No job notes supplied.");
 }
 
 export default function JsonReview({ alphaJson, validation, sourceNotes = "", onApprove, onEdit, busy = false }) {
