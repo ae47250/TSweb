@@ -552,6 +552,93 @@ test("missing service address still blocks after messy-input normalization", () 
   assert.match(validation.blocking_errors.join(" "), /address/i);
 });
 
+test("follow-up answers recover missing customer fields without leaking contact notes to customer summary", () => {
+  const smokeCases = [
+    {
+      input:
+        "Maria Lopez called from 812-555-0134. Remove 3 oak trees near the back fence. Option A cut and haul debris $2000. Option B remove trees, haul debris, and stump grind $2800.",
+      followUps: ["Follow-up 1: Service address is 805 2nd Street, Madison Indiana."],
+      expected: {
+        name: "Maria Lopez",
+        address: "805 2nd Street",
+        corrected: /Remove 3 oak trees near the back fence/i,
+      },
+    },
+    {
+      input:
+        "Email for approval is alex@example.com. Job is at 440 Walnut St Madison IN. Trim limbs over roof and remove brush pile. Option A trim only $850. Option B trim and haul brush $1250.",
+      followUps: [],
+      expected: {
+        name: "",
+        email: "alex@example.com",
+        address: "440 Walnut St",
+        corrected: /^Trim limbs over roof/i,
+      },
+    },
+    {
+      input:
+        "Customer is Darren Fields. Phone 8125997711. Remove one dead pine by garage. Option A drop and leave wood $950. Option B remove all debris $1450.",
+      followUps: ["Follow-up 1: Service address is 440 Walnut St, Madison IN."],
+      expected: {
+        name: "Darren Fields",
+        phone: "812-599-7711",
+        address: "440 Walnut St",
+        corrected: /Remove one dead pine by garage/i,
+      },
+    },
+    {
+      input:
+        "Nora Burns called from 812.555.2443 and email nora.burns@example.com. Take down two storm damaged maples. Option A drop and leave logs $2100. Option B remove trees, haul debris, and clean yard $2950.",
+      followUps: ["Follow-up 1: Exact service address is 789 West Main, Hanover IN."],
+      expected: {
+        name: "Nora Burns",
+        email: "nora.burns@example.com",
+        address: "789 West Main",
+        corrected: /^Take down two storm damaged maples/i,
+        optionB: "remove trees, haul debris, and clean yard",
+      },
+    },
+    {
+      input:
+        "Wade Foster wants two maples removed behind the garage, cleanup if customer wants. Option A remove only $1700. Stump maybe included?",
+      followUps: [
+        "Follow-up 1: Phone is 812-555-3388 and service address is 63 Oak Lane, Madison Indiana.",
+        "Follow-up 2: Stump grinding is excluded. Cleanup and haul-away are included in Option B for $2300.",
+      ],
+      expected: {
+        name: "Wade Foster",
+        phone: "812-555-3388",
+        address: "63 Oak Lane",
+        corrected: /two maples removed behind the garage/i,
+        optionB: "Cleanup and haul-away",
+      },
+    },
+  ];
+
+  for (const smokeCase of smokeCases) {
+    let raw = smokeCase.input;
+    let validation = validateAlphaJson(normalizeToAlphaJsonV14({}, raw));
+    let used = 0;
+    while (!validation.can_generate_pdf && used < smokeCase.followUps.length) {
+      raw += `\n${smokeCase.followUps[used]}`;
+      used += 1;
+      validation = validateAlphaJson(normalizeToAlphaJsonV14({}, raw));
+    }
+
+    const alphaJson = validation.alphaJson;
+    assert.equal(validation.can_generate_pdf, true, smokeCase.input);
+    assert.equal(alphaJson.customer.name, smokeCase.expected.name);
+    if (smokeCase.expected.phone) assert.equal(alphaJson.customer.phone_display, smokeCase.expected.phone);
+    if (smokeCase.expected.email) assert.equal(alphaJson.customer.email, smokeCase.expected.email);
+    assert.match(alphaJson.job.service_address.display, new RegExp(smokeCase.expected.address, "i"));
+    assert.match(alphaJson.normalization.corrected_interpretation, smokeCase.expected.corrected);
+    assert.doesNotMatch(alphaJson.normalization.corrected_interpretation, /Follow-up|service address|phone is|email for approval/i);
+    if (smokeCase.expected.optionB) {
+      assert.equal(alphaJson.service_options.items[1].description, smokeCase.expected.optionB);
+    }
+  }
+});
+
 test("vague customer-facing prose request blocks without inventing quote details", () => {
   const input =
     "Vague Case 812-555-2209 just make it look professional, maybe around 2k, address later.";
