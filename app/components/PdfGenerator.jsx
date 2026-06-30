@@ -58,6 +58,7 @@ export default function PdfGenerator({
   }
 
   function sendMock(type) {
+    setActivePreview("");
     if (type === "sms") {
       setSendStatus(`SMS send recorded for ${customerName} in mock mode.`);
       return;
