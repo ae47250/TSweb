@@ -1,5 +1,6 @@
 import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { readJson, json } from "../../../lib/api.js";
+import { OPENAI_SYSTEM_PROMPT } from "../../../lib/openaiPrompt.js";
 
 export const runtime = "nodejs";
 
@@ -44,8 +45,7 @@ export async function POST(request) {
       messages: [
         {
           role: "system",
-          content:
-            "Convert messy tree service notes into AlphaJSON v1.4. Return JSON only. Never invent missing service address, phone, tree count/scope, or prices. Put missing items in validation.blocking_errors and validation.tree_dude_follow_ups.",
+          content: OPENAI_SYSTEM_PROMPT,
         },
         { role: "user", content: customerText },
       ],

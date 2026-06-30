@@ -204,6 +204,32 @@ test("maps customer phone/service address and service tree shape", () => {
   assert.match(validation.alphaJson.job.condition_details, /near barn/);
 });
 
+test("maps new normalization plus alphaJson response shape", () => {
+  const raw = {
+    normalization: {
+      corrected_interpretation: "Synthetic customer wants one oak removed. Quoted price is $1,200.",
+      corrections_made: [{ original: "rmv", corrected: "remove", reason: "Expanded shorthand." }],
+      uncertainties: [{ field: "haul_away", issue: "Haul-away not mentioned.", evidence: "No haul-away phrase." }],
+      field_evidence: { work_scope: "remove one oak", price: "$1,200" },
+    },
+    alphaJson: {
+      customer: { name: "Shape Test", contact: { phone: "8125556677" } },
+      job: { service_address: { display: "17 Oak Road, Madison, Indiana" } },
+      service: {
+        tree_count_scope: "one oak tree",
+        description: "remove one oak",
+        options: [{ description: "remove one oak and leave wood", price: 1200 }],
+      },
+    },
+  };
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(raw, ""));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.customer.phone_display, "812-555-6677");
+  assert.equal(validation.alphaJson.normalization.corrected_interpretation, raw.normalization.corrected_interpretation);
+  assert.deepEqual(validation.alphaJson.normalization.corrections_made[0], raw.normalization.corrections_made[0]);
+});
+
 for (const testCase of customerCases) {
   test(`customer battery: ${testCase.name}`, () => {
     assertNormalizedCase(testCase);
@@ -355,4 +381,117 @@ test("common tree service typos are cleaned in reviewable job and option text", 
   assert.match(reviewText, /haul off debris/i);
   assert.equal(/removel|hall off|hual|debree|twp/i.test(reviewText), false);
   assert.equal(validation.alphaJson.service_options.items.some((option) => /removel|hual|debree/i.test(option.description)), false);
+});
+
+test("normalization captures obvious typo corrections without blocking safe parse", () => {
+  const input =
+    "Typo Case 812-555-2201 44 Pine Lane Madison Indiana. 2 mapls by barn trim ovr roof no hawl quoted 1200.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const alphaJson = validation.alphaJson;
+  const normalization = alphaJson.normalization || {};
+  const combinedText = [
+    alphaJson.job.description,
+    ...alphaJson.service_options.items.map((option) => option.description),
+    normalization.corrected_interpretation,
+  ].join(" ");
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(alphaJson.service_options.items[0].price.display, "$1,200");
+  assert.match(combinedText, /maple/i);
+  assert.match(combinedText, /over roof/i);
+  assert.doesNotMatch(combinedText, /\bmapls\b|\bovr\b|\bhawl\b/i);
+  assert.ok((normalization.corrections_made || []).some((item) => item.original === "mapls" && /maples/i.test(item.corrected)));
+});
+
+test("normalization expands tree-service shorthand for safe removal notes", () => {
+  const input =
+    "Shorthand Case 812-555-2202 55 Cedar Drive Madison Indiana. rmv dead ash by shed, leave wood, no haul, 950.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const alphaJson = validation.alphaJson;
+  const optionText = alphaJson.service_options.items.map((option) => option.description).join(" ");
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(alphaJson.service_options.items[0].price.display, "$950");
+  assert.match(`${alphaJson.job.description} ${optionText}`, /remove|removal/i);
+  assert.match(`${alphaJson.job.description} ${optionText}`, /leave wood/i);
+});
+
+test("speech-to-text-like unclear species and spoken price blocks instead of inventing", () => {
+  const input =
+    "Speech Case 812-555-2203 66 Beech Road Madison Indiana. cut too beach trees by barn for twenty five hundred.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const followUps = validation.alphaJson.validation.tree_dude_follow_ups.join(" ");
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(`${validation.blocking_errors.join(" ")} ${followUps}`, /price|option|unclear|scope/i);
+});
+
+test("remove-vs-trim ambiguity blocks for follow-up", () => {
+  const input =
+    "Ambiguous Scope 812-555-2204 77 Maple Street Madison Indiana. Take care of maple touching roof 900.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const followUps = validation.alphaJson.validation.tree_dude_follow_ups.join(" ");
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(`${validation.blocking_errors.join(" ")} ${followUps}`, /remove|trim|scope|work/i);
+});
+
+test("unclear cleanup or haul-away add-on blocks when scope affects price", () => {
+  const input =
+    "Cleanup Case 812-555-2205 88 Ash Lane Madison Indiana. Drop dead ash 1100, clean it up if they want.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const followUps = validation.alphaJson.validation.tree_dude_follow_ups.join(" ");
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(`${validation.blocking_errors.join(" ")} ${followUps}`, /cleanup|haul|price|option/i);
+});
+
+test("unclear stump inclusion blocks for follow-up", () => {
+  const input =
+    "Stump Case 812-555-2206 99 Pine Court Madison Indiana. Remove pine 1400, stump maybe included?";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const followUps = validation.alphaJson.validation.tree_dude_follow_ups.join(" ");
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(`${validation.blocking_errors.join(" ")} ${followUps}`, /stump|included|price|option/i);
+});
+
+test("non-firm price language blocks customer-facing estimate", () => {
+  for (const priceText of ["around 2k", "price depends", "maybe 1800"]) {
+    const input =
+      `Price Case 812-555-2207 101 Oak Road Madison Indiana. Remove one oak by garage ${priceText}.`;
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+    assert.equal(validation.can_generate_pdf, false, priceText);
+    assert.match(validation.blocking_errors.join(" "), /price|priced option/i);
+  }
+});
+
+test("missing contact still blocks after messy-input normalization", () => {
+  const input =
+    "Missing Contact 202 Oak Lane Madison Indiana. Remove one maple by garage. Option A cut and leave wood 1200.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /phone or email/i);
+});
+
+test("missing service address still blocks after messy-input normalization", () => {
+  const input =
+    "Missing Address 812-555-2208 remove one maple by garage. Option A cut and leave wood 1200.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /address/i);
+});
+
+test("vague customer-facing prose request blocks without inventing quote details", () => {
+  const input =
+    "Vague Case 812-555-2209 just make it look professional, maybe around 2k, address later.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const alphaJson = validation.alphaJson;
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /address|scope|price|option/i);
+  assert.equal(alphaJson.job.service_address.display, "");
+  assert.equal(alphaJson.service_options.items.length, 0);
 });
