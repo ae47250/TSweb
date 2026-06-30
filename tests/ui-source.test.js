@@ -97,3 +97,17 @@ test("OpenAI route can use reasoning effort without affecting non-reasoning mode
   assert.match(openaiRouteSource, /gpt-4o/);
   assert.match(envExampleSource, /OPENAI_REASONING_EFFORT=/);
 });
+
+test("OpenAI route logs production case metrics without raw customer text", () => {
+  assert.match(openaiRouteSource, /openai_case_result/);
+  assert.match(openaiRouteSource, /case_id/);
+  assert.match(openaiRouteSource, /model/);
+  assert.match(openaiRouteSource, /reasoning_effort/);
+  assert.match(openaiRouteSource, /input_tokens/);
+  assert.match(openaiRouteSource, /output_tokens/);
+  assert.match(openaiRouteSource, /total_tokens/);
+  assert.match(openaiRouteSource, /parse_block_outcome/);
+  assert.match(openaiRouteSource, /error_message/);
+  assert.match(openaiRouteSource, /validateAlphaJson/);
+  assert.doesNotMatch(openaiRouteSource, /customerText,\s*$/m);
+});
