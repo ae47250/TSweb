@@ -639,6 +639,19 @@ test("follow-up answers recover missing customer fields without leaking contact 
   }
 });
 
+test("safety and access notes stay internal while customer summary remains work-only", () => {
+  const input =
+    "Daria Moss 812-555-1111 22 Oak Lane Madison Indiana. Aggressive dog in backyard. Remove two maples behind garage. Option A remove only $1700.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const alphaJson = validation.alphaJson;
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.match(alphaJson.raw_input.customer_text, /Aggressive dog in backyard/i);
+  assert.match(validation.warnings.join(" "), /Safety\/access note: Aggressive dog in backyard\./i);
+  assert.match(alphaJson.normalization.corrected_interpretation, /Remove two maples behind garage/i);
+  assert.doesNotMatch(alphaJson.normalization.corrected_interpretation, /aggressive dog|dog in backyard/i);
+});
+
 test("vague customer-facing prose request blocks without inventing quote details", () => {
   const input =
     "Vague Case 812-555-2209 just make it look professional, maybe around 2k, address later.";
