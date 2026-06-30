@@ -17,6 +17,19 @@ function git(command) {
   }
 }
 
+function easternTimestamp(date) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZoneName: "short",
+  }).format(date);
+}
+
 function isBlank(value) {
   return value == null || value === "";
 }
@@ -295,7 +308,8 @@ function renderReport(history) {
   const lines = [
     "# Alpha Metrics Report",
     "",
-    `Generated: ${latest.timestamp}`,
+    `Generated Eastern: ${latest.timestampEastern || latest.timestamp}`,
+    `Generated UTC: ${latest.timestamp}`,
     `Commit: ${latest.commit}`,
     `Branch: ${latest.branch}`,
     "",
@@ -320,13 +334,13 @@ function renderReport(history) {
   lines.push("", "## Error Rate History", "");
   for (const [tier] of Object.entries(latest.fixtures)) {
     lines.push(`### ${tier}`, "");
-    lines.push("| Commit | Time | Error | Failing | Still blocked | Leakage |");
-    lines.push("|---|---|---:|---:|---:|---:|");
+    lines.push("| Commit | Eastern time | UTC time | Error | Failing | Still blocked | Leakage |");
+    lines.push("|---|---|---|---:|---:|---:|---:|");
     for (const snapshot of history.slice(-10)) {
       const summary = snapshot.fixtures[tier];
       if (!summary) continue;
       lines.push(
-        `| ${snapshot.commit.slice(0, 7)} | ${snapshot.timestamp} | ${summary.errorRatePercentExact.toFixed(2)}% | ${summary.failing}/${summary.total} | ${summary.stillBlocked} | ${summary.customerFacingLeakage} |`,
+        `| ${snapshot.commit.slice(0, 7)} | ${snapshot.timestampEastern || ""} | ${snapshot.timestamp} | ${summary.errorRatePercentExact.toFixed(2)}% | ${summary.failing}/${summary.total} | ${summary.stillBlocked} | ${summary.customerFacingLeakage} |`,
       );
     }
     lines.push("");
@@ -354,8 +368,10 @@ const fixtures = readdirSync(FIXTURE_DIR)
     data: JSON.parse(readFileSync(join(FIXTURE_DIR, filename), "utf8")),
   }));
 
+const now = new Date();
 const snapshot = {
-  timestamp: new Date().toISOString(),
+  timestamp: now.toISOString(),
+  timestampEastern: easternTimestamp(now),
   commit: git("rev-parse HEAD"),
   branch: git("branch --show-current"),
   fixtures: Object.fromEntries(fixtures.map(({ data }) => [data.tier, summarizeBenchmark(data)])),
