@@ -18,7 +18,7 @@ Cases that are blocked at first but recover through simulated follow-up are not 
 
 ## Current Cohorts
 
-The five messiness cohorts are selected by intrinsic record properties first, then measured. Their failure rates are not selection targets.
+The six messiness cohorts are selected by intrinsic record properties first, then measured. Their failure rates are not selection targets, except that `uber-plus-messy` is intentionally more failure-dense as an extreme stress cohort.
 
 | Fixture | Role | Initial failing | Initial error rate |
 | --- | --- | ---: | ---: |
@@ -27,6 +27,7 @@ The five messiness cohorts are selected by intrinsic record properties first, th
 | `tests/fixtures/alpha-medium-messy-150-initial-7pct-2026-06-30-cases.json` | Moderate but inferable customer-note messiness. | 10 / 150 | 6.67% |
 | `tests/fixtures/alpha-very-messy-150-initial-11pct-2026-06-30-cases.json` | Severe but mostly resolvable note complexity. | 17 / 150 | 11.33% |
 | `tests/fixtures/alpha-uber-messy-150-initial-16pct-2026-06-30-cases.json` | Missing, ambiguous, or follow-up-heavy cases. | 24 / 150 | 16.00% |
+| `tests/fixtures/alpha-uber-plus-messy-150-initial-39pct-2026-06-30-cases.json` | Extreme stress cohort selected from unused high-risk cases. | 59 / 150 | 39.33% |
 | `tests/fixtures/alpha-hard-knownfail-150-initial-100pct-2026-06-30-cases.json` | Known-failure improvement backlog; not representative. | 150 / 150 | 100.00% |
 
 ## Initial Run Log
@@ -38,6 +39,7 @@ The five messiness cohorts are selected by intrinsic record properties first, th
 | 2026-06-30 | medium-messy 150 | `5ec5c9e` selection baseline | `node --test tests/alpha-cohort-RULES-simulation.test.js` | 150 | 10 | 6.67% | 150 | 0 | 0 | parser_price_options 8; parser_tree_count 2 |
 | 2026-06-30 | very-messy 150 | `5ec5c9e` selection baseline | `node --test tests/alpha-cohort-RULES-simulation.test.js` | 150 | 17 | 11.33% | 128 | 22 | 0 | parser_name 2; parser_price_options 5; parser_tree_count 1; validator_readiness 9 |
 | 2026-06-30 | uber-messy 150 | `5ec5c9e` selection baseline | `node --test tests/alpha-cohort-RULES-simulation.test.js` | 150 | 24 | 16.00% | 0 | 150 | 0 | parser_name 2; parser_tree_count 22 |
+| 2026-06-30 | uber-plus-messy 150 | `976098c` selection baseline | `node --test tests/alpha-cohort-RULES-simulation.test.js` | 150 | 59 | 39.33% | 62 | 88 | 0 | parser_name 10; parser_price_options 21; parser_tree_count 2; validator_readiness 26 |
 | 2026-06-30 | hard-knownfail 150 | `5ec5c9e` selection baseline | `node --test tests/alpha-cohort-RULES-simulation.test.js` | 150 | 150 | 100.00% | 67 | 83 | 0 | parser_price_options 96; parser_tree_count 122; validator_readiness 68 |
 
 ## Error Rate Bar Chart
@@ -50,13 +52,14 @@ medium 150         |   4.00% | #
 medium-messy 150   |   6.67% | #
 very-messy 150     |  11.33% | ##
 uber-messy 150     |  16.00% | ###
+uber-plus-messy 150|  39.33% | ########
 hard-knownfail 150 | 100.00% | ####################
 ```
 
 ## How To Read Movement
 
 - If easy or medium gets worse, treat it as a likely regression.
-- If medium-messy, very-messy, or uber-messy improves, parser/validator behavior is getting better on harder notes.
+- If medium-messy, very-messy, uber-messy, or uber-plus-messy improves, parser/validator behavior is getting better on harder notes.
 - If hard-knownfail improves, known weak spots are being fixed.
 - If hard-knownfail improves but intrinsic cohorts get worse, the app may be overfitting to the known failures.
 

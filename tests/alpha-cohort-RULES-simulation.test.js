@@ -6,7 +6,7 @@ import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 
 const FIXTURE_DIR = "tests/fixtures";
-const EXPECTED_TIERS = ["easy", "medium", "medium-messy", "very-messy", "uber-messy", "hard-knownfail"];
+const EXPECTED_TIERS = ["easy", "medium", "medium-messy", "very-messy", "uber-messy", "uber-plus-messy", "hard-knownfail"];
 const fixtures = readdirSync(FIXTURE_DIR)
   .filter((name) => /^alpha-.*-cases\.json$/i.test(name))
   .sort()
