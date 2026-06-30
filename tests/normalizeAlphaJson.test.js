@@ -652,6 +652,19 @@ test("safety and access notes stay internal while customer summary remains work-
   assert.doesNotMatch(alphaJson.normalization.corrected_interpretation, /aggressive dog|dog in backyard/i);
 });
 
+test("service address fragments do not leak into customer-facing job summary", () => {
+  const input =
+    "Eli Stone 812-555-2222 cut down one cedar tree -- service address 7844 Maple Avenue Hanover IN -- basic package 1350; full cleanup package 1800";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const corrected = validation.alphaJson.normalization.corrected_interpretation;
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.match(validation.alphaJson.job.service_address.display, /7844 Maple Avenue/i);
+  assert.match(corrected, /cut down one cedar tree/i);
+  assert.match(corrected, /basic package 1350/i);
+  assert.doesNotMatch(corrected, /service address|7844 Maple Avenue|Hanover IN/i);
+});
+
 test("vague customer-facing prose request blocks without inventing quote details", () => {
   const input =
     "Vague Case 812-555-2209 just make it look professional, maybe around 2k, address later.";
