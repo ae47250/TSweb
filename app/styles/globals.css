@@ -154,6 +154,50 @@ main {
   margin: 4px 0;
 }
 
+.final-summary-card {
+  margin-bottom: 12px;
+}
+
+.job-summary-text {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.review-status {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 12px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.review-status-ready {
+  background: #eef6ed;
+  color: var(--green-dark);
+}
+
+.review-status-needs-info {
+  background: #fffaf1;
+  color: #7c2d12;
+}
+
+.review-option-note {
+  margin-top: 10px;
+}
+
+.needs-info-card {
+  background: #fffaf1;
+  border-color: #fed7aa;
+}
+
+.needs-info-card ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
 .quote-options-grid {
   display: grid;
   gap: 12px;

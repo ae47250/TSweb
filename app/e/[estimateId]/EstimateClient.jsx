@@ -28,6 +28,9 @@ export default function EstimateClient({ record }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const alphaJson = record.alphaJson;
+  const workDescription = String(
+    alphaJson.normalization?.corrected_interpretation || alphaJson.job?.description || "",
+  ).trim();
   const signatureValid = signature.trim().length >= 2 && signature.trim().length <= 50;
   const ready = Boolean(selectedOption && checkboxAccepted && signatureValid);
   const selected = (alphaJson.service_options?.items || []).find((option) => option.label === selectedOption);
@@ -77,7 +80,7 @@ export default function EstimateClient({ record }) {
           </div>
         </div>
         <h3>Work Description</h3>
-        <p>{alphaJson.job?.description}</p>
+        <p>{workDescription}</p>
       </section>
 
       <section className="card">

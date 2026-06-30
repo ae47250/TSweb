@@ -37,8 +37,9 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(pageSource, /New Quote/);
   assert.match(pageSource, /Recent Estimates/);
   assert.match(pageSource, /Record Manual Acceptance/);
-  assert.match(inputFormSource, /full of typos/);
-  assert.match(inputFormSource, /Create Estimate for Review/);
+  assert.match(inputFormSource, /Enter what you know/);
+  assert.match(inputFormSource, /Create Review/);
+  assert.match(inputFormSource, /Clear/);
   assert.match(pdfGeneratorSource, /Inform Customer/);
   assert.match(pdfGeneratorSource, /Send SMS/);
   assert.match(pdfGeneratorSource, /Send Email/);
@@ -60,28 +61,51 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.equal(existsSync("app/e/[estimateId]/EstimateClient.jsx"), true);
 });
 
-test("confirm quote separates address, notes, and option cards", () => {
+test("Tree Dude review and confirm screens separate AI review from final quote approval", () => {
   const reviewSource = readFileSync("app/components/JsonReview.jsx", "utf8");
-  assert.match(reviewSource, /Job Address/);
-  assert.match(reviewSource, /Job Notes/);
+  assert.match(pageSource, /stage === "review"/);
+  assert.match(pageSource, /mode="review"/);
+  assert.match(pageSource, /mode="confirm"/);
+  assert.match(reviewSource, /AI Review/);
+  assert.match(reviewSource, /Check details before confirming quote/);
+  assert.match(reviewSource, /Review ready/);
+  assert.match(reviewSource, /Needs more info/);
+  assert.match(reviewSource, /Job Summary/);
   assert.match(reviewSource, /Cleaned from the original note for review/);
   assert.match(reviewSource, /normalization\?\.\s*corrected_interpretation/);
   assert.match(reviewSource, /normalizedJobNotes\s*\|\|\s*cleanJobNotesForReview/);
+  assert.match(reviewSource, /Quote Options/);
   assert.match(reviewSource, /Customer Options/);
   assert.match(reviewSource, /quote-option-card/);
   assert.match(reviewSource, /Option 1/);
   assert.match(reviewSource, /normalizeTreeServiceText/);
   assert.match(reviewSource, /orderJobWarningsLast/);
-  assert.match(reviewSource, /Go Back to Edit Notes and Add Missing Details/);
+  assert.match(reviewSource, /Tree Dude reviews these options/);
+  assert.match(reviewSource, /Do not choose an option here/);
+  assert.match(reviewSource, /Needs More Info/);
+  assert.match(reviewSource, /Fix missing info before confirming quote/);
+  assert.match(reviewSource, /Edit Info/);
 });
 
 test("customer route requires compact e-signature consent and Tree Dude panel does not sign for customer", () => {
   const consentText = /I agree to receive and sign this estimate electronically/;
   assert.match(customerRouteSource, consentText);
   assert.match(customerRouteSource, /checkboxAccepted/);
+  assert.match(customerRouteSource, /normalization\?\.\s*corrected_interpretation/);
+  assert.match(customerRouteSource, /workDescription/);
   assert.doesNotMatch(pdfGeneratorSource, consentText);
   assert.doesNotMatch(pdfGeneratorSource, /checkboxAccepted/);
   assert.doesNotMatch(pdfGeneratorSource, /onSelectOption/);
+});
+
+test("customer-facing estimate documents use cleaned job notes without internal evidence fields", () => {
+  const customerDocumentSource = readFileSync("lib/customerDocument.js", "utf8");
+  assert.match(customerDocumentSource, /normalization\?\.\s*corrected_interpretation/);
+  assert.match(customerDocumentSource, /workDescription/);
+  assert.doesNotMatch(customerRouteSource, /field_evidence/);
+  assert.doesNotMatch(customerRouteSource, /uncertainties/);
+  assert.doesNotMatch(customerDocumentSource, /field_evidence/);
+  assert.doesNotMatch(customerDocumentSource, /uncertainties/);
 });
 
 test("manual acceptance foundation exists without multi-company scope", () => {

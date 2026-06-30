@@ -150,6 +150,18 @@ export default function HomePage() {
     setEditMessage("");
   }
 
+  function clearQuoteForm() {
+    setCustomerText("");
+    setQuoteContact(emptyQuoteContact);
+    setSubmittedText("");
+    setAlphaJson(null);
+    setValidation(null);
+    setDocumentResult(null);
+    setNotice("");
+    setError("");
+    setEditMessage("");
+  }
+
   async function createReview(fullText = customerText) {
     setBusy(true);
     setError("");
@@ -162,10 +174,10 @@ export default function HomePage() {
       setAlphaJson(validated.alphaJson);
       setValidation(validated);
       setDocumentResult(null);
-      setStage("confirm");
+      setStage("review");
     } catch (err) {
       setError(err.message);
-      setEditMessage("Edit the notes above, add the missing information, then click Create Estimate for Review again.");
+      setEditMessage("Edit the notes above, add the missing information, then click Create Review again.");
       setStage("new");
     } finally {
       setBusy(false);
@@ -175,7 +187,7 @@ export default function HomePage() {
   function editNotes() {
     setDocumentResult(null);
     setStage("new");
-    setEditMessage("Edit the notes above, add the missing information, then click Create Estimate for Review again.");
+    setEditMessage("Edit the notes above, add the missing information, then click Create Review again.");
     requestAnimationFrame(() => {
       notesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       notesRef.current?.focus();
@@ -199,7 +211,7 @@ export default function HomePage() {
       refreshRecentCards();
     } catch (err) {
       setError(err.message);
-      setEditMessage("Edit the notes above, add the missing information, then click Create Estimate for Review again.");
+      setEditMessage("Edit the notes above, add the missing information, then click Create Review again.");
     } finally {
       setBusy(false);
     }
@@ -277,8 +289,25 @@ export default function HomePage() {
               contactValue={quoteContact}
               onContactChange={setQuoteContact}
               onSubmit={createReview}
+              onClear={clearQuoteForm}
               busy={busy}
               editMessage={editMessage}
+            />
+          </div>
+        </div>
+      )}
+
+      {stage === "review" && (
+        <div className="app-grid app-grid-initial">
+          <div>
+            <JsonReview
+              mode="review"
+              alphaJson={alphaJson}
+              validation={validation}
+              sourceNotes={submittedText}
+              onApprove={() => setStage("confirm")}
+              onEdit={editNotes}
+              busy={busy}
             />
           </div>
         </div>
@@ -288,11 +317,12 @@ export default function HomePage() {
         <div className="app-grid app-grid-initial">
           <div>
             <JsonReview
+              mode="confirm"
               alphaJson={alphaJson}
               validation={validation}
               sourceNotes={submittedText}
               onApprove={confirmQuote}
-              onEdit={editNotes}
+              onEdit={() => setStage("review")}
               busy={busy}
             />
           </div>

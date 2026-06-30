@@ -81,33 +81,62 @@ function cleanJobNotesForReview(sourceNotes, alphaJson) {
   return orderJobWarningsLast(notesWithWarnings || alphaJson.job?.description || "No job notes supplied.");
 }
 
-export default function JsonReview({ alphaJson, validation, sourceNotes = "", onApprove, onEdit, busy = false }) {
+export default function JsonReview({ alphaJson, validation, sourceNotes = "", mode = "review", onApprove, onEdit, busy = false }) {
   if (!alphaJson) return null;
 
   const options = alphaJson.service_options?.items || [];
   const normalizedJobNotes = String(alphaJson.normalization?.corrected_interpretation || "").trim();
   const jobNotes = normalizedJobNotes || cleanJobNotesForReview(sourceNotes, alphaJson);
+  const customerName = alphaJson.customer?.name || "Name not available";
+  const customerPhone = alphaJson.customer?.phone_display || "Phone not available";
+  const customerEmail = alphaJson.customer?.email || "Email not available";
+  const jobAddress = alphaJson.job?.service_address?.display || "Address missing";
+  const canConfirm = Boolean(validation?.can_generate_pdf);
+  const isFinalConfirm = mode === "confirm";
+  const reviewIssues = validation?.follow_ups?.length
+    ? validation.follow_ups
+    : validation?.blocking_errors || [];
+  const title = isFinalConfirm ? "Confirm Quote" : "AI Review";
+  const subtitle = isFinalConfirm ? "This creates the customer estimate link." : "Check details before confirming quote.";
+  const optionNote = isFinalConfirm
+    ? `Do not choose an option here. ${customerName === "Name not available" ? "The customer" : customerName} will choose one when opening the estimate.`
+    : "Tree Dude reviews these options. The customer chooses one later.";
+  const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Quote") : "Confirm Quote";
+  const editLabel = isFinalConfirm ? "Back" : "Edit Info";
 
   return (
     <section className="card">
-      <h2>Confirm Quote</h2>
-      <p className="text-muted">Review the organized estimate before choosing how to inform the customer.</p>
-      <div className="review-grid">
-        <div className="summary-card">
-          <h3>Customer</h3>
-          <p>{alphaJson.customer?.name || "Name not available"}</p>
-          <p>{alphaJson.customer?.phone_display || "Phone not available"}</p>
-          <p>{alphaJson.customer?.email || "Email not available"}</p>
+      <h2>{title}</h2>
+      <p className="text-muted">{subtitle}</p>
+      {!isFinalConfirm && (
+        <span className={`review-status ${canConfirm ? "review-status-ready" : "review-status-needs-info"}`}>
+          {canConfirm ? "Review ready" : "Needs more info"}
+        </span>
+      )}
+      {isFinalConfirm ? (
+        <div className="summary-card final-summary-card">
+          <h3>Summary</h3>
+          <p><strong>{customerName}</strong></p>
+          <p>{jobAddress}</p>
+          <p>{jobNotes}</p>
         </div>
-        <div className="summary-card">
-          <h3>Job Address</h3>
-          <p>{alphaJson.job?.service_address?.display || "Address missing"}</p>
+      ) : (
+        <div className="review-grid">
+          <div className="summary-card">
+            <h3>Customer</h3>
+            <p>{customerName}</p>
+            <p>{customerPhone}</p>
+            <p>{customerEmail}</p>
+            <p>{jobAddress}</p>
+          </div>
+          <div className="summary-card">
+            <h3>Job Summary</h3>
+            <p className="text-muted">Cleaned from the original note for review.</p>
+            <p className="job-summary-text">{jobNotes}</p>
+          </div>
         </div>
-      </div>
-      <h3>Job Notes</h3>
-      <p className="text-muted">Cleaned from the original note for review.</p>
-      <div className="notes-card">{jobNotes}</div>
-      <h3>Customer Options</h3>
+      )}
+      <h3>{isFinalConfirm ? "Customer Options" : "Quote Options"}</h3>
       <div className="quote-options-grid">
         {options.length > 0 ? options.map((option, index) => (
           <article className="quote-option-card" key={option.label || index}>
@@ -129,21 +158,23 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", on
           </article>
         )}
       </div>
-      <p className="text-muted">All customer options must be listed here. The customer chooses one later.</p>
-      {validation?.follow_ups?.length > 0 && (
-        <>
-          <h3>Follow-up Questions</h3>
-          <p className="text-muted">Add the missing details before informing the customer.</p>
+      <p className="text-muted review-option-note">{optionNote}</p>
+      {reviewIssues.length > 0 && (
+        <div className="summary-card needs-info-card">
+          <h3>Needs More Info</h3>
           <ul>
-            {validation.follow_ups.map((question) => <li key={question}>{question}</li>)}
+            {reviewIssues.map((question) => <li key={question}>{question}</li>)}
           </ul>
-        </>
+        </div>
+      )}
+      {!canConfirm && (
+        <p className="text-muted">Fix missing info before confirming quote.</p>
       )}
       <div className="toolbar mt-2">
-        <button className="btn-primary" onClick={onApprove} disabled={!validation?.can_generate_pdf || busy}>
-          {busy ? "Confirming..." : "Confirm Quote and Inform Customer"}
+        <button className="btn-primary" onClick={onApprove} disabled={!canConfirm || busy}>
+          {approveLabel}
         </button>
-        <button className="btn-secondary" onClick={onEdit}>Go Back to Edit Notes and Add Missing Details</button>
+        <button className="btn-secondary" onClick={onEdit}>{editLabel}</button>
       </div>
     </section>
   );
