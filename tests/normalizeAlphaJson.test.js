@@ -230,6 +230,23 @@ test("maps new normalization plus alphaJson response shape", () => {
   assert.deepEqual(validation.alphaJson.normalization.corrections_made[0], raw.normalization.corrections_made[0]);
 });
 
+test("corrected interpretation omits structured contact label lines", () => {
+  const input = [
+    "Customer name: Test Alpha Customer",
+    "Customer phone: 812-555-0199",
+    "Customer email: test.alpha@example.com",
+    "Service address: 805 2nd Street, Madison, IN",
+    "",
+    "Remove 3 oak trees near the back fence. Option 1 cut and haul debris $2000. Option 2 remove trees, haul debris, and stump grind $2800.",
+  ].join("\n");
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const corrected = validation.alphaJson.normalization.corrected_interpretation;
+
+  assert.match(corrected, /Remove 3 oak trees near the back fence/i);
+  assert.doesNotMatch(corrected, /Customer name|Customer phone|Customer email|Service address/i);
+  assert.doesNotMatch(corrected, /test\.alpha@example\.com|812-555-0199/i);
+});
+
 for (const testCase of customerCases) {
   test(`customer battery: ${testCase.name}`, () => {
     assertNormalizedCase(testCase);

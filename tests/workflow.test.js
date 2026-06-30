@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createDraftAlphaJson } from "../lib/alphaJson.js";
 import { renderCustomerDocument } from "../lib/customerDocument.js";
-import { notifyContractor, notifyCustomerEstimate } from "../lib/notifications.js";
+import { formatPingramErrorDetail, notifyContractor, notifyCustomerEstimate } from "../lib/notifications.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 import { difficultInput, easyInput } from "./fixtures/sampleInput.js";
 
@@ -53,4 +53,14 @@ test("mock customer estimate notification uses Pingram without sending", async (
   assert.equal(result.channel, "sms");
   assert.equal(result.to, "502-555-0100");
   assert.match(result.message, /https:\/\/example\.com\/e\/EST-20260629-001/);
+});
+
+test("Pingram object errors format as readable text", () => {
+  const detail = formatPingramErrorDetail({
+    code: "invalid_sms_recipient",
+    message: { reason: "Phone number is not SMS-capable", providerStatus: 400 },
+  });
+
+  assert.match(detail, /Phone number is not SMS-capable|invalid_sms_recipient|providerStatus/);
+  assert.doesNotMatch(detail, /\[object Object\]/);
 });
