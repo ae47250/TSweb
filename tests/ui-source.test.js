@@ -23,6 +23,7 @@ test("Edit Notes focuses the textarea and shows a visible retry message", () => 
   assert.match(pageSource, /quoteContact/);
   assert.match(inputFormSource, /contactValue/);
   assert.match(inputFormSource, /onContactChange/);
+  assert.match(pageSource, /setCustomerText\(savedNotes\)/);
 });
 
 test("initial desktop layout centers the Customer Notes card", () => {

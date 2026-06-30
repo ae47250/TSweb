@@ -227,7 +227,9 @@ export default function HomePage() {
         mobile: record.documents?.mobile || record.signed?.mobile,
       });
       setValidation({ can_generate_pdf: true, follow_ups: [] });
-      setSubmittedText(record.alphaJson?.raw_input?.customer_text || "");
+      const savedNotes = record.alphaJson?.raw_input?.customer_text || "";
+      setSubmittedText(savedNotes);
+      setCustomerText(savedNotes);
       setQuoteContact(contactFromAlphaJson(record.alphaJson));
       setStage("inform");
     } catch (err) {
