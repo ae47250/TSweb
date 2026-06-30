@@ -85,7 +85,8 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", on
   if (!alphaJson) return null;
 
   const options = alphaJson.service_options?.items || [];
-  const jobNotes = cleanJobNotesForReview(sourceNotes, alphaJson);
+  const normalizedJobNotes = String(alphaJson.normalization?.corrected_interpretation || "").trim();
+  const jobNotes = normalizedJobNotes || cleanJobNotesForReview(sourceNotes, alphaJson);
 
   return (
     <section className="card">
@@ -104,6 +105,7 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", on
         </div>
       </div>
       <h3>Job Notes</h3>
+      <p className="text-muted">Cleaned from the original note for review.</p>
       <div className="notes-card">{jobNotes}</div>
       <h3>Customer Options</h3>
       <div className="quote-options-grid">

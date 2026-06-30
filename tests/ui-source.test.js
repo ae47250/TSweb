@@ -64,6 +64,9 @@ test("confirm quote separates address, notes, and option cards", () => {
   const reviewSource = readFileSync("app/components/JsonReview.jsx", "utf8");
   assert.match(reviewSource, /Job Address/);
   assert.match(reviewSource, /Job Notes/);
+  assert.match(reviewSource, /Cleaned from the original note for review/);
+  assert.match(reviewSource, /normalization\?\.\s*corrected_interpretation/);
+  assert.match(reviewSource, /normalizedJobNotes\s*\|\|\s*cleanJobNotesForReview/);
   assert.match(reviewSource, /Customer Options/);
   assert.match(reviewSource, /quote-option-card/);
   assert.match(reviewSource, /Option 1/);
