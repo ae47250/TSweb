@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createDraftAlphaJson } from "../lib/alphaJson.js";
 import { renderCustomerDocument } from "../lib/customerDocument.js";
-import { notifyContractor } from "../lib/notifications.js";
+import { notifyContractor, notifyCustomerEstimate } from "../lib/notifications.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 import { difficultInput, easyInput } from "./fixtures/sampleInput.js";
 
@@ -37,4 +37,20 @@ test("mock notification targets Pingram phone and tree dude email without sendin
   assert.equal(result.sentEmail, false);
   assert.equal(result.intendedRecipients.phone, "502-310-6952");
   assert.equal(result.intendedRecipients.email, "huagalli@hotmail.com");
+});
+
+test("mock customer estimate notification uses Pingram without sending", async () => {
+  const result = await notifyCustomerEstimate({
+    channel: "sms",
+    documentId: "EST-20260629-001",
+    customerName: "John Smith",
+    customerPhone: "502-555-0100",
+    customerEmail: "john@example.com",
+    estimateUrl: "https://example.com/e/EST-20260629-001",
+  });
+  assert.equal(result.mocked, true);
+  assert.equal(result.sent, false);
+  assert.equal(result.channel, "sms");
+  assert.equal(result.to, "502-555-0100");
+  assert.match(result.message, /https:\/\/example\.com\/e\/EST-20260629-001/);
 });

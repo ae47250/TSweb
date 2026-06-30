@@ -46,6 +46,9 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(pdfGeneratorSource, /Copy Link to Estimate/);
   assert.match(pdfGeneratorSource, /Send Now/);
   assert.match(pdfGeneratorSource, /setActivePreview\(""\)/);
+  assert.match(pdfGeneratorSource, /sendCustomerMessage/);
+  assert.match(pdfGeneratorSource, /recipient:\s*"customer"/);
+  assert.doesNotMatch(pdfGeneratorSource, /function sendMock/);
   assert.match(pdfGeneratorSource, /Copy Link to Completed Estimate/);
   assert.match(pdfGeneratorSource, /Back to Front Page/);
   assert.match(pdfGeneratorSource, /btn-neutral/);

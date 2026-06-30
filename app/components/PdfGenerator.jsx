@@ -25,6 +25,8 @@ export default function PdfGenerator({
 }) {
   const [activePreview, setActivePreview] = useState("");
   const [sendStatus, setSendStatus] = useState("");
+  const [sendError, setSendError] = useState("");
+  const [sendingChannel, setSendingChannel] = useState("");
   const [showManual, setShowManual] = useState(false);
   const [manualOption, setManualOption] = useState("");
   const [approvalMethod, setApprovalMethod] = useState("Text reply");
@@ -55,15 +57,31 @@ export default function PdfGenerator({
   function showPreview(type) {
     setActivePreview(type);
     setSendStatus("");
+    setSendError("");
   }
 
-  function sendMock(type) {
+  async function sendCustomerMessage(type) {
+    setSendingChannel(type);
+    setSendStatus("");
+    setSendError("");
     setActivePreview("");
-    if (type === "sms") {
-      setSendStatus(`SMS send recorded for ${customerName} in mock mode.`);
-      return;
+    try {
+      const result = await postJson("/api/notify", {
+        recipient: "customer",
+        channel: type,
+        documentId: documentResult.documentId,
+        alphaJson,
+        customerEstimateUrl: customerUrl,
+      });
+      const label = type === "sms" ? "SMS" : "Email";
+      setSendStatus(result.mocked
+        ? `${label} send recorded for ${customerName} in mock mode.`
+        : `${label} sent to ${customerName}.`);
+    } catch (err) {
+      setSendError(err.message);
+    } finally {
+      setSendingChannel("");
     }
-    setSendStatus(`Email send recorded for ${customerName} in mock mode.`);
   }
 
   async function recordManualAcceptance() {
@@ -81,6 +99,7 @@ export default function PdfGenerator({
       setManualResult(result);
       setShowManual(false);
       setSendStatus("");
+      setSendError("");
     } catch (err) {
       setManualError(err.message);
     } finally {
@@ -111,11 +130,16 @@ export default function PdfGenerator({
         <div className="action-card">
           <h3>Inform Customer</h3>
           <div className="button-row">
-            <button className="btn-light-orange" type="button" disabled={!customerPhone} onClick={() => sendMock("sms")}>Send SMS</button>
-            <button className="btn-light-orange" type="button" disabled={!customerEmail} onClick={() => sendMock("email")}>Send Email</button>
+            <button className="btn-light-orange" type="button" disabled={!customerPhone || Boolean(sendingChannel)} onClick={() => sendCustomerMessage("sms")}>
+              {sendingChannel === "sms" ? "Sending..." : "Send SMS"}
+            </button>
+            <button className="btn-light-orange" type="button" disabled={!customerEmail || Boolean(sendingChannel)} onClick={() => sendCustomerMessage("email")}>
+              {sendingChannel === "email" ? "Sending..." : "Send Email"}
+            </button>
           </div>
           {(!customerPhone || !customerEmail) && <p className="text-muted">Missing phone or email disables that send option.</p>}
           {sendStatus && <div className="alert alert-success">{sendStatus}</div>}
+          {sendError && <div className="alert alert-error">{sendError}</div>}
         </div>
 
         <div className="utility-card">
@@ -161,13 +185,16 @@ export default function PdfGenerator({
         </p>
       )}
       {sendStatus && <div className="alert alert-success">{sendStatus}</div>}
+      {sendError && <div className="alert alert-error">{sendError}</div>}
 
       {activePreview === "sms" && (
         <div className="preview-card">
           <h3>SMS Preview</h3>
           <p className="message-preview">{smsMessage}</p>
-          <button className="btn-orange" type="button" onClick={() => sendMock("sms")}>Send Now</button>
-          <p className="text-muted">Mock mode: no real SMS is sent yet.</p>
+          <button className="btn-orange" type="button" disabled={Boolean(sendingChannel)} onClick={() => sendCustomerMessage("sms")}>
+            {sendingChannel === "sms" ? "Sending..." : "Send Now"}
+          </button>
+          <p className="text-muted">Mock mode records the send without contacting Pingram. Live mode sends through Pingram.</p>
         </div>
       )}
 
@@ -176,8 +203,10 @@ export default function PdfGenerator({
           <h3>Email Preview</h3>
           <p><strong>Subject:</strong> {emailSubject}</p>
           <pre className="message-preview">{emailBody}</pre>
-          <button className="btn-orange" type="button" onClick={() => sendMock("email")}>Send Now</button>
-          <p className="text-muted">Mock mode: no real email is sent yet.</p>
+          <button className="btn-orange" type="button" disabled={Boolean(sendingChannel)} onClick={() => sendCustomerMessage("email")}>
+            {sendingChannel === "email" ? "Sending..." : "Send Now"}
+          </button>
+          <p className="text-muted">Mock mode records the send without contacting Pingram. Live mode sends through Pingram.</p>
         </div>
       )}
 
