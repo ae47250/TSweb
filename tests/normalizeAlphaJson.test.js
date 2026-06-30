@@ -231,3 +231,98 @@ test("missing prices blocks only unclear option prices", () => {
   assert.equal(validation.alphaJson.service_options.items.length, 3);
   assert.ok(validation.blocking_errors.every((error) => /price/i.test(error)));
 });
+
+test("implicit add-on phrasing creates separate customer options", () => {
+  const input =
+    "Maria Lopez 812-555-0134 805 2nd Street Madison Indiana. Remove one tree by garage for 1000 and also haul away for 1500.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.service_options.items.length, 2);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,000", "$1,500"]);
+  assert.match(validation.alphaJson.service_options.items[0].description, /remove one tree/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /haul away/i);
+});
+
+test("implicit unpriced add-on is shown but blocked for price follow-up", () => {
+  const input =
+    "Maria Lopez 812-555-0134 805 2nd Street Madison Indiana. Remove one tree by garage for 1000 and then add to that haul away.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, false);
+  assert.equal(validation.alphaJson.service_options.items.length, 2);
+  assert.equal(validation.alphaJson.service_options.items[0].price.display, "$1,000");
+  assert.equal(validation.alphaJson.service_options.items[1].price.display, "");
+  assert.match(validation.blocking_errors.join(" "), /Option B.*price/i);
+});
+
+test("cleans prefixed customer names and preserves email", () => {
+  const input =
+    "Customer is James Carter phone 502.777.1122 email james.carter@example.com. Job at 88 Pine Ridge Lane Madison Indiana. Wants two leaning trees by driveway removed. Option 1 remove both trees leave wood 1800 dollars. Option 2 remove both and haul away debris 2400 dollars.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.customer.name, "James Carter");
+  assert.equal(validation.alphaJson.customer.email, "james.carter@example.com");
+});
+
+test("amount-before-work add-on phrasing becomes two clean options", () => {
+  const input =
+    "lady named Beth Ann maybe 5023104455 says place is 19 County Road 8 near Hanover Indiana, big oak out back near fence wants it down. 1000 to drop it and also add haul away for 1500 total if she wants cleanup.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.customer.name, "Beth Ann");
+  assert.equal(validation.alphaJson.service_options.items.length, 2);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,000", "$1,500"]);
+  assert.match(validation.alphaJson.service_options.items[0].description, /drop tree/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /haul away/i);
+});
+
+test("double dollar prices do not leak dollar signs into option descriptions", () => {
+  const input =
+    "Mark Davis 502-555-7777 needs quote at 900 Cedar Drive Madison Indiana for one fallen tree. Remove and leave wood $$1000. Remove and haul all debris $$1500.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,000", "$1,500"]);
+  assert.equal(validation.alphaJson.service_options.items.some((option) => /\$/.test(option.description)), false);
+});
+
+test("slash prices create basic and hauling options", () => {
+  const input =
+    "Joe Carter 8125550000 12 Shed Lane Madison Indiana big tree bad by shed 1200/1800 with hauling.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,200", "$1,800"]);
+  assert.match(validation.alphaJson.service_options.items[1].description, /hauling/i);
+});
+
+test("package prices ignore tree counts as prices", () => {
+  const input =
+    "Martha Lane 812-555-4545 500 County Road 10 Madison Indiana. Remove 5 trees. small package 2500 big package 4100.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,500", "$4,100"]);
+  assert.equal(validation.alphaJson.service_options.items.some((option) => option.price.display === "$5"), false);
+});
+
+test("or-all-of-it messy pricing creates two options", () => {
+  const input =
+    "Karla Price texted 8125551002, 77 Ridge Lane Madison Indiana, dead pine and stump, cheap way 900 or all of it 1700";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$900", "$1,700"]);
+  assert.equal(validation.alphaJson.service_options.items.length, 2);
+});
+
+test("clean follow-up customer name replaces messy guessed name", () => {
+  const input =
+    "customer wants estimate from yesterday: two pines, backyard, email only? price 1100 and 1600, no name no number no address. Customer Nora Field. Phone 812-555-7878. Service address 44 Pine Court Hanover Indiana. Work scope: remove two backyard pines. Option A remove pines leave debris 1100. Option B remove pines and haul debris 1600.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.customer.name, "Nora Field");
+});
+
+test("vague address fragments are blocked for follow-up", () => {
+  const input =
+    "guy Tom 8125553344 on walnut somewhere wants storm mess cleaned, maybe two trees. basic cleanup 800 full cleanup 1400";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /address/i);
+});

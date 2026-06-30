@@ -17,12 +17,13 @@ async function postJson(url, body) {
 }
 
 export default function EstimateClient({ record }) {
-  const [selectedOption, setSelectedOption] = useState(record.selected_option || "");
-  const [signature, setSignature] = useState(record.signature_name || "");
+  const manual = record.manualAcceptance || null;
+  const [selectedOption, setSelectedOption] = useState(record.selected_option || manual?.selectedOptionLabel || "");
+  const [signature, setSignature] = useState(record.signature_name || manual?.signatureName || "");
   const [checkboxAccepted, setCheckboxAccepted] = useState(record.checkboxAccepted || false);
-  const [submitted, setSubmitted] = useState(record.status === "signed");
-  const [signedFile, setSignedFile] = useState(record.signed?.full || null);
-  const [signedAtDisplay, setSignedAtDisplay] = useState(record.signedAtDisplay || record.signedResult?.signedAtDisplay || "");
+  const [submitted, setSubmitted] = useState(record.status === "signed" || record.status === "accepted_manually");
+  const [signedFile, setSignedFile] = useState(record.signed?.full || record.accepted?.full || null);
+  const [signedAtDisplay, setSignedAtDisplay] = useState(record.signedAtDisplay || record.signedResult?.signedAtDisplay || manual?.acceptedAtDisplay || "");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -47,7 +48,7 @@ export default function EstimateClient({ record }) {
       setSignedFile(upload.signed);
       setSignedAtDisplay(upload.signedAtDisplay);
       setSubmitted(true);
-      setNotice(`Submitted in mock-safe mode. No real SMS or email was sent. SMS target: ${notify.intendedRecipients.phone}; email target: ${notify.intendedRecipients.email}.`);
+      setNotice("Your signed estimate has been received.");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -82,13 +83,15 @@ export default function EstimateClient({ record }) {
       <section className="card">
         {submitted ? (
           <>
-            <h2>Signed Estimate Confirmed</h2>
+            <h2>{record.status === "accepted_manually" ? "Your accepted estimate has been received." : "Your signed estimate has been received."}</h2>
             <p>Selected option: <strong>{selectedOption}</strong>{selected?.price?.display ? `, ${selected.price.display}` : ""}</p>
-            <p>Signature: <strong>{signature}</strong></p>
-            {signedAtDisplay && <p>Signed: <strong>{signedAtDisplay}</strong></p>}
+            {signature && <p>Signature: <strong>{signature}</strong></p>}
+            {signedAtDisplay && <p>{record.status === "accepted_manually" ? "Accepted" : "Signed"}: <strong>{signedAtDisplay}</strong></p>}
             {signedFile && (
               <a className="btn-primary btn-fit" href={signedFile.downloadUrl || signedFile.htmlDataUrl} download={signedFile.filename}>
-                {signedFile.format === "pdf" ? "Download Signed PDF" : "Download Signed HTML"}
+                {record.status === "accepted_manually"
+                  ? (signedFile.format === "pdf" ? "Download Saved Estimate" : "Download Saved HTML")
+                  : (signedFile.format === "pdf" ? "Download Signed Estimate" : "Download Signed HTML")}
               </a>
             )}
           </>
@@ -110,7 +113,6 @@ export default function EstimateClient({ record }) {
               {busy ? "Submitting..." : "Submit Signed Estimate"}
             </button>
             {!ready && <p className="text-muted">Please select one option, accept electronic signature consent, and type your signature before submitting.</p>}
-            <p className="text-muted">Mock mode: no real SMS or email was sent.</p>
           </>
         )}
       </section>

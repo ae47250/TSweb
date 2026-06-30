@@ -4,6 +4,8 @@
   --green-dark: #1f4229;
   --green: #3f7045;
   --yellow: #f1ce55;
+  --orange: #d97706;
+  --blue: #2563eb;
   --ink: #222;
   --paper: #fff;
   --line: #ddd;
@@ -38,6 +40,206 @@ main {
 .toolbar button,
 .toolbar a {
   width: auto;
+}
+
+.front-page {
+  display: grid;
+  gap: 18px;
+}
+
+.front-actions {
+  display: grid;
+  gap: 14px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.front-actions .btn-primary,
+.front-actions .btn-secondary {
+  min-height: 58px;
+  font-size: 17px;
+}
+
+.recent-list {
+  display: grid;
+  gap: 12px;
+}
+
+.recent-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+  background: #fff;
+}
+
+.recent-card h3,
+.recent-card p {
+  margin: 0;
+}
+
+.recent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-pill {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef6ed;
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.new-quote-card form {
+  display: grid;
+  gap: 12px;
+}
+
+.compact-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.compact-fields label {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+}
+
+.job-notes-textarea {
+  min-height: 220px;
+  max-height: 460px;
+  resize: vertical;
+}
+
+.example-notes {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fbfaf6;
+}
+
+.example-notes p {
+  margin: 6px 0 0;
+}
+
+.notes-card,
+.summary-card,
+.result-card,
+.action-card,
+.utility-card,
+.preview-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fff;
+  margin-top: 12px;
+}
+
+.notes-card {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.summary-card p {
+  margin: 4px 0;
+}
+
+.quote-options-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.quote-option-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfdfb;
+}
+
+.quote-option-card h4 {
+  margin: 8px 0 6px;
+  color: var(--green-dark);
+}
+
+.quote-option-card p {
+  margin: 0;
+}
+
+.quote-option-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.quote-option-header span {
+  font-weight: 700;
+}
+
+.missing-option-card {
+  background: #fffaf1;
+  border-color: #fed7aa;
+}
+
+.action-toolbar {
+  margin-bottom: 12px;
+}
+
+.preview-card {
+  background: #fffaf1;
+  border-color: #fed7aa;
+}
+
+.message-preview {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.btn-orange {
+  background: var(--orange);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-orange:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.btn-blue {
+  background: var(--blue);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.utility-card {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.back-home-area {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
 }
 
 .review-grid {
@@ -100,6 +302,7 @@ pre {
   .app-grid,
   .review-grid,
   .button-row,
+  .compact-fields,
   .option-row {
     grid-template-columns: 1fr;
   }

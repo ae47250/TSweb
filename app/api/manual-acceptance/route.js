@@ -6,7 +6,18 @@ import { getEstimate, saveEstimate } from "../../../lib/estimateStore.js";
 
 export const runtime = "nodejs";
 
-const METHODS = new Set(["SMS/text", "phone call/voice", "email", "in person", "other"]);
+const METHODS = new Set([
+  "SMS/text",
+  "phone call/voice",
+  "email",
+  "in person",
+  "other",
+  "Phone call",
+  "Text reply",
+  "Email reply",
+  "In person",
+  "Other",
+]);
 
 export async function POST(request) {
   const body = await readJson(request);

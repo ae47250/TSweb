@@ -1,10 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import LegalDisclaimer from "./LegalDisclaimer.jsx";
-import OptionSelector from "./OptionSelector.jsx";
-import SignatureBlock from "./SignatureBlock.jsx";
-import SubmissionButtons from "./SubmissionButtons.jsx";
 
 async function postJson(url, body) {
   const response = await fetch(url, {
@@ -17,39 +13,56 @@ async function postJson(url, body) {
   return data;
 }
 
+function firstName(name = "customer") {
+  return String(name).trim().split(/\s+/)[0] || "there";
+}
+
 export default function PdfGenerator({
   alphaJson,
   documentResult,
-  selectedOption,
-  signature,
-  checkboxAccepted,
-  onSelectOption,
-  onSignature,
-  onCheckboxAccepted,
-  onSubmit,
-  submitting,
+  onReviewQuote,
+  onBackFront,
 }) {
+  const [activePreview, setActivePreview] = useState("");
+  const [sendStatus, setSendStatus] = useState("");
+  const [showManual, setShowManual] = useState(false);
   const [manualOption, setManualOption] = useState("");
-  const [approvalMethod, setApprovalMethod] = useState("SMS/text");
+  const [approvalMethod, setApprovalMethod] = useState("Text reply");
   const [customerNote, setCustomerNote] = useState("");
   const [manualSignature, setManualSignature] = useState("");
   const [manualResult, setManualResult] = useState(null);
   const [manualError, setManualError] = useState("");
   const [manualBusy, setManualBusy] = useState(false);
+
   if (!alphaJson || !documentResult) return null;
-  const signatureValid = signature.trim().length >= 2 && signature.trim().length <= 50;
-  const ready = Boolean(selectedOption && checkboxAccepted && signatureValid);
+
   const options = alphaJson.service_options?.items || [];
-  const fullLabel = documentResult.full?.format === "pdf" ? "Download Full PDF" : "Download Full HTML";
-  const mobileLabel = documentResult.mobile?.format === "pdf" ? "Download Mobile PDF" : "Download Mobile HTML";
-  const signedLabel = documentResult.signed?.format === "pdf" ? "Download Signed PDF" : "Download Signed HTML";
-  const acceptedFile = manualResult?.accepted;
+  const customerName = alphaJson.customer?.name || "Customer";
+  const customerPhone = alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "";
+  const customerEmail = alphaJson.customer?.email || "";
   const customerUrl = documentResult.customerEstimateUrl || `/e/${documentResult.documentId}`;
-  const smsPreview = `View your Alpha Tree Service estimate: ${customerUrl}`;
-  const emailPreview = `Please review your Alpha Tree Service estimate: ${customerUrl}`;
+  const estimateFile = documentResult.full || documentResult.mobile;
+  const estimateDownloadLabel = estimateFile?.format === "pdf" ? "Download Estimate" : "Download Estimate HTML";
+  const smsMessage = `Hi ${firstName(customerName)}, your Alpha Tree Service estimate is ready. Review options and sign here: ${customerUrl}`;
+  const emailSubject = `Alpha Tree Service Estimate - ${customerName}`;
+  const emailBody = `Hi ${firstName(customerName)},\n\nYour Alpha Tree Service estimate is ready. Please review the options and sign electronically.\n\nView Your Alpha Tree Service Estimate:\n${customerUrl}`;
 
   async function copyText(text) {
     await navigator.clipboard?.writeText(text);
+    setSendStatus("Link copied.");
+  }
+
+  function showPreview(type) {
+    setActivePreview(type);
+    setSendStatus("");
+  }
+
+  function sendMock(type) {
+    if (type === "sms") {
+      setSendStatus(`SMS send recorded for ${customerName} in mock mode.`);
+      return;
+    }
+    setSendStatus(`Email send recorded for ${customerName} in mock mode.`);
   }
 
   async function recordManualAcceptance() {
@@ -59,12 +72,14 @@ export default function PdfGenerator({
       const result = await postJson("/api/manual-acceptance", {
         estimateId: documentResult.documentId,
         alphaJson,
-        acceptedOption: manualOption || selectedOption,
+        acceptedOption: manualOption,
         approvalMethod,
         customerNote,
         signatureName: manualSignature,
       });
       setManualResult(result);
+      setShowManual(false);
+      setSendStatus("");
     } catch (err) {
       setManualError(err.message);
     } finally {
@@ -72,108 +87,128 @@ export default function PdfGenerator({
     }
   }
 
+  if (manualResult) {
+    const savedFile = manualResult.accepted;
+    const savedLabel = savedFile?.format === "pdf" ? "Download Saved Estimate" : "Download Saved HTML";
+    const completedLink = customerUrl;
+    return (
+      <section className="card">
+        <h2>Acceptance has been saved</h2>
+        <div className="result-card">
+          <h3>{manualResult.manualAcceptance.customerName || customerName}</h3>
+          <p>{manualResult.documentId}</p>
+          <p>
+            Saved option: <strong>{manualResult.manualAcceptance.selectedOptionLabel}</strong>
+            {manualResult.manualAcceptance.selectedOptionPrice ? ` - ${manualResult.manualAcceptance.selectedOptionPrice}` : ""}
+          </p>
+          <p>Method: <strong>{manualResult.manualAcceptance.approvalMethod}</strong></p>
+          <p>Accepted: <strong>{manualResult.manualAcceptance.acceptedAtDisplay}</strong></p>
+          <p>Note: {manualResult.manualAcceptance.customerNote}</p>
+          {manualResult.manualAcceptance.signatureName && <p>Name/signature: <strong>{manualResult.manualAcceptance.signatureName}</strong></p>}
+        </div>
+
+        <div className="action-card">
+          <h3>Inform Customer</h3>
+          <div className="button-row">
+            <button className="btn-orange" type="button" disabled={!customerPhone} onClick={() => sendMock("sms")}>Send SMS</button>
+            <button className="btn-orange" type="button" disabled={!customerEmail} onClick={() => sendMock("email")}>Send Email</button>
+          </div>
+          {(!customerPhone || !customerEmail) && <p className="text-muted">Missing phone or email disables that send option.</p>}
+          {sendStatus && <div className="alert alert-success">{sendStatus}</div>}
+        </div>
+
+        <div className="utility-card">
+          {savedFile && (
+            <a className="btn-secondary" href={savedFile.downloadUrl || savedFile.htmlDataUrl} download={savedFile.filename}>
+              {savedLabel}
+            </a>
+          )}
+          <button className="btn-secondary" type="button" onClick={() => copyText(completedLink)}>
+            Copy Link to Completed Estimate
+          </button>
+        </div>
+
+        <div className="back-home-area">
+          <button className="btn-blue" type="button" onClick={onBackFront}>Back to Front Page</button>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="card">
-      <h2>Customer Document</h2>
-      <p>
-        Document ID: <strong>{documentResult.documentId}</strong>{" "}
-        <span className="mock-pill">mock-safe</span>
+      <h2>Inform Customer</h2>
+      <p className="text-muted">
+        Estimate <strong>{documentResult.documentId}</strong> is confirmed. Choose how to inform the customer.
       </p>
-      {documentResult.customerEstimateUrl && (
-        <p>
-          Customer link:{" "}
-          <a className="btn-link" href={documentResult.customerEstimateUrl}>
-            View Customer Estimate
+      <div className="toolbar action-toolbar">
+        <button className="btn-secondary" type="button" onClick={onReviewQuote}>Review Quote</button>
+        <button className="btn-secondary" type="button" disabled={!customerPhone} onClick={() => showPreview("sms")}>Send SMS</button>
+        <button className="btn-secondary" type="button" disabled={!customerEmail} onClick={() => showPreview("email")}>Send Email</button>
+        {estimateFile && (
+          <a className="btn-secondary" href={estimateFile.downloadUrl || estimateFile.htmlDataUrl} download={estimateFile.filename}>
+            {estimateDownloadLabel}
           </a>
+        )}
+        <button className="btn-secondary" type="button" onClick={() => copyText(customerUrl)}>Copy Link to Estimate</button>
+        <button className="btn-secondary" type="button" onClick={() => setShowManual((current) => !current)}>Record Manual Acceptance</button>
+      </div>
+      {(!customerPhone || !customerEmail) && (
+        <p className="text-muted">
+          {!customerPhone ? "SMS unavailable - missing phone. " : ""}
+          {!customerEmail ? "Email unavailable - missing email." : ""}
         </p>
       )}
-      <div className="toolbar">
-        <button className="btn-secondary" type="button" onClick={() => copyText(customerUrl)}>
-          Copy Customer Link
-        </button>
-        <button className="btn-secondary" type="button" onClick={() => copyText(smsPreview)}>
-          Copy SMS Message
-        </button>
-        <a className="btn-secondary" href={`mailto:?subject=${encodeURIComponent("Alpha Tree Service Estimate")}&body=${encodeURIComponent(emailPreview)}`}>
-          Preview Email to Customer
-        </a>
-        <a className="btn-secondary" href={documentResult.full.downloadUrl || documentResult.full.htmlDataUrl} download={documentResult.full.filename}>
-          {fullLabel}
-        </a>
-        <a className="btn-secondary" href={documentResult.mobile.downloadUrl || documentResult.mobile.htmlDataUrl} download={documentResult.mobile.filename}>
-          {mobileLabel}
-        </a>
-        {documentResult.signed && (
-          <a className="btn-secondary" href={documentResult.signed.downloadUrl || documentResult.signed.htmlDataUrl} download={documentResult.signed.filename}>
-            {signedLabel}
-          </a>
-        )}
-      </div>
-      {documentResult.signedAtDisplay && (
-        <p className="text-muted">Signed: {documentResult.signedAtDisplay}</p>
+      {sendStatus && <div className="alert alert-success">{sendStatus}</div>}
+
+      {activePreview === "sms" && (
+        <div className="preview-card">
+          <h3>SMS Preview</h3>
+          <p className="message-preview">{smsMessage}</p>
+          <button className="btn-orange" type="button" onClick={() => sendMock("sms")}>Send Now</button>
+          <p className="text-muted">Mock mode: no real SMS is sent yet.</p>
+        </div>
       )}
-      <OptionSelector options={options} selectedOption={selectedOption} onSelect={onSelectOption} />
-      <LegalDisclaimer />
-      <label className="checkbox-line">
-        <input
-          type="checkbox"
-          checked={checkboxAccepted}
-          onChange={(event) => onCheckboxAccepted(event.target.checked)}
-        />
-        <span>I agree to receive and sign this estimate electronically, and I understand that typing my name below is my electronic signature.</span>
-      </label>
-      <SignatureBlock value={signature} onChange={onSignature} />
-      <SubmissionButtons
-        disabled={!ready}
-        alphaJson={alphaJson}
-        selectedOption={selectedOption}
-        signature={signature}
-        onSubmit={onSubmit}
-        busy={submitting}
-      />
-      <section className="manual-acceptance">
-        <h3>Record Manual Acceptance</h3>
-        {manualError && <div className="alert alert-error">{manualError}</div>}
-        {manualResult ? (
-          <div className="accepted-summary">
-            <p>Accepted: <strong>{manualResult.manualAcceptance.selectedOptionLabel}</strong>{manualResult.manualAcceptance.selectedOptionPrice ? `, ${manualResult.manualAcceptance.selectedOptionPrice}` : ""}</p>
-            <p>Method: <strong>{manualResult.manualAcceptance.approvalMethod}</strong></p>
-            <p>Accepted: <strong>{manualResult.manualAcceptance.acceptedAtDisplay}</strong></p>
-            <p>Note: {manualResult.manualAcceptance.customerNote}</p>
-            {manualResult.manualAcceptance.signatureName && <p>Name/signature: <strong>{manualResult.manualAcceptance.signatureName}</strong></p>}
-            {acceptedFile && (
-              <a className="btn-secondary btn-fit" href={acceptedFile.downloadUrl || acceptedFile.htmlDataUrl} download={acceptedFile.filename}>
-                {acceptedFile.format === "pdf" ? "Download Accepted PDF" : "Download Accepted HTML"}
-              </a>
-            )}
-          </div>
-        ) : (
-          <>
-            <label htmlFor="manualOption">Accepted option</label>
-            <select id="manualOption" value={manualOption || selectedOption} onChange={(event) => setManualOption(event.target.value)}>
-              <option value="">Choose option</option>
-              {options.map((option) => (
-                <option key={option.label} value={option.label}>{option.label}: {option.price?.display}</option>
-              ))}
-            </select>
-            <label htmlFor="approvalMethod">Approval method</label>
-            <select id="approvalMethod" value={approvalMethod} onChange={(event) => setApprovalMethod(event.target.value)}>
-              <option>SMS/text</option>
-              <option>phone call/voice</option>
-              <option>email</option>
-              <option>in person</option>
-              <option>other</option>
-            </select>
-            <label htmlFor="customerNote">Customer note/reply</label>
-            <textarea id="customerNote" rows={3} value={customerNote} onChange={(event) => setCustomerNote(event.target.value)} placeholder="Customer texted: Go ahead with Option B." />
-            <label htmlFor="manualSignature">Typed name/signature if available</label>
-            <input id="manualSignature" type="text" value={manualSignature} onChange={(event) => setManualSignature(event.target.value)} placeholder={alphaJson.customer?.name || "Customer name"} />
-            <button className="btn-secondary" type="button" disabled={manualBusy || !(manualOption || selectedOption) || !customerNote.trim()} onClick={recordManualAcceptance}>
-              {manualBusy ? "Recording..." : "Record Manual Acceptance"}
-            </button>
-          </>
-        )}
-      </section>
+
+      {activePreview === "email" && (
+        <div className="preview-card">
+          <h3>Email Preview</h3>
+          <p><strong>Subject:</strong> {emailSubject}</p>
+          <pre className="message-preview">{emailBody}</pre>
+          <button className="btn-orange" type="button" onClick={() => sendMock("email")}>Send Now</button>
+          <p className="text-muted">Mock mode: no real email is sent yet.</p>
+        </div>
+      )}
+
+      {showManual && (
+        <section className="manual-acceptance">
+          <h3>Record Manual Acceptance</h3>
+          <p className="text-muted">Use this when the customer approved outside the app by phone call, text reply, email reply, in person, or similar.</p>
+          {manualError && <div className="alert alert-error">{manualError}</div>}
+          <label htmlFor="manualOption">Accepted option</label>
+          <select id="manualOption" value={manualOption} onChange={(event) => setManualOption(event.target.value)}>
+            <option value="">Choose option</option>
+            {options.map((option) => (
+              <option key={option.label} value={option.label}>{option.label}: {option.price?.display}</option>
+            ))}
+          </select>
+          <label htmlFor="approvalMethod">Approval method</label>
+          <select id="approvalMethod" value={approvalMethod} onChange={(event) => setApprovalMethod(event.target.value)}>
+            <option>Phone call</option>
+            <option>Text reply</option>
+            <option>Email reply</option>
+            <option>In person</option>
+            <option>Other</option>
+          </select>
+          <label htmlFor="customerNote">Customer note/reply</label>
+          <textarea id="customerNote" rows={3} value={customerNote} onChange={(event) => setCustomerNote(event.target.value)} placeholder="Customer texted: Go ahead with Option B." />
+          <label htmlFor="manualSignature">Typed name/signature if available</label>
+          <input id="manualSignature" type="text" value={manualSignature} onChange={(event) => setManualSignature(event.target.value)} placeholder={customerName} />
+          <button className="btn-primary" type="button" disabled={manualBusy || !manualOption || !customerNote.trim()} onClick={recordManualAcceptance}>
+            {manualBusy ? "Saving..." : "Save Manual Acceptance"}
+          </button>
+        </section>
+      )}
     </section>
   );
 }

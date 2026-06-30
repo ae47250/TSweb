@@ -3,7 +3,7 @@
 export default function OptionSelector({ options = [], selectedOption, onSelect }) {
   return (
     <section>
-      <h3>Select One Option</h3>
+      <h3>Choose one option</h3>
       {options.map((option) => {
         const selected = selectedOption === option.label;
         return (

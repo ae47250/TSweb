@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ErrorAlert from "./components/ErrorAlert.jsx";
 import InputForm from "./components/InputForm.jsx";
 import JsonReview from "./components/JsonReview.jsx";
@@ -17,39 +17,131 @@ async function postJson(url, body) {
   return data;
 }
 
+const emptyRecentCards = [
+  {
+    documentId: "Slot 1",
+    customerName: "No recent quote yet",
+    status: "Start with New Quote",
+    lastActivityTime: "",
+    isPlaceholder: true,
+  },
+  {
+    documentId: "Slot 2",
+    customerName: "Recent estimates will appear here",
+    status: "Waiting for activity",
+    lastActivityTime: "",
+    isPlaceholder: true,
+  },
+  {
+    documentId: "Slot 3",
+    customerName: "Saved approvals will appear here",
+    status: "Waiting for activity",
+    lastActivityTime: "",
+    isPlaceholder: true,
+  },
+];
+
+function FrontPage({ cards, onNewQuote, onOpenEstimate, onManualAcceptance, onCopyLink }) {
+  return (
+    <section className="front-page">
+      <div className="front-actions">
+        <button className="btn-primary" type="button" onClick={onNewQuote}>New Quote</button>
+        <button className="btn-secondary" type="button" onClick={() => document.getElementById("recent-estimates")?.scrollIntoView({ behavior: "smooth" })}>Recent Estimates</button>
+        <button className="btn-secondary" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
+      </div>
+
+      <section id="recent-estimates" className="card">
+        <h2>Recent Activity</h2>
+        <div className="recent-list">
+          {cards.slice(0, 3).map((card) => (
+            <article className="recent-card" key={card.documentId}>
+              <div>
+                <h3>{card.customerName}</h3>
+                <p>{card.documentId}</p>
+              </div>
+              <span className="status-pill">{card.status}</span>
+              <p className="text-muted">{card.lastActivityTime || "No recent time"}</p>
+              {!card.isPlaceholder && (
+                <div className="recent-actions">
+                  <button className="btn-secondary btn-fit" type="button" onClick={() => onOpenEstimate(card)}>Open</button>
+                  {card.status === "Signed Estimate Received" && (
+                    card.signedDownloadUrl
+                      ? <a className="btn-secondary btn-fit" href={card.signedDownloadUrl}>Download Signed Estimate</a>
+                      : <button className="btn-secondary btn-fit" type="button" disabled>Download Signed Estimate</button>
+                  )}
+                  {card.status === "Manual Acceptance Recorded" && (
+                    card.savedDownloadUrl
+                      ? <a className="btn-secondary btn-fit" href={card.savedDownloadUrl}>Download Saved Estimate</a>
+                      : <button className="btn-secondary btn-fit" type="button" disabled>Download Saved Estimate</button>
+                  )}
+                  {card.status !== "Signed Estimate Received" && card.status !== "Manual Acceptance Recorded" && (
+                    <>
+                      <button className="btn-secondary btn-fit" type="button" onClick={() => onCopyLink(card)}>Copy Link to Estimate</button>
+                      <button className="btn-secondary btn-fit" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
+                    </>
+                  )}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    </section>
+  );
+}
+
 export default function HomePage() {
+  const [stage, setStage] = useState("front");
+  const [recentCards, setRecentCards] = useState([]);
   const [customerText, setCustomerText] = useState("");
+  const [submittedText, setSubmittedText] = useState("");
   const [alphaJson, setAlphaJson] = useState(null);
   const [validation, setValidation] = useState(null);
   const [documentResult, setDocumentResult] = useState(null);
-  const [selectedOption, setSelectedOption] = useState("");
-  const [signature, setSignature] = useState("");
-  const [checkboxAccepted, setCheckboxAccepted] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [editMessage, setEditMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const notesRef = useRef(null);
 
-  async function createReview() {
+  async function refreshRecentCards() {
+    try {
+      const response = await fetch("/api/estimates");
+      const data = await response.json();
+      if (response.ok) setRecentCards(Array.isArray(data.items) ? data.items : []);
+    } catch {
+      setRecentCards([]);
+    }
+  }
+
+  useEffect(() => {
+    refreshRecentCards();
+  }, []);
+
+  function startNewQuote() {
+    setStage("new");
+    setNotice("");
+    setError("");
+    setEditMessage("");
+  }
+
+  async function createReview(fullText = customerText) {
     setBusy(true);
     setError("");
     setNotice("");
     setEditMessage("");
+    setSubmittedText(customerText);
     try {
-      const openai = await postJson("/api/openai", { customer_text: customerText });
+      const openai = await postJson("/api/openai", { customer_text: fullText });
       const validated = await postJson("/api/validate", { alphaJson: openai.alphaJson });
       setAlphaJson(validated.alphaJson);
       setValidation(validated);
       setDocumentResult(null);
-      setSelectedOption("");
-      setSignature("");
-      setCheckboxAccepted(false);
-      setEditMessage("");
+      setStage("confirm");
     } catch (err) {
       setError(err.message);
-      setEditMessage("Edit the notes above, add the missing information, then click Create AlphaJSON Review again.");
+      setEditMessage("Edit the notes above, add the missing information, then click Create Estimate for Review again.");
+      setStage("new");
     } finally {
       setBusy(false);
     }
@@ -57,14 +149,19 @@ export default function HomePage() {
 
   function editNotes() {
     setDocumentResult(null);
-    setEditMessage("Edit the notes above, add the missing information, then click Create AlphaJSON Review again.");
+    setStage("new");
+    setEditMessage("Edit the notes above, add the missing information, then click Create Estimate for Review again.");
     requestAnimationFrame(() => {
       notesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       notesRef.current?.focus();
     });
   }
 
-  async function generateDocuments() {
+  async function confirmQuote() {
+    if (documentResult) {
+      setStage("inform");
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -72,65 +169,114 @@ export default function HomePage() {
       setDocumentResult(result);
       setAlphaJson(result.alphaJson);
       setEditMessage("");
-      setNotice("Documents generated. Customer must select one option and sign before submitting.");
+      setNotice("Quote confirmed. Choose how to inform the customer.");
+      setStage("inform");
+      refreshRecentCards();
     } catch (err) {
       setError(err.message);
-      setEditMessage("Edit the notes above, add the missing information, then click Create AlphaJSON Review again.");
+      setEditMessage("Edit the notes above, add the missing information, then click Create Estimate for Review again.");
     } finally {
       setBusy(false);
     }
   }
 
-  async function submitToContractor() {
-    setSubmitting(true);
+  async function copyRecentLink(card) {
+    await navigator.clipboard?.writeText(card.customerEstimateUrl || `/e/${card.documentId}`);
+    setNotice("Link copied.");
+  }
+
+  async function openEstimate(card) {
     setError("");
+    setNotice("");
     try {
-      const upload = await postJson("/api/upload", { alphaJson, selectedOption, signature, checkboxAccepted });
-      const notify = await postJson("/api/notify", {
-        documentId: upload.documentId,
-        alphaJson,
-        selectedOption,
-        signature,
-        signedAtDisplay: upload.signedAtDisplay,
+      const response = await fetch(`/api/estimates/${encodeURIComponent(card.documentId)}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Estimate not found.");
+      const record = data.record;
+      setAlphaJson(record.alphaJson);
+      setDocumentResult({
+        documentId: record.documentId,
+        alphaJson: record.alphaJson,
+        customerEstimateUrl: record.customerEstimateUrl || `/e/${encodeURIComponent(record.documentId)}`,
+        full: record.documents?.full || record.accepted?.full || record.signed?.full,
+        mobile: record.documents?.mobile || record.signed?.mobile,
       });
-      setDocumentResult((current) => current ? { ...current, signed: upload.signed, signedAtDisplay: upload.signedAtDisplay } : current);
-      setEditMessage("");
-      setNotice(`Submitted in mock-safe mode. No real SMS or email was sent. SMS target: ${notify.intendedRecipients.phone}; email target: ${notify.intendedRecipients.email}.`);
+      setValidation({ can_generate_pdf: true, follow_ups: [] });
+      setSubmittedText(record.alphaJson?.raw_input?.customer_text || "");
+      setStage("inform");
     } catch (err) {
       setError(err.message);
-    } finally {
-      setSubmitting(false);
     }
   }
+
+  function openManualFromFront() {
+    if (documentResult) {
+      setStage("inform");
+      setNotice("Use Record Manual Acceptance on the quote panel.");
+      return;
+    }
+    setNotice("Create or open an estimate before recording manual acceptance.");
+  }
+
+  const cards = [...recentCards, ...emptyRecentCards].slice(0, 3);
 
   return (
     <main>
       <section className="banner">
-        <h1>Alpha Tree Service Estimate Builder</h1>
-        <p>Messy notes to reviewed estimate to signed customer document.</p>
+        <h1>Alpha Tree Service</h1>
+        <p>Quotes and customer approvals.</p>
       </section>
       {notice && <div className="alert alert-success">{notice}</div>}
       {error && <ErrorAlert errors={[error]} />}
-      <div className={`app-grid ${!alphaJson ? "app-grid-initial" : ""}`}>
-        <div>
-          <InputForm ref={notesRef} value={customerText} onChange={setCustomerText} onSubmit={createReview} busy={busy} editMessage={editMessage} />
-          <JsonReview alphaJson={alphaJson} validation={validation} onApprove={generateDocuments} onEdit={editNotes} />
+
+      {stage === "front" && (
+        <FrontPage
+          cards={cards}
+          onNewQuote={startNewQuote}
+          onOpenEstimate={openEstimate}
+          onManualAcceptance={openManualFromFront}
+          onCopyLink={copyRecentLink}
+        />
+      )}
+
+      {stage === "new" && (
+        <div className="app-grid app-grid-initial">
+          <div>
+            <InputForm ref={notesRef} value={customerText} onChange={setCustomerText} onSubmit={createReview} busy={busy} editMessage={editMessage} />
+          </div>
         </div>
-        {alphaJson && <div>
-          <PdfGenerator
-            alphaJson={alphaJson}
-            documentResult={documentResult}
-            selectedOption={selectedOption}
-            signature={signature}
-            checkboxAccepted={checkboxAccepted}
-            onSelectOption={setSelectedOption}
-            onSignature={setSignature}
-            onCheckboxAccepted={setCheckboxAccepted}
-            onSubmit={submitToContractor}
-            submitting={submitting}
-          />
-        </div>}
-      </div>
+      )}
+
+      {stage === "confirm" && (
+        <div className="app-grid app-grid-initial">
+          <div>
+            <JsonReview
+              alphaJson={alphaJson}
+              validation={validation}
+              sourceNotes={submittedText}
+              onApprove={confirmQuote}
+              onEdit={editNotes}
+              busy={busy}
+            />
+          </div>
+        </div>
+      )}
+
+      {stage === "inform" && (
+        <div className="app-grid app-grid-initial">
+          <div>
+            <PdfGenerator
+              alphaJson={alphaJson}
+              documentResult={documentResult}
+              onReviewQuote={() => setStage("confirm")}
+              onBackFront={() => {
+                setStage("front");
+                refreshRecentCards();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </main>
   );
 }

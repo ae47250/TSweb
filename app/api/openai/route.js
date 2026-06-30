@@ -3,6 +3,19 @@ import { readJson, json } from "../../../lib/api.js";
 
 export const runtime = "nodejs";
 
+const ALLOWED_REASONING_EFFORTS = new Set(["low", "medium", "high"]);
+
+function getReasoningEffort(model) {
+  const effort = (process.env.OPENAI_REASONING_EFFORT || "").trim().toLowerCase();
+  const modelSupportsReasoningEffort = /^(gpt-5|o\d)/i.test(model);
+
+  if (!modelSupportsReasoningEffort || !ALLOWED_REASONING_EFFORTS.has(effort)) {
+    return null;
+  }
+
+  return effort;
+}
+
 export async function POST(request) {
   const body = await readJson(request);
   const customerText = body.customer_text || body.customerText || "";
@@ -22,8 +35,11 @@ export async function POST(request) {
   try {
     const { default: OpenAI } = await import("openai");
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const model = process.env.OPENAI_MODEL || "gpt-4o";
+    const reasoningEffort = getReasoningEffort(model);
     const response = await client.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gpt-4o",
+      model,
+      ...(reasoningEffort ? { reasoning_effort: reasoningEffort } : {}),
       response_format: { type: "json_object" },
       messages: [
         {
