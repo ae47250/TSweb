@@ -1,0 +1,2320 @@
+{
+  "generated_from": "C:/Users/eiriksson/Downloads/GPTsimulCust_2026-06-30 (1).md",
+  "generated_at": "2026-06-30T04:46:41.763Z",
+  "purpose": "Durable 80-case offline Alpha Tree follow-up simulation fixture.",
+  "follow_up_round_limit": 3,
+  "simulated_follow_up_style_mix": "50_percent_messy_50_percent_slightly_messy",
+  "cases": [
+    {
+      "selection_reason": "add-on price stack pass baseline",
+      "id": "case_0047",
+      "category": "add_on_prices",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Heather Clark said 812.555.2739 heather.clark047@example.com. 3734 Hilltop Road Madison Indiana. remove 1 dead ash tree. base cut $1,200 add haul 1,550 add stump grind $2,450",
+      "expected": {
+        "customer_name": "Heather Clark",
+        "phone_display": "812-555-2739",
+        "email": "heather.clark047@example.com",
+        "service_address_should_include": [
+          "3734 Hilltop Road",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,200",
+          "$1,550",
+          "$2,450"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks base service plus add-on pricing extraction."
+    },
+    {
+      "selection_reason": "add-on name after phone",
+      "id": "case_0001",
+      "category": "add_on_prices",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "812-555-1037 note from Sylvia Tucker -- remove one locust tree -- service address 6370 Hickory Lane - Madison Indiana -- base cut $950 add haul 1950 add stump grind $2,400",
+      "expected": {
+        "customer_name": "Sylvia Tucker",
+        "phone_display": "812-555-1037",
+        "email": null,
+        "service_address_should_include": [
+          "6370 Hickory Lane",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$950",
+          "$1,950",
+          "$2,400"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks base service plus add-on pricing extraction."
+    },
+    {
+      "selection_reason": "add-on price extraction failure",
+      "id": "case_0233",
+      "category": "add_on_prices",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "Ron Boyd 8125559621 ron.boyd233@example.com. at 125 Ferry Street in Madison IN. four maple trees removal. 2550 to drop it plus $3150 to haul off brush",
+      "expected": {
+        "customer_name": "Ron Boyd",
+        "phone_display": "812-555-9621",
+        "email": "ron.boyd233@example.com",
+        "service_address_should_include": [
+          "125 Ferry Street",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$2,550",
+          "$3,150"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks base service plus add-on pricing extraction."
+    },
+    {
+      "selection_reason": "high messiness add-on name failure",
+      "id": "case_0067",
+      "category": "add_on_prices",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "note from James Foster; address 1548 Walnut Street, Hanover, IN; 812.555.3479 james.foster067@example.com; needs remove four locust trees; remove tree for $2,650 and haul for 3400",
+      "expected": {
+        "customer_name": "James Foster",
+        "phone_display": "812-555-3479",
+        "email": "james.foster067@example.com",
+        "service_address_should_include": [
+          "1548 Walnut Street",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$2,650",
+          "$3,400"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks base service plus add-on pricing extraction."
+    },
+    {
+      "selection_reason": "clean quote pass baseline",
+      "id": "case_0017",
+      "category": "clean_standard_inputs",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Melinda Hughes; address 1345 Moffett Road - Hanover IN; 1-812-555-1629; needs Remove 4 locust trees.; Option A cut and leave wood 2,100. Option B cut, haul away debris, and cleanup $2,450.",
+      "expected": {
+        "customer_name": "Melinda Hughes",
+        "phone_display": "812-555-1629",
+        "email": null,
+        "service_address_should_include": [
+          "1345 Moffett Road",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$2,100",
+          "$2,450"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Baseline parse case with name, contact, specific address, clear scope, and priced options."
+    },
+    {
+      "selection_reason": "clean quote name failure",
+      "id": "case_0015",
+      "category": "clean_standard_inputs",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "812 555 1555 candace.murphy015@example.com note from Candace Murphy -- Remove 3 sycamore trees. -- service address 1303 Michigan Road Madison IN -- Option A cut and leave wood 2200. Option B cut, haul away debris, and cleanup $2550.",
+      "expected": {
+        "customer_name": "Candace Murphy",
+        "phone_display": "812-555-1555",
+        "email": "candace.murphy015@example.com",
+        "service_address_should_include": [
+          "1303 Michigan Road",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$2,200",
+          "$2,550"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Baseline parse case with name, contact, specific address, clear scope, and priced options."
+    },
+    {
+      "selection_reason": "clean quote name failure",
+      "id": "case_0041",
+      "category": "clean_standard_inputs",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Kayla Butler\ntext 812-555-2517 kayla.butler041@example.com\n2163 Sycamore Drive, Hanover, IN\nRemove 3 ash trees.\nOption A cut and leave wood 1350. Option B cut, haul away debris, and cleanup $2350.",
+      "expected": {
+        "customer_name": "Kayla Butler",
+        "phone_display": "812-555-2517",
+        "email": "kayla.butler041@example.com",
+        "service_address_should_include": [
+          "2163 Sycamore Drive",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,350",
+          "$2,350"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Baseline parse case with name, contact, specific address, clear scope, and priced options."
+    },
+    {
+      "selection_reason": "clean quote pass baseline",
+      "id": "case_0002",
+      "category": "clean_standard_inputs",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "customer Logan Hughes call 812-555-1074. 3744 Orchard Drive Hanover IN. Remove 2 sweet gum trees.. Option A cut and leave wood $2600. Option B cut, haul away debris, and cleanup $3,100.",
+      "expected": {
+        "customer_name": "Logan Hughes",
+        "phone_display": "812-555-1074",
+        "email": null,
+        "service_address_should_include": [
+          "3744 Orchard Drive",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$2,600",
+          "$3,100"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Baseline parse case with name, contact, specific address, clear scope, and priced options."
+    },
+    {
+      "selection_reason": "haul and cleanup pass baseline",
+      "id": "case_0087",
+      "category": "hauling_and_cleanup",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Sylvia Garza said; address 4888 Oak Lane, Madison, IN; (812) 555-4219; needs three oak trees removal brush pile at curb; leave wood stacked $1150 / haul away all debris 1900",
+      "expected": {
+        "customer_name": "Sylvia Garza",
+        "phone_display": "812-555-4219",
+        "email": null,
+        "service_address_should_include": [
+          "4888 Oak Lane",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,150",
+          "$1,900"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks haul-away, debris, brush, cleanup, and leave-wood options."
+    },
+    {
+      "selection_reason": "haul cleanup name after phone and email",
+      "id": "case_0003",
+      "category": "hauling_and_cleanup",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "812 555 1111 tyler.murphy003@example.com Tyler Murphy -- three maple trees removal haul off debris -- service address 430 Ridge Road - Madison IN -- drop only $700 haul brush $1100 full cleanup 1,800",
+      "expected": {
+        "customer_name": "Tyler Murphy",
+        "phone_display": "812-555-1111",
+        "email": "tyler.murphy003@example.com",
+        "service_address_should_include": [
+          "430 Ridge Road",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$700",
+          "$1,100",
+          "$1,800"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks haul-away, debris, brush, cleanup, and leave-wood options."
+    },
+    {
+      "selection_reason": "haul cleanup name and price failure",
+      "id": "case_0315",
+      "category": "hauling_and_cleanup",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "call/text call 812-555-3655 customer Erin Walker -- remove two oak trees leave logs stacked option -- service address at 6115 Jefferson Street in Hanover IN -- drop only $1900 haul brush $2,600 full cleanup 3600",
+      "expected": {
+        "customer_name": "Erin Walker",
+        "phone_display": "812-555-3655",
+        "email": null,
+        "service_address_should_include": [
+          "6115 Jefferson Street",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,900",
+          "$2,600",
+          "$3,600"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks haul-away, debris, brush, cleanup, and leave-wood options."
+    },
+    {
+      "selection_reason": "high messiness haul cleanup failure",
+      "id": "case_0682",
+      "category": "hauling_and_cleanup",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "812 555 8234 note from Tom Miller -- cut down 1 hickory tree leave logs stacked option -- service address at 6846 Cherry Street in Madison IN -- drop only $650 haul brush $1100 full cleanup $1,750",
+      "expected": {
+        "customer_name": "Tom Miller",
+        "phone_display": "812-555-8234",
+        "email": null,
+        "service_address_should_include": [
+          "6846 Cherry Street",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$650",
+          "$1,100",
+          "$1,750"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks haul-away, debris, brush, cleanup, and leave-wood options."
+    },
+    {
+      "selection_reason": "tree type pass baseline",
+      "id": "case_0004",
+      "category": "tree_types",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "customer Wes Freeman; address 1439 Elm Street, Madison, IN; call/text text 812-555-1148; needs remove two bradford pear trees; drop only 2400; drop plus haul away 2,750",
+      "expected": {
+        "customer_name": "Wes Freeman",
+        "phone_display": "812-555-1148",
+        "email": null,
+        "service_address_should_include": [
+          "1439 Elm Street",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$2,400",
+          "$2,750"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks that useful tree type detail survives normalization."
+    },
+    {
+      "selection_reason": "tree type name failure",
+      "id": "case_0043",
+      "category": "tree_types",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "8125552591 laura.rivera043@example.com customer Laura Rivera -- remove two cedar trees -- service address 3861 Meadow Lane - Madison IN -- drop only 2,350; drop plus haul away $3,050",
+      "expected": {
+        "customer_name": "Laura Rivera",
+        "phone_display": "812-555-2591",
+        "email": "laura.rivera043@example.com",
+        "service_address_should_include": [
+          "3861 Meadow Lane",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$2,350",
+          "$3,050"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks that useful tree type detail survives normalization."
+    },
+    {
+      "selection_reason": "tree type price failure",
+      "id": "case_0256",
+      "category": "tree_types",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Brooke Kelly\n(812) 555-1472\n6639 Main Street - Madison Indiana\ntake down 1 cedar tree by the driveway\ndrop only 2,550; drop plus haul away 3200",
+      "expected": {
+        "customer_name": "Brooke Kelly",
+        "phone_display": "812-555-1472",
+        "email": null,
+        "service_address_should_include": [
+          "6639 Main Street",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$2,550",
+          "$3,200"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks that useful tree type detail survives normalization."
+    },
+    {
+      "selection_reason": "high messiness tree type name failure",
+      "id": "case_1921",
+      "category": "tree_types",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "customer Tyler Harris text 812-555-9077 tyler.harris921@example.com. 5698 Dogwood Court, Hanover, IN. cut down 2 locust trees near fence. drop only 1700; drop plus haul away $2450",
+      "expected": {
+        "customer_name": "Tyler Harris",
+        "phone_display": "812-555-9077",
+        "email": "tyler.harris921@example.com",
+        "service_address_should_include": [
+          "5698 Dogwood Court",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,700",
+          "$2,450"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks that useful tree type detail survives normalization."
+    },
+    {
+      "selection_reason": "urgent hazard wording pass baseline",
+      "id": "case_1844",
+      "category": "emergency_jobs",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Oscar Harris; address 4758 Bear Creek Road, Madison, Indiana; 812.555.6228 oscar.harris844@example.com; needs urgent but not on power line: remove three pine trees blocking driveway; same day drop/clear access 1350; clear and haul away 2,150",
+      "expected": {
+        "customer_name": "Oscar Harris",
+        "phone_display": "812-555-6228",
+        "email": "oscar.harris844@example.com",
+        "service_address_should_include": [
+          "4758 Bear Creek Road",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,350",
+          "$2,150"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Preserves urgency while requiring safe, complete quote data."
+    },
+    {
+      "selection_reason": "emergency name address and price failure",
+      "id": "case_0014",
+      "category": "emergency_jobs",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "note from Brad Price; address 6657 Wilson Avenue - Madison Indiana; text 812-555-1518 brad.price014@example.com; needs emergency access issue, 1 sycamore tree across gravel drive; same day drop/clear access $2350; clear and haul away 3,350",
+      "expected": {
+        "customer_name": "Brad Price",
+        "phone_display": "812-555-1518",
+        "email": "brad.price014@example.com",
+        "service_address_should_include": [
+          "6657 Wilson Avenue",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$2,350",
+          "$3,350"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Preserves urgency while requiring safe, complete quote data."
+    },
+    {
+      "selection_reason": "emergency access price failure",
+      "id": "case_0005",
+      "category": "emergency_jobs",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "Gina French\n8125551185 gina.french005@example.com\n1422 Michigan Road, Madison, IN\nsame-day quote request for 1 leaning silver maple tree\nsame day drop/clear access 1,550; clear and haul away $2,500",
+      "expected": {
+        "customer_name": "Gina French",
+        "phone_display": "812-555-1185",
+        "email": "gina.french005@example.com",
+        "service_address_should_include": [
+          "1422 Michigan Road",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,550",
+          "$2,500"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Preserves urgency while requiring safe, complete quote data."
+    },
+    {
+      "selection_reason": "safety warning should not block",
+      "id": "case_0019",
+      "category": "emergency_jobs",
+      "messiness": "high",
+      "decision": "block",
+      "raw_customer_input": "call/text 8125551703 Caleb Peterson 7666 2nd Street - Madison IN leaning tree touching service drop, quote $1100 cleanup $1,600",
+      "expected": {
+        "customer_name": "Caleb Peterson",
+        "phone_display": "812-555-1703",
+        "email": null,
+        "service_address_should_include": [
+          "7666 2nd Street",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,100",
+          "$1,600"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "safety"
+        ],
+        "warnings_should_include": [
+          "emergency or hazard requires review"
+        ],
+        "follow_ups_should_include": [
+          "confirm safe access"
+        ]
+      },
+      "notes_for_codex": "Preserves urgency while requiring safe, complete quote data."
+    },
+    {
+      "selection_reason": "storm damage pass baseline",
+      "id": "case_0127",
+      "category": "storm_damage",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Owen Bailey said; address at 7244 Hilltop Road in Hanover IN; 8125555699 owen.bailey127@example.com; needs fallen dead ash after wind storm, three trees to remove; storm cleanup option A $2,200 leave logs; option B $2550 haul debris and rake",
+      "expected": {
+        "customer_name": "Owen Bailey",
+        "phone_display": "812-555-5699",
+        "email": "owen.bailey127@example.com",
+        "service_address_should_include": [
+          "7244 Hilltop Road",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$2,200",
+          "$2,550"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks storm or wind damage wording without losing required quote details."
+    },
+    {
+      "selection_reason": "storm note from name failure",
+      "id": "case_0006",
+      "category": "storm_damage",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "note from Felix Hale (812) 555-1222. at 5580 Wilson Avenue in Hanover Indiana. storm limbs from three locust trees over garage. storm cleanup option A 950 leave logs; option B 1,950 haul debris and rake",
+      "expected": {
+        "customer_name": "Felix Hale",
+        "phone_display": "812-555-1222",
+        "email": null,
+        "service_address_should_include": [
+          "5580 Wilson Avenue",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$950",
+          "$1,950"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks storm or wind damage wording without losing required quote details."
+    },
+    {
+      "selection_reason": "storm damage price failure",
+      "id": "case_1037",
+      "category": "storm_damage",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "call/text text 812-555-3369 Harold Foster -- storm damaged dead ash, remove 4 trees and clean up limbs -- service address at 5304 County Road 250 W in Madison Indiana -- storm cleanup option A 750 leave logs; option B $1,100 haul debris and rake",
+      "expected": {
+        "customer_name": "Harold Foster",
+        "phone_display": "812-555-3369",
+        "email": null,
+        "service_address_should_include": [
+          "5304 County Road 250 W",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$750",
+          "$1,100"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks storm or wind damage wording without losing required quote details."
+    },
+    {
+      "selection_reason": "storm follow-up warning behavior",
+      "id": "case_0119",
+      "category": "storm_damage",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "812 555 5403 customer Candace Howard fallen tree on neighbor fence at 370 Clifty Drive Madison Indiana; scope/property responsibility unclear; price $850",
+      "expected": {
+        "customer_name": "Candace Howard",
+        "phone_display": "812-555-5403",
+        "email": null,
+        "service_address_should_include": [
+          "370 Clifty Drive",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$850",
+          "$1,550"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "scope"
+        ],
+        "warnings_should_include": [
+          "storm damage details need review"
+        ],
+        "follow_ups_should_include": [
+          "clarify storm damage scope"
+        ]
+      },
+      "notes_for_codex": "Checks storm or wind damage wording without losing required quote details."
+    },
+    {
+      "selection_reason": "package price pass baseline",
+      "id": "case_0647",
+      "category": "package_prices",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "customer Cody Howard; address 7433 Orchard Drive Hanover Indiana; call/text text 812-555-6939; needs take down 3 dead elm trees; basic package $1,150; full cleanup package $1950",
+      "expected": {
+        "customer_name": "Cody Howard",
+        "phone_display": "812-555-6939",
+        "email": null,
+        "service_address_should_include": [
+          "7433 Orchard Drive",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,150",
+          "$1,950"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks package-label pricing like basic/full cleanup."
+    },
+    {
+      "selection_reason": "package price name prefix failure",
+      "id": "case_0007",
+      "category": "package_prices",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "note from Sylvia Clark\n812-555-1259 sylvia.clark007@example.com\n318 Greenbriar Lane - Hanover Indiana\ntake down 2 elm trees\nbasic package $1450; full cleanup package $1800",
+      "expected": {
+        "customer_name": "Sylvia Clark",
+        "phone_display": "812-555-1259",
+        "email": "sylvia.clark007@example.com",
+        "service_address_should_include": [
+          "318 Greenbriar Lane",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,450",
+          "$1,800"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks package-label pricing like basic/full cleanup."
+    },
+    {
+      "selection_reason": "package price extraction failure",
+      "id": "case_1136",
+      "category": "package_prices",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "1-812-555-7032 rachel.parker136@example.com customer Rachel Parker -- one maple tree removal -- service address at 3779 State Road 56 in Madison IN -- basic package 1850; full cleanup package 2850",
+      "expected": {
+        "customer_name": "Rachel Parker",
+        "phone_display": "812-555-7032",
+        "email": "rachel.parker136@example.com",
+        "service_address_should_include": [
+          "3779 State Road 56",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,850",
+          "$2,850"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks package-label pricing like basic/full cleanup."
+    },
+    {
+      "selection_reason": "high messiness package name failure",
+      "id": "case_0393",
+      "category": "package_prices",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "812 555 6541 note from Erin Sharp -- take down three elm trees -- service address 7204 Meadow Lane, Hanover, IN -- basic package $850; full cleanup package 1300",
+      "expected": {
+        "customer_name": "Erin Sharp",
+        "phone_display": "812-555-6541",
+        "email": null,
+        "service_address_should_include": [
+          "7204 Meadow Lane",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$850",
+          "$1,300"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks package-label pricing like basic/full cleanup."
+    },
+    {
+      "selection_reason": "vague scope follow-up block",
+      "id": "case_0008",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "high",
+      "decision": "block",
+      "raw_customer_input": "note from Brenda Clark 812.555.1296 1257 Woodland Drive - Madison IN wants tree stuff done, $1,650 written in notes",
+      "expected": {
+        "customer_name": "Brenda Clark",
+        "phone_display": "812-555-1296",
+        "email": null,
+        "service_address_should_include": [
+          "1257 Woodland Drive",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,650"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "scope"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "clear work scope"
+        ]
+      },
+      "notes_for_codex": "Extracts partial data but blocks until scope/details are clarified."
+    },
+    {
+      "selection_reason": "tree stuff vague scope follow-up",
+      "id": "case_0030",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "high",
+      "decision": "block",
+      "raw_customer_input": "customer is April Mills call/text 1-812-555-2110 5188 Maple Avenue Madison IN wants tree stuff done, $2,650 written in notes",
+      "expected": {
+        "customer_name": "April Mills",
+        "phone_display": "812-555-2110",
+        "email": null,
+        "service_address_should_include": [
+          "5188 Maple Avenue",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$2,650"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "scope"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "clear work scope"
+        ]
+      },
+      "notes_for_codex": "Extracts partial data but blocks until scope/details are clarified."
+    },
+    {
+      "selection_reason": "prices with no option descriptions",
+      "id": "case_0038",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "lady named Joan Blair text 812-555-2406 5816 Poplar Ridge Road Hanover IN option A $1850 option B 2350, no descriptions",
+      "expected": {
+        "customer_name": "Joan Blair",
+        "phone_display": "812-555-2406",
+        "email": null,
+        "service_address_should_include": [
+          "5816 Poplar Ridge Road",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,850",
+          "$2,350"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "option description"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "what each option includes"
+        ]
+      },
+      "notes_for_codex": "Extracts partial data but blocks until scope/details are clarified."
+    },
+    {
+      "selection_reason": "vague scope follow-up still needed",
+      "id": "case_0050",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "customer Olivia Freeman 812 555 2850 olivia.freeman050@example.com 6612 Main Street - Hanover IN tree removel maybe 750, not sure what we are doing yet",
+      "expected": {
+        "customer_name": "Olivia Freeman",
+        "phone_display": "812-555-2850",
+        "email": "olivia.freeman050@example.com",
+        "service_address_should_include": [
+          "6612 Main Street",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$750"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "scope"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "clear work scope"
+        ]
+      },
+      "notes_for_codex": "Extracts partial data but blocks until scope/details are clarified."
+    },
+    {
+      "selection_reason": "email contact pass baseline",
+      "id": "case_0634",
+      "category": "email_inputs",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Sofia Price said\nemail sofia.price634@example.com\nat 5682 Highway 421 in Hanover IN\ntake down 3 elm trees\nquote options: remove only $2650; remove plus cleanup 3,200",
+      "expected": {
+        "customer_name": "Sofia Price",
+        "phone_display": null,
+        "email": "sofia.price634@example.com",
+        "service_address_should_include": [
+          "5682 Highway 421",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$2,650",
+          "$3,200"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks email extraction and contact sufficiency when email is present."
+    },
+    {
+      "selection_reason": "email-only name extraction",
+      "id": "case_0011",
+      "category": "email_inputs",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "email only leah.mason011@example.com customer Leah Mason -- 1 silver maple tree removal -- service address 1591 Mulberry Street, Hanover, Indiana -- quote options: remove only $750; remove plus cleanup $1050",
+      "expected": {
+        "customer_name": "Leah Mason",
+        "phone_display": null,
+        "email": "leah.mason011@example.com",
+        "service_address_should_include": [
+          "1591 Mulberry Street",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$750",
+          "$1,050"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks email extraction and contact sufficiency when email is present."
+    },
+    {
+      "selection_reason": "email input name and price failure",
+      "id": "case_0832",
+      "category": "email_inputs",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "send quote to james.french832@example.com James French -- one river birch tree removal -- service address at 2597 Spring Street in Madison IN -- quote options: remove only $1350; remove plus cleanup $1,850",
+      "expected": {
+        "customer_name": "James French",
+        "phone_display": null,
+        "email": "james.french832@example.com",
+        "service_address_should_include": [
+          "2597 Spring Street",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,350",
+          "$1,850"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks email extraction and contact sufficiency when email is present."
+    },
+    {
+      "selection_reason": "no contact plus slash prices",
+      "id": "case_0009",
+      "category": "email_inputs",
+      "messiness": "high",
+      "decision": "block",
+      "raw_customer_input": "Victor Mason said contact later 1614 Spring Street - Madison IN; take down 3 sycamore trees; 1,400/$2100",
+      "expected": {
+        "customer_name": "Victor Mason",
+        "phone_display": null,
+        "email": null,
+        "service_address_should_include": [
+          "1614 Spring Street",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,400",
+          "$2,100"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "contact"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "phone or email"
+        ]
+      },
+      "notes_for_codex": "Checks email extraction and contact sufficiency when email is present."
+    },
+    {
+      "selection_reason": "missing prices name failure",
+      "id": "case_0040",
+      "category": "missing_prices",
+      "messiness": "high",
+      "decision": "block",
+      "raw_customer_input": "812 555 2480 vivian.hansen040@example.com text from Vivian Hansen address at 2368 Highway 421 in Madison Indiana. remove 1 ash tree; stump grinding mentioned but no prices written down.",
+      "expected": {
+        "customer_name": "Vivian Hansen",
+        "phone_display": "812-555-2480",
+        "email": "vivian.hansen040@example.com",
+        "service_address_should_include": [
+          "2368 Highway 421",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "price"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "priced option"
+        ]
+      },
+      "notes_for_codex": "Blocks customer-facing estimate because one or more options have no price."
+    },
+    {
+      "selection_reason": "missing prices pass block baseline",
+      "id": "case_0010",
+      "category": "missing_prices",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "8125551370 lady named Nora Henderson address at 253 Broadway Street in Hanover IN. 2 silver maple trees removal; stump grinding mentioned but no prices written down.",
+      "expected": {
+        "customer_name": "Nora Henderson",
+        "phone_display": "812-555-1370",
+        "email": null,
+        "service_address_should_include": [
+          "253 Broadway Street",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "price"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "priced option"
+        ]
+      },
+      "notes_for_codex": "Blocks customer-facing estimate because one or more options have no price."
+    },
+    {
+      "selection_reason": "missing price follow-up wording",
+      "id": "case_0088",
+      "category": "missing_prices",
+      "messiness": "high",
+      "decision": "block",
+      "raw_customer_input": "lady named Ron Cox 812 555 4256 3431 Meadow Lane - Hanover IN remove two maple trees. Option A cut only. Option B haul away and cleanup.",
+      "expected": {
+        "customer_name": "Ron Cox",
+        "phone_display": "812-555-4256",
+        "email": null,
+        "service_address_should_include": [
+          "3431 Meadow Lane",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "price"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "priced option"
+        ]
+      },
+      "notes_for_codex": "Blocks customer-facing estimate because one or more options have no price."
+    },
+    {
+      "selection_reason": "missing prices address edge",
+      "id": "case_0060",
+      "category": "missing_prices",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "Eli Clark said\n4953 Lanier Drive - Hanover Indiana\n(812) 555-3220 eli.clark060@example.com\nremove 2 ash trees\ncheap way and full cleanup options, prices missing",
+      "expected": {
+        "customer_name": "Eli Clark",
+        "phone_display": "812-555-3220",
+        "email": "eli.clark060@example.com",
+        "service_address_should_include": [
+          "4953 Lanier Drive",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "price"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "priced option"
+        ]
+      },
+      "notes_for_codex": "Blocks customer-facing estimate because one or more options have no price."
+    },
+    {
+      "selection_reason": "messy name pass baseline",
+      "id": "case_0295",
+      "category": "messy_names",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Henry Coleman said; address at 6085 Moffett Road in Madison IN; call/text 812-555-2915; needs remove 2 sweet gum trees; cheap way 1250 full cleanup $1600",
+      "expected": {
+        "customer_name": "Henry Coleman",
+        "phone_display": "812-555-2915",
+        "email": null,
+        "service_address_should_include": [
+          "6085 Moffett Road",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,250",
+          "$1,600"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks name extraction when the customer name is embedded in loose note wording."
+    },
+    {
+      "selection_reason": "messy embedded name failure",
+      "id": "case_0013",
+      "category": "messy_names",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "8125551481 luis.powell013@example.com Powell, Luis -- cut down one elm tree -- service address 5263 Meadow Lane - Madison Indiana -- A leave wood $2300 B haul all 2850",
+      "expected": {
+        "customer_name": "Luis Powell",
+        "phone_display": "812-555-1481",
+        "email": "luis.powell013@example.com",
+        "service_address_should_include": [
+          "5263 Meadow Lane",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$2,300",
+          "$2,850"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks name extraction when the customer name is embedded in loose note wording."
+    },
+    {
+      "selection_reason": "messy name and address failure",
+      "id": "case_0021",
+      "category": "messy_names",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "customer Riley Diaz call/text 812-555-1777. 4100 Michigan Road, Hanover, Indiana. cut down 4 pine trees. cheap way $750 full cleanup $1500",
+      "expected": {
+        "customer_name": "Riley Diaz",
+        "phone_display": "812-555-1777",
+        "email": null,
+        "service_address_should_include": [
+          "4100 Michigan Road",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$750",
+          "$1,500"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks name extraction when the customer name is embedded in loose note wording."
+    },
+    {
+      "selection_reason": "high messiness name failure",
+      "id": "case_0105",
+      "category": "messy_names",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "guy Harold Turner call/text 1-812-555-4885. 4876 Liberty Road, Hanover, IN. remove three oak trees. cut only 650 / cut and hall off 1000",
+      "expected": {
+        "customer_name": "Harold Turner",
+        "phone_display": "812-555-4885",
+        "email": null,
+        "service_address_should_include": [
+          "4876 Liberty Road",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$650",
+          "$1,000"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks name extraction when the customer name is embedded in loose note wording."
+    },
+    {
+      "selection_reason": "slash price pass baseline",
+      "id": "case_0112",
+      "category": "slash_prices",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Teresa Porter said\n(812) 555-5144\n4269 Oak Lane Madison Indiana\ncut down two sycamore trees\nprice 700 leave wood / $1,000 haul off",
+      "expected": {
+        "customer_name": "Teresa Porter",
+        "phone_display": "812-555-5144",
+        "email": null,
+        "service_address_should_include": [
+          "4269 Oak Lane",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$700",
+          "$1,000"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks shorthand slash pricing and option splitting."
+    },
+    {
+      "selection_reason": "A/B slash price failure",
+      "id": "case_0016",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "customer Megan Cooper\ncall/text text 812-555-1592\n4714 Meadow Lane, Hanover, IN\ncut down 1 pine tree\nA/B $1350 / $1,650",
+      "expected": {
+        "customer_name": "Megan Cooper",
+        "phone_display": "812-555-1592",
+        "email": null,
+        "service_address_should_include": [
+          "4714 Meadow Lane",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,350",
+          "$1,650"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks shorthand slash pricing and option splitting."
+    },
+    {
+      "selection_reason": "slash price name and price failure",
+      "id": "case_0057",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "1-812-555-3109 note from Maria Wells -- remove four oak trees -- service address 1046 Ridge Road, Hanover, IN -- A/B $2250 / 3250",
+      "expected": {
+        "customer_name": "Maria Wells",
+        "phone_display": "812-555-3109",
+        "email": null,
+        "service_address_should_include": [
+          "1046 Ridge Road",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$2,250",
+          "$3,250"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks shorthand slash pricing and option splitting."
+    },
+    {
+      "selection_reason": "blocked slash price extraction",
+      "id": "case_0048",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "customer Luis Lucas 812 555 2776 5455 Creekside Drive, Madison, IN slash price 1,600/2300 from truck notes, scope unclear",
+      "expected": {
+        "customer_name": "Luis Lucas",
+        "phone_display": "812-555-2776",
+        "email": null,
+        "service_address_should_include": [
+          "5455 Creekside Drive",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,600",
+          "$2,300"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "scope"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "what each slash price includes"
+        ]
+      },
+      "notes_for_codex": "Checks shorthand slash pricing and option splitting."
+    },
+    {
+      "selection_reason": "missing address block with prices",
+      "id": "case_0018",
+      "category": "vague_or_missing_addresses",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "customer Donna Sanders 812.555.1666 wants 3 dead ash trees removal near Clifty Falls entrance. option A $1,300 option B haul 1900",
+      "expected": {
+        "customer_name": "Donna Sanders",
+        "phone_display": "812-555-1666",
+        "email": null,
+        "service_address_should_include": [],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,300",
+          "$1,900"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "address"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "exact service address"
+        ]
+      },
+      "notes_for_codex": "Blocks PDF generation because the service address is vague or missing."
+    },
+    {
+      "selection_reason": "high messiness vague address block",
+      "id": "case_0039",
+      "category": "vague_or_missing_addresses",
+      "messiness": "high",
+      "decision": "block",
+      "raw_customer_input": "lady named Nora Burns 812.555.2443 wants take down 4 pine trees near Clifty Falls entrance. option A $1,900 option B haul $2,450",
+      "expected": {
+        "customer_name": "Nora Burns",
+        "phone_display": "812-555-2443",
+        "email": null,
+        "service_address_should_include": [],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$1,900",
+          "$2,450"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "address"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "exact service address"
+        ]
+      },
+      "notes_for_codex": "Blocks PDF generation because the service address is vague or missing."
+    },
+    {
+      "selection_reason": "vague address name and price failure",
+      "id": "case_0069",
+      "category": "vague_or_missing_addresses",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "customer Beth Lawson call/text 812 555 3553 wants take down 2 elm trees somewhere near River Road. option A 2,050 option B haul $2,400",
+      "expected": {
+        "customer_name": "Beth Lawson",
+        "phone_display": "812-555-3553",
+        "email": null,
+        "service_address_should_include": [],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$2,050",
+          "$2,400"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "address"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "exact service address"
+        ]
+      },
+      "notes_for_codex": "Blocks PDF generation because the service address is vague or missing."
+    },
+    {
+      "selection_reason": "vague address price failure",
+      "id": "case_0099",
+      "category": "vague_or_missing_addresses",
+      "messiness": "medium",
+      "decision": "block",
+      "raw_customer_input": "April Reed call 812-555-4663 april.reed099@example.com wants take down 4 oak trees past the church on a gravel lane. option A $1,600 option B haul 2450",
+      "expected": {
+        "customer_name": "April Reed",
+        "phone_display": "812-555-4663",
+        "email": "april.reed099@example.com",
+        "service_address_should_include": [],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$1,600",
+          "$2,450"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "address"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "exact service address"
+        ]
+      },
+      "notes_for_codex": "Blocks PDF generation because the service address is vague or missing."
+    },
+    {
+      "selection_reason": "tree count pass baseline",
+      "id": "case_0071",
+      "category": "tree_counts",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "customer Marta Young; address 5633 Michigan Road Madison IN; 812-555-3627 marta.young071@example.com; needs 2 sycamore trees need removal; cut/leave 1,850 haul/cleanup $2300",
+      "expected": {
+        "customer_name": "Marta Young",
+        "phone_display": "812-555-3627",
+        "email": "marta.young071@example.com",
+        "service_address_should_include": [
+          "5633 Michigan Road",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,850",
+          "$2,300"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks tree count normalization and avoids guessing when count is vague."
+    },
+    {
+      "selection_reason": "tree count name failure",
+      "id": "case_0024",
+      "category": "tree_counts",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "Molly Porter\ncall/text 8125551888\nat 394 Poplar Ridge Road in Madison IN\nremove 3 trees\ncut/leave 2000 haul/cleanup 2850",
+      "expected": {
+        "customer_name": "Molly Porter",
+        "phone_display": "812-555-1888",
+        "email": null,
+        "service_address_should_include": [
+          "394 Poplar Ridge Road",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$2,000",
+          "$2,850"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks tree count normalization and avoids guessing when count is vague."
+    },
+    {
+      "selection_reason": "twp tree count typo",
+      "id": "case_0035",
+      "category": "tree_counts",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "Paula Crawford\n812-555-2295 paula.crawford035@example.com\n4844 County Road 250 W Hanover IN\nremove twp trees\ncut/leave 1,350 haul/cleanup $2,150",
+      "expected": {
+        "customer_name": "Paula Crawford",
+        "phone_display": "812-555-2295",
+        "email": "paula.crawford035@example.com",
+        "service_address_should_include": [
+          "4844 County Road 250 W",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,350",
+          "$2,150"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks tree count normalization and avoids guessing when count is vague."
+    },
+    {
+      "selection_reason": "vague tree count block",
+      "id": "case_0020",
+      "category": "tree_counts",
+      "messiness": "high",
+      "decision": "block",
+      "raw_customer_input": "Hayes, Owen call/text (812) 555-1740 7871 Sycamore Drive, Hanover, IN remove multiple trees near back fence. Option A 850 Option B haul $1,700",
+      "expected": {
+        "customer_name": "Owen Hayes",
+        "phone_display": "812-555-1740",
+        "email": null,
+        "service_address_should_include": [
+          "7871 Sycamore Drive",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": null,
+        "service_option_prices": [
+          "$850",
+          "$1,700"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "tree count"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "how many trees"
+        ]
+      },
+      "notes_for_codex": "Checks tree count normalization and avoids guessing when count is vague."
+    },
+    {
+      "selection_reason": "phone format pass baseline",
+      "id": "case_0184",
+      "category": "phone_formats",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "customer Caleb Clark 812.555.7808. 5338 Broadway Street, Hanover, IN. remove 3 silver maple trees. opt1 drop and leave brush $1,900 opt2 haul away and cleanup 2,450",
+      "expected": {
+        "customer_name": "Caleb Clark",
+        "phone_display": "812-555-7808",
+        "email": null,
+        "service_address_should_include": [
+          "5338 Broadway Street",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,900",
+          "$2,450"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks phone normalization from a real-world raw phone format."
+    },
+    {
+      "selection_reason": "phone adjacent name failure",
+      "id": "case_0031",
+      "category": "phone_formats",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "(812) 555-2147 Henry Goodwin said -- remove 1 bradford pear tree -- service address 5441 Sycamore Drive - Hanover Indiana -- opt1 drop and leave brush $1,800 opt2 haul away and cleanup 2350",
+      "expected": {
+        "customer_name": "Henry Goodwin",
+        "phone_display": "812-555-2147",
+        "email": null,
+        "service_address_should_include": [
+          "5441 Sycamore Drive",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,800",
+          "$2,350"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks phone normalization from a real-world raw phone format."
+    },
+    {
+      "selection_reason": "phone format price failure",
+      "id": "case_1685",
+      "category": "phone_formats",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "812 555 9345 Shane Lopez -- cut down 2 ash trees -- service address at 2741 Pine Court in Hanover IN -- opt1 drop and leave brush $1,950 opt2 haul away and cleanup 2,950",
+      "expected": {
+        "customer_name": "Shane Lopez",
+        "phone_display": "812-555-9345",
+        "email": null,
+        "service_address_should_include": [
+          "2741 Pine Court",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,950",
+          "$2,950"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks phone normalization from a real-world raw phone format."
+    },
+    {
+      "selection_reason": "high messiness phone name failure",
+      "id": "case_0804",
+      "category": "phone_formats",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "1-812-555-3748 James Carter said -- take down one pine tree -- service address at 5201 Woodland Drive in Hanover IN -- opt1 drop and leave brush $2600 opt2 haul away and cleanup $3,250",
+      "expected": {
+        "customer_name": "James Carter",
+        "phone_display": "812-555-3748",
+        "email": null,
+        "service_address_should_include": [
+          "5201 Woodland Drive",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$2,600",
+          "$3,250"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks phone normalization from a real-world raw phone format."
+    },
+    {
+      "selection_reason": "address extraction pass baseline",
+      "id": "case_0046",
+      "category": "address_formats",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "Gabe Coleman\n8125552702 gabe.coleman046@example.com\n4817 River Bluff Lane - Hanover IN\nremove three hickory trees\nOption A $2000 leave wood stacked. Option B $2,750 haul off debris.",
+      "expected": {
+        "customer_name": "Gabe Coleman",
+        "phone_display": "812-555-2702",
+        "email": "gabe.coleman046@example.com",
+        "service_address_should_include": [
+          "4817 River Bluff Lane",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$2,000",
+          "$2,750"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks extraction of a specific Madison/Hanover service address with punctuation or wording variation."
+    },
+    {
+      "selection_reason": "address plus price failure",
+      "id": "case_0025",
+      "category": "address_formats",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "call/text 1-812-555-1925 note from Leah Roberts -- 3 ash trees removal -- service address at 959 Moffett Road in Madison Indiana -- Option A $1150 leave wood stacked. Option B 1550 haul off debris.",
+      "expected": {
+        "customer_name": "Leah Roberts",
+        "phone_display": "812-555-1925",
+        "email": null,
+        "service_address_should_include": [
+          "959 Moffett Road",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,150",
+          "$1,550"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks extraction of a specific Madison/Hanover service address with punctuation or wording variation."
+    },
+    {
+      "selection_reason": "high messiness address and price failure",
+      "id": "case_0164",
+      "category": "address_formats",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "text 812-555-7068 note from Erin Freeman -- cut down four bradford pear trees -- service address at 3380 Orchard Drive in Hanover IN -- Option A 1,100 leave wood stacked. Option B 1,400 haul off debris.",
+      "expected": {
+        "customer_name": "Erin Freeman",
+        "phone_display": "812-555-7068",
+        "email": null,
+        "service_address_should_include": [
+          "3380 Orchard Drive",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$1,100",
+          "$1,400"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks extraction of a specific Madison/Hanover service address with punctuation or wording variation."
+    },
+    {
+      "selection_reason": "address block price failure",
+      "id": "case_0129",
+      "category": "address_formats",
+      "messiness": "low",
+      "decision": "block",
+      "raw_customer_input": "Ivy Baker 812 555 5773 ivy.baker129@example.com corner of Main and 2nd. take down one bradford pear tree. Option A 1,250 Option B $1,850",
+      "expected": {
+        "customer_name": "Ivy Baker",
+        "phone_display": "812-555-5773",
+        "email": "ivy.baker129@example.com",
+        "service_address_should_include": [],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,250",
+          "$1,850"
+        ],
+        "can_generate_pdf": false,
+        "blocking_errors_should_include": [
+          "address"
+        ],
+        "warnings_should_include": [],
+        "follow_ups_should_include": [
+          "exact service address"
+        ]
+      },
+      "notes_for_codex": "Checks extraction of a specific Madison/Hanover service address with punctuation or wording variation."
+    },
+    {
+      "selection_reason": "mixed note stump distractor prices",
+      "id": "case_0037",
+      "category": "mixed_realistic_customer_notes",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "812-555-2369 beth.burns037@example.com note from Beth Burns -- fallen ash after wind storm, 2 trees to remove -- service address at 2959 College Avenue in Madison Indiana -- notes: old estimate scribble. drop $2050 haul brush $2550 stump $3,000",
+      "expected": {
+        "customer_name": "Beth Burns",
+        "phone_display": "812-555-2369",
+        "email": "beth.burns037@example.com",
+        "service_address_should_include": [
+          "2959 College Avenue",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$2,050",
+          "$2,550",
+          "$3,000"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Mixed real-world note with multiple small messiness features."
+    },
+    {
+      "selection_reason": "mixed note tree count failure",
+      "id": "case_0125",
+      "category": "mixed_realistic_customer_notes",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "Maria Nelson said call/text 812 555 5625. 1711 Main Street, Hanover, Indiana. tree removel for twp dead elm treess. neighbor wants qoute too but this one is 1350 cut / $2250 cut and cleanup",
+      "expected": {
+        "customer_name": "Maria Nelson",
+        "phone_display": "812-555-5625",
+        "email": null,
+        "service_address_should_include": [
+          "1711 Main Street",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,350",
+          "$2,250"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Mixed real-world note with multiple small messiness features."
+    },
+    {
+      "selection_reason": "mixed note name failure",
+      "id": "case_0277",
+      "category": "mixed_realistic_customer_notes",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "note from Alicia Blair 812 555 2249 alicia.blair277@example.com. 2061 Vaughn Drive Hanover IN. 2 oak trees removal. notes: old estimate scribble. drop $1250 haul brush 1800 stump 2,800",
+      "expected": {
+        "customer_name": "Alicia Blair",
+        "phone_display": "812-555-2249",
+        "email": "alicia.blair277@example.com",
+        "service_address_should_include": [
+          "2061 Vaughn Drive",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,250",
+          "$1,800",
+          "$2,800"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Mixed real-world note with multiple small messiness features."
+    },
+    {
+      "selection_reason": "mixed note name failure",
+      "id": "case_0147",
+      "category": "mixed_realistic_customer_notes",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "Gina Palmer\ncall/text 8125556439\n6530 Poplar Ridge Road - Hanover Indiana\nfallen locust after wind storm, 1 tree to remove\nnotes: old estimate scribble. drop $950 haul brush 1,850 stump 2850",
+      "expected": {
+        "customer_name": "Gina Palmer",
+        "phone_display": "812-555-6439",
+        "email": null,
+        "service_address_should_include": [
+          "6530 Poplar Ridge Road",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$950",
+          "$1,850",
+          "$2,850"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Mixed real-world note with multiple small messiness features."
+    },
+    {
+      "selection_reason": "over four options warning",
+      "id": "case_0044",
+      "category": "more_than_four_options",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "call/text 812-555-2628 note from Brad Baker -- cut down two spruce trees -- service address 2335 Rolling Ridge Drive - Madison Indiana -- A drop only $1,950 B drop stack wood 2250 C haul brush $2,600 D full cleanup 3150 E cleanup plus stump grind $3,750",
+      "expected": {
+        "customer_name": "Brad Baker",
+        "phone_display": "812-555-2628",
+        "email": null,
+        "service_address_should_include": [
+          "2335 Rolling Ridge Drive",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,950",
+          "$2,250",
+          "$2,600",
+          "$3,150",
+          "$3,750"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [
+          "more than four options"
+        ],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks warning behavior when more than four priced options are present."
+    },
+    {
+      "selection_reason": "over four options warning",
+      "id": "case_0062",
+      "category": "more_than_four_options",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "812.555.3294 kayla.hughes062@example.com note from Kayla Hughes -- take down 3 maple trees -- service address 881 State Road 56, Madison, Indiana -- A drop only 1,900 B drop stack wood $2,200 C haul brush 3150 D full cleanup 3,900 E cleanup plus stump grind $4,350",
+      "expected": {
+        "customer_name": "Kayla Hughes",
+        "phone_display": "812-555-3294",
+        "email": "kayla.hughes062@example.com",
+        "service_address_should_include": [
+          "881 State Road 56",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,900",
+          "$2,200",
+          "$3,150",
+          "$3,900",
+          "$4,350"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [
+          "more than four options"
+        ],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks warning behavior when more than four priced options are present."
+    },
+    {
+      "selection_reason": "high messiness over four options",
+      "id": "case_1614",
+      "category": "more_than_four_options",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "note from Lacey Sharp; address 1723 Ridge Road - Madison Indiana; 812.555.6718 lacey.sharp614@example.com; needs cut down one pine tree; A drop only 950 B drop stack wood 1300 C haul brush 1,950 D full cleanup 2950 E cleanup plus stump grind $3,600",
+      "expected": {
+        "customer_name": "Lacey Sharp",
+        "phone_display": "812-555-6718",
+        "email": "lacey.sharp614@example.com",
+        "service_address_should_include": [
+          "1723 Ridge Road",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$950",
+          "$1,300",
+          "$1,950",
+          "$2,950",
+          "$3,600"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [
+          "more than four options"
+        ],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks warning behavior when more than four priced options are present."
+    },
+    {
+      "selection_reason": "over four options warning",
+      "id": "case_0166",
+      "category": "more_than_four_options",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "call/text call 812-555-7142 Kim Wells -- take down two walnut trees -- service address 134 Thomas Hill Road - Madison IN -- A drop only $800 B drop stack wood 1,400 C haul brush $1800 D full cleanup 2550 E cleanup plus stump grind 3550",
+      "expected": {
+        "customer_name": "Kim Wells",
+        "phone_display": "812-555-7142",
+        "email": null,
+        "service_address_should_include": [
+          "134 Thomas Hill Road",
+          "Madison",
+          "IN"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$800",
+          "$1,400",
+          "$1,800",
+          "$2,550",
+          "$3,550"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [
+          "more than four options"
+        ],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks warning behavior when more than four priced options are present."
+    },
+    {
+      "selection_reason": "typo synonyms name and tree count",
+      "id": "case_0073",
+      "category": "typo_and_synonym_normalization",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "call 812-555-3701 Hannah Lucas -- cut tree down for 4 leaning pine treess and stomp grind not included -- service address at 6317 Hickory Lane in Hanover IN -- Option A cut tree leave wood 2,150 Option B cut tree haul away 2500",
+      "expected": {
+        "customer_name": "Hannah Lucas",
+        "phone_display": "812-555-3701",
+        "email": null,
+        "service_address_should_include": [
+          "6317 Hickory Lane",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$2,150",
+          "$2,500"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Good alias candidate coverage for tree-service misspellings and synonyms."
+    },
+    {
+      "selection_reason": "typo tree count",
+      "id": "case_0061",
+      "category": "typo_and_synonym_normalization",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "Nora Hale said; address 6999 Thomas Hill Road Hanover IN; 1-812-555-3257 nora.hale061@example.com; needs cut tree down for three sycamore treess and stomp grind not included; Option A cut tree leave wood $1600 Option B cut tree haul away $2300",
+      "expected": {
+        "customer_name": "Nora Hale",
+        "phone_display": "812-555-3257",
+        "email": "nora.hale061@example.com",
+        "service_address_should_include": [
+          "6999 Thomas Hill Road",
+          "Hanover",
+          "IN"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,600",
+          "$2,300"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Good alias candidate coverage for tree-service misspellings and synonyms."
+    },
+    {
+      "selection_reason": "typo tree count and price",
+      "id": "case_0063",
+      "category": "typo_and_synonym_normalization",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "customer Trent Fisher 8125553331. 7163 State Road 56, Madison, Indiana. tree removel for 4 hickory treess and hall off debree. 1850 to drop it plus $2,150 to hall off debree",
+      "expected": {
+        "customer_name": "Trent Fisher",
+        "phone_display": "812-555-3331",
+        "email": null,
+        "service_address_should_include": [
+          "7163 State Road 56",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$1,850",
+          "$2,150"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Good alias candidate coverage for tree-service misspellings and synonyms."
+    },
+    {
+      "selection_reason": "typo name and price",
+      "id": "case_0104",
+      "category": "typo_and_synonym_normalization",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "note from Caleb Holland; address 5656 Crooked Creek Road, Hanover, Indiana; call/text 812 555 4848; needs cut tree down for 1 spruce treee and hual off brush; $2100 to drop it plus $2,600 to hall off debree",
+      "expected": {
+        "customer_name": "Caleb Holland",
+        "phone_display": "812-555-4848",
+        "email": null,
+        "service_address_should_include": [
+          "5656 Crooked Creek Road",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$2,100",
+          "$2,600"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Good alias candidate coverage for tree-service misspellings and synonyms."
+    },
+    {
+      "selection_reason": "stump grind pass baseline",
+      "id": "case_0145",
+      "category": "stump_grinding",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "customer Alicia Klein; address 4203 Highway 421, Madison, Indiana; call/text 812 555 6365; needs cut down one walnut tree plus grind stump; A drop leave stump $1100 B drop and stump grind $2,100 C haul debris and grind stump $2,950",
+      "expected": {
+        "customer_name": "Alicia Klein",
+        "phone_display": "812-555-6365",
+        "email": null,
+        "service_address_should_include": [
+          "4203 Highway 421",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,100",
+          "$2,100",
+          "$2,950"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks stump grinding as either included work or a priced add-on option."
+    },
+    {
+      "selection_reason": "stump grind address price distractor",
+      "id": "case_0064",
+      "category": "stump_grinding",
+      "messiness": "low",
+      "decision": "parse",
+      "raw_customer_input": "812 555 3368 customer Marta Gray -- take down 3 elm trees stump work requested -- service address at 7153 Ridge Road in Madison Indiana -- remove only $1350; remove and grind stump $1,650",
+      "expected": {
+        "customer_name": "Marta Gray",
+        "phone_display": "812-555-3368",
+        "email": null,
+        "service_address_should_include": [
+          "7153 Ridge Road",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,350",
+          "$1,650"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks stump grinding as either included work or a priced add-on option."
+    },
+    {
+      "selection_reason": "stump grind price failure",
+      "id": "case_0267",
+      "category": "stump_grinding",
+      "messiness": "medium",
+      "decision": "parse",
+      "raw_customer_input": "812.555.1879 Derek Fox said -- take down 2 sycamore trees and stump grinding -- service address at 7315 Lanier Drive in Madison Indiana -- A drop leave stump 2,350 B drop and stump grind 3300 C haul debris and grind stump $4,150",
+      "expected": {
+        "customer_name": "Derek Fox",
+        "phone_display": "812-555-1879",
+        "email": null,
+        "service_address_should_include": [
+          "7315 Lanier Drive",
+          "Madison",
+          "Indiana"
+        ],
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$2,350",
+          "$3,300",
+          "$4,150"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks stump grinding as either included work or a priced add-on option."
+    },
+    {
+      "selection_reason": "high messiness stump name failure",
+      "id": "case_0261",
+      "category": "stump_grinding",
+      "messiness": "high",
+      "decision": "parse",
+      "raw_customer_input": "Diane Reynolds call/text 812.555.1657. 5203 Rolling Ridge Drive, Hanover, Indiana. take down 4 oak trees plus grind stump. remove only 1550; remove and grind stump 2,150",
+      "expected": {
+        "customer_name": "Diane Reynolds",
+        "phone_display": "812-555-1657",
+        "email": null,
+        "service_address_should_include": [
+          "5203 Rolling Ridge Drive",
+          "Hanover",
+          "Indiana"
+        ],
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$1,550",
+          "$2,150"
+        ],
+        "can_generate_pdf": true,
+        "blocking_errors_should_include": [],
+        "warnings_should_include": [],
+        "follow_ups_should_include": []
+      },
+      "notes_for_codex": "Checks stump grinding as either included work or a priced add-on option."
+    }
+  ]
+}
