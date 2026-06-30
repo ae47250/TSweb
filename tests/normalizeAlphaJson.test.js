@@ -354,6 +354,57 @@ test("vague address fragments are blocked for follow-up", () => {
   assert.match(validation.blocking_errors.join(" "), /address/i);
 });
 
+test("June 30 reviewed production cases preserve safe parser decisions", () => {
+  const case0039 = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "lady named Nora Burns 812.555.2443 wants take down 4 pine trees near Clifty Falls entrance. option A $1,900 option B haul $2,450",
+  ));
+  assert.equal(case0039.can_generate_pdf, false);
+  assert.equal(case0039.alphaJson.job.service_address.display, "");
+  assert.equal(case0039.alphaJson.job.tree_details.tree_count, "4 trees");
+  assert.equal(case0039.alphaJson.job.tree_details.tree_type, "pine");
+  assert.deepEqual(case0039.alphaJson.service_options.items.map((option) => option.price.display), ["$1,900", "$2,450"]);
+  assert.match(case0039.alphaJson.service_options.items[0].description, /Service Option A/i);
+  assert.match(case0039.alphaJson.service_options.items[1].description, /haul/i);
+  assert.match(case0039.follow_ups.join(" "), /exact service address/i);
+
+  const case0259 = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "note from Wade Foster 8125551583 wade.foster259@example.com 7544 2nd Street, Hanover, Indiana option A 1,800 option B 2200, no descriptions",
+  ));
+  assert.equal(case0259.can_generate_pdf, false);
+  assert.deepEqual(case0259.alphaJson.service_options.items.map((option) => option.price.display), ["$1,800", "$2,200"]);
+  assert.match(case0259.blocking_errors.join(" "), /option descriptions/i);
+  assert.match(case0259.follow_ups[0], /what does each priced option include/i);
+
+  const case0330 = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Seth West call/text 812 555 4210 says use price from yesterday for 704 Greenbriar Lane - Madison IN, tree job, send estimate",
+  ));
+  assert.equal(case0330.can_generate_pdf, false);
+  assert.equal(case0330.alphaJson.job.tree_details.tree_count, "");
+  assert.match(case0330.blocking_errors.join(" "), /priced service option/i);
+
+  const case0319 = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Whitney Mendez said 812 555 3803 whitney.mendez319@example.com wants take down one bradford pear tree somewhere near River Road. option A $900 option B haul 1400",
+  ));
+  assert.equal(case0319.can_generate_pdf, false);
+  assert.equal(case0319.alphaJson.job.service_address.display, "");
+  assert.equal(case0319.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(case0319.alphaJson.job.tree_details.tree_type, "bradford pear");
+  assert.deepEqual(case0319.alphaJson.service_options.items.map((option) => option.price.display), ["$900", "$1,400"]);
+  assert.match(case0319.follow_ups.join(" "), /exact service address/i);
+
+  const case0370 = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "guy Donna Reed 812.555.5690 donna.reed370@example.com says use price from yesterday for 1529 Spring Street Madison Indiana, tree job, send estimate",
+  ));
+  assert.equal(case0370.can_generate_pdf, false);
+  assert.equal(case0370.alphaJson.job.tree_details.tree_count, "");
+  assert.match(case0370.blocking_errors.join(" "), /priced service option/i);
+});
+
 test("email-only customer is a valid contact method", () => {
   const input =
     "Terry Cole email terry.cole@example.com; 511 Mulberry Pike Hanover IN. One cherry laying across pasture gate. cut and move off gate 700; haul away brush/logs 1150.";

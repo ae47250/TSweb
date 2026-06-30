@@ -790,9 +790,7 @@
         "structure",
         "unresolvable_should_block"
       ],
-      "current_failure_categories": [
-        "parser_tree_count"
-      ],
+      "current_failure_categories": [],
       "current_initial_can_generate_pdf": false,
       "current_final_can_generate_pdf_after_followups": true,
       "current_follow_up_rounds": 1,
@@ -810,7 +808,7 @@
           "Madison",
           "IN"
         ],
-        "tree_count": "3 trees",
+        "tree_count": null,
         "service_option_prices": [],
         "can_generate_pdf": false,
         "blocking_errors_should_include": [
@@ -1033,9 +1031,7 @@
         "structure",
         "unresolvable_should_block"
       ],
-      "current_failure_categories": [
-        "parser_tree_count"
-      ],
+      "current_failure_categories": [],
       "current_initial_can_generate_pdf": false,
       "current_final_can_generate_pdf_after_followups": true,
       "current_follow_up_rounds": 1,
@@ -1053,7 +1049,7 @@
           "Madison",
           "Indiana"
         ],
-        "tree_count": "4 trees",
+        "tree_count": null,
         "service_option_prices": [],
         "can_generate_pdf": false,
         "blocking_errors_should_include": [
