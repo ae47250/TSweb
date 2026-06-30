@@ -1,4 +1,4 @@
-# Alpha Tree Service Estimate Builder
+# Alpha Tree Service Estimate Builder.
 
 This is the Phase 1 web UI for turning rough Alpha Tree Service job notes into a reviewed customer estimate flow.
 
