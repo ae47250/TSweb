@@ -194,7 +194,7 @@ export default function PdfGenerator({
           <button className="btn-orange" type="button" disabled={Boolean(sendingChannel)} onClick={() => sendCustomerMessage("sms")}>
             {sendingChannel === "sms" ? "Sending..." : "Send Now"}
           </button>
-          <p className="text-muted">Mock mode records the send without contacting Pingram. Live mode sends through Pingram.</p>
+          <p className="text-muted">Send Now uses the server notification setting for this deployment.</p>
         </div>
       )}
 
@@ -206,7 +206,7 @@ export default function PdfGenerator({
           <button className="btn-orange" type="button" disabled={Boolean(sendingChannel)} onClick={() => sendCustomerMessage("email")}>
             {sendingChannel === "email" ? "Sending..." : "Send Now"}
           </button>
-          <p className="text-muted">Mock mode records the send without contacting Pingram. Live mode sends through Pingram.</p>
+          <p className="text-muted">Send Now uses the server notification setting for this deployment.</p>
         </div>
       )}
 
