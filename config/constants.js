@@ -1,7 +1,7 @@
 export const TREE_DUDE_PHONE = process.env.TREE_DUDE_PHONE || "502-310-6952";
 export const TREE_DUDE_EMAIL = process.env.TREE_DUDE_EMAIL || "huagalli@hotmail.com";
 export const PINGRAM_API_KEY = process.env.PINGRAM_API_KEY || "";
-export const PINGRAM_API_URL = process.env.PINGRAM_API_URL || "https://api.pingram.io/send";
+export const PINGRAM_API_URL = process.env.PINGRAM_API_URL || "https://api.pingram.io";
 export const PINGRAM_FROM_EMAIL = process.env.PINGRAM_FROM_EMAIL || "";
 export const PINGRAM_FROM_NAME = process.env.PINGRAM_FROM_NAME || "Alpha Tree Service";
 export const PINGRAM_FROM_NUMBER = process.env.PINGRAM_FROM_NUMBER || "";
