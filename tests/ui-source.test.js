@@ -105,6 +105,9 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /Tree Dude reviews these options/);
   assert.match(reviewSource, /Do not choose an option here/);
   assert.match(reviewSource, /Needs More Info/);
+  assert.match(reviewSource, /warningItems/);
+  assert.match(reviewSource, /Warnings/);
+  assert.match(reviewSource, /warning-card/);
   assert.match(reviewSource, /Fix missing info before confirming quote/);
   assert.match(reviewSource, /Edit Info/);
   assert.match(reviewSource, /customer-summary-card/);
@@ -112,6 +115,7 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /customer-info-right/);
   assert.match(reviewSource, /td2-action-toolbar/);
   assert.match(cssSource, /\.td2-action-toolbar/);
+  assert.match(cssSource, /\.warning-card/);
   assert.match(cssSource, /grid-template-columns:\s*max-content minmax\(0, 1fr\)/);
   assert.match(cssSource, /\.customer-summary-card/);
   assert.match(cssSource, /\.customer-info-grid/);

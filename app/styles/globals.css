@@ -385,6 +385,22 @@ main {
   padding-left: 20px;
 }
 
+.warning-card {
+  background: #fff8e6;
+  border-color: #facc15;
+  padding: 8px 10px 10px;
+}
+
+.warning-card h3 {
+  color: #713f12;
+  margin: 0 0 6px;
+}
+
+.warning-card ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
 .quote-options-grid {
   display: grid;
   gap: 12px;

@@ -262,6 +262,7 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
     : "Tree Dude reviews these options. The customer chooses one later.";
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Quote") : "Confirm Quote";
   const editLabel = isFinalConfirm ? "Back" : "Edit Info";
+  const warningItems = validation?.warnings || [];
   const renderedFields = {
     customerCard: {
       name: { value: customerName, source: "alphaJson.customer.name" },
@@ -352,6 +353,14 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
           <h3>Needs More Info</h3>
           <ul>
             {reviewIssues.map((question) => <li key={question}>{question}</li>)}
+          </ul>
+        </div>
+      )}
+      {!isFinalConfirm && warningItems.length > 0 && (
+        <div className="summary-card warning-card">
+          <h3>Warnings</h3>
+          <ul>
+            {warningItems.map((warning) => <li key={warning}>{warning}</li>)}
           </ul>
         </div>
       )}

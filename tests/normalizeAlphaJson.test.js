@@ -150,6 +150,61 @@ test("normalizes obvious typed service address spacing", () => {
   assert.equal(normalizeServiceAddress("8052nd Street, Madison, IN"), "805 2nd Street, Madison, IN");
   assert.equal(normalizeServiceAddress("440Walnut St Madison IN"), "440 Walnut St Madison IN");
   assert.equal(normalizeServiceAddress("123Main"), "123 Main");
+  assert.equal(normalizeServiceAddress("803w 2nd"), "803 W 2nd");
+  assert.equal(normalizeServiceAddress("803w2nd"), "803 W 2nd");
+  assert.equal(normalizeServiceAddress("121NMain"), "121 N Main");
+});
+
+test("trusted local towns append Indiana and avoid city-state warning", () => {
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "Test Customer 812-555-0199 service address 123 Main Salem. Remove one maple tree. Option A remove and haul 1250.",
+    ),
+  );
+
+  assert.equal(validation.alphaJson.job.service_address.display, "123 Main, Salem, Indiana");
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.blocking_errors, []);
+  assert.deepEqual(validation.follow_ups, []);
+  assert.doesNotMatch(validation.warnings.join(" "), /Service address may need city or state/);
+});
+
+test("extracts street suffix addresses with two-word trusted towns", () => {
+  const northVernon = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "Test Customer 812-555-0199 service address 257Walnut St North Vernon Indiana. Remove one maple tree. Option A remove and haul 1250.",
+    ),
+  );
+  const littleYork = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "Test Customer 812-555-0199 service address 177Noble Avenue Little York Indiana. Remove one maple tree. Option A remove and haul 1250.",
+    ),
+  );
+
+  assert.equal(northVernon.alphaJson.job.service_address.display, "257 Walnut St, North Vernon, Indiana");
+  assert.equal(littleYork.alphaJson.job.service_address.display, "177 Noble Avenue, Little York, Indiana");
+  assert.equal(northVernon.can_generate_pdf, true);
+  assert.equal(littleYork.can_generate_pdf, true);
+  assert.deepEqual(northVernon.blocking_errors, []);
+  assert.deepEqual(littleYork.blocking_errors, []);
+});
+
+test("keeps short typed local address for TD2 with city-state warning", () => {
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "Test Customer 812-555-0199 service address 803w 2nd. Remove one maple tree. Option A remove and haul 1250.",
+    ),
+  );
+
+  assert.equal(validation.alphaJson.job.service_address.display, "803 W 2nd");
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.blocking_errors, []);
+  assert.deepEqual(validation.follow_ups, []);
+  assert.match(validation.warnings.join(" "), /Service address may need city or state/);
 });
 
 test("maps client and services shape into canonical AlphaJSON", () => {
@@ -849,6 +904,56 @@ test("more than four shorthand options keep first four by price and warn", () =>
   assert.equal(validation.can_generate_pdf, true);
   assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,900", "$2,200", "$3,150", "$3,900"]);
   assert.match(validation.warnings.join(" "), /More than four options/);
+});
+
+test("50 generated price-spread cases warn when Option B is 4x Option A", () => {
+  const names = [
+    "Ava Reed",
+    "Ben Clay",
+    "Cara Mills",
+    "Drew Moss",
+    "Ella Knox",
+    "Finn Hale",
+    "Gina Price",
+    "Hank Bell",
+    "Ivy Stone",
+    "Jake Fox",
+  ];
+  const species = ["maple", "oak", "pine", "ash", "cedar"];
+  const cases = Array.from({ length: 50 }, (_, index) => {
+    const optionCount = index % 2 === 0 ? 2 : 3;
+    const basePrice = 950 + index * 25;
+    const optionBPrice = basePrice * 4;
+    const optionCPrice = optionBPrice + 450;
+    const name = names[index % names.length];
+    const phone = `812-555-${String(4000 + index).padStart(4, "0")}`;
+    const email = `spread${index + 1}@example.com`;
+    const treeType = species[index % species.length];
+    const address = `${120 + index} Oak Lane Madison IN`;
+    const optionCText =
+      optionCount === 3 ? ` Option C remove, haul away, cleanup, and grind stump $${optionCPrice}.` : "";
+    return {
+      id: `spread-${String(index + 1).padStart(2, "0")}`,
+      optionCount,
+      expectedPrices:
+        optionCount === 3
+          ? [basePrice, optionBPrice, optionCPrice].map((amount) => `$${amount.toLocaleString("en-US")}`)
+          : [basePrice, optionBPrice].map((amount) => `$${amount.toLocaleString("en-US")}`),
+      input:
+        `${name} ${phone} ${email}. ${address}. Remove one ${treeType} tree near garage. ` +
+        `Option A remove only $${basePrice}. Option B remove and haul away $${optionBPrice}.` +
+        optionCText,
+    };
+  });
+
+  for (const testCase of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, testCase.input));
+    const prices = validation.alphaJson.service_options.items.map((option) => option.price.display);
+    assert.deepEqual(prices, testCase.expectedPrices, `${testCase.id}: prices were not extracted correctly`);
+    assert.equal(validation.alphaJson.service_options.items.length, testCase.optionCount, testCase.id);
+    assert.equal(validation.can_generate_pdf, true, testCase.id);
+    assert.match(validation.warnings.join(" "), /Large price spread/i, `${testCase.id}: expected price-spread warning`);
+  }
 });
 
 test("amount-before-work add-on keeps base work as Option A", () => {
