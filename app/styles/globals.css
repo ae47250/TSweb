@@ -175,22 +175,23 @@ main {
 }
 
 .customer-summary-card {
-  padding: 10px 12px;
+  padding: 8px 10px;
 }
 
 .customer-summary-card h3 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 
 .customer-info-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: 10px;
+  gap: 8px;
 }
 
 .customer-info-grid p {
-  margin: 2px 0;
-  line-height: 1.25;
+  margin: 1px 0;
+  line-height: 1.18;
+  font-size: 13px;
 }
 
 .customer-info-right {
@@ -205,6 +206,21 @@ main {
   margin: 8px 0 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.review-job-notes-card {
+  border: 2px solid #b91c1c;
+  background: #fff1f2;
+  padding: 16px;
+}
+
+.review-job-notes-card h3 {
+  margin-top: 0;
+}
+
+.review-job-notes-card .job-summary-text {
+  font-size: 16px;
+  line-height: 1.45;
 }
 
 .review-status {

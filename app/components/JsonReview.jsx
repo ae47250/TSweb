@@ -135,9 +135,14 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
               </div>
             </div>
           </div>
-          <div className="summary-card">
-            <h3>Job Summary</h3>
-            <p className="text-muted">Structured from the reviewed job details.</p>
+          <div className="summary-card review-job-notes-card">
+            <h3>Job Notes</h3>
+            <p className="job-notes-guidance">
+              Include tree count, cleanup, hauling, stump grinding, access issues, prices, and options.
+            </p>
+            <p className="job-notes-example">
+              Example: 2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.
+            </p>
             <p className="job-summary-text">{jobNotes}</p>
           </div>
         </div>
