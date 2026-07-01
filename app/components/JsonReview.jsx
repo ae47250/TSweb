@@ -1,6 +1,6 @@
 "use client";
 
-import { cleanCustomerFacingSummary, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
+import { buildCustomerJobSummary, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
 
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -85,8 +85,8 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
   if (!alphaJson) return null;
 
   const options = alphaJson.service_options?.items || [];
-  const normalizedJobNotes = cleanCustomerFacingSummary(alphaJson.normalization?.corrected_interpretation || "", alphaJson);
-  const jobNotes = normalizedJobNotes || cleanJobNotesForReview(sourceNotes, alphaJson);
+  const structuredJobSummary = buildCustomerJobSummary(alphaJson);
+  const jobNotes = structuredJobSummary || cleanJobNotesForReview(sourceNotes, alphaJson);
   const customerName = alphaJson.customer?.name || "Name not available";
   const customerPhone = alphaJson.customer?.phone_display || "Phone not available";
   const customerEmail = alphaJson.customer?.email || "Email not available";
@@ -131,7 +131,7 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
           </div>
           <div className="summary-card">
             <h3>Job Summary</h3>
-            <p className="text-muted">Cleaned from the original note for review.</p>
+            <p className="text-muted">Structured from the reviewed job details.</p>
             <p className="job-summary-text">{jobNotes}</p>
           </div>
         </div>

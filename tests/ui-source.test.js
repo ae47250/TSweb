@@ -71,9 +71,9 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /Review ready/);
   assert.match(reviewSource, /Needs more info/);
   assert.match(reviewSource, /Job Summary/);
-  assert.match(reviewSource, /Cleaned from the original note for review/);
-  assert.match(reviewSource, /normalization\?\.\s*corrected_interpretation/);
-  assert.match(reviewSource, /normalizedJobNotes\s*\|\|\s*cleanJobNotesForReview/);
+  assert.match(reviewSource, /Structured from the reviewed job details/);
+  assert.match(reviewSource, /buildCustomerJobSummary/);
+  assert.match(reviewSource, /structuredJobSummary\s*\|\|\s*cleanJobNotesForReview/);
   assert.match(reviewSource, /Quote Options/);
   assert.match(reviewSource, /Customer Options/);
   assert.match(reviewSource, /quote-option-card/);
@@ -91,9 +91,7 @@ test("customer route requires compact e-signature consent and Tree Dude panel do
   const consentText = /I agree to receive and sign this estimate electronically/;
   assert.match(customerRouteSource, consentText);
   assert.match(customerRouteSource, /checkboxAccepted/);
-  assert.match(customerRouteSource, /cleanCustomerFacingSummary/);
-  assert.match(customerRouteSource, /job\?\.\s*description/);
-  assert.match(customerRouteSource, /normalization\?\.\s*corrected_interpretation/);
+  assert.match(customerRouteSource, /buildCustomerJobSummary/);
   assert.match(customerRouteSource, /workDescription/);
   assert.doesNotMatch(pdfGeneratorSource, consentText);
   assert.doesNotMatch(pdfGeneratorSource, /checkboxAccepted/);
@@ -102,7 +100,7 @@ test("customer route requires compact e-signature consent and Tree Dude panel do
 
 test("customer-facing estimate documents use cleaned job notes without internal evidence fields", () => {
   const customerDocumentSource = readFileSync("lib/customerDocument.js", "utf8");
-  assert.match(customerDocumentSource, /normalization\?\.\s*corrected_interpretation/);
+  assert.match(customerDocumentSource, /buildCustomerJobSummary/);
   assert.match(customerDocumentSource, /workDescription/);
   assert.doesNotMatch(customerRouteSource, /field_evidence/);
   assert.doesNotMatch(customerRouteSource, /uncertainties/);

@@ -1,6 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalizeToAlphaJsonV14, normalizePhone, normalizeTreeServiceText } from "../lib/normalizeAlphaJson.js";
+import {
+  buildCustomerJobSummary,
+  normalizeToAlphaJsonV14,
+  normalizePhone,
+  normalizeTreeServiceText,
+} from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 
 const customerCases = [
@@ -260,7 +265,7 @@ test("reconciles clear normalized evidence into structured AlphaJSON fields", ()
   assert.equal(validation.can_generate_pdf, true);
   assert.equal(alphaJson.job.tree_details.tree_count, "2 trees");
   assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
-  assert.match(alphaJson.job.description, /removal of two walnut trees/i);
+  assert.equal(alphaJson.job.description, "Remove two walnut trees.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
     "remove only",
     "remove and haul away",
@@ -371,6 +376,33 @@ test("corrected interpretation removes duplicated words and broken address fille
 
   assert.match(corrected, /Remove one oak tree/i);
   assert.doesNotMatch(corrected, /\bthe the\b|by at|at\.|The,\s*Corydon/i);
+});
+
+test("structured job summary is rebuilt from AlphaJSON instead of broken prose", () => {
+  const raw = {
+    normalization: {
+      corrected_interpretation:
+        "The note lists customer as Mara Lane, but the tree needing removal is., by at. Option A remove only $1,500.",
+    },
+    alphaJson: {
+      customer: { name: "Mara Lane", phone: "812-555-1515" },
+      job: {
+        description: "note lists customer/ as, but the work tree needing removal is.,",
+        service_address: { display: "18 Maple Bend Salem" },
+        tree_details: { tree_count: "1 tree", tree_type: "maple" },
+      },
+      service_options: {
+        items: [{ label: "Option A", title: "Remove only", description: "Remove only", price: "$1,500" }],
+      },
+    },
+  };
+
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(raw, ""));
+  const summary = validation.alphaJson.job.description;
+
+  assert.equal(summary, "Remove one maple tree.");
+  assert.equal(buildCustomerJobSummary(validation.alphaJson), summary);
+  assert.doesNotMatch(summary, /note lists|tree needing removal is|customer|by at|^\p{Ll}/u);
 });
 
 for (const testCase of customerCases) {
@@ -586,6 +618,7 @@ test("messy raw note parses implied one-tree removal while keeping safety notes 
   assert.match(validation.follow_ups.join(" "), /phone number or email/i);
   assert.equal(alphaJson.job.service_address.display, "148 maple st");
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(alphaJson.job.description, "Remove one tree.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,200", "$9,000"]);
   assert.match(alphaJson.service_options.items[0].description, /remove only/i);
   assert.match(alphaJson.service_options.items[1].description, /remove.*haul away.*cleanup/i);
@@ -608,6 +641,7 @@ test("local no-standard-suffix address parses and gate access note stays interna
   assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
   assert.match(alphaJson.job.service_address.display, /Salem/i);
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(alphaJson.job.description, "Remove one tree.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,540", "$3,220"]);
   assert.match(validation.warnings.join(" "), /Safety\/access note/i);
   assert.doesNotMatch(customerFacingText, /gate|access is bad|crew|call before entering/i);

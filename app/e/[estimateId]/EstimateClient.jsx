@@ -4,7 +4,7 @@ import { useState } from "react";
 import LegalDisclaimer from "../../components/LegalDisclaimer.jsx";
 import OptionSelector from "../../components/OptionSelector.jsx";
 import SignatureBlock from "../../components/SignatureBlock.jsx";
-import { cleanCustomerFacingSummary } from "../../../lib/normalizeAlphaJson.js";
+import { buildCustomerJobSummary } from "../../../lib/normalizeAlphaJson.js";
 
 async function postJson(url, body) {
   const response = await fetch(url, {
@@ -29,9 +29,7 @@ export default function EstimateClient({ record }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const alphaJson = record.alphaJson;
-  const workDescription =
-    cleanCustomerFacingSummary(alphaJson.job?.description || "", alphaJson) ||
-    cleanCustomerFacingSummary(alphaJson.normalization?.corrected_interpretation || "", alphaJson);
+  const workDescription = buildCustomerJobSummary(alphaJson);
   const signatureValid = signature.trim().length >= 2 && signature.trim().length <= 50;
   const ready = Boolean(selectedOption && checkboxAccepted && signatureValid);
   const selected = (alphaJson.service_options?.items || []).find((option) => option.label === selectedOption);
