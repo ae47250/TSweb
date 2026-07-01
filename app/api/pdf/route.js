@@ -3,6 +3,7 @@ import { hasBlobConfig } from "../../../lib/blobStore.js";
 import { renderCustomerDocument } from "../../../lib/customerDocument.js";
 import { createDownloadFile } from "../../../lib/documentFiles.js";
 import { saveEstimate } from "../../../lib/estimateStore.js";
+import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { checkRateLimit } from "../../../lib/rateLimiter.js";
 import { validateAlphaJson } from "../../../lib/validateJson.js";
 
@@ -19,7 +20,12 @@ export async function POST(request) {
   }
 
   const body = await readJson(request);
-  const validation = validateAlphaJson(body.alphaJson);
+  const alphaJsonForValidation = normalizeToAlphaJsonV14(
+    body.alphaJson,
+    body.customer_text || body.customerText || body.alphaJson?.raw_input?.customer_text || "",
+    body.intake || {},
+  );
+  const validation = validateAlphaJson(alphaJsonForValidation);
   if (!validation.can_generate_pdf) {
     return json(
       {

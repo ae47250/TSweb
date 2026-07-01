@@ -230,6 +230,78 @@ test("maps new normalization plus alphaJson response shape", () => {
   assert.deepEqual(validation.alphaJson.normalization.corrections_made[0], raw.normalization.corrections_made[0]);
 });
 
+test("reconciles clear normalized evidence into structured AlphaJSON fields", () => {
+  const raw = {
+    normalization: {
+      corrected_interpretation:
+        "Mara Lane requested removal of two walnut trees at 18 Maple Bend Salem. Option A is remove only for $1,500. Option B is remove and haul away for $2,400.",
+      field_evidence: {
+        tree_count: "two walnut trees",
+        service_address: "18 Maple Bend Salem",
+        options: ["remove only", "remove and haul away"],
+        price: ["$1,500", "$2,400"],
+      },
+    },
+    alphaJson: {
+      customer: { name: "Mara Lane", phone: "812-555-1515" },
+      job: { description: "", service_address: { display: "" }, tree_details: { tree_count: "" } },
+      service_options: {
+        items: [
+          { label: "Option A", description: "Service Option A", price: { display: "", amount: null } },
+          { label: "Option B", description: "Service Option B", price: { display: "", amount: null } },
+        ],
+      },
+    },
+  };
+
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(raw, ""));
+  const alphaJson = validation.alphaJson;
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
+  assert.match(alphaJson.job.description, /removal of two walnut trees/i);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
+    "remove only",
+    "remove and haul away",
+  ]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.title), [
+    "remove only",
+    "remove and haul away",
+  ]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,500", "$2,400"]);
+});
+
+test("reconciliation keeps uncertain normalized evidence blocked for Tree Dude follow-up", () => {
+  const raw = {
+    normalization: {
+      corrected_interpretation:
+        "Customer has several trees at 18 Maple Bend Salem. Price may be around $2,000.",
+      uncertainties: [
+        { field: "tree_count", issue: "Several is not an exact count.", evidence: "several trees" },
+        { field: "price", issue: "Price is not firm.", evidence: "may be around $2,000" },
+      ],
+      field_evidence: {
+        service_address: "18 Maple Bend Salem",
+      },
+    },
+    alphaJson: {
+      customer: { name: "Mara Lane", phone: "812-555-1515" },
+      job: { description: "", service_address: { display: "" }, tree_details: { tree_count: "" } },
+      service_options: { items: [] },
+    },
+  };
+
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(raw, ""));
+  const alphaJson = validation.alphaJson;
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
+  assert.equal(alphaJson.job.tree_details.tree_count, "");
+  assert.equal(alphaJson.service_options.items.length, 0);
+  assert.match(validation.follow_ups.join(" "), /how many trees|priced option|exact price/i);
+});
+
 test("corrected interpretation omits structured contact label lines", () => {
   const input = [
     "Customer name: Test Alpha Customer",
