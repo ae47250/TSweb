@@ -307,6 +307,51 @@ test("cleans prefixed customer names and preserves email", () => {
   assert.equal(validation.alphaJson.customer.email, "james.carter@example.com");
 });
 
+test("cleans customer names from email, address, and missing-contact cues", () => {
+  const cases = [
+    {
+      input:
+        "customer Ivy French\nemail ivy.french414@example.com\n4955 Maple Avenue Hanover Indiana\nremove 3 sweet gum trees\nquote options: remove only 1850; remove plus cleanup $2,750",
+      expectedName: "Ivy French",
+    },
+    {
+      input:
+        "email stella.hunt683@example.com Stella Hunt -- remove four oak trees -- service address 7614 Liberty Road Hanover IN -- quote options: remove only 1500; remove plus cleanup $2,000",
+      expectedName: "Stella Hunt",
+    },
+    {
+      input:
+        "customer Victor Henderson\nemail only victor.henderson337@example.com\n2090 Highway 421, Madison, Indiana\ntake down 3 dead elm trees\nquote options: remove only 1,500; remove plus cleanup 1,800",
+      expectedName: "Victor Henderson",
+    },
+    {
+      input:
+        "Henry Cooper\n6280 Mulberry Street, Madison, Indiana\ncall/text 1-812-555-5940\n4 sweet gum trees removal\ncheap way and full cleanup options, prices missing",
+      expectedName: "Henry Cooper",
+    },
+    {
+      input:
+        "Garza, Kara\n5526 Thomas Hill Road - Hanover Indiana\n(812) 555-7430 kara.garza390@example.com\nremove three dead elm trees\ncheap way and full cleanup options, prices missing",
+      expectedName: "Kara Garza",
+    },
+    {
+      input:
+        "Ruth Stone no phone written no email 1867 Hilltop Road Madison IN remove two leaning pine trees option A $2,650 option B 2950",
+      expectedName: "Ruth Stone",
+    },
+    {
+      input:
+        "note from Victor Peterson contact later 5888 Mill Street Madison IN; 3 maple trees removal; $2350/$2,700",
+      expectedName: "Victor Peterson",
+    },
+  ];
+
+  for (const testCase of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, testCase.input));
+    assert.equal(validation.alphaJson.customer.name, testCase.expectedName, testCase.input);
+  }
+});
+
 test("amount-before-work add-on phrasing becomes two clean options", () => {
   const input =
     "lady named Beth Ann maybe 5023104455 says place is 19 County Road 8 near Hanover Indiana, big oak out back near fence wants it down. 1000 to drop it and also add haul away for 1500 total if she wants cleanup.";
