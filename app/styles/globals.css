@@ -101,6 +101,10 @@ main {
   gap: 12px;
 }
 
+.new-quote-card {
+  max-width: 860px;
+}
+
 .compact-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -113,21 +117,37 @@ main {
   margin: 0;
 }
 
+.job-notes-card {
+  border: 2px solid #b91c1c;
+  border-radius: 8px;
+  background: #fff1f2;
+  padding: 16px;
+}
+
+.job-notes-title {
+  margin-bottom: 4px;
+  font-size: 18px;
+}
+
+.job-notes-guidance {
+  margin: 0 0 8px;
+  color: #7f1d1d;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.job-notes-example {
+  margin: 0 0 12px;
+  color: #4b1d1d;
+  font-size: 14px;
+}
+
 .job-notes-textarea {
-  min-height: 220px;
+  min-height: 280px;
   max-height: 460px;
   resize: vertical;
-}
-
-.example-notes {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 12px;
-  background: #fbfaf6;
-}
-
-.example-notes p {
-  margin: 6px 0 0;
+  margin-bottom: 0;
 }
 
 .notes-card,
@@ -152,6 +172,29 @@ main {
 
 .summary-card p {
   margin: 4px 0;
+}
+
+.customer-summary-card {
+  padding: 10px 12px;
+}
+
+.customer-summary-card h3 {
+  margin: 0 0 8px;
+}
+
+.customer-info-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 10px;
+}
+
+.customer-info-grid p {
+  margin: 2px 0;
+  line-height: 1.25;
+}
+
+.customer-info-right {
+  text-align: right;
 }
 
 .final-summary-card {
@@ -392,5 +435,9 @@ pre {
   .compact-fields,
   .option-row {
     grid-template-columns: 1fr;
+  }
+
+  .customer-info-right {
+    text-align: left;
   }
 }

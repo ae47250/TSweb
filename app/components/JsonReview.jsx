@@ -122,12 +122,18 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
         </div>
       ) : (
         <div className="review-grid">
-          <div className="summary-card">
+          <div className="summary-card customer-summary-card">
             <h3>Customer</h3>
-            <p>{customerName}</p>
-            <p>{customerPhone}</p>
-            <p>{customerEmail}</p>
-            <p>{jobAddress}</p>
+            <div className="customer-info-grid">
+              <div>
+                <p>{customerName}</p>
+                <p>{customerPhone}</p>
+              </div>
+              <div className="customer-info-right">
+                <p>{jobAddress}</p>
+                <p>{customerEmail}</p>
+              </div>
+            </div>
           </div>
           <div className="summary-card">
             <h3>Job Summary</h3>

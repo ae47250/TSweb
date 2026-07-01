@@ -51,26 +51,26 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
             <input id="serviceAddress" value={contactValue.address} onChange={(event) => updateContact("address", event.target.value)} placeholder="805 2nd Street, Madison, IN" />
           </label>
         </div>
-        <label htmlFor="customerText">Job notes</label>
-        <textarea
-          ref={ref}
-          id="customerText"
-          className="job-notes-textarea"
-          rows={10}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="Write it however you would say it. Example: 2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750."
-        />
-        <p className="text-muted">
-          Include tree count, location, cleanup, hauling, stump grinding, access issues, and prices/options.
-        </p>
-        <div className="example-notes">
-          <strong>Quick examples</strong>
-          <p>2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.</p>
-          <p>Oak near garage, save firewood, cleanup maybe, price 2400 or 3100 with stump grinding.</p>
+        <div className="job-notes-card">
+          <label htmlFor="customerText" className="job-notes-title">Job Notes</label>
+          <p className="job-notes-guidance">
+            Include tree count, cleanup, hauling, stump grinding, access issues, prices, and options.
+          </p>
+          <p className="job-notes-example">
+            Example: 2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.
+          </p>
+          <textarea
+            ref={ref}
+            id="customerText"
+            className="job-notes-textarea"
+            rows={10}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder="Write it however you would say it."
+          />
         </div>
         <div className="toolbar">
-          <button className="btn-primary" type="submit" disabled={busy || value.trim().length < 10}>
+          <button className="btn-primary btn-create-review" type="submit" disabled={busy || value.trim().length < 10}>
             {busy ? "Structuring..." : "Create Review"}
           </button>
           <button className="btn-secondary" type="button" onClick={onClear} disabled={busy}>

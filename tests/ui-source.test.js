@@ -8,6 +8,7 @@ const inputFormSource = readFileSync("app/components/InputForm.jsx", "utf8");
 const pdfGeneratorSource = readFileSync("app/components/PdfGenerator.jsx", "utf8");
 const submissionButtonsSource = readFileSync("app/components/SubmissionButtons.jsx", "utf8");
 const cssSource = readFileSync("app/styles/globals.css", "utf8");
+const globalCssSource = readFileSync("styles-globals.css", "utf8");
 const customerRouteSource = readFileSync("app/e/[estimateId]/EstimateClient.jsx", "utf8");
 const openaiRouteSource = readFileSync("app/api/openai/route.js", "utf8");
 
@@ -40,6 +41,15 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(inputFormSource, /Enter what you know/);
   assert.match(inputFormSource, /Create Review/);
   assert.match(inputFormSource, /Clear/);
+  assert.match(inputFormSource, /job-notes-card/);
+  assert.match(inputFormSource, /Include tree count, cleanup, hauling, stump grinding, access issues, prices, and options/);
+  assert.match(inputFormSource, /btn-create-review/);
+  assert.match(cssSource, /\.job-notes-card/);
+  assert.match(cssSource, /border:\s*2px solid #b91c1c/);
+  assert.match(cssSource, /\.job-notes-guidance/);
+  assert.match(globalCssSource, /\.btn-create-review/);
+  assert.match(globalCssSource, /\.banner/);
+  assert.match(globalCssSource, /padding:\s*12px 16px/);
   assert.match(pdfGeneratorSource, /Inform Customer/);
   assert.match(pdfGeneratorSource, /Send SMS/);
   assert.match(pdfGeneratorSource, /Send Email/);
@@ -85,6 +95,11 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /Needs More Info/);
   assert.match(reviewSource, /Fix missing info before confirming quote/);
   assert.match(reviewSource, /Edit Info/);
+  assert.match(reviewSource, /customer-summary-card/);
+  assert.match(reviewSource, /customer-info-grid/);
+  assert.match(reviewSource, /customer-info-right/);
+  assert.match(cssSource, /\.customer-summary-card/);
+  assert.match(cssSource, /\.customer-info-grid/);
 });
 
 test("customer route requires compact e-signature consent and Tree Dude panel does not sign for customer", () => {
