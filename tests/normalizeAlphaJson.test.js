@@ -639,6 +639,18 @@ test("follow-up answers recover missing customer fields without leaking contact 
   }
 });
 
+test("follow-up details label does not leak into customer-facing job summary", () => {
+  const input =
+    "Molly Lopez 812-555-3590 5345 Mulberry Street Madison Indiana. Take down one maple tree. Option A cut only. Option B haul away and cleanup.\nFollow-up 1: Follow-up details: Option A cut and leave wood $1,000. Option B haul debris and cleanup $1,650.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const corrected = validation.alphaJson.normalization.corrected_interpretation;
+
+  assert.match(corrected, /Take down one maple tree/i);
+  assert.match(corrected, /Option A cut and leave wood \$1,000/i);
+  assert.doesNotMatch(corrected, /Follow-up/i);
+  assert.doesNotMatch(validation.alphaJson.service_options.items.map((option) => option.description).join(" "), /Follow-up/i);
+});
+
 test("safety and access notes stay internal while customer summary remains work-only", () => {
   const input =
     "Daria Moss 812-555-1111 22 Oak Lane Madison Indiana. Aggressive dog in backyard. Remove two maples behind garage. Option A remove only $1700.";

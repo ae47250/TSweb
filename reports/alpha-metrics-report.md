@@ -1,8 +1,8 @@
 # Alpha Metrics Report
 
-Generated Eastern: 06/30/2026, 7:54:29 PM EDT
-Generated UTC: 2026-06-30T23:54:29.333Z
-Commit: eb2a795ad6c64c5b4313eec672e5df6326726f37
+Generated Eastern: 06/30/2026, 7:59:45 PM EDT
+Generated UTC: 2026-06-30T23:59:45.657Z
+Commit: 0f4220b0df9ccfa566e82aced5171271a8774559
 Branch: master
 
 ## Current Cohort Metrics
@@ -10,12 +10,12 @@ Branch: master
 | Tier | Error | Trend | Failing | Recovered | Still blocked | Customer leakage | Top failure buckets |
 |---|---:|---:|---:|---:|---:|---:|---|
 | easy | 4.00% `#.......................` | same | 6/150 | 0 | 0 | 0 | parser_name 5, parser_tree_count 1 |
-| hard-knownfail | 94.67% `#######################.` | same | 142/150 | 92 | 0 | 34 | parser_tree_count 122, parser_price_options 95, validator_readiness 57 |
+| hard-knownfail | 94.67% `#######################.` | same | 142/150 | 92 | 0 | 0 | parser_tree_count 122, parser_price_options 95, validator_readiness 57 |
 | medium | 4.00% `#.......................` | same | 6/150 | 0 | 0 | 0 | parser_name 4, parser_tree_count 2 |
 | medium-messy | 6.67% `##......................` | same | 10/150 | 0 | 0 | 0 | parser_price_options 8, parser_tree_count 2 |
-| uber-messy | 14.67% `####....................` | same | 22/150 | 150 | 0 | 40 | parser_tree_count 20, parser_name 2 |
-| uber-plus-messy | 30.67% `#######.................` | same | 46/150 | 101 | 0 | 28 | parser_price_options 21, validator_readiness 13, parser_name 10 |
-| very-messy | 5.33% `#.......................` | same | 8/150 | 31 | 0 | 12 | parser_price_options 5, parser_name 2, parser_tree_count 1 |
+| uber-messy | 14.67% `####....................` | same | 22/150 | 150 | 0 | 0 | parser_tree_count 20, parser_name 2 |
+| uber-plus-messy | 30.67% `#######.................` | same | 46/150 | 101 | 0 | 0 | parser_price_options 21, validator_readiness 13, parser_name 10 |
+| very-messy | 5.33% `#.......................` | same | 8/150 | 31 | 0 | 0 | parser_price_options 5, parser_name 2, parser_tree_count 1 |
 
 ## Error Rate History
 
@@ -26,6 +26,7 @@ Branch: master
 | b6e8906 |  | 2026-06-30T23:35:40.593Z | 4.00% | 6/150 | 0 | 48 |
 | b6e8906 |  | 2026-06-30T23:37:55.847Z | 4.00% | 6/150 | 0 | 0 |
 | eb2a795 | 06/30/2026, 7:54:29 PM EDT | 2026-06-30T23:54:29.333Z | 4.00% | 6/150 | 0 | 0 |
+| 0f4220b | 06/30/2026, 7:59:45 PM EDT | 2026-06-30T23:59:45.657Z | 4.00% | 6/150 | 0 | 0 |
 
 ### hard-knownfail
 
@@ -34,6 +35,7 @@ Branch: master
 | b6e8906 |  | 2026-06-30T23:35:40.593Z | 94.67% | 142/150 | 0 | 34 |
 | b6e8906 |  | 2026-06-30T23:37:55.847Z | 94.67% | 142/150 | 0 | 34 |
 | eb2a795 | 06/30/2026, 7:54:29 PM EDT | 2026-06-30T23:54:29.333Z | 94.67% | 142/150 | 0 | 34 |
+| 0f4220b | 06/30/2026, 7:59:45 PM EDT | 2026-06-30T23:59:45.657Z | 94.67% | 142/150 | 0 | 0 |
 
 ### medium
 
@@ -42,6 +44,7 @@ Branch: master
 | b6e8906 |  | 2026-06-30T23:35:40.593Z | 4.00% | 6/150 | 0 | 44 |
 | b6e8906 |  | 2026-06-30T23:37:55.847Z | 4.00% | 6/150 | 0 | 0 |
 | eb2a795 | 06/30/2026, 7:54:29 PM EDT | 2026-06-30T23:54:29.333Z | 4.00% | 6/150 | 0 | 0 |
+| 0f4220b | 06/30/2026, 7:59:45 PM EDT | 2026-06-30T23:59:45.657Z | 4.00% | 6/150 | 0 | 0 |
 
 ### medium-messy
 
@@ -50,6 +53,7 @@ Branch: master
 | b6e8906 |  | 2026-06-30T23:35:40.593Z | 6.67% | 10/150 | 0 | 34 |
 | b6e8906 |  | 2026-06-30T23:37:55.847Z | 6.67% | 10/150 | 0 | 0 |
 | eb2a795 | 06/30/2026, 7:54:29 PM EDT | 2026-06-30T23:54:29.333Z | 6.67% | 10/150 | 0 | 0 |
+| 0f4220b | 06/30/2026, 7:59:45 PM EDT | 2026-06-30T23:59:45.657Z | 6.67% | 10/150 | 0 | 0 |
 
 ### uber-messy
 
@@ -58,6 +62,7 @@ Branch: master
 | b6e8906 |  | 2026-06-30T23:35:40.593Z | 14.67% | 22/150 | 0 | 40 |
 | b6e8906 |  | 2026-06-30T23:37:55.847Z | 14.67% | 22/150 | 0 | 40 |
 | eb2a795 | 06/30/2026, 7:54:29 PM EDT | 2026-06-30T23:54:29.333Z | 14.67% | 22/150 | 0 | 40 |
+| 0f4220b | 06/30/2026, 7:59:45 PM EDT | 2026-06-30T23:59:45.657Z | 14.67% | 22/150 | 0 | 0 |
 
 ### uber-plus-messy
 
@@ -66,6 +71,7 @@ Branch: master
 | b6e8906 |  | 2026-06-30T23:35:40.593Z | 30.67% | 46/150 | 0 | 37 |
 | b6e8906 |  | 2026-06-30T23:37:55.847Z | 30.67% | 46/150 | 0 | 28 |
 | eb2a795 | 06/30/2026, 7:54:29 PM EDT | 2026-06-30T23:54:29.333Z | 30.67% | 46/150 | 0 | 28 |
+| 0f4220b | 06/30/2026, 7:59:45 PM EDT | 2026-06-30T23:59:45.657Z | 30.67% | 46/150 | 0 | 0 |
 
 ### very-messy
 
@@ -74,6 +80,7 @@ Branch: master
 | b6e8906 |  | 2026-06-30T23:35:40.593Z | 5.33% | 8/150 | 0 | 40 |
 | b6e8906 |  | 2026-06-30T23:37:55.847Z | 5.33% | 8/150 | 0 | 12 |
 | eb2a795 | 06/30/2026, 7:54:29 PM EDT | 2026-06-30T23:54:29.333Z | 5.33% | 8/150 | 0 | 12 |
+| 0f4220b | 06/30/2026, 7:59:45 PM EDT | 2026-06-30T23:59:45.657Z | 5.33% | 8/150 | 0 | 0 |
 
 ## How To Read This
 
