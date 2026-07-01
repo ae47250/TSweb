@@ -119,6 +119,7 @@ export default function HomePage() {
   const [submittedText, setSubmittedText] = useState("");
   const [alphaJson, setAlphaJson] = useState(null);
   const [validation, setValidation] = useState(null);
+  const [debugPipeline, setDebugPipeline] = useState(null);
   const [documentResult, setDocumentResult] = useState(null);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -147,6 +148,7 @@ export default function HomePage() {
       setSubmittedText("");
       setAlphaJson(null);
       setValidation(null);
+      setDebugPipeline(null);
       setDocumentResult(null);
     }
     setStage("new");
@@ -161,6 +163,7 @@ export default function HomePage() {
     setSubmittedText("");
     setAlphaJson(null);
     setValidation(null);
+    setDebugPipeline(null);
     setDocumentResult(null);
     setNotice("");
     setError("");
@@ -178,6 +181,7 @@ export default function HomePage() {
       const validated = await postJson("/api/validate", { alphaJson: openai.alphaJson, customer_text: fullText, intake });
       setAlphaJson(validated.alphaJson);
       setValidation(validated);
+      setDebugPipeline(openai.debugPipeline || null);
       setDocumentResult(null);
       setStage("review");
     } catch (err) {
@@ -244,6 +248,7 @@ export default function HomePage() {
         mobile: record.documents?.mobile || record.signed?.mobile,
       });
       setValidation({ can_generate_pdf: true, follow_ups: [] });
+      setDebugPipeline(null);
       const savedNotes = record.alphaJson?.raw_input?.customer_text || "";
       setSubmittedText(savedNotes);
       setCustomerText(savedNotes);
@@ -310,6 +315,7 @@ export default function HomePage() {
               mode="review"
               alphaJson={alphaJson}
               validation={validation}
+              debugPipeline={debugPipeline}
               intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={() => setStage("confirm")}
@@ -327,6 +333,7 @@ export default function HomePage() {
               mode="confirm"
               alphaJson={alphaJson}
               validation={validation}
+              debugPipeline={debugPipeline}
               intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={confirmQuote}

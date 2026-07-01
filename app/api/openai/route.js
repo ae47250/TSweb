@@ -8,6 +8,33 @@ export const runtime = "nodejs";
 
 const ALLOWED_REASONING_EFFORTS = new Set(["low", "medium", "high"]);
 
+function debugPipelineEnabled() {
+  return process.env.DEBUG_PIPELINE === "true";
+}
+
+function debugResponsePayload({ rawTd1Text, rawOpenAiDraftJson, alphaJson, validation, mocked, note, error }) {
+  if (!debugPipelineEnabled()) return {};
+
+  return {
+    debugPipeline: {
+      rawTd1Input: {
+        customer_text: rawTd1Text,
+      },
+      rawOpenAiDraftJson,
+      cleanedCanonicalAlphaJson: alphaJson,
+      validationResult: {
+        can_generate_pdf: validation.can_generate_pdf,
+        blocking_errors: validation.blocking_errors || [],
+        follow_ups: validation.follow_ups || [],
+        warnings: validation.warnings || [],
+      },
+      source: mocked ? "local-draft-parser" : "openai",
+      note: note || "",
+      error: error || "",
+    },
+  };
+}
+
 function getReasoningEffort(model) {
   const effort = (process.env.OPENAI_REASONING_EFFORT || "").trim().toLowerCase();
   const modelSupportsReasoningEffort = /^(gpt-5|o\d)/i.test(model);
@@ -65,6 +92,7 @@ export async function POST(request) {
   }
 
   if (!process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true") {
+    const rawOpenAiDraftJson = {};
     const alphaJson = normalizeToAlphaJsonV14({}, customerText, intake);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
@@ -78,6 +106,14 @@ export async function POST(request) {
       alphaJson,
       mocked: true,
       note: "OPENAI_API_KEY is not configured, so a local draft parser was used.",
+      ...debugResponsePayload({
+        rawTd1Text: customerText || "",
+        rawOpenAiDraftJson,
+        alphaJson,
+        validation,
+        mocked: true,
+        note: "OPENAI_API_KEY is not configured, so a local draft parser was used.",
+      }),
     });
   }
 
@@ -96,7 +132,8 @@ export async function POST(request) {
         { role: "user", content: customerText },
       ],
     });
-    const alphaJson = normalizeToAlphaJsonV14(JSON.parse(response.choices[0]?.message?.content || "{}"), customerText, intake);
+    const rawOpenAiDraftJson = JSON.parse(response.choices[0]?.message?.content || "{}");
+    const alphaJson = normalizeToAlphaJsonV14(rawOpenAiDraftJson, customerText, intake);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       caseId,
@@ -105,8 +142,19 @@ export async function POST(request) {
       usage: tokenUsageFromResponse(response),
       outcome: validation.can_generate_pdf ? "parse" : "block",
     });
-    return json({ alphaJson, mocked: false });
+    return json({
+      alphaJson,
+      mocked: false,
+      ...debugResponsePayload({
+        rawTd1Text: customerText || "",
+        rawOpenAiDraftJson,
+        alphaJson,
+        validation,
+        mocked: false,
+      }),
+    });
   } catch (error) {
+    const rawOpenAiDraftJson = {};
     const alphaJson = normalizeToAlphaJsonV14({}, customerText, intake);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
@@ -123,6 +171,14 @@ export async function POST(request) {
         error: "OpenAI could not structure the notes. The safe local draft parser was used instead.",
         alphaJson,
         detail: error.message,
+        ...debugResponsePayload({
+          rawTd1Text: customerText || "",
+          rawOpenAiDraftJson,
+          alphaJson,
+          validation,
+          mocked: true,
+          error: error.message,
+        }),
       },
       { status: 200 },
     );
