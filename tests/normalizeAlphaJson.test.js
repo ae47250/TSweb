@@ -337,6 +337,95 @@ test("slash prices create basic and hauling options", () => {
   assert.match(validation.alphaJson.service_options.items[1].description, /hauling/i);
 });
 
+test("slash prices preserve the amount before the slash", () => {
+  const input =
+    "note from Kayla Gibson; address at 7627 Creekside Drive in Madison Indiana; 1-812-555-4959 kayla.gibson107@example.com; needs take down 1 dead ash tree; price $950 leave wood / $1,700 haul off";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$950", "$1,700"]);
+  assert.match(validation.alphaJson.service_options.items[0].description, /leave wood/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /haul off/i);
+});
+
+test("bare slash prices extract prices but block unclear option scope", () => {
+  const input =
+    "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana 2600/2,950 for tree? no note on haul or stump";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, false);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,600", "$2,950"]);
+  assert.match(validation.blocking_errors.join(" "), /option descriptions|stump/i);
+});
+
+test("gate codes are not treated as prices", () => {
+  const input =
+    "Kevin Cox call/text 8125555377. 6097 Poplar Ridge Road, Madison, IN. one river birch tree removal. gate code 1234, dog in back. drop $850 cleanup $1250";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$850", "$1,250"]);
+});
+
+test("highway route numbers are not treated as prices", () => {
+  const input =
+    "812 555 5977 gabe.baker621@example.com customer Gabe Baker -- cut down 1 locust tree near fence -- service address at 6163 Highway 421 in Madison Indiana -- drop only $2,100; drop plus haul away $2750";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,100", "$2,750"]);
+});
+
+test("drop and cleanup shorthand creates two priced options", () => {
+  const input =
+    "812-555-6874 kevin.young402@example.com Kevin Young said -- storm damaged dead elm, remove one treee tree and clean up limbs -- service address 6422 College Avenue - Hanover Indiana -- gate code 1234, dog in back. drop 1,900 cleanup 2,850";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,900", "$2,850"]);
+});
+
+test("price then haul shorthand keeps base price before haul price", () => {
+  const input =
+    "lady named Luke Cooper says email quote but email not provided. 1893 Wilson Avenue - Madison Indiana. take down two sycamore trees. price $1,350 haul 2,250";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, false);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,350", "$2,250"]);
+  assert.match(validation.blocking_errors.join(" "), /phone or email/i);
+});
+
+test("cheap way and full cleanup shorthand creates two priced options", () => {
+  const input =
+    "lady named Megan Rogers call/text 1-812-555-7929. 5428 Maple Avenue Hanover IN. take down 4 walnut trees. cheap way $1900 full cleanup $2750";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,900", "$2,750"]);
+});
+
+test("drop haul cleanup shorthand creates three priced options", () => {
+  const input =
+    "Tina Bell call/text 1-812-555-4534 279 River Bluff Lane, Hanover, IN cut down 3 bradford pear trees leave logs stacked option drop only $1,450 haul brush $2400 full cleanup 2,900";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,450", "$2,400", "$2,900"]);
+});
+
+test("more than four shorthand options keep first four by price and warn", () => {
+  const input =
+    "812.555.3294 kayla.hughes062@example.com note from Kayla Hughes -- take down 3 maple trees -- service address 881 State Road 56, Madison, Indiana -- A drop only 1,900 B drop stack wood $2,200 C haul brush 3150 D full cleanup 3,900 E cleanup plus stump grind $4,350";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,900", "$2,200", "$3,150", "$3,900"]);
+  assert.match(validation.warnings.join(" "), /More than four options/);
+});
+
+test("amount-before-work add-on keeps base work as Option A", () => {
+  const input =
+    "customer Kayla Carroll; address 5530 Liberty Road, Hanover, Indiana; 812-555-2157; needs take down 1 elm tree; $800 to drop it plus 1300 to haul off brush";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.service_options.items[0].label, "Option A");
+  assert.equal(validation.alphaJson.service_options.items[1].label, "Option B");
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$800", "$1,300"]);
+  assert.match(validation.alphaJson.service_options.items[0].description, /drop/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /haul off brush/i);
+});
+
 test("package prices ignore tree counts as prices", () => {
   const input =
     "Martha Lane 812-555-4545 500 County Road 10 Madison Indiana. Remove 5 trees. small package 2500 big package 4100.";
