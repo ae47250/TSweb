@@ -125,23 +125,20 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
           <div className="summary-card customer-summary-card">
             <h3>Customer</h3>
             <div className="customer-info-grid">
-              <div>
-                <p>{customerName}</p>
-                <p>{customerPhone}</p>
-              </div>
-              <div className="customer-info-right">
-                <p>{jobAddress}</p>
-                <p>{customerEmail}</p>
-              </div>
+              <p>{customerName}</p>
+              <p className="customer-info-right">{jobAddress}</p>
+              <p>{customerPhone}</p>
+              <p className="customer-info-right">{customerEmail}</p>
             </div>
           </div>
           <div className="summary-card review-job-notes-card">
             <h3>Job Notes</h3>
             <p className="job-notes-guidance">
-              Include tree count, cleanup, hauling, stump grinding, access issues, prices, and options.
+              <span>Include</span> as much information as possible about the job, scope of work, and prices.
             </p>
             <p className="job-notes-example">
-              Example: 2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.
+              <span>Example:</span>
+              <span className="job-notes-example-text">2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.</span>
             </p>
             <p className="job-summary-text">{jobNotes}</p>
           </div>

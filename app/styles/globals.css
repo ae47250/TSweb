@@ -105,47 +105,122 @@ main {
   max-width: 860px;
 }
 
-.compact-fields {
+.new-estimate-guidance {
+  margin: 0 0 12px;
+  color: #b91c1c;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.compact-fields,
+.contact-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.compact-fields label {
+.compact-fields label,
+.contact-fields label {
+  color: #111;
   display: grid;
   gap: 5px;
+  font-weight: 700;
   margin: 0;
+}
+
+.contact-choice-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.contact-or {
+  align-self: end;
+  color: #7f1d1d;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  padding-bottom: 24px;
+  text-transform: lowercase;
+}
+
+.contact-fields input {
+  font-size: 16px;
+  min-height: 46px;
+}
+
+.required-input {
+  border: 3px solid #b91c1c !important;
+}
+
+.required-input-filled {
+  border-color: var(--green) !important;
 }
 
 .job-notes-card {
   border: 2px solid #b91c1c;
   border-radius: 8px;
   background: #fff1f2;
+  font-weight: 700;
   padding: 16px;
+}
+
+.required-marker {
+  color: #b91c1c;
+  font-size: 0.7em;
+  font-weight: 700;
+  line-height: 0;
+  margin-left: 1px;
+  vertical-align: super;
 }
 
 .job-notes-title {
   margin-bottom: 4px;
-  font-size: 18px;
+  color: var(--green-dark);
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .job-notes-guidance {
   margin: 0 0 8px;
-  color: #7f1d1d;
-  font-size: 17px;
+  color: #111;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.35;
 }
 
+.job-notes-guidance span,
+.job-notes-example span:first-child {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
 .job-notes-example {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 6px;
+  align-items: start;
   margin: 0 0 12px;
-  color: #4b1d1d;
-  font-size: 14px;
+  color: #111;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.job-notes-example-text {
+  color: #111;
+  font-weight: 700;
+  min-width: 0;
 }
 
 .job-notes-textarea {
   min-height: 280px;
   max-height: 460px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
   resize: vertical;
   margin-bottom: 0;
 }
@@ -184,14 +259,17 @@ main {
 
 .customer-info-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  column-gap: 10px;
+  row-gap: 2px;
+  min-width: min(100%, 320px);
 }
 
 .customer-info-grid p {
   margin: 1px 0;
   line-height: 1.18;
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .customer-info-right {
@@ -449,8 +527,20 @@ pre {
   .review-grid,
   .button-row,
   .compact-fields,
+  .contact-fields,
   .option-row {
     grid-template-columns: 1fr;
+  }
+
+  .contact-choice-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .contact-or {
+    justify-self: start;
+    margin-left: 3ch;
+    padding-bottom: 0;
   }
 
   .customer-info-right {

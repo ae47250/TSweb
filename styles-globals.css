@@ -42,8 +42,8 @@ button, .btn, .btn-primary, .btn-secondary, .btn-link {
 
 .btn-primary { background-color: #3f7045; color: white; width: 100%; margin-bottom: 12px; }
 .btn-primary:hover { background-color: #1f4229; transform: translateY(-2px); }
-.btn-create-review { background-color: #d97706; }
-.btn-create-review:hover { background-color: #b45309; }
+.btn-create-review { background-color: #f97316; }
+.btn-create-review:hover { background-color: #ea580c; }
 
 .btn-secondary { background-color: #f0f0f0; color: #222; border: 1px solid #ddd; width: 100%; }
 .btn-secondary:hover { background-color: #e0e0e0; }

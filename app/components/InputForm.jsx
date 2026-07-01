@@ -25,53 +25,62 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
     onSubmit([contactText, value].filter(Boolean).join("\n\n"), contactValue);
   }
 
+  const addressFilled = Boolean(contactValue.address.trim());
+  const contactFilled = Boolean(contactValue.phone.trim() || contactValue.email.trim());
+  const notesFilled = Boolean(value.trim());
+  const requiredClass = (filled) => filled ? "required-input required-input-filled" : "required-input";
+
   return (
     <section className="card new-quote-card" data-testid="customer-notes-card">
-      <h2>New Quote</h2>
-      <p className="text-muted">
-        Enter what you know. The review screen will flag missing details.
+      <h2>New Estimate</h2>
+      <p className="new-estimate-guidance">
+        Fill in the red fields and add Job Notes.
       </p>
       {editMessage && <div className="alert" data-testid="edit-notes-message">{editMessage}</div>}
       <form onSubmit={submit}>
-        <div className="compact-fields">
+        <div className="contact-fields">
           <label htmlFor="customerName">
             Customer name
-            <input id="customerName" value={contactValue.name} onChange={(event) => updateContact("name", event.target.value)} placeholder="Maria Lopez" />
-          </label>
-          <label htmlFor="customerPhone">
-            Customer phone
-            <input id="customerPhone" value={contactValue.phone} onChange={(event) => updateContact("phone", event.target.value)} placeholder="812-555-0134" />
-          </label>
-          <label htmlFor="customerEmail">
-            Customer email
-            <input id="customerEmail" value={contactValue.email} onChange={(event) => updateContact("email", event.target.value)} placeholder="maria@example.com" />
+            <input id="customerName" value={contactValue.name} onChange={(event) => updateContact("name", event.target.value)} />
           </label>
           <label htmlFor="serviceAddress">
             Service address
-            <input id="serviceAddress" value={contactValue.address} onChange={(event) => updateContact("address", event.target.value)} placeholder="805 2nd Street, Madison, IN" />
+            <input className={requiredClass(addressFilled)} id="serviceAddress" value={contactValue.address} onChange={(event) => updateContact("address", event.target.value)} />
           </label>
+          <div className="contact-choice-row">
+            <label htmlFor="customerPhone">
+              Customer phone
+              <input className={requiredClass(contactFilled)} id="customerPhone" value={contactValue.phone} onChange={(event) => updateContact("phone", event.target.value)} />
+            </label>
+            <span className="contact-or">or</span>
+            <label htmlFor="customerEmail">
+              Customer email
+              <input className={requiredClass(contactFilled)} id="customerEmail" value={contactValue.email} onChange={(event) => updateContact("email", event.target.value)} />
+            </label>
+          </div>
         </div>
         <div className="job-notes-card">
           <label htmlFor="customerText" className="job-notes-title">Job Notes</label>
           <p className="job-notes-guidance">
-            Include tree count, cleanup, hauling, stump grinding, access issues, prices, and options.
+            <span>Include</span> as much information as possible about the job, scope of work, and prices.
           </p>
           <p className="job-notes-example">
-            Example: 2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.
+            <span>Example:</span>
+            <span className="job-notes-example-text">2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.</span>
           </p>
           <textarea
             ref={ref}
             id="customerText"
-            className="job-notes-textarea"
+            className={`job-notes-textarea ${requiredClass(notesFilled)}`}
             rows={10}
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            placeholder="Write it however you would say it."
+            placeholder="Add the number of trees, prices, and customer options here."
           />
         </div>
         <div className="toolbar">
           <button className="btn-primary btn-create-review" type="submit" disabled={busy || value.trim().length < 10}>
-            {busy ? "Structuring..." : "Create Review"}
+            {busy ? "Structuring..." : "Review Estimate"}
           </button>
           <button className="btn-secondary" type="button" onClick={onClear} disabled={busy}>
             Clear
