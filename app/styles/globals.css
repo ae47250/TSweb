@@ -472,6 +472,85 @@ main {
   max-height: 360px;
 }
 
+.debug-text-block {
+  background: #f8f8f8;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: #111;
+  font-size: 13px;
+  line-height: 1.45;
+  max-height: 260px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  padding: 12px;
+  white-space: pre-wrap;
+}
+
+.debug-simulation-note {
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+  color: #3b0764;
+  font-weight: 800;
+}
+
+.debug-typo-highlight {
+  color: #7f1d1d;
+  font-weight: 900;
+}
+
+.debug-rendered-fields {
+  display: grid;
+  gap: 8px;
+}
+
+.debug-rendered-row,
+.debug-rendered-options {
+  background: #fafafa;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.debug-rendered-label {
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.debug-rendered-value {
+  color: #111;
+  font-size: 14px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.debug-rendered-row code,
+.debug-rendered-option code {
+  color: #5b21b6;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.debug-rendered-option {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 3px;
+  padding-top: 8px;
+}
+
+.debug-rendered-option strong {
+  color: var(--green-dark);
+}
+
+.debug-rendered-option p,
+.debug-rendered-option small {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .action-toolbar {
   margin-bottom: 12px;
 }

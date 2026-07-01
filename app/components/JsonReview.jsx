@@ -90,6 +90,74 @@ function DebugJsonBlock({ value }) {
   return <pre className="debug-json-block">{formatDebugJson(value)}</pre>;
 }
 
+function highlightDebugCorrections(text, corrections = []) {
+  const sourceText = String(text || "");
+  const originals = [...new Set(corrections.map((item) => String(item?.original || "").trim()).filter(Boolean))]
+    .sort((a, b) => b.length - a.length);
+
+  if (!originals.length) return sourceText;
+
+  const pattern = new RegExp(`(${originals.map(escapeRegExp).join("|")})`, "gi");
+  return sourceText.split(pattern).map((part, index) => (
+    originals.some((original) => original.toLowerCase() === part.toLowerCase())
+      ? <strong className="debug-typo-highlight" key={`${part}-${index}`}>{part}</strong>
+      : part
+  ));
+}
+
+function DebugTextBlock({ text, corrections = [] }) {
+  return <div className="debug-text-block">{highlightDebugCorrections(text, corrections)}</div>;
+}
+
+function DebugOpenAiDraft({ debugPipeline }) {
+  if (debugPipeline.source === "local-draft-parser") {
+    return (
+      <div className="debug-text-block debug-simulation-note">
+        OpenAI not used - this is simulation.
+      </div>
+    );
+  }
+
+  return <DebugJsonBlock value={debugPipeline.rawOpenAiDraftJson} />;
+}
+
+function DebugRenderedRows({ renderedFields }) {
+  const rows = [
+    ["Customer name", renderedFields.customerCard.name.value, renderedFields.customerCard.name.source],
+    ["Phone", renderedFields.customerCard.phone.value, renderedFields.customerCard.phone.source],
+    ["Email", renderedFields.customerCard.email.value, renderedFields.customerCard.email.source],
+    ["Service address", renderedFields.customerCard.serviceAddress.value, renderedFields.customerCard.serviceAddress.source],
+    ["Job summary", renderedFields.jobSummary.value, renderedFields.jobSummary.source],
+    ["Needs more info", renderedFields.needsMoreInfo.value, renderedFields.needsMoreInfo.source],
+  ];
+
+  return (
+    <div className="debug-rendered-fields">
+      {rows.map(([label, value, source]) => (
+        <div className="debug-rendered-row" key={label}>
+          <span className="debug-rendered-label">{label}</span>
+          <span className="debug-rendered-value">{value || "None"}</span>
+          <code>{source}</code>
+        </div>
+      ))}
+      {renderedFields.quoteOptions.length > 0 && (
+        <div className="debug-rendered-options">
+          <span className="debug-rendered-label">Quote options</span>
+          {renderedFields.quoteOptions.map((option) => (
+            <div className="debug-rendered-option" key={option.label}>
+              <strong>{option.label}</strong>
+              <span>{option.price}</span>
+              <p>{option.title}</p>
+              <small>{option.description}</small>
+              <code>{option.source}</code>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function buildDebugExplanation(validation, renderedFields) {
   const blocking = validation?.blocking_errors || [];
   const followUps = validation?.follow_ups || [];
@@ -131,6 +199,8 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
   if (!debugPipeline) return null;
 
   const explanation = buildDebugExplanation(validation, renderedFields);
+  const rawText = debugPipeline.rawTd1Input?.customer_text || "";
+  const corrections = (debugPipeline.cleanedCanonicalAlphaJson || alphaJson)?.normalization?.corrections_made || [];
 
   return (
     <section className="debug-pipeline-panel" aria-label="Debug Pipeline">
@@ -147,11 +217,11 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
 
           <h3>Raw TD1 Input</h3>
           <p className="debug-field-note">This is exactly what TD1 sent as <code>customer_text</code>.</p>
-          <DebugJsonBlock value={debugPipeline.rawTd1Input || { customer_text: "" }} />
+          <DebugTextBlock text={rawText} corrections={corrections} />
 
           <h3>Raw OpenAI Draft JSON</h3>
           <p className="debug-field-note">This is the parsed OpenAI response before <code>normalizeToAlphaJsonV14()</code> cleaned it.</p>
-          <DebugJsonBlock value={debugPipeline.rawOpenAiDraftJson} />
+          <DebugOpenAiDraft debugPipeline={debugPipeline} />
 
           <h3>Cleaned Canonical AlphaJSON</h3>
           <p className="debug-field-note">This is the AlphaJSON after <code>normalizeToAlphaJsonV14()</code>.</p>
@@ -163,7 +233,7 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
 
           <h3>TD2 Rendered Fields</h3>
           <p className="debug-field-note">This is what TD2 actually displays, with each field path shown beside its value.</p>
-          <DebugJsonBlock value={renderedFields} />
+          <DebugRenderedRows renderedFields={renderedFields} />
         </div>
       )}
     </section>
@@ -194,24 +264,22 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
   const editLabel = isFinalConfirm ? "Back" : "Edit Info";
   const renderedFields = {
     customerCard: {
-      "name -> alphaJson.customer.name": customerName,
-      "phone -> alphaJson.customer.phone_display": customerPhone,
-      "email -> alphaJson.customer.email": customerEmail,
-      "service address -> alphaJson.job.service_address.display": jobAddress,
+      name: { value: customerName, source: "alphaJson.customer.name" },
+      phone: { value: customerPhone, source: "alphaJson.customer.phone_display" },
+      email: { value: customerEmail, source: "alphaJson.customer.email" },
+      serviceAddress: { value: jobAddress, source: "alphaJson.job.service_address.display" },
     },
-    jobNotesJobSummary: {
-      "buildCustomerJobSummary(alphaJson)": jobNotes,
-    },
+    jobSummary: { value: jobNotes, source: "buildCustomerJobSummary(alphaJson)" },
     quoteOptions: options.map((option, index) => ({
-      index,
-      "service_options.items[n].label": option.label || `Option ${index + 1}`,
-      "service_options.items[n].price.display": option.price?.display || "Price missing",
-      "service_options.items[n].title": option.title || "Option details",
-      "service_options.items[n].description": option.description || "Add the work details for this option before informing the customer.",
+      label: option.label || `Option ${index + 1}`,
+      price: option.price?.display || "Price missing",
+      title: option.title || "Option details",
+      description: option.description || "Add the work details for this option before informing the customer.",
+      source: `service_options.items[${index}]`,
     })),
     needsMoreInfo: {
-      "validation.follow_ups": validation?.follow_ups || [],
-      "validation.blocking_errors": validation?.blocking_errors || [],
+      value: [...(validation?.follow_ups || []), ...(validation?.blocking_errors || [])].join("; "),
+      source: "validation.follow_ups + validation.blocking_errors",
     },
   };
 
