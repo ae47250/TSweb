@@ -1,6 +1,6 @@
 "use client";
 
-import { buildCustomerJobSummary, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
+import { buildCustomerJobSummary, normalizeServiceAddress, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
 
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -81,7 +81,7 @@ function cleanJobNotesForReview(sourceNotes, alphaJson) {
   return orderJobWarningsLast(notesWithWarnings || alphaJson.job?.description || "No job notes supplied.");
 }
 
-export default function JsonReview({ alphaJson, validation, sourceNotes = "", mode = "review", onApprove, onEdit, busy = false }) {
+export default function JsonReview({ alphaJson, validation, sourceNotes = "", intake = {}, mode = "review", onApprove, onEdit, busy = false }) {
   if (!alphaJson) return null;
 
   const options = alphaJson.service_options?.items || [];
@@ -90,7 +90,7 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
   const customerName = alphaJson.customer?.name || "Name not available";
   const customerPhone = alphaJson.customer?.phone_display || "Phone not available";
   const customerEmail = alphaJson.customer?.email || "Email not available";
-  const jobAddress = alphaJson.job?.service_address?.display || "Address missing";
+  const jobAddress = alphaJson.job?.service_address?.display || normalizeServiceAddress(intake.address) || "Address missing";
   const canConfirm = Boolean(validation?.can_generate_pdf);
   const isFinalConfirm = mode === "confirm";
   const reviewIssues = validation?.follow_ups?.length
@@ -133,14 +133,6 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
           </div>
           <div className="summary-card review-job-notes-card">
             <h3>Job Notes</h3>
-            <p className="job-notes-guidance">
-              <span>Include:</span>
-              <span className="job-notes-example-text">as much information as possible about the job, scope of work, and prices.</span>
-            </p>
-            <p className="job-notes-example">
-              <span>Example:</span>
-              <span className="job-notes-example-text">2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.</span>
-            </p>
             <p className="job-summary-text">{jobNotes}</p>
           </div>
         </div>

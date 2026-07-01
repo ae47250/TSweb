@@ -88,8 +88,12 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /Review ready/);
   assert.match(reviewSource, /Needs more info/);
   assert.match(reviewSource, /Job Notes/);
-  assert.match(reviewSource, /Include:/);
-  assert.match(reviewSource, /job-notes-example-text/);
+  assert.doesNotMatch(reviewSource, /Include:/);
+  assert.doesNotMatch(reviewSource, /job-notes-example-text/);
+  assert.match(reviewSource, /intake = \{\}/);
+  assert.match(reviewSource, /intake\.address/);
+  assert.match(reviewSource, /normalizeServiceAddress/);
+  assert.match(pageSource, /intake=\{quoteContact\}/);
   assert.match(reviewSource, /buildCustomerJobSummary/);
   assert.match(reviewSource, /structuredJobSummary\s*\|\|\s*cleanJobNotesForReview/);
   assert.match(reviewSource, /Quote Options/);

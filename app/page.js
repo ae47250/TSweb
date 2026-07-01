@@ -310,6 +310,7 @@ export default function HomePage() {
               mode="review"
               alphaJson={alphaJson}
               validation={validation}
+              intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={() => setStage("confirm")}
               onEdit={editNotes}
@@ -326,6 +327,7 @@ export default function HomePage() {
               mode="confirm"
               alphaJson={alphaJson}
               validation={validation}
+              intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={confirmQuote}
               onEdit={() => setStage("review")}

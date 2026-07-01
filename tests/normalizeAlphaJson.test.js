@@ -4,6 +4,7 @@ import {
   buildCustomerJobSummary,
   normalizeToAlphaJsonV14,
   normalizePhone,
+  normalizeServiceAddress,
   normalizeTreeServiceText,
 } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
@@ -143,6 +144,12 @@ test("normalizes phone formats", () => {
   assert.equal(normalizePhone("322-4567899"), "322-456-7899");
   assert.equal(normalizePhone("812.555.4410"), "812-555-4410");
   assert.equal(normalizePhone("812/555/0144"), "812-555-0144");
+});
+
+test("normalizes obvious typed service address spacing", () => {
+  assert.equal(normalizeServiceAddress("8052nd Street, Madison, IN"), "805 2nd Street, Madison, IN");
+  assert.equal(normalizeServiceAddress("440Walnut St Madison IN"), "440 Walnut St Madison IN");
+  assert.equal(normalizeServiceAddress("123Main"), "123 Main");
 });
 
 test("maps client and services shape into canonical AlphaJSON", () => {
