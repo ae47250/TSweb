@@ -405,6 +405,85 @@ test("structured job summary is rebuilt from AlphaJSON instead of broken prose",
   assert.doesNotMatch(summary, /note lists|tree needing removal is|customer|by at|^\p{Ll}/u);
 });
 
+test("job summary falls back when option prose contains customer/internal fragments", () => {
+  const alphaJson = {
+    customer: { name: "Mara Lane", phone_display: "812-555-1515" },
+    job: {
+      service_address: { display: "18 Maple Bend Salem" },
+      tree_details: {},
+      description: "The note lists customer as Mara Lane, but the tree needing removal is., by at.",
+    },
+    service_options: {
+      items: [
+        {
+          label: "Option A",
+          title: "The customer can be reached by at The.",
+          description: "customer phone and follow-up evidence are provided, but the work is.",
+          price: { display: "$1,500", amount: 1500 },
+        },
+      ],
+    },
+  };
+
+  assert.equal(buildCustomerJobSummary(alphaJson), "Tree service work as described in the selected option.");
+});
+
+test("job summary omits safety and access notes from structured scope", () => {
+  const raw =
+    "Jim 8125553333 30 Maple St Madison IN aggressive dog in yard do not enter until dog up remove one tree $1200";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, raw));
+  const summary = validation.alphaJson.job.description;
+
+  assert.equal(summary, "Remove one maple tree.");
+  assert.doesNotMatch(summary, /aggressive dog|dog in yard|do not enter|access|gate/i);
+});
+
+test("job summary keeps highway-style addresses out of location phrase", () => {
+  const stateRoad = validateAlphaJson(
+    normalizeToAlphaJsonV14({}, "Dan 8125555555 123 State Road 56 Salem IN remove one tree $1000"),
+  ).alphaJson;
+  const route = validateAlphaJson(
+    normalizeToAlphaJsonV14({}, "Kim 8125556666 88 Route 7 Madison IN remove one tree $1000"),
+  ).alphaJson;
+
+  assert.equal(stateRoad.job.service_address.display, "123 State Road 56, Salem, IN");
+  assert.equal(stateRoad.job.description, "Remove one tree.");
+  assert.equal(route.job.service_address.display, "88 Route 7, Madison, IN");
+  assert.equal(route.job.description, "Remove one tree.");
+});
+
+test("job summary rejects awkward perform-tree and option-only fragments", () => {
+  const performTree = validateAlphaJson(
+    normalizeToAlphaJsonV14({}, "Pat 8125558888 22 Pine Ln Madison IN remove one maple tree $1500 cleanup maybe $1900"),
+  ).alphaJson;
+  const optionOnly = {
+    job: { tree_details: {}, description: "Drop only" },
+    service_options: {
+      items: [{ label: "Option A", title: "Drop only", description: "Drop only", price: { display: "$1,500", amount: 1500 } }],
+    },
+  };
+
+  assert.equal(performTree.job.description, "Remove one maple tree.");
+  assert.equal(buildCustomerJobSummary(optionOnly), "Tree service work as described in the selected option.");
+});
+
+test("conditional cleanup and haul-away wording blocks after typo normalization", () => {
+  const cases = [
+    "Pat 8125558888 22 Pine Ln Madison IN remove one oak tree $1500 cleanup if customer wants",
+    "Pat 8125558888 22 Pine Ln Madison IN remove one oak tree $1500 cleen up if customer wants",
+    "Pat 8125558888 22 Pine Ln Madison IN remove one oak tree $1500 haulaway if customer wants",
+    "Pat 8125558888 22 Pine Ln Madison IN remove one oak tree $1500 hual away if customer wants",
+    "Pat 8125558888 22 Pine Ln Madison IN remove one oak tree $1500 hawl if customer wants",
+  ];
+
+  for (const raw of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, raw));
+    assert.equal(validation.can_generate_pdf, false, raw);
+    assert.match(validation.blocking_errors.join(" "), /Cleanup or haul-away scope is unclear/i, raw);
+    assert.match(validation.follow_ups.join(" "), /included, excluded, or listed as a separate priced option/i, raw);
+  }
+});
+
 for (const testCase of customerCases) {
   test(`customer battery: ${testCase.name}`, () => {
     assertNormalizedCase(testCase);
