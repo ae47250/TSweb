@@ -864,6 +864,75 @@ test("speech-to-text-like unclear species and spoken price blocks instead of inv
   assert.match(`${validation.blocking_errors.join(" ")} ${followUps}`, /price|option|unclear|scope/i);
 });
 
+test("single firm price after take-down work creates a priced option", () => {
+  const input =
+    "Corey Hill 812-555-7070 corey@example.com. 504 Elm St, Scottsburg IN. Take down an ash tree in side yard. $1750.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(validation.alphaJson.service_options.items[0].price.display, "$1,750");
+  assert.match(validation.alphaJson.service_options.items[0].description, /take down an ash tree/i);
+});
+
+test("species typo cleanup supports mple and ashy tree notes", () => {
+  const maple = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Cal Reed 812-555-2929 cal@example.com. 12 Leaf Ln, Paoli IN. Remove a mple tree by porch. $1450.",
+  ));
+  assert.equal(maple.can_generate_pdf, true);
+  assert.equal(maple.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(maple.alphaJson.job.tree_details.tree_type, "maple");
+  assert.match(maple.alphaJson.service_options.items[0].description, /maple tree/i);
+
+  const ash = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Erin Bell 812-555-3131 erin@example.com. 34 Wood St, Scottsburg IN. Remove an ashy tree close to roof. $1700.",
+  ));
+  assert.equal(ash.can_generate_pdf, true);
+  assert.equal(ash.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(ash.alphaJson.job.tree_details.tree_type, "ash");
+  assert.match(ash.alphaJson.service_options.items[0].description, /ash tree/i);
+});
+
+test("plural species without tree word can still provide clear count", () => {
+  const input =
+    "Mara Lane 812-555-1515 mara@example.com. 39 Sycamore St, Bedford IN. Remove two sycamores. $2400 leave wood, clean it up if they want.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.match(validation.blocking_errors.join(" "), /Cleanup or haul-away/i);
+});
+
+test("a tree or maybe more blocks instead of guessing one tree", () => {
+  const input =
+    "Perry Dale 812-555-3535 perry@example.com. 74 Farm Lane, Madison IN. Remove a tree or maybe more behind barn. $2100.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /Tree count is unclear/i);
+  assert.match(validation.follow_ups.join(" "), /How many trees/i);
+});
+
+test("customer-facing summaries strip power and blocked-access notes", () => {
+  const powerLine = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Greg Moss 812-555-1818 greg@example.com. 33 Spruce Ct, Madison IN. Remove two spruce trees for $2600. Near service drop, crew needs caution.",
+  ));
+  assert.equal(powerLine.can_generate_pdf, true);
+  assert.match(powerLine.warnings.join(" "), /service drop|crew needs caution/i);
+  assert.doesNotMatch(powerLine.alphaJson.normalization.corrected_interpretation, /service drop|crew needs caution/i);
+
+  const blockedAccess = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Dana Price 812-555-1919 dana@example.com. 120 Alley Way, New Albany IN. Trim one maple over roof for $900. Gate blocked by trailer.",
+  ));
+  assert.equal(blockedAccess.can_generate_pdf, true);
+  assert.match(blockedAccess.warnings.join(" "), /Gate blocked by trailer/i);
+  assert.doesNotMatch(blockedAccess.alphaJson.normalization.corrected_interpretation, /gate blocked|trailer/i);
+});
+
 test("remove-vs-trim ambiguity blocks for follow-up", () => {
   const input =
     "Ambiguous Scope 812-555-2204 77 Maple Street Madison Indiana. Take care of maple touching roof 900.";

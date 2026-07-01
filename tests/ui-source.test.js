@@ -91,6 +91,8 @@ test("customer route requires compact e-signature consent and Tree Dude panel do
   const consentText = /I agree to receive and sign this estimate electronically/;
   assert.match(customerRouteSource, consentText);
   assert.match(customerRouteSource, /checkboxAccepted/);
+  assert.match(customerRouteSource, /cleanCustomerFacingSummary/);
+  assert.match(customerRouteSource, /job\?\.\s*description/);
   assert.match(customerRouteSource, /normalization\?\.\s*corrected_interpretation/);
   assert.match(customerRouteSource, /workDescription/);
   assert.doesNotMatch(pdfGeneratorSource, consentText);
