@@ -498,6 +498,59 @@ test("article tree count is one only in clear tree-work context", () => {
   assert.match(`${ambiguous.blocking_errors.join(" ")} ${ambiguous.follow_ups.join(" ")}`, /tree count|how many trees/i);
 });
 
+test("messy raw note parses implied one-tree removal while keeping safety notes internal", () => {
+  const input =
+    "needs tree remuved at 148 mapel st. big tree by garage. option 1 remuv only 1200. option 2 remuv plus haila way and cleen up 9000. cust wants text no call. gate messd up and dog is real aggresiv, barks hard and mite bite, dont go in yard till cust puts dog up.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const alphaJson = validation.alphaJson;
+  const customerFacingText = [
+    alphaJson.normalization.corrected_interpretation,
+    alphaJson.job.description,
+    ...alphaJson.service_options.items.map((option) => option.description),
+  ].join(" ");
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.deepEqual(validation.blocking_errors, ["Missing customer phone or email."]);
+  assert.match(validation.follow_ups.join(" "), /phone number or email/i);
+  assert.equal(alphaJson.job.service_address.display, "148 maple st");
+  assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,200", "$9,000"]);
+  assert.match(alphaJson.service_options.items[0].description, /remove only/i);
+  assert.match(alphaJson.service_options.items[1].description, /remove.*haul away.*cleanup/i);
+  assert.match(validation.warnings.join(" "), /Safety\/access note/i);
+  assert.doesNotMatch(customerFacingText, /dog|bite|gate|do not go|customer wants text|messd|aggresiv|mite bite/i);
+});
+
+test("local no-standard-suffix address parses and gate access note stays internal", () => {
+  const input =
+    "Mara Lane 812-555-1515 mara@example.com. 18 Maple Bend Salem. needs big tree by garage removed. option 1 remove only 1540. option 2 remove plus haul away and cleanup 3220. gate broken and access is bad, crew should call before entering.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const alphaJson = validation.alphaJson;
+  const customerFacingText = [
+    alphaJson.normalization.corrected_interpretation,
+    alphaJson.job.description,
+    ...alphaJson.service_options.items.map((option) => option.description),
+  ].join(" ");
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
+  assert.match(alphaJson.job.service_address.display, /Salem/i);
+  assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,540", "$3,220"]);
+  assert.match(validation.warnings.join(" "), /Safety\/access note/i);
+  assert.doesNotMatch(customerFacingText, /gate|access is bad|crew|call before entering/i);
+});
+
+test("singular located tree after option text still counts as one", () => {
+  const input =
+    "Hank Bell 812-555-0108 hank@example.com. service address 83 River Ave Jeffersonville IN. option 1 remove only 1100. option 2 remove plus haul away and cleanup 2100. big tree by shed.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,100", "$2,100"]);
+});
+
 test("drop and cleanup shorthand creates two priced options", () => {
   const input =
     "812-555-6874 kevin.young402@example.com Kevin Young said -- storm damaged dead elm, remove one treee tree and clean up limbs -- service address 6422 College Avenue - Hanover Indiana -- gate code 1234, dog in back. drop 1,900 cleanup 2,850";
