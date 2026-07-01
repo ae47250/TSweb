@@ -540,6 +540,36 @@ test("common tree service typos are cleaned in reviewable job and option text", 
   assert.equal(validation.alphaJson.service_options.items.some((option) => /removel|hual|debree/i.test(option.description)), false);
 });
 
+test("tow typo becomes two only when attached to tree-count wording", () => {
+  const sweetGum = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "George Reynolds 8125554062 7816 Meadow Lane Madison Indiana. tow sweet gum trees removal. A leave rounds $1900 B hall off debree $2,700",
+  ));
+  assert.equal(sweetGum.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.equal(sweetGum.alphaJson.job.tree_details.tree_type, "sweet gum");
+  assert.deepEqual(sweetGum.alphaJson.service_options.items.map((option) => option.price.display), ["$1,900", "$2,700"]);
+
+  const spruce = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Caleb Wood 812-555-2592 5430 Wilson Avenue Hanover Indiana needs removeal for tow spruce treess and hall off debree; cheap qoute 2,200 full estiment with cleanup 2,800",
+  ));
+  assert.equal(spruce.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.equal(spruce.alphaJson.job.tree_details.tree_type, "spruce");
+  assert.deepEqual(spruce.alphaJson.service_options.items.map((option) => option.price.display), ["$2,200", "$2,800"]);
+
+  const towTruck = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Tow Truck Test 812-555-2301 12 Oak Lane Madison Indiana. tow truck access near trees, removal package $1200.",
+  ));
+  assert.notEqual(towTruck.alphaJson.job.tree_details.tree_count, "2 trees");
+
+  const towAway = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Tow Away Test 812-555-2302 14 Oak Lane Madison Indiana. remove one maple tree and tow away debris for $1200.",
+  ));
+  assert.equal(towAway.alphaJson.job.tree_details.tree_count, "1 tree");
+});
+
 test("normalization captures obvious typo corrections without blocking safe parse", () => {
   const input =
     "Typo Case 812-555-2201 44 Pine Lane Madison Indiana. 2 mapls by barn trim ovr roof no hawl quoted 1200.";
