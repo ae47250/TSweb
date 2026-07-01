@@ -709,6 +709,19 @@ test("non-firm price language blocks customer-facing estimate", () => {
   }
 });
 
+test("vague tree job without count or price asks one combined Tree Dude follow-up", () => {
+  const input =
+    "Tina Long said 8125557170 tina.long410@example.com says use price from yesterday for 249 Ferry Street Madison Indiana, tree job, send estimate";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const followUps = validation.follow_ups.join(" ");
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /priced service option/i);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "");
+  assert.match(followUps, /how many trees/i);
+  assert.match(followUps, /priced option/i);
+});
+
 test("missing contact still blocks after messy-input normalization", () => {
   const input =
     "Missing Contact 202 Oak Lane Madison Indiana. Remove one maple by garage. Option A cut and leave wood 1200.";
