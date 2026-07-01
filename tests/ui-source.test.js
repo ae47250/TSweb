@@ -35,21 +35,28 @@ test("initial desktop layout centers the Customer Notes card", () => {
 });
 
 test("workflow actions use customer-safe labels and clean estimate route", () => {
-  assert.match(pageSource, /New Quote/);
+  assert.match(pageSource, /New Estimate/);
+  assert.match(pageSource, /New Invoice/);
   assert.match(pageSource, /Recent Estimates/);
   assert.match(pageSource, /Record Manual Acceptance/);
-  assert.match(inputFormSource, /Enter what you know/);
-  assert.match(inputFormSource, /Create Review/);
+  assert.doesNotMatch(pageSource, /Recent Activity/);
+  assert.match(cssSource, /\.front-action-primary/);
+  assert.match(cssSource, /min-height:\s*104px/);
+  assert.match(cssSource, /\.front-action-invoice/);
+  assert.match(cssSource, /\.front-action-recent/);
+  assert.match(cssSource, /background:\s*#dbeafe/);
+  assert.match(inputFormSource, /Fill in the red fields and add Job Notes/);
+  assert.match(inputFormSource, /Review Estimate/);
   assert.match(inputFormSource, /Clear/);
   assert.match(inputFormSource, /job-notes-card/);
-  assert.match(inputFormSource, /Include tree count, cleanup, hauling, stump grinding, access issues, prices, and options/);
+  assert.match(inputFormSource, /Include<\/span> as much information as possible about the job, scope of work, and prices/);
   assert.match(inputFormSource, /btn-create-review/);
   assert.match(cssSource, /\.job-notes-card/);
   assert.match(cssSource, /border:\s*2px solid #b91c1c/);
   assert.match(cssSource, /\.job-notes-guidance/);
   assert.match(globalCssSource, /\.btn-create-review/);
   assert.match(globalCssSource, /\.banner/);
-  assert.match(globalCssSource, /padding:\s*12px 16px/);
+  assert.match(globalCssSource, /padding:\s*8px 14px/);
   assert.match(pdfGeneratorSource, /Inform Customer/);
   assert.match(pdfGeneratorSource, /Send SMS/);
   assert.match(pdfGeneratorSource, /Send Email/);
@@ -80,8 +87,7 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /Check details before confirming quote/);
   assert.match(reviewSource, /Review ready/);
   assert.match(reviewSource, /Needs more info/);
-  assert.match(reviewSource, /Job Summary/);
-  assert.match(reviewSource, /Structured from the reviewed job details/);
+  assert.match(reviewSource, /Job Notes/);
   assert.match(reviewSource, /buildCustomerJobSummary/);
   assert.match(reviewSource, /structuredJobSummary\s*\|\|\s*cleanJobNotesForReview/);
   assert.match(reviewSource, /Quote Options/);

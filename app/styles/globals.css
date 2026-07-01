@@ -49,15 +49,49 @@ main {
 
 .front-actions {
   display: grid;
-  gap: 14px;
-  max-width: 520px;
+  gap: 16px;
+  max-width: 680px;
   margin: 0 auto;
 }
 
-.front-actions .btn-primary,
-.front-actions .btn-secondary {
-  min-height: 58px;
-  font-size: 17px;
+.front-action {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 19px;
+  font-weight: 800;
+  min-height: 72px;
+  padding: 17px 22px;
+  text-align: center;
+}
+
+.front-action-primary {
+  background: var(--green);
+  color: #fff;
+  font-size: 23px;
+  min-height: 104px;
+}
+
+.front-action-secondary {
+  background: var(--yellow);
+  border-color: #d9ad21;
+  color: #2b2111;
+  font-size: 23px;
+  min-height: 104px;
+}
+
+.front-action-invoice {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e3a8a;
+  min-height: 78px;
+}
+
+.front-action-recent {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e3a8a;
+  min-height: 78px;
 }
 
 .recent-list {

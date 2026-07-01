@@ -57,51 +57,56 @@ function contactFromAlphaJson(alphaJson) {
   };
 }
 
-function FrontPage({ cards, onNewQuote, onOpenEstimate, onManualAcceptance, onCopyLink }) {
+function FrontPage({ cards, onNewQuote, onNewInvoice, onOpenEstimate, onManualAcceptance, onCopyLink }) {
+  const [showRecentEstimates, setShowRecentEstimates] = useState(false);
+
   return (
     <section className="front-page">
       <div className="front-actions">
-        <button className="btn-primary" type="button" onClick={onNewQuote}>New Quote</button>
-        <button className="btn-secondary" type="button" onClick={() => document.getElementById("recent-estimates")?.scrollIntoView({ behavior: "smooth" })}>Recent Estimates</button>
-        <button className="btn-secondary" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
+        <button className="front-action front-action-primary" type="button" onClick={onNewQuote}>New Estimate</button>
+        <button className="front-action front-action-secondary" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
+        <button className="front-action front-action-invoice" type="button" onClick={onNewInvoice}>New Invoice</button>
+        <button className="front-action front-action-recent" type="button" onClick={() => setShowRecentEstimates((current) => !current)}>Recent Estimates</button>
       </div>
 
-      <section id="recent-estimates" className="card">
-        <h2>Recent Activity</h2>
-        <div className="recent-list">
-          {cards.slice(0, 3).map((card) => (
-            <article className="recent-card" key={card.documentId}>
-              <div>
-                <h3>{card.customerName}</h3>
-                <p>{card.documentId}</p>
-              </div>
-              <span className="status-pill">{card.status}</span>
-              <p className="text-muted">{card.lastActivityTime || "No recent time"}</p>
-              {!card.isPlaceholder && (
-                <div className="recent-actions">
-                  <button className="btn-secondary btn-fit" type="button" onClick={() => onOpenEstimate(card)}>Open</button>
-                  {card.status === "Signed Estimate Received" && (
-                    card.signedDownloadUrl
-                      ? <a className="btn-secondary btn-fit" href={card.signedDownloadUrl}>Download Signed Estimate</a>
-                      : <button className="btn-secondary btn-fit" type="button" disabled>Download Signed Estimate</button>
-                  )}
-                  {card.status === "Manual Acceptance Recorded" && (
-                    card.savedDownloadUrl
-                      ? <a className="btn-secondary btn-fit" href={card.savedDownloadUrl}>Download Saved Estimate</a>
-                      : <button className="btn-secondary btn-fit" type="button" disabled>Download Saved Estimate</button>
-                  )}
-                  {card.status !== "Signed Estimate Received" && card.status !== "Manual Acceptance Recorded" && (
-                    <>
-                      <button className="btn-secondary btn-fit" type="button" onClick={() => onCopyLink(card)}>Copy Link to Estimate</button>
-                      <button className="btn-secondary btn-fit" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
-                    </>
-                  )}
+      {showRecentEstimates && (
+        <section id="recent-estimates" className="card">
+          <h2>Recent Estimates</h2>
+          <div className="recent-list">
+            {cards.slice(0, 3).map((card) => (
+              <article className="recent-card" key={card.documentId}>
+                <div>
+                  <h3>{card.customerName}</h3>
+                  <p>{card.documentId}</p>
                 </div>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
+                <span className="status-pill">{card.status}</span>
+                <p className="text-muted">{card.lastActivityTime || "No recent time"}</p>
+                {!card.isPlaceholder && (
+                  <div className="recent-actions">
+                    <button className="btn-secondary btn-fit" type="button" onClick={() => onOpenEstimate(card)}>Open</button>
+                    {card.status === "Signed Estimate Received" && (
+                      card.signedDownloadUrl
+                        ? <a className="btn-secondary btn-fit" href={card.signedDownloadUrl}>Download Signed Estimate</a>
+                        : <button className="btn-secondary btn-fit" type="button" disabled>Download Signed Estimate</button>
+                    )}
+                    {card.status === "Manual Acceptance Recorded" && (
+                      card.savedDownloadUrl
+                        ? <a className="btn-secondary btn-fit" href={card.savedDownloadUrl}>Download Saved Estimate</a>
+                        : <button className="btn-secondary btn-fit" type="button" disabled>Download Saved Estimate</button>
+                    )}
+                    {card.status !== "Signed Estimate Received" && card.status !== "Manual Acceptance Recorded" && (
+                      <>
+                        <button className="btn-secondary btn-fit" type="button" onClick={() => onCopyLink(card)}>Copy Link to Estimate</button>
+                        <button className="btn-secondary btn-fit" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </section>
   );
 }
@@ -273,6 +278,7 @@ export default function HomePage() {
         <FrontPage
           cards={cards}
           onNewQuote={startNewQuote}
+          onNewInvoice={() => setNotice("New invoice workflow is not connected yet.")}
           onOpenEstimate={openEstimate}
           onManualAcceptance={openManualFromFront}
           onCopyLink={copyRecentLink}
