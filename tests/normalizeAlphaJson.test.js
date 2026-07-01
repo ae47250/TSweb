@@ -445,6 +445,72 @@ test("job summary omits safety and access notes from structured scope", () => {
   assert.doesNotMatch(summary, /aggressive dog|dog in yard|do not enter|access|gate/i);
 });
 
+test("job summary preserves safe size and location descriptors from messy notes", () => {
+  const cases = [
+    {
+      input:
+        "Ben Clay 812-555-0102 ben@example.com. needs mapel tree remuved at 220 Oak Lane Madison IN. big tree by garage. option 1 remove only 1250. option 2 remove plus haul away and cleanup 9025. aggressive dog in back yard, text only and do not enter until customer secures dog.",
+      expectedSummary: "Remove one large maple tree near the garage.",
+      canGenerate: true,
+      expectedWarning: /Safety\/access note/i,
+    },
+    {
+      input:
+        "needs tree remuved at 305 River Road Madison IN. big tree by garage. option 1 remuv only 1340. option 2 remuv plus haila way and cleen up 2470. aggressive dog in back yard, text only and do not enter until customer secures dog.",
+      expectedSummary: "Remove one large tree near the garage.",
+      canGenerate: false,
+      expectedBlocking: /Missing customer phone or email/i,
+    },
+    {
+      input:
+        "Hank Bell 812-555-0108 hank@example.com. 220 Oak Lane Madison IN. remove a maple tree by garage. option 1 around 1700. option 2 cleanup maybe 2900.",
+      expectedSummary: "Remove one maple tree near the garage.",
+      canGenerate: false,
+      expectedBlocking: /Price is not firm enough/i,
+    },
+  ];
+
+  for (const item of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, item.input));
+    assert.equal(validation.alphaJson.job.description, item.expectedSummary, item.input);
+    assert.equal(validation.can_generate_pdf, item.canGenerate, item.input);
+    assert.doesNotMatch(validation.alphaJson.job.description, /aggressive dog|do not enter|customer secures dog/i, item.input);
+    if (item.expectedWarning) assert.match(validation.warnings.join(" "), item.expectedWarning, item.input);
+    if (item.expectedBlocking) assert.match(validation.blocking_errors.join(" "), item.expectedBlocking, item.input);
+  }
+});
+
+test("blocked-case summaries preserve safe partial meaning without weakening validation", () => {
+  const cases = [
+    {
+      input:
+        "Finn Hale 812-555-0106 finn@example.com. 44 Pine Court Hanover IN. remove several trees near garage. option 1 drop only 1600. option 2 drop plus haul away 2600.",
+      expectedSummary: "Remove several trees near the garage. Exact tree count needs confirmation.",
+      expectedBlocking: /Tree count is unclear/i,
+    },
+    {
+      input:
+        "customer Paula Fox 812.555.8613 paula.fox449@example.com 4375 Ferry Street, Madison, IN tree removel maybe $1,050, not sure what we are doing yet",
+      expectedSummary: "Possible tree removal. Scope and firm price need confirmation.",
+      expectedBlocking: /Price is not firm enough/i,
+    },
+    {
+      input:
+        "lady named Joan Blair text 812-555-2406 5816 Poplar Ridge Road Hanover IN option A $1850 option B 2350, no descriptions",
+      expectedSummary: "Priced service options need work-scope descriptions.",
+      expectedBlocking: /Priced option descriptions are missing/i,
+    },
+  ];
+
+  for (const item of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, item.input));
+    assert.equal(validation.alphaJson.job.description, item.expectedSummary, item.input);
+    assert.equal(validation.can_generate_pdf, false, item.input);
+    assert.match(validation.blocking_errors.join(" "), item.expectedBlocking, item.input);
+    assert.doesNotMatch(validation.alphaJson.job.description, /aggressive dog|do not enter|customer phone|parser|internal/i, item.input);
+  }
+});
+
 test("job summary keeps highway-style addresses out of location phrase", () => {
   const stateRoad = validateAlphaJson(
     normalizeToAlphaJsonV14({}, "Dan 8125555555 123 State Road 56 Salem IN remove one tree $1000"),
@@ -704,7 +770,7 @@ test("messy raw note parses implied one-tree removal while keeping safety notes 
   assert.match(validation.follow_ups.join(" "), /phone number or email/i);
   assert.equal(alphaJson.job.service_address.display, "148 maple st");
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
-  assert.equal(alphaJson.job.description, "Remove one tree.");
+  assert.equal(alphaJson.job.description, "Remove one large tree near the garage.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,200", "$9,000"]);
   assert.match(alphaJson.service_options.items[0].description, /remove only/i);
   assert.match(alphaJson.service_options.items[1].description, /remove.*haul away.*cleanup/i);
@@ -727,7 +793,7 @@ test("local no-standard-suffix address parses and gate access note stays interna
   assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
   assert.match(alphaJson.job.service_address.display, /Salem/i);
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
-  assert.equal(alphaJson.job.description, "Remove one tree.");
+  assert.equal(alphaJson.job.description, "Remove one large tree near the garage.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,540", "$3,220"]);
   assert.match(validation.warnings.join(" "), /Safety\/access note/i);
   assert.doesNotMatch(customerFacingText, /gate|access is bad|crew|call before entering/i);
