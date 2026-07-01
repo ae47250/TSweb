@@ -134,7 +134,8 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
           <div className="summary-card review-job-notes-card">
             <h3>Job Notes</h3>
             <p className="job-notes-guidance">
-              <span>Include</span> as much information as possible about the job, scope of work, and prices.
+              <span>Include:</span>
+              <span className="job-notes-example-text">as much information as possible about the job, scope of work, and prices.</span>
             </p>
             <p className="job-notes-example">
               <span>Example:</span>
@@ -178,7 +179,7 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
       {!canConfirm && (
         <p className="text-muted">Fix missing info before confirming quote.</p>
       )}
-      <div className="toolbar mt-2">
+      <div className="toolbar td2-action-toolbar mt-2">
         <button className="btn-primary" onClick={onApprove} disabled={!canConfirm || busy}>
           {approveLabel}
         </button>

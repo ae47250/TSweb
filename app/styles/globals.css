@@ -42,6 +42,18 @@ main {
   width: auto;
 }
 
+.td2-action-toolbar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.td2-action-toolbar button {
+  min-height: 64px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
 .front-page {
   display: grid;
   gap: 18px;
@@ -219,6 +231,10 @@ main {
 }
 
 .job-notes-guidance {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 6px;
+  align-items: start;
   margin: 0 0 8px;
   color: #111;
   font-size: 16px;

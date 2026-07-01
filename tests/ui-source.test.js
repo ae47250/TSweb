@@ -88,6 +88,8 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /Review ready/);
   assert.match(reviewSource, /Needs more info/);
   assert.match(reviewSource, /Job Notes/);
+  assert.match(reviewSource, /Include:/);
+  assert.match(reviewSource, /job-notes-example-text/);
   assert.match(reviewSource, /buildCustomerJobSummary/);
   assert.match(reviewSource, /structuredJobSummary\s*\|\|\s*cleanJobNotesForReview/);
   assert.match(reviewSource, /Quote Options/);
@@ -104,6 +106,9 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /customer-summary-card/);
   assert.match(reviewSource, /customer-info-grid/);
   assert.match(reviewSource, /customer-info-right/);
+  assert.match(reviewSource, /td2-action-toolbar/);
+  assert.match(cssSource, /\.td2-action-toolbar/);
+  assert.match(cssSource, /grid-template-columns:\s*max-content minmax\(0, 1fr\)/);
   assert.match(cssSource, /\.customer-summary-card/);
   assert.match(cssSource, /\.customer-info-grid/);
 });
