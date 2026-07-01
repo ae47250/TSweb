@@ -417,6 +417,17 @@ test("highway route numbers are not treated as prices", () => {
   assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,100", "$2,750"]);
 });
 
+test("state road numbers are not treated as tree counts and vague counts block", () => {
+  const input =
+    "Victor Myers 8125552990 victor.myers270@example.com 1296 State Road 56 Hanover Indiana remove several trees near back fence. Option A 2500 Option B haul $2,950";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "");
+  assert.match(validation.blocking_errors.join(" "), /tree count/i);
+  assert.match(validation.follow_ups.join(" "), /how many trees/i);
+});
+
 test("drop and cleanup shorthand creates two priced options", () => {
   const input =
     "812-555-6874 kevin.young402@example.com Kevin Young said -- storm damaged dead elm, remove one treee tree and clean up limbs -- service address 6422 College Avenue - Hanover Indiana -- gate code 1234, dog in back. drop 1,900 cleanup 2,850";
