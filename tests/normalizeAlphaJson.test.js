@@ -428,6 +428,22 @@ test("state road numbers are not treated as tree counts and vague counts block",
   assert.match(validation.follow_ups.join(" "), /how many trees/i);
 });
 
+test("article tree count is one only in clear tree-work context", () => {
+  const clearRemoval = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Article Count 812-555-2303 18 Oak Lane Madison Indiana. Remove a maple tree by garage. Option A cut and leave wood $1,200.",
+  ));
+  assert.equal(clearRemoval.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(clearRemoval.can_generate_pdf, true);
+
+  const ambiguous = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Ambiguous Article 812-555-2304 20 Oak Lane Madison Indiana. Wind damage, not sure if it is one tree or several, haul debris $1,300.",
+  ));
+  assert.equal(ambiguous.can_generate_pdf, false);
+  assert.match(`${ambiguous.blocking_errors.join(" ")} ${ambiguous.follow_ups.join(" ")}`, /tree count|how many trees/i);
+});
+
 test("drop and cleanup shorthand creates two priced options", () => {
   const input =
     "812-555-6874 kevin.young402@example.com Kevin Young said -- storm damaged dead elm, remove one treee tree and clean up limbs -- service address 6422 College Avenue - Hanover Indiana -- gate code 1234, dog in back. drop 1,900 cleanup 2,850";
