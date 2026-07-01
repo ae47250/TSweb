@@ -247,6 +247,60 @@ test("corrected interpretation omits structured contact label lines", () => {
   assert.doesNotMatch(corrected, /test\.alpha@example\.com|812-555-0199/i);
 });
 
+test("typed intake service address wins over model and raw note address guesses", () => {
+  const input = [
+    "Customer name: Real Customer",
+    "Customer phone: 812-555-0199",
+    "Service address: 805 2nd Street, Madison, IN",
+    "",
+    "Old irrelevant note says job was near River Road. Remove one oak tree. Option A remove and haul $1,800.",
+  ].join("\n");
+  const raw = {
+    alphaJson: {
+      customer: { name: "Real Customer", phone: "812-555-0199" },
+      job: {
+        service_address: { display: "99 River Road, Hanover, IN" },
+        tree_details: { tree_count: "1 tree", tree_type: "oak" },
+      },
+      service_options: {
+        items: [{ label: "Option A", description: "Remove and haul", price: "$1,800" }],
+      },
+    },
+  };
+
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(raw, input, { address: "805 2nd Street, Madison, IN" }),
+  );
+
+  assert.equal(validation.alphaJson.job.service_address.display, "805 2nd Street, Madison, IN");
+  assert.doesNotMatch(validation.alphaJson.job.service_address.display, /River Road|Hanover/i);
+});
+
+test("corrected interpretation removes duplicated words and broken address fillers", () => {
+  const raw = {
+    normalization: {
+      corrected_interpretation:
+        "The the customer can be reached by at. The, Corydon, Indiana. Remove one oak tree by at. Quoted price is $1,800.",
+    },
+    alphaJson: {
+      customer: { name: "Cleanup Test", phone: "812-555-0199" },
+      job: {
+        service_address: { display: "805 2nd Street, Madison, IN" },
+        tree_details: { tree_count: "1 tree", tree_type: "oak" },
+      },
+      service_options: {
+        items: [{ label: "Option A", description: "Remove one oak tree", price: "$1,800" }],
+      },
+    },
+  };
+
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(raw, ""));
+  const corrected = validation.alphaJson.normalization.corrected_interpretation;
+
+  assert.match(corrected, /Remove one oak tree/i);
+  assert.doesNotMatch(corrected, /\bthe the\b|by at|at\.|The,\s*Corydon/i);
+});
+
 for (const testCase of customerCases) {
   test(`customer battery: ${testCase.name}`, () => {
     assertNormalizedCase(testCase);

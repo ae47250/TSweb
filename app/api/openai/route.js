@@ -55,6 +55,7 @@ function logOpenAiCase({ level = "info", caseId, model, reasoningEffort, usage, 
 export async function POST(request) {
   const body = await readJson(request);
   const customerText = body.customer_text || body.customerText || "";
+  const intake = body.intake || body.structured_input || body.structuredInput || {};
   const caseId = caseIdFromBody(body);
   const model = process.env.OPENAI_MODEL || "gpt-4o";
   const reasoningEffort = getReasoningEffort(model);
@@ -64,7 +65,7 @@ export async function POST(request) {
   }
 
   if (!process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true") {
-    const alphaJson = normalizeToAlphaJsonV14({}, customerText);
+    const alphaJson = normalizeToAlphaJsonV14({}, customerText, intake);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       caseId,
@@ -95,7 +96,7 @@ export async function POST(request) {
         { role: "user", content: customerText },
       ],
     });
-    const alphaJson = normalizeToAlphaJsonV14(JSON.parse(response.choices[0]?.message?.content || "{}"), customerText);
+    const alphaJson = normalizeToAlphaJsonV14(JSON.parse(response.choices[0]?.message?.content || "{}"), customerText, intake);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       caseId,
@@ -106,7 +107,7 @@ export async function POST(request) {
     });
     return json({ alphaJson, mocked: false });
   } catch (error) {
-    const alphaJson = normalizeToAlphaJsonV14({}, customerText);
+    const alphaJson = normalizeToAlphaJsonV14({}, customerText, intake);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       level: "error",

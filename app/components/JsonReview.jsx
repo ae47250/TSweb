@@ -1,6 +1,6 @@
 "use client";
 
-import { normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
+import { cleanCustomerFacingSummary, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
 
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -85,7 +85,7 @@ export default function JsonReview({ alphaJson, validation, sourceNotes = "", mo
   if (!alphaJson) return null;
 
   const options = alphaJson.service_options?.items || [];
-  const normalizedJobNotes = String(alphaJson.normalization?.corrected_interpretation || "").trim();
+  const normalizedJobNotes = cleanCustomerFacingSummary(alphaJson.normalization?.corrected_interpretation || "", alphaJson);
   const jobNotes = normalizedJobNotes || cleanJobNotesForReview(sourceNotes, alphaJson);
   const customerName = alphaJson.customer?.name || "Name not available";
   const customerPhone = alphaJson.customer?.phone_display || "Phone not available";

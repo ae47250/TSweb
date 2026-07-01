@@ -22,7 +22,7 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
       contactValue.email ? `Customer email: ${contactValue.email}` : "",
       contactValue.address ? `Service address: ${contactValue.address}` : "",
     ].filter(Boolean).join("\n");
-    onSubmit([contactText, value].filter(Boolean).join("\n\n"));
+    onSubmit([contactText, value].filter(Boolean).join("\n\n"), contactValue);
   }
 
   return (

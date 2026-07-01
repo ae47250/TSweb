@@ -162,15 +162,15 @@ export default function HomePage() {
     setEditMessage("");
   }
 
-  async function createReview(fullText = customerText) {
+  async function createReview(fullText = customerText, intake = quoteContact) {
     setBusy(true);
     setError("");
     setNotice("");
     setEditMessage("");
     setSubmittedText(customerText);
     try {
-      const openai = await postJson("/api/openai", { customer_text: fullText });
-      const validated = await postJson("/api/validate", { alphaJson: openai.alphaJson });
+      const openai = await postJson("/api/openai", { customer_text: fullText, intake });
+      const validated = await postJson("/api/validate", { alphaJson: openai.alphaJson, customer_text: fullText, intake });
       setAlphaJson(validated.alphaJson);
       setValidation(validated);
       setDocumentResult(null);
