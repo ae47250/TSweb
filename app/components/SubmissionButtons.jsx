@@ -16,7 +16,7 @@ export default function SubmissionButtons({ disabled, alphaJson, selectedOption,
           if (disabled) event.preventDefault();
         }}
       >
-        Preview Email to Tree Dude
+        Preview Email to Contractor
       </a>
       <button className="btn-primary" type="button" disabled={disabled || busy} onClick={onSubmit}>
         {busy ? "Submitting..." : "Submit to Contractor"}

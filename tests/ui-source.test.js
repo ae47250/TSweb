@@ -51,10 +51,9 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(inputFormSource, /Fill in the red fields and add Job Notes/);
   assert.match(inputFormSource, /Review Estimate/);
   assert.match(inputFormSource, /Clear/);
-  assert.match(inputFormSource, /Tree count/);
-  assert.match(inputFormSource, /treeCountOverride/);
-  assert.match(inputFormSource, /<option value="Auto">Auto<\/option>/);
-  assert.match(inputFormSource, /<option value="Unknown">Unknown<\/option>/);
+  assert.doesNotMatch(inputFormSource, /Tree count/);
+  assert.doesNotMatch(inputFormSource, /<option value="Auto">Auto<\/option>/);
+  assert.doesNotMatch(inputFormSource, /<option value="Unknown">Unknown<\/option>/);
   assert.match(inputFormSource, /job-notes-card/);
   assert.match(inputFormSource, /Include<\/span> as much information as possible about the job, scope of work, and prices/);
   assert.match(inputFormSource, /btn-create-review/);
@@ -79,6 +78,7 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.doesNotMatch(pdfGeneratorSource, /function sendMock/);
   assert.match(pdfGeneratorSource, /Copy Link to Completed Estimate/);
   assert.match(pdfGeneratorSource, /Back to Front Page/);
+  assert.match(submissionButtonsSource, /Preview Email to Contractor/);
   assert.match(pdfGeneratorSource, /btn-neutral/);
   assert.match(pdfGeneratorSource, /btn-light-orange/);
   assert.match(pdfGeneratorSource, /btn-light-blue/);
@@ -88,7 +88,7 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.equal(existsSync("app/e/[estimateId]/EstimateClient.jsx"), true);
 });
 
-test("Tree Dude review and confirm screens separate AI review from final quote approval", () => {
+test("review and confirm screens separate AI review from final quote approval", () => {
   const reviewSource = readFileSync("app/components/JsonReview.jsx", "utf8");
   assert.match(pageSource, /stage === "review"/);
   assert.match(pageSource, /mode="review"/);
@@ -112,14 +112,20 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /Option 1/);
   assert.match(reviewSource, /normalizeTreeServiceText/);
   assert.match(reviewSource, /orderJobWarningsLast/);
-  assert.match(reviewSource, /Tree Dude reviews these options/);
+  assert.match(reviewSource, /Review these options/);
   assert.match(reviewSource, /Do not choose an option here/);
   assert.match(reviewSource, /Needs More Info/);
   assert.match(reviewSource, /warningItems/);
   assert.match(reviewSource, /Warnings/);
   assert.match(reviewSource, /warning-card/);
   assert.match(reviewSource, /OverrideWarningCard/);
-  assert.match(reviewSource, /Tree Dude Warning/);
+  assert.match(reviewSource, /TreeCountResolutionCard/);
+  assert.match(reviewSource, /Internal Warning/);
+  assert.doesNotMatch(reviewSource, /Tree Dude Warning/);
+  assert.match(reviewSource, /Tree Count Is Unclear/);
+  assert.match(reviewSource, /3\+ trees/);
+  assert.match(reviewSource, /Still unclear but OK to proceed/);
+  assert.match(reviewSource, /Use this tree count/);
   assert.match(reviewSource, /Create Estimate without exact address/);
   assert.match(reviewSource, /Create Estimate without phone number/);
   assert.match(reviewSource, /Create Estimate without email/);
@@ -139,7 +145,7 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(cssSource, /\.customer-info-grid/);
 });
 
-test("customer route requires compact e-signature consent and Tree Dude panel does not sign for customer", () => {
+test("customer route requires compact e-signature consent and contractor panel does not sign for customer", () => {
   const consentText = /I agree to receive and sign this estimate electronically/;
   assert.match(customerRouteSource, consentText);
   assert.match(customerRouteSource, /checkboxAccepted/);
@@ -156,6 +162,9 @@ test("customer-facing estimate documents use cleaned job notes without internal 
   assert.match(customerDocumentSource, /buildCustomerJobSummary/);
   assert.match(customerDocumentSource, /workDescription/);
   assert.match(customerDocumentSource, /renderTreeDudeDocument/);
+  assert.match(customerDocumentSource, /Contractor Copy/);
+  assert.match(customerDocumentSource, /These warnings are for the contractor copy only/);
+  assert.match(customerDocumentSource, /Preview Email to Contractor/);
   assert.match(pdfRouteSource, /renderCustomerDocument\(alphaJson, \{ mobile: false \}\)/);
   assert.match(pdfRouteSource, /renderCustomerDocument\(alphaJson, \{ mobile: true \}\)/);
   assert.match(pdfRouteSource, /renderTreeDudeDocument/);
@@ -183,6 +192,7 @@ test("review overrides are narrow and recorded separately from normal validation
   assert.match(reviewOverridesSource, /Sending Estimate SMS and Email will not be available/);
   assert.match(pdfRouteSource, /getBlockingOverrideStatus/);
   assert.match(pdfRouteSource, /canGenerateWithOverrides/);
+  assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /const canConfirmWithOverrides = overrideStatus\.canProceed/);
   assert.match(pdfRouteSource, /remainingBlockingErrors/);
 });
 

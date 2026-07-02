@@ -1067,6 +1067,28 @@ test("tree count override wins and Unknown forces follow-up", () => {
   assert.equal(unknown.can_generate_pdf, false);
   assert.equal(unknown.alphaJson.job.tree_details.tree_count, "");
   assert.match(`${unknown.blocking_errors.join(" ")} ${unknown.follow_ups.join(" ")}`, /tree count|how many trees/i);
+
+  const threePlus = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Perry Dale 812-555-3535 perry@example.com. 74 Farm Lane, Madison IN. Remove a tree or maybe more behind barn. Option A cut only $2100.",
+    { treeCountOverride: "3+" },
+  ));
+
+  assert.equal(threePlus.can_generate_pdf, true);
+  assert.equal(threePlus.alphaJson.job.tree_details.tree_count, "3+ trees");
+  assert.equal(threePlus.alphaJson.normalization.field_evidence.tree_count_override, "3+ trees");
+  assert.doesNotMatch(threePlus.blocking_errors.join(" "), /Tree count is unclear/i);
+
+  const unclearOk = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Perry Dale 812-555-3535 perry@example.com. 74 Farm Lane, Madison IN. Remove a tree or maybe more behind barn. Option A cut only $2100.",
+    { treeCountOverride: "Still unclear but OK to proceed" },
+  ));
+
+  assert.equal(unclearOk.can_generate_pdf, true);
+  assert.equal(unclearOk.alphaJson.job.tree_details.tree_count, "");
+  assert.equal(unclearOk.alphaJson.normalization.field_evidence.tree_count_override, "Still unclear but OK to proceed");
+  assert.match(unclearOk.warnings.join(" "), /Tree count is still unclear but was OK'd/i);
 });
 
 test("messy raw note parses implied one-tree removal while keeping safety notes internal", () => {

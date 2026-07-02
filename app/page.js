@@ -240,6 +240,27 @@ export default function HomePage() {
     }
   }
 
+  async function applyTreeCountOverride(treeCountOverride) {
+    setBusy(true);
+    setError("");
+    try {
+      const nextContact = { ...quoteContact, treeCountOverride };
+      const validated = await postJson("/api/validate", {
+        alphaJson,
+        customer_text: submittedText,
+        intake: nextContact,
+      });
+      setQuoteContact(nextContact);
+      setAlphaJson(validated.alphaJson);
+      setValidation(validated);
+      setNotice("Tree count selection applied.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function copyRecentLink(card) {
     await navigator.clipboard?.writeText(card.customerEstimateUrl || `/e/${card.documentId}`);
     setNotice("Link copied.");
@@ -334,6 +355,7 @@ export default function HomePage() {
               debugPipeline={debugPipeline}
               reviewOverrides={reviewOverrides}
               onReviewOverridesChange={setReviewOverrides}
+              onTreeCountOverrideChange={applyTreeCountOverride}
               intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={() => setStage("confirm")}

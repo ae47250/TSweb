@@ -174,7 +174,7 @@ function buildDebugExplanation(validation, renderedFields) {
 
   if (warnings.length > 0) {
     return {
-      meaning: "The estimate can be generated, but Tree Dude should review one or more details.",
+      meaning: "The estimate can be generated, but one or more details should be reviewed.",
       suggestion: warnings[0],
       why: "Warnings do not block the quote, but they usually point to safety, access, address, or cleanup details worth checking before sending.",
     };
@@ -263,7 +263,7 @@ function OverrideWarningCard({ status, overrides, onChange }) {
 
   return (
     <section className="summary-card override-warning-card">
-      <h3>Tree Dude Warning</h3>
+      <h3>Internal Warning</h3>
       <p>This information is missing or unclear. Customer documents stay clean, but the contractor copy will record the warning.</p>
       <div className="override-warning-actions">
         {status.needsAddressOverride && (
@@ -297,6 +297,45 @@ function OverrideWarningCard({ status, overrides, onChange }) {
   );
 }
 
+const TREE_COUNT_BLOCK_RE = /Tree count is marked unknown|Tree count is unclear|Missing tree count or clear scope/i;
+
+function TreeCountResolutionCard({ validation, busy = false, onApply }) {
+  const [selectedCount, setSelectedCount] = useState("");
+  const hasTreeCountBlock = (validation?.blocking_errors || []).some((error) => TREE_COUNT_BLOCK_RE.test(error));
+  if (!hasTreeCountBlock || !onApply) return null;
+
+  return (
+    <section className="summary-card override-warning-card">
+      <h3>Tree Count Is Unclear</h3>
+      <p>The notes do not make the number of trees clear. Select the count to continue.</p>
+      <div className="tree-count-override-row">
+        <label htmlFor="td2TreeCountOverride">
+          Tree count
+          <select
+            id="td2TreeCountOverride"
+            value={selectedCount}
+            onChange={(event) => setSelectedCount(event.target.value)}
+          >
+            <option value="">Select count</option>
+            <option value="1 tree">1</option>
+            <option value="2 trees">2</option>
+            <option value="3+ trees">3+</option>
+            <option value="Still unclear but OK to proceed">Still unclear but OK to proceed</option>
+          </select>
+        </label>
+        <button
+          className="btn-orange override-ack-button"
+          type="button"
+          disabled={!selectedCount || busy}
+          onClick={() => onApply(selectedCount)}
+        >
+          Use this tree count
+        </button>
+      </div>
+    </section>
+  );
+}
+
 export default function JsonReview({
   alphaJson,
   validation,
@@ -306,6 +345,7 @@ export default function JsonReview({
   mode = "review",
   reviewOverrides = {},
   onReviewOverridesChange,
+  onTreeCountOverrideChange,
   onApprove,
   onEdit,
   busy = false,
@@ -320,9 +360,13 @@ export default function JsonReview({
   const customerPhone = alphaJson.customer?.phone_display || "Phone not available";
   const customerEmail = alphaJson.customer?.email || "Email not available";
   const jobAddress = alphaJson.job?.service_address?.display || normalizeServiceAddress(intake.address) || "Address missing";
-  const canConfirm = Boolean(validation?.can_generate_pdf);
   const overrideStatus = getBlockingOverrideStatus(validation, normalizedOverrides, alphaJson);
-  const canConfirmWithOverrides = canConfirm || overrideStatus.canProceed;
+  const canConfirmWithOverrides = overrideStatus.canProceed;
+  const hasAcceptedOverrideWarnings = overrideStatus.acceptedOverrideWarnings.length > 0;
+  const needsOverrideAck = overrideStatus.needsAddressOverride
+    || overrideStatus.needsContactOverride
+    || overrideStatus.needsPhoneOverride
+    || overrideStatus.needsEmailOverride;
   const isFinalConfirm = mode === "confirm";
   const reviewIssues = validation?.follow_ups?.length
     ? validation.follow_ups
@@ -333,7 +377,7 @@ export default function JsonReview({
   const subtitle = isFinalConfirm ? "This creates the customer estimate link." : "Check details before confirming quote.";
   const optionNote = isFinalConfirm
     ? `Do not choose an option here. ${customerName === "Name not available" ? "The customer" : customerName} will choose one when opening the estimate.`
-    : "Tree Dude reviews these options. The customer chooses one later.";
+    : "Review these options. The customer chooses one later.";
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Quote") : "Confirm Quote";
   const editLabel = isFinalConfirm ? "Back" : "Edit Info";
   const warningItems = validation?.warnings || [];
@@ -434,6 +478,13 @@ export default function JsonReview({
           onChange={onReviewOverridesChange}
         />
       )}
+      {!isFinalConfirm && (
+        <TreeCountResolutionCard
+          validation={validation}
+          busy={busy}
+          onApply={onTreeCountOverrideChange}
+        />
+      )}
       {reviewIssues.length > 0 && (
         <div className="summary-card needs-info-card">
           <h3>Needs More Info</h3>
@@ -451,10 +502,14 @@ export default function JsonReview({
         </div>
       )}
       {!canConfirmWithOverrides && (
-        <p className="text-muted">Fix missing info before confirming quote.</p>
+        <p className="text-muted">
+          {needsOverrideAck
+            ? "Click the warning OK button or fix missing info before confirming quote."
+            : "Fix missing info before confirming quote."}
+        </p>
       )}
-      {!canConfirm && canConfirmWithOverrides && (
-        <p className="text-muted">Override accepted. Confirm Quote will create a Tree Dude copy with internal warnings.</p>
+      {hasAcceptedOverrideWarnings && canConfirmWithOverrides && (
+        <p className="text-muted">Override accepted. Confirm Quote will create a contractor copy with internal warnings.</p>
       )}
       <div className="toolbar td2-action-toolbar mt-2">
         <button className="btn-primary" onClick={onApprove} disabled={!canConfirmWithOverrides || busy}>
