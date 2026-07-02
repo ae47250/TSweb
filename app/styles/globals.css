@@ -198,6 +198,32 @@ main {
   min-height: 46px;
 }
 
+.tree-count-override-row {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(160px, 180px) minmax(0, 1fr);
+}
+
+.tree-count-override-row label {
+  color: #111;
+  display: grid;
+  gap: 5px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.tree-count-override-row select {
+  font-size: 16px;
+  min-height: 42px;
+}
+
+.tree-count-override-row p {
+  color: #555;
+  font-size: 13px;
+  margin: 0 0 3px;
+}
+
 .required-input {
   border: 3px solid #b91c1c !important;
 }
@@ -349,6 +375,18 @@ main {
 .review-job-notes-card .job-summary-text {
   font-size: 16px;
   line-height: 1.45;
+}
+
+.manual-override-note {
+  background: #f5f3ff;
+  border: 1px solid #c4b5fd;
+  border-radius: 999px;
+  color: #4b2497;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  margin: 10px 0 0;
+  padding: 3px 9px;
 }
 
 .review-status {
@@ -730,6 +768,10 @@ pre {
   .contact-choice-row {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+
+  .tree-count-override-row {
+    grid-template-columns: 1fr;
   }
 
   .contact-or {

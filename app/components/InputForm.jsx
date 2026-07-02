@@ -7,6 +7,7 @@ const emptyContact = {
   phone: "",
   email: "",
   address: "",
+  treeCountOverride: "Auto",
 };
 
 const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onClear, busy, editMessage = "", contactValue = emptyContact, onContactChange }, ref) {
@@ -28,6 +29,7 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
   const addressFilled = Boolean(contactValue.address.trim());
   const contactFilled = Boolean(contactValue.phone.trim() || contactValue.email.trim());
   const notesFilled = Boolean(value.trim());
+  const treeCountOverride = contactValue.treeCountOverride || "Auto";
   const requiredClass = (filled) => filled ? "required-input required-input-filled" : "required-input";
 
   return (
@@ -58,6 +60,25 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
               <input className={requiredClass(contactFilled)} id="customerEmail" value={contactValue.email} onChange={(event) => updateContact("email", event.target.value)} />
             </label>
           </div>
+        </div>
+        <div className="tree-count-override-row">
+          <label htmlFor="treeCountOverride">
+            Tree count
+            <select
+              id="treeCountOverride"
+              value={treeCountOverride}
+              onChange={(event) => updateContact("treeCountOverride", event.target.value)}
+            >
+              <option value="Auto">Auto</option>
+              <option value="1 tree">1</option>
+              <option value="2 trees">2</option>
+              <option value="3 trees">3</option>
+              <option value="4 trees">4</option>
+              <option value="5+ trees">5+</option>
+              <option value="Unknown">Unknown</option>
+            </select>
+          </label>
+          <p>Leave on Auto unless the tree count is wrong or unclear.</p>
         </div>
         <div className="job-notes-card">
           <label htmlFor="customerText" className="job-notes-title">Job Notes</label>

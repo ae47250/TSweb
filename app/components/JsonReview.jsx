@@ -255,6 +255,8 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
   const reviewIssues = validation?.follow_ups?.length
     ? validation.follow_ups
     : validation?.blocking_errors || [];
+  const treeCountOverride = alphaJson.normalization?.field_evidence?.tree_count_override || "";
+  const showTreeCountOverride = treeCountOverride && treeCountOverride !== "Auto";
   const title = isFinalConfirm ? "Confirm Quote" : "AI Review";
   const subtitle = isFinalConfirm ? "This creates the customer estimate link." : "Check details before confirming quote.";
   const optionNote = isFinalConfirm
@@ -314,6 +316,11 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
           <div className="summary-card review-job-notes-card">
             <h3>Job Notes</h3>
             <p className="job-summary-text">{jobNotes}</p>
+            {showTreeCountOverride && (
+              <p className="manual-override-note">
+                Tree count set manually: {treeCountOverride}
+              </p>
+            )}
           </div>
         </div>
       )}

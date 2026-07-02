@@ -327,7 +327,7 @@ test("reconciles clear normalized evidence into structured AlphaJSON fields", ()
   assert.equal(validation.can_generate_pdf, true);
   assert.equal(alphaJson.job.tree_details.tree_count, "2 trees");
   assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
-  assert.equal(alphaJson.job.description, "Remove two walnut trees.");
+  assert.equal(alphaJson.job.description, "Remove two walnut trees. Options include haul away.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
     "remove only",
     "remove and haul away",
@@ -496,7 +496,7 @@ test("job summary omits safety and access notes from structured scope", () => {
   const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, raw));
   const summary = validation.alphaJson.job.description;
 
-  assert.equal(summary, "Remove one maple tree.");
+  assert.equal(summary, "Remove one tree.");
   assert.doesNotMatch(summary, /aggressive dog|dog in yard|do not enter|access|gate/i);
 });
 
@@ -505,21 +505,21 @@ test("job summary preserves safe size and location descriptors from messy notes"
     {
       input:
         "Ben Clay 812-555-0102 ben@example.com. needs mapel tree remuved at 220 Oak Lane Madison IN. big tree by garage. option 1 remove only 1250. option 2 remove plus haul away and cleanup 9025. aggressive dog in back yard, text only and do not enter until customer secures dog.",
-      expectedSummary: "Remove one large maple tree near the garage.",
+      expectedSummary: "Remove one large maple tree near the garage. Options include haul away or cleanup.",
       canGenerate: true,
       expectedWarning: /Safety\/access note/i,
     },
     {
       input:
         "needs tree remuved at 305 River Road Madison IN. big tree by garage. option 1 remuv only 1340. option 2 remuv plus haila way and cleen up 2470. aggressive dog in back yard, text only and do not enter until customer secures dog.",
-      expectedSummary: "Remove one large tree near the garage.",
+      expectedSummary: "Remove one large tree near the garage. Options include haul away or cleanup.",
       canGenerate: false,
       expectedBlocking: /Missing customer phone or email/i,
     },
     {
       input:
         "Hank Bell 812-555-0108 hank@example.com. 220 Oak Lane Madison IN. remove a maple tree by garage. option 1 around 1700. option 2 cleanup maybe 2900.",
-      expectedSummary: "Remove one maple tree near the garage.",
+      expectedSummary: "Remove one maple tree near the garage. Options include cleanup.",
       canGenerate: false,
       expectedBlocking: /Price is not firm enough/i,
     },
@@ -533,6 +533,165 @@ test("job summary preserves safe size and location descriptors from messy notes"
     if (item.expectedWarning) assert.match(validation.warnings.join(" "), item.expectedWarning, item.input);
     if (item.expectedBlocking) assert.match(validation.blocking_errors.join(" "), item.expectedBlocking, item.input);
   }
+});
+
+test("job summary suppresses bad second sentence and keeps safe option scope", () => {
+  const alphaJson = {
+    raw_input: {
+      customer_text:
+        "Gina Price. Service address 2018 Cedar Dr Seymour Indiana. Remove 1 maple tree by garage. Option A cut and leave wood $900. Option B remove, haul away, and cleanup $1,450.",
+    },
+    customer: { name: "Gina Price", phone_display: "812-555-0107", email: "gina@example.com" },
+    job: {
+      service_address: { display: "2018 Cedar Dr, Seymour, Indiana" },
+      description: "Remove one maple tree near the garage at the.",
+      tree_details: { tree_count: "1 tree", tree_type: "maple" },
+    },
+    normalization: {
+      corrected_interpretation:
+        "has requested the removal of one maple tree located by the garage at the service address.",
+      field_evidence: {
+        tree_count: "1 tree",
+        tree_type: "maple",
+        work_scope: "Remove one maple tree near the garage at the.",
+      },
+    },
+    service_options: {
+      items: [
+        { label: "Option A", description: "cut and leave wood", price: { display: "$900", amount: 900 } },
+        { label: "Option B", description: "remove, haul away, and cleanup", price: { display: "$1,450", amount: 1450 } },
+      ],
+    },
+  };
+
+  const summary = buildCustomerJobSummary(alphaJson);
+
+  assert.equal(summary, "Remove one maple tree near the garage. Options include leaving wood on site, haul away or cleanup.");
+  assert.doesNotMatch(summary, /tree (?:has )?(?:requested|wants|would like|is requesting)|service address|2018|at the\./i);
+});
+
+test("job summary removes address leakage and tree-as-actor prose", () => {
+  const alphaJson = {
+    raw_input: {
+      customer_text:
+        "Jake Fox service address 3225 Elm Austin IN. Remove one oak tree over roof. Option A cut and leave wood $900. Option B remove, haul away, and cleanup $1,450.",
+    },
+    job: {
+      service_address: { display: "3225 Elm, Austin, IN" },
+      description:
+        "Remove one oak tree over the roof at 3225 Elm over the roof at 3225 Elm. 1 tree requested the removal of one oak tree over the roof at 3225 Elm.",
+      tree_details: { tree_count: "1 tree", tree_type: "oak" },
+    },
+    normalization: {
+      corrected_interpretation:
+        "1 tree requested the removal of one oak tree over the roof at 3225 Elm over the roof at 3225 Elm.",
+      field_evidence: {
+        tree_count: "1 tree",
+        tree_type: "oak",
+        work_scope:
+          "Remove one oak tree over the roof at 3225 Elm over the roof at 3225 Elm. 1 tree requested the removal.",
+      },
+    },
+    service_options: {
+      items: [
+        { label: "Option A", description: "cut and leave wood", price: { display: "$900", amount: 900 } },
+        { label: "Option B", description: "remove, haul away, and cleanup", price: { display: "$1,450", amount: 1450 } },
+      ],
+    },
+  };
+
+  const summary = buildCustomerJobSummary(alphaJson);
+
+  assert.equal(summary, "Remove one oak tree over the roof. Options include leaving wood on site, haul away or cleanup.");
+  assert.doesNotMatch(summary, /3225|requested|wants|would like|is requesting/i);
+});
+
+test("job summary cleans broken articles and preserves leaning location", () => {
+  const articleCase = {
+    raw_input: {
+      customer_text:
+        "Remove 3 pine trees beside the a shed. Option A cut and leave wood $900. Option B remove, haul away, and cleanup $1,450.",
+    },
+    job: {
+      service_address: { display: "202 Main St, Madison, IN" },
+      description: "Remove three pine trees beside the a shed. 3 trees requests removal of three pine trees beside the a shed.",
+      tree_details: { tree_count: "3 trees", tree_type: "pine" },
+    },
+    service_options: {
+      items: [
+        { description: "cut and leave wood", price: { display: "$900", amount: 900 } },
+        { description: "remove, haul away, and cleanup", price: { display: "$1,450", amount: 1450 } },
+      ],
+    },
+  };
+  const leaningCase = {
+    raw_input: {
+      customer_text:
+        "Remove two walnut trees leaning toward the house. Option A cut and leave wood $900. Option B remove, haul away, and cleanup $1,450.",
+    },
+    job: {
+      service_address: { display: "204 Main St, Madison, IN" },
+      description: "Remove two walnut trees. 2 trees The task is to remove two walnut trees leaning toward the house.",
+      tree_details: { tree_count: "2 trees", tree_type: "walnut" },
+    },
+    service_options: {
+      items: [
+        { description: "cut and leave wood", price: { display: "$900", amount: 900 } },
+        { description: "remove, haul away, and cleanup", price: { display: "$1,450", amount: 1450 } },
+      ],
+    },
+  };
+  const possessiveCase = {
+    raw_input: {
+      customer_text:
+        "Remove one ash tree beside the his shed. Option A cut and leave wood $900. Option B remove, haul away, and cleanup $1,450.",
+    },
+    job: {
+      service_address: { display: "206 Main St, Madison, IN" },
+      description: "Remove one ash tree beside the his shed.",
+      tree_details: { tree_count: "1 tree", tree_type: "ash" },
+    },
+    service_options: {
+      items: [
+        { description: "cut and leave wood", price: { display: "$900", amount: 900 } },
+        { description: "remove, haul away, and cleanup", price: { display: "$1,450", amount: 1450 } },
+      ],
+    },
+  };
+  const brokenLocationCase = {
+    raw_input: {
+      customer_text:
+        "Remove one large spruce tree near the a There are two options. Option A cut and leave wood $900. Option B remove, haul away, and cleanup $1,450.",
+    },
+    job: {
+      service_address: { display: "208 Main St, Madison, IN" },
+      description: "Remove one large spruce tree near the a There are two options.",
+      tree_details: { tree_count: "1 tree", tree_type: "spruce", tree_size: "large" },
+    },
+    service_options: {
+      items: [
+        { description: "cut and leave wood", price: { display: "$900", amount: 900 } },
+        { description: "remove, haul away, and cleanup", price: { display: "$1,450", amount: 1450 } },
+      ],
+    },
+  };
+
+  assert.equal(
+    buildCustomerJobSummary(articleCase),
+    "Remove three pine trees beside the shed. Options include leaving wood on site, haul away or cleanup.",
+  );
+  assert.equal(
+    buildCustomerJobSummary(leaningCase),
+    "Remove two walnut trees leaning toward the house. Options include leaving wood on site, haul away or cleanup.",
+  );
+  assert.equal(
+    buildCustomerJobSummary(possessiveCase),
+    "Remove one ash tree beside the shed. Options include leaving wood on site, haul away or cleanup.",
+  );
+  assert.equal(
+    buildCustomerJobSummary(brokenLocationCase),
+    "Remove one large spruce tree. Options include leaving wood on site, haul away or cleanup.",
+  );
 });
 
 test("blocked-case summaries preserve safe partial meaning without weakening validation", () => {
@@ -591,7 +750,7 @@ test("job summary rejects awkward perform-tree and option-only fragments", () =>
     },
   };
 
-  assert.equal(performTree.job.description, "Remove one maple tree.");
+  assert.equal(performTree.job.description, "Remove one maple tree. Options include cleanup.");
   assert.equal(buildCustomerJobSummary(optionOnly), "Tree service work as described in the selected option.");
 });
 
@@ -809,6 +968,63 @@ test("article tree count is one only in clear tree-work context", () => {
   assert.match(`${ambiguous.blocking_errors.join(" ")} ${ambiguous.follow_ups.join(" ")}`, /tree count|how many trees/i);
 });
 
+test("messy singular tree wording extracts one tree", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Cara Mills 812-555-0103 cara.mills@example.com. 240 Walnut St Madison Indiana. mapel tree kinda big by garage need remuv. Option A cut and leave wood $1,100. Option B remove and haul away $1,900.",
+  ));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.match(validation.alphaJson.job.description, /one .*maple tree|one .*tree/i);
+});
+
+test("mixed counted species add to total and stay visible in TD2 summary", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Ava Reed 812-555-0101 ava.reed@example.com. 520 Walnut St Madison Indiana. Remove two maples and one oak by garage. Option A cut and leave wood $1,500. Option B haul away $2,300.",
+  ));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "3 trees");
+  assert.equal(validation.alphaJson.job.tree_details.tree_type, "maple and oak");
+  assert.match(validation.alphaJson.job.description, /two maples and one oak/i);
+});
+
+test("one maple and one ash add to two trees", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Ben Clay 812-555-0102 ben.clay@example.com. 247 Oak Lane Hanover IN. Remove one maple and one ash over roof. Option A cut only $1,200. Option B haul away $1,900.",
+  ));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.equal(validation.alphaJson.job.tree_details.tree_type, "maple and ash");
+  assert.match(validation.alphaJson.job.description, /one maple and one ash/i);
+});
+
+test("tree count override wins and Unknown forces follow-up", () => {
+  const manual = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Drew Moss 812-555-0104 drew.moss@example.com. 300 Pine Road Salem IN. Remove two maples and one oak. Option A cut only $1,200.",
+    { treeCountOverride: "4 trees" },
+  ));
+
+  assert.equal(manual.can_generate_pdf, true);
+  assert.equal(manual.alphaJson.job.tree_details.tree_count, "4 trees");
+  assert.equal(manual.alphaJson.normalization.field_evidence.tree_count_override, "4 trees");
+
+  const unknown = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Ella Knox 812-555-0105 ella.knox@example.com. 312 Cedar Dr Seymour IN. Remove one maple tree. Option A cut only $1,200.",
+    { treeCountOverride: "Unknown" },
+  ));
+
+  assert.equal(unknown.can_generate_pdf, false);
+  assert.equal(unknown.alphaJson.job.tree_details.tree_count, "");
+  assert.match(`${unknown.blocking_errors.join(" ")} ${unknown.follow_ups.join(" ")}`, /tree count|how many trees/i);
+});
+
 test("messy raw note parses implied one-tree removal while keeping safety notes internal", () => {
   const input =
     "needs tree remuved at 148 mapel st. big tree by garage. option 1 remuv only 1200. option 2 remuv plus haila way and cleen up 9000. cust wants text no call. gate messd up and dog is real aggresiv, barks hard and mite bite, dont go in yard till cust puts dog up.";
@@ -825,7 +1041,7 @@ test("messy raw note parses implied one-tree removal while keeping safety notes 
   assert.match(validation.follow_ups.join(" "), /phone number or email/i);
   assert.equal(alphaJson.job.service_address.display, "148 maple st");
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
-  assert.equal(alphaJson.job.description, "Remove one large tree near the garage.");
+  assert.equal(alphaJson.job.description, "Remove one large tree near the garage. Options include haul away or cleanup.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,200", "$9,000"]);
   assert.match(alphaJson.service_options.items[0].description, /remove only/i);
   assert.match(alphaJson.service_options.items[1].description, /remove.*haul away.*cleanup/i);
@@ -848,7 +1064,7 @@ test("local no-standard-suffix address parses and gate access note stays interna
   assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
   assert.match(alphaJson.job.service_address.display, /Salem/i);
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
-  assert.equal(alphaJson.job.description, "Remove one large tree near the garage.");
+  assert.equal(alphaJson.job.description, "Remove one large tree near the garage. Options include haul away or cleanup.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,540", "$3,220"]);
   assert.match(validation.warnings.join(" "), /Safety\/access note/i);
   assert.doesNotMatch(customerFacingText, /gate|access is bad|crew|call before entering/i);

@@ -48,6 +48,10 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(inputFormSource, /Fill in the red fields and add Job Notes/);
   assert.match(inputFormSource, /Review Estimate/);
   assert.match(inputFormSource, /Clear/);
+  assert.match(inputFormSource, /Tree count/);
+  assert.match(inputFormSource, /treeCountOverride/);
+  assert.match(inputFormSource, /<option value="Auto">Auto<\/option>/);
+  assert.match(inputFormSource, /<option value="Unknown">Unknown<\/option>/);
   assert.match(inputFormSource, /job-notes-card/);
   assert.match(inputFormSource, /Include<\/span> as much information as possible about the job, scope of work, and prices/);
   assert.match(inputFormSource, /btn-create-review/);

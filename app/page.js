@@ -46,6 +46,7 @@ const emptyQuoteContact = {
   phone: "",
   email: "",
   address: "",
+  treeCountOverride: "Auto",
 };
 
 function contactFromAlphaJson(alphaJson) {
@@ -54,6 +55,7 @@ function contactFromAlphaJson(alphaJson) {
     phone: alphaJson?.customer?.phone_display || alphaJson?.customer?.phone_primary || "",
     email: alphaJson?.customer?.email || "",
     address: alphaJson?.job?.service_address?.display || "",
+    treeCountOverride: "Auto",
   };
 }
 
