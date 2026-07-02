@@ -1,10 +1,10 @@
 # Focused Regression Battery - Latest Baseline
 
-Generated Eastern: 07/02/2026, 10:02:00 AM EDT
-Generated UTC: 2026-07-02T14:02:00.008Z
-Commit: d1fd8273ab2718b4aac084b0277bb71512686832
+Generated Eastern: 07/02/2026, 02:35:56 PM EDT
+Generated UTC: 2026-07-02T18:35:56.959Z
+Commit: ef03a5d8273edad1dc194dd4c1d558c3d745c679
 Branch: master
-Dirty files: 31
+Dirty files: 3
 
 ## Summary
 
@@ -57,3 +57,4 @@ Dirty files: 31
 
 - Input text, intake fields, expected behavior, actual validation state, address, tree count/type, prices, options, TD2 summary, job description, corrected interpretation, commit, branch, timestamp, and dirty file count are stored in the JSONL history.
 - This battery intentionally records desired future behavior, so failing cases are baseline evidence before parser/validation changes.
+
