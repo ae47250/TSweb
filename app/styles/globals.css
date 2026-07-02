@@ -439,6 +439,47 @@ main {
   padding-left: 20px;
 }
 
+.override-warning-card {
+  background: #fff7ed;
+  border: 2px solid #f97316;
+}
+
+.override-warning-card h3 {
+  color: #7c2d12;
+  margin: 0 0 6px;
+}
+
+.override-warning-card p {
+  color: #7c2d12;
+}
+
+.override-warning-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.override-warning-item {
+  background: #fff;
+  border: 1px solid #fdba74;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.override-warning-item p {
+  margin: 0;
+}
+
+.override-ack-button {
+  justify-self: start;
+}
+
+.override-ack-button-active {
+  background: #3f7045;
+}
+
 .quote-options-grid {
   display: grid;
   gap: 12px;

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { buildCustomerJobSummary, normalizeServiceAddress, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
+import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../lib/reviewOverrides.js";
 
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -240,9 +241,78 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
   );
 }
 
-export default function JsonReview({ alphaJson, validation, debugPipeline = null, sourceNotes = "", intake = {}, mode = "review", onApprove, onEdit, busy = false }) {
+function OverrideWarningCard({ status, overrides, onChange }) {
+  if (!status.needsAddressOverride && !status.needsContactOverride && !status.needsPhoneOverride && !status.needsEmailOverride) return null;
+
+  function toggle(key) {
+    onChange?.({ ...overrides, [key]: !overrides[key] });
+  }
+
+  const contactWarning = status.contactWarning;
+  const contactButtonText = {
+    missingPhone: "Create Estimate without phone number",
+    missingEmail: "Create Estimate without email",
+    missingContact: "Create Estimate without phone number or email",
+  }[contactWarning?.key];
+  const contactRecordedText = {
+    missingPhone: "OK recorded - phone number",
+    missingEmail: "OK recorded - email",
+    missingContact: "OK recorded - phone number and email",
+  }[contactWarning?.key];
+  const contactAccepted = contactWarning ? Boolean(overrides[contactWarning.key]) : false;
+
+  return (
+    <section className="summary-card override-warning-card">
+      <h3>Tree Dude Warning</h3>
+      <p>This information is missing or unclear. Customer documents stay clean, but the contractor copy will record the warning.</p>
+      <div className="override-warning-actions">
+        {status.needsAddressOverride && (
+          <div className="override-warning-item">
+            <strong>{status.addressWarning?.title || "Service address missing or unclear"}</strong>
+            <p>{status.addressWarning?.message || "Service address is missing or unclear."}</p>
+            <button
+              className={`btn-orange override-ack-button ${overrides.missingAddress ? "override-ack-button-active" : ""}`}
+              type="button"
+              onClick={() => toggle("missingAddress")}
+            >
+              {overrides.missingAddress ? "OK recorded - address" : "Create Estimate without exact address"}
+            </button>
+          </div>
+        )}
+        {contactWarning && (
+          <div className="override-warning-item">
+            <strong>{contactWarning.title}</strong>
+            <p>{contactWarning.message}</p>
+            <button
+              className={`btn-orange override-ack-button ${contactAccepted ? "override-ack-button-active" : ""}`}
+              type="button"
+              onClick={() => toggle(contactWarning.key)}
+            >
+              {contactAccepted ? contactRecordedText : contactButtonText}
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+export default function JsonReview({
+  alphaJson,
+  validation,
+  debugPipeline = null,
+  sourceNotes = "",
+  intake = {},
+  mode = "review",
+  reviewOverrides = {},
+  onReviewOverridesChange,
+  onApprove,
+  onEdit,
+  busy = false,
+}) {
   if (!alphaJson) return null;
 
+  const normalizedOverrides = normalizeReviewOverrides(reviewOverrides);
   const options = alphaJson.service_options?.items || [];
   const structuredJobSummary = buildCustomerJobSummary(alphaJson);
   const jobNotes = structuredJobSummary || cleanJobNotesForReview(sourceNotes, alphaJson);
@@ -251,6 +321,8 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
   const customerEmail = alphaJson.customer?.email || "Email not available";
   const jobAddress = alphaJson.job?.service_address?.display || normalizeServiceAddress(intake.address) || "Address missing";
   const canConfirm = Boolean(validation?.can_generate_pdf);
+  const overrideStatus = getBlockingOverrideStatus(validation, normalizedOverrides, alphaJson);
+  const canConfirmWithOverrides = canConfirm || overrideStatus.canProceed;
   const isFinalConfirm = mode === "confirm";
   const reviewIssues = validation?.follow_ups?.length
     ? validation.follow_ups
@@ -291,8 +363,8 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
       <h2>{title}</h2>
       <p className="text-muted">{subtitle}</p>
       {!isFinalConfirm && (
-        <span className={`review-status ${canConfirm ? "review-status-ready" : "review-status-needs-info"}`}>
-          {canConfirm ? "Review ready" : "Needs more info"}
+        <span className={`review-status ${canConfirmWithOverrides ? "review-status-ready" : "review-status-needs-info"}`}>
+          {canConfirmWithOverrides ? "Review ready" : "Needs more info"}
         </span>
       )}
       {isFinalConfirm ? (
@@ -355,6 +427,13 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
           renderedFields={renderedFields}
         />
       )}
+      {!isFinalConfirm && (
+        <OverrideWarningCard
+          status={overrideStatus}
+          overrides={normalizedOverrides}
+          onChange={onReviewOverridesChange}
+        />
+      )}
       {reviewIssues.length > 0 && (
         <div className="summary-card needs-info-card">
           <h3>Needs More Info</h3>
@@ -371,11 +450,14 @@ export default function JsonReview({ alphaJson, validation, debugPipeline = null
           </ul>
         </div>
       )}
-      {!canConfirm && (
+      {!canConfirmWithOverrides && (
         <p className="text-muted">Fix missing info before confirming quote.</p>
       )}
+      {!canConfirm && canConfirmWithOverrides && (
+        <p className="text-muted">Override accepted. Confirm Quote will create a Tree Dude copy with internal warnings.</p>
+      )}
       <div className="toolbar td2-action-toolbar mt-2">
-        <button className="btn-primary" onClick={onApprove} disabled={!canConfirm || busy}>
+        <button className="btn-primary" onClick={onApprove} disabled={!canConfirmWithOverrides || busy}>
           {approveLabel}
         </button>
         <button className="btn-secondary" onClick={onEdit}>{editLabel}</button>

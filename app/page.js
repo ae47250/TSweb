@@ -49,6 +49,13 @@ const emptyQuoteContact = {
   treeCountOverride: "Auto",
 };
 
+const emptyReviewOverrides = {
+  missingAddress: false,
+  missingPhone: false,
+  missingEmail: false,
+  missingContact: false,
+};
+
 function contactFromAlphaJson(alphaJson) {
   return {
     name: alphaJson?.customer?.name || "",
@@ -122,6 +129,7 @@ export default function HomePage() {
   const [alphaJson, setAlphaJson] = useState(null);
   const [validation, setValidation] = useState(null);
   const [debugPipeline, setDebugPipeline] = useState(null);
+  const [reviewOverrides, setReviewOverrides] = useState(emptyReviewOverrides);
   const [documentResult, setDocumentResult] = useState(null);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -151,6 +159,7 @@ export default function HomePage() {
       setAlphaJson(null);
       setValidation(null);
       setDebugPipeline(null);
+      setReviewOverrides(emptyReviewOverrides);
       setDocumentResult(null);
     }
     setStage("new");
@@ -166,6 +175,7 @@ export default function HomePage() {
     setAlphaJson(null);
     setValidation(null);
     setDebugPipeline(null);
+    setReviewOverrides(emptyReviewOverrides);
     setDocumentResult(null);
     setNotice("");
     setError("");
@@ -184,6 +194,7 @@ export default function HomePage() {
       setAlphaJson(validated.alphaJson);
       setValidation(validated);
       setDebugPipeline(openai.debugPipeline || null);
+      setReviewOverrides(emptyReviewOverrides);
       setDocumentResult(null);
       setStage("review");
     } catch (err) {
@@ -197,6 +208,7 @@ export default function HomePage() {
 
   function editNotes() {
     setDocumentResult(null);
+    setReviewOverrides(emptyReviewOverrides);
     setStage("new");
     setEditMessage("Edit the notes above, add the missing information, then click Create Review again.");
     requestAnimationFrame(() => {
@@ -213,7 +225,7 @@ export default function HomePage() {
     setBusy(true);
     setError("");
     try {
-      const result = await postJson("/api/pdf", { alphaJson });
+      const result = await postJson("/api/pdf", { alphaJson, reviewOverrides });
       setDocumentResult(result);
       setAlphaJson(result.alphaJson);
       setEditMessage("");
@@ -248,9 +260,11 @@ export default function HomePage() {
         customerEstimateUrl: record.customerEstimateUrl || `/e/${encodeURIComponent(record.documentId)}`,
         full: record.documents?.full || record.accepted?.full || record.signed?.full,
         mobile: record.documents?.mobile || record.signed?.mobile,
+        treeDude: record.documents?.treeDude || record.documents?.["tree-dude"],
       });
       setValidation({ can_generate_pdf: true, follow_ups: [] });
       setDebugPipeline(null);
+      setReviewOverrides(emptyReviewOverrides);
       const savedNotes = record.alphaJson?.raw_input?.customer_text || "";
       setSubmittedText(savedNotes);
       setCustomerText(savedNotes);
@@ -318,6 +332,8 @@ export default function HomePage() {
               alphaJson={alphaJson}
               validation={validation}
               debugPipeline={debugPipeline}
+              reviewOverrides={reviewOverrides}
+              onReviewOverridesChange={setReviewOverrides}
               intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={() => setStage("confirm")}
@@ -336,6 +352,7 @@ export default function HomePage() {
               alphaJson={alphaJson}
               validation={validation}
               debugPipeline={debugPipeline}
+              reviewOverrides={reviewOverrides}
               intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={confirmQuote}

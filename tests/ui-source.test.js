@@ -13,6 +13,7 @@ const customerRouteSource = readFileSync("app/e/[estimateId]/EstimateClient.jsx"
 const openaiRouteSource = readFileSync("app/api/openai/route.js", "utf8");
 const openaiPromptSource = readFileSync("lib/openaiPrompt.js", "utf8");
 const debugPipelineSource = readFileSync("lib/debugPipeline.js", "utf8");
+const reviewOverridesSource = readFileSync("lib/reviewOverrides.js", "utf8");
 
 test("normal UI does not render raw AlphaJSON debug panel", () => {
   assert.doesNotMatch(pageSource, /<h2>AlphaJSON<\/h2>/);
@@ -66,7 +67,10 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(pdfGeneratorSource, /Inform Customer/);
   assert.match(pdfGeneratorSource, /Send SMS/);
   assert.match(pdfGeneratorSource, /Send Email/);
-  assert.match(pdfGeneratorSource, /Download Estimate/);
+  assert.match(pdfGeneratorSource, /Download Customer Copy/);
+  assert.match(pdfGeneratorSource, /Download Contractor Copy/);
+  assert.match(pdfGeneratorSource, /Contractor copy includes internal warning notes from TD2/);
+  assert.match(pdfGeneratorSource, /hasContractorWarnings/);
   assert.match(pdfGeneratorSource, /Copy Link to Estimate/);
   assert.match(pdfGeneratorSource, /Send Now/);
   assert.match(pdfGeneratorSource, /setActivePreview\(""\)/);
@@ -114,6 +118,12 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /warningItems/);
   assert.match(reviewSource, /Warnings/);
   assert.match(reviewSource, /warning-card/);
+  assert.match(reviewSource, /OverrideWarningCard/);
+  assert.match(reviewSource, /Tree Dude Warning/);
+  assert.match(reviewSource, /Create Estimate without exact address/);
+  assert.match(reviewSource, /Create Estimate without phone number/);
+  assert.match(reviewSource, /Create Estimate without email/);
+  assert.match(reviewSource, /Create Estimate without phone number or email/);
   assert.match(reviewSource, /Fix missing info before confirming quote/);
   assert.match(reviewSource, /Edit Info/);
   assert.match(reviewSource, /customer-summary-card/);
@@ -122,6 +132,8 @@ test("Tree Dude review and confirm screens separate AI review from final quote a
   assert.match(reviewSource, /td2-action-toolbar/);
   assert.match(cssSource, /\.td2-action-toolbar/);
   assert.match(cssSource, /\.warning-card/);
+  assert.match(cssSource, /\.override-warning-card/);
+  assert.match(cssSource, /border:\s*2px solid #f97316/);
   assert.match(cssSource, /grid-template-columns:\s*max-content minmax\(0, 1fr\)/);
   assert.match(cssSource, /\.customer-summary-card/);
   assert.match(cssSource, /\.customer-info-grid/);
@@ -140,12 +152,38 @@ test("customer route requires compact e-signature consent and Tree Dude panel do
 
 test("customer-facing estimate documents use cleaned job notes without internal evidence fields", () => {
   const customerDocumentSource = readFileSync("lib/customerDocument.js", "utf8");
+  const pdfRouteSource = readFileSync("app/api/pdf/route.js", "utf8");
   assert.match(customerDocumentSource, /buildCustomerJobSummary/);
   assert.match(customerDocumentSource, /workDescription/);
+  assert.match(customerDocumentSource, /renderTreeDudeDocument/);
+  assert.match(pdfRouteSource, /renderCustomerDocument\(alphaJson, \{ mobile: false \}\)/);
+  assert.match(pdfRouteSource, /renderCustomerDocument\(alphaJson, \{ mobile: true \}\)/);
+  assert.match(pdfRouteSource, /renderTreeDudeDocument/);
+  assert.match(pdfRouteSource, /overrideWarnings\.length > 0/);
+  assert.match(pdfRouteSource, /if \(treeDude\) recordPayload\.pdf_url_tree_dude/);
+  assert.match(pdfRouteSource, /override_warnings/);
   assert.doesNotMatch(customerRouteSource, /field_evidence/);
   assert.doesNotMatch(customerRouteSource, /uncertainties/);
   assert.doesNotMatch(customerDocumentSource, /field_evidence/);
   assert.doesNotMatch(customerDocumentSource, /uncertainties/);
+});
+
+test("review overrides are narrow and recorded separately from normal validation", () => {
+  const pageSource = readFileSync("app/page.js", "utf8");
+  const pdfRouteSource = readFileSync("app/api/pdf/route.js", "utf8");
+  assert.match(pageSource, /reviewOverrides/);
+  assert.match(pageSource, /onReviewOverridesChange/);
+  assert.match(pageSource, /postJson\("\/api\/pdf", \{ alphaJson, reviewOverrides \}\)/);
+  assert.match(reviewOverridesSource, /Missing service address/);
+  assert.match(reviewOverridesSource, /Missing customer phone or email/);
+  assert.match(reviewOverridesSource, /Service address is missing, but was OK'd when the estimate was created/);
+  assert.match(reviewOverridesSource, /Service address is not clear, but was OK'd when the estimate was created/);
+  assert.match(reviewOverridesSource, /Customer phone number is missing, but email is given/);
+  assert.match(reviewOverridesSource, /Customer email is missing, but phone number is given/);
+  assert.match(reviewOverridesSource, /Sending Estimate SMS and Email will not be available/);
+  assert.match(pdfRouteSource, /getBlockingOverrideStatus/);
+  assert.match(pdfRouteSource, /canGenerateWithOverrides/);
+  assert.match(pdfRouteSource, /remainingBlockingErrors/);
 });
 
 test("manual acceptance foundation exists without multi-company scope", () => {

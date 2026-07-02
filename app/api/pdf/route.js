@@ -1,10 +1,11 @@
 import { readJson, json, requestIp } from "../../../lib/api.js";
 import { hasBlobConfig } from "../../../lib/blobStore.js";
-import { renderCustomerDocument } from "../../../lib/customerDocument.js";
+import { renderCustomerDocument, renderTreeDudeDocument } from "../../../lib/customerDocument.js";
 import { createDownloadFile } from "../../../lib/documentFiles.js";
 import { saveEstimate } from "../../../lib/estimateStore.js";
 import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { checkRateLimit } from "../../../lib/rateLimiter.js";
+import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../../lib/reviewOverrides.js";
 import { validateAlphaJson } from "../../../lib/validateJson.js";
 
 export const runtime = "nodejs";
@@ -26,11 +27,16 @@ export async function POST(request) {
     body.intake || {},
   );
   const validation = validateAlphaJson(alphaJsonForValidation);
-  if (!validation.can_generate_pdf) {
+  const reviewOverrides = normalizeReviewOverrides(body.reviewOverrides || body.overrides);
+  const overrideStatus = getBlockingOverrideStatus(validation, reviewOverrides, alphaJsonForValidation);
+  const canGenerateWithOverrides = overrideStatus.canProceed;
+  if (!canGenerateWithOverrides) {
     return json(
       {
         error: "Blocking issues must be fixed before generating customer documents.",
-        blocking_errors: validation.blocking_errors,
+        blocking_errors: overrideStatus.remainingBlockingErrors.length
+          ? overrideStatus.remainingBlockingErrors
+          : validation.blocking_errors,
         follow_ups: validation.follow_ups,
       },
       { status: 400 },
@@ -41,26 +47,45 @@ export async function POST(request) {
   alphaJson.document.approved_for_pdf = true;
   alphaJson.review.approved_for_pdf = true;
   alphaJson.review.review_completed = true;
+  alphaJson.review.overrides = reviewOverrides;
+  alphaJson.review.override_warnings = overrideStatus.acceptedOverrideWarnings;
   alphaJson.validation.can_generate_pdf = true;
+  alphaJson.validation.overridden_blocking_errors = overrideStatus.acceptedOverrideWarnings.map((warning) => warning.title);
 
+  const overrideWarnings = overrideStatus.acceptedOverrideWarnings;
   const fullHtml = renderCustomerDocument(alphaJson, { mobile: false });
   const mobileHtml = renderCustomerDocument(alphaJson, { mobile: true });
   const documentId = alphaJson.document.number;
-  const [full, mobile] = await Promise.all([
+  const documentJobs = [
     createDownloadFile(fullHtml, { documentId, variant: "full", mobile: false }),
     createDownloadFile(mobileHtml, { documentId, variant: "mobile", mobile: true }),
-  ]);
-  const customerEstimateUrl = new URL(`/e/${encodeURIComponent(documentId)}`, request.url).toString();
+  ];
 
-  const record = await saveEstimate({
+  if (overrideWarnings.length > 0) {
+    const treeDudeHtml = renderTreeDudeDocument(alphaJson, { warnings: overrideWarnings });
+    documentJobs.push(createDownloadFile(treeDudeHtml, { documentId, variant: "tree-dude", mobile: false }));
+  }
+
+  const [full, mobile, treeDude] = await Promise.all(documentJobs);
+  const customerEstimateUrl = new URL(`/e/${encodeURIComponent(documentId)}`, request.url).toString();
+  const documents = { full, mobile };
+  if (treeDude) {
+    documents.treeDude = treeDude;
+    documents["tree-dude"] = treeDude;
+  }
+
+  const recordPayload = {
     documentId,
     status: "approved",
     alphaJson,
     customerEstimateUrl,
-    documents: { full, mobile },
+    documents,
     pdf_url_full: full.downloadUrl,
     pdf_url_mobile: mobile.downloadUrl,
-  });
+  };
+  if (treeDude) recordPayload.pdf_url_tree_dude = treeDude.downloadUrl;
+
+  const record = await saveEstimate(recordPayload);
 
   return json({
     documentId,
@@ -68,6 +93,8 @@ export async function POST(request) {
     customerEstimateUrl,
     full,
     mobile,
+    treeDude,
+    overrideWarnings,
     mockedStorage: !hasBlobConfig(),
     blobStorage: record.blobStorage,
     note:

@@ -44,7 +44,13 @@ export default function PdfGenerator({
   const customerEmail = alphaJson.customer?.email || "";
   const customerUrl = documentResult.customerEstimateUrl || `/e/${documentResult.documentId}`;
   const estimateFile = documentResult.full || documentResult.mobile;
-  const estimateDownloadLabel = estimateFile?.format === "pdf" ? "Download Estimate" : "Download Estimate HTML";
+  const overrideWarnings = documentResult.overrideWarnings || alphaJson.review?.override_warnings || [];
+  const hasContractorWarnings = overrideWarnings.length > 0;
+  const treeDudeFile = hasContractorWarnings
+    ? documentResult.treeDude || documentResult.documents?.treeDude || documentResult.documents?.["tree-dude"]
+    : null;
+  const estimateDownloadLabel = estimateFile?.format === "pdf" ? "Download Customer Copy" : "Download Customer HTML";
+  const treeDudeDownloadLabel = treeDudeFile?.format === "pdf" ? "Download Contractor Copy" : "Download Contractor HTML";
   const smsMessage = `Hi ${firstName(customerName)}, your Alpha Tree Service estimate is ready. Review options and sign here: ${customerUrl}`;
   const emailSubject = `Alpha Tree Service Estimate - ${customerName}`;
   const emailBody = `Hi ${firstName(customerName)},\n\nYour Alpha Tree Service estimate is ready. Please review the options and sign electronically.\n\nView Your Alpha Tree Service Estimate:\n${customerUrl}`;
@@ -175,9 +181,17 @@ export default function PdfGenerator({
             {estimateDownloadLabel}
           </a>
         )}
+        {treeDudeFile && (
+          <a className="btn-light-blue" href={treeDudeFile.downloadUrl || treeDudeFile.htmlDataUrl} download={treeDudeFile.filename}>
+            {treeDudeDownloadLabel}
+          </a>
+        )}
         <button className="btn-light-blue" type="button" onClick={() => copyText(customerUrl)}>Copy Link to Estimate</button>
         <button className="btn-yellow" type="button" onClick={() => setShowManual((current) => !current)}>Record Manual Acceptance</button>
       </div>
+      {treeDudeFile && (
+        <p className="text-muted">Contractor copy includes internal warning notes from TD2.</p>
+      )}
       {(!customerPhone || !customerEmail) && (
         <p className="text-muted">
           {!customerPhone ? "SMS unavailable - missing phone. " : ""}

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { createDraftAlphaJson } from "../lib/alphaJson.js";
 import { generateDocumentId } from "../lib/metadata.js";
 import { checkRateLimit, resetRateLimiter } from "../lib/rateLimiter.js";
+import { getBlockingOverrideStatus } from "../lib/reviewOverrides.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 import { easyInput } from "./fixtures/sampleInput.js";
 
@@ -27,6 +28,55 @@ test("validation blocks missing phone and priced option", () => {
   assert.equal(result.can_generate_pdf, false);
   assert.ok(result.blocking_errors.includes("Missing customer phone or email."));
   assert.ok(result.blocking_errors.includes("Missing priced service option."));
+});
+
+test("review overrides allow only accepted address and contact blocking issues", () => {
+  const alphaJsonMissingContact = { customer: { phone_display: "", phone_primary: "", email: "" } };
+  const addressAndContactValidation = {
+    can_generate_pdf: false,
+    blocking_errors: ["Missing service address.", "Missing customer phone or email."],
+  };
+
+  assert.equal(getBlockingOverrideStatus(addressAndContactValidation, {}, alphaJsonMissingContact).canProceed, false);
+  assert.equal(getBlockingOverrideStatus(addressAndContactValidation, { missingAddress: true }, alphaJsonMissingContact).canProceed, false);
+  assert.equal(getBlockingOverrideStatus(addressAndContactValidation, { missingAddress: true, missingContact: true }, alphaJsonMissingContact).canProceed, true);
+
+  const unrelatedValidation = {
+    can_generate_pdf: false,
+    blocking_errors: ["Missing service address.", "Missing priced service option."],
+  };
+
+  const status = getBlockingOverrideStatus(unrelatedValidation, { missingAddress: true, missingContact: true }, alphaJsonMissingContact);
+  assert.equal(status.canProceed, false);
+  assert.deepEqual(status.remainingBlockingErrors, ["Missing priced service option."]);
+});
+
+test("review overrides require acknowledgement for each missing send channel", () => {
+  const validation = { can_generate_pdf: true, blocking_errors: [] };
+
+  const missingPhone = getBlockingOverrideStatus(
+    validation,
+    {},
+    { customer: { phone_display: "", phone_primary: "", email: "sam@example.com" } },
+  );
+  assert.equal(missingPhone.canProceed, false);
+  assert.equal(missingPhone.contactWarning.message, "Customer phone number is missing, but email is given. Sending Estimate SMS will not be available.");
+  assert.equal(
+    getBlockingOverrideStatus(validation, { missingPhone: true }, { customer: { phone_display: "", phone_primary: "", email: "sam@example.com" } }).canProceed,
+    true,
+  );
+
+  const missingEmail = getBlockingOverrideStatus(
+    validation,
+    {},
+    { customer: { phone_display: "812-555-0199", phone_primary: "812-555-0199", email: "" } },
+  );
+  assert.equal(missingEmail.canProceed, false);
+  assert.equal(missingEmail.contactWarning.message, "Customer email is missing, but phone number is given. Sending Estimate Email will not be available.");
+  assert.equal(
+    getBlockingOverrideStatus(validation, { missingEmail: true }, { customer: { phone_display: "812-555-0199", phone_primary: "812-555-0199", email: "" } }).canProceed,
+    true,
+  );
 });
 
 function pricedOptionsCase(prices) {
