@@ -487,7 +487,7 @@ test("job summary falls back when option prose contains customer/internal fragme
     },
   };
 
-  assert.equal(buildCustomerJobSummary(alphaJson), "Tree service work as described in the selected option.");
+  assert.equal(buildCustomerJobSummary(alphaJson), "Tree service work as described in the selected quote option.");
 });
 
 test("job summary omits safety and access notes from structured scope", () => {
@@ -606,7 +606,7 @@ test("job summary removes address leakage and tree-as-actor prose", () => {
   assert.doesNotMatch(summary, /3225|requested|wants|would like|is requesting/i);
 });
 
-test("job summary cleans broken articles and preserves leaning location", () => {
+test("job summary cleans broken articles and keeps warning details out of customer summary", () => {
   const articleCase = {
     raw_input: {
       customer_text:
@@ -682,7 +682,7 @@ test("job summary cleans broken articles and preserves leaning location", () => 
   );
   assert.equal(
     buildCustomerJobSummary(leaningCase),
-    "Remove two walnut trees leaning toward the house. Options include leaving wood on site, haul away or cleanup.",
+    "Remove two walnut trees. Options include leaving wood on site, haul away or cleanup.",
   );
   assert.equal(
     buildCustomerJobSummary(possessiveCase),
@@ -751,7 +751,7 @@ test("job summary rejects awkward perform-tree and option-only fragments", () =>
   };
 
   assert.equal(performTree.job.description, "Remove one maple tree. Options include cleanup.");
-  assert.equal(buildCustomerJobSummary(optionOnly), "Tree service work as described in the selected option.");
+  assert.equal(buildCustomerJobSummary(optionOnly), "Tree service work as described in the selected quote option.");
 });
 
 test("conditional cleanup and haul-away wording blocks after typo normalization", () => {
@@ -1430,6 +1430,16 @@ test("customer-facing summaries strip power and blocked-access notes", () => {
   assert.equal(powerLine.can_generate_pdf, true);
   assert.match(powerLine.warnings.join(" "), /service drop|crew needs caution/i);
   assert.doesNotMatch(powerLine.alphaJson.normalization.corrected_interpretation, /service drop|crew needs caution/i);
+  assert.doesNotMatch(powerLine.alphaJson.job.description, /service drop|crew needs caution|power line/i);
+
+  const leaning = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Nora Bell 812-555-2020 nora@example.com. 40 Walnut St, Madison IN. Remove two walnut trees leaning toward the house for $3100.",
+  ));
+  assert.equal(leaning.can_generate_pdf, true);
+  assert.match(leaning.warnings.join(" "), /leaning toward the house/i);
+  assert.equal(leaning.alphaJson.job.description, "Remove two walnut trees.");
+  assert.doesNotMatch(leaning.alphaJson.job.description, /leaning toward/i);
 
   const blockedAccess = validateAlphaJson(normalizeToAlphaJsonV14(
     {},
