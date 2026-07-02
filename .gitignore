@@ -8,3 +8,30 @@ coverage/
 *.log
 out/
 data/estimates/
+
+# Generated review and smoke-test artifacts.
+reports/LIVEapi-*
+reports/internal-100-each-*
+reports/replay-messy-inputs-*.jsonl
+reports/*-preview.png
+reports/*.docx
+reports/*.csv
+reports/~$*
+reports/compare-version-study/
+reports/td-*-visual.html
+reports/td-style-updated-css-preview.html
+
+# Keep durable progress artifacts visible for commits.
+!reports/alpha-metrics-history.jsonl
+!reports/alpha-metrics-report.md
+!reports/progress-report-*.md
+
+# Root-level generated review artifacts.
+* Review 2026-*.md
+* Review 2026-*.docx
+WebApp Architecture 2026-*.md
+* review-data*.json
+synthetic-messy-input-review-data-*.json
+live-*-review-data*.json
+address-pipeline-*.jsonl
+td-tree-count-override-mock.html

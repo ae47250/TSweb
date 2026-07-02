@@ -3,6 +3,9 @@ import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../../../lib/validateJson.js";
 import { readJson, json } from "../../../lib/api.js";
 import { OPENAI_SYSTEM_PROMPT } from "../../../lib/openaiPrompt.js";
+import { parseOpenAiDraft } from "../../../lib/openaiDraftSchema.js";
+import { openAiDraftToNormalizerInput } from "../../../lib/openaiDraftAdapter.js";
+import { buildDebugPipelinePayload } from "../../../lib/debugPipeline.js";
 
 export const runtime = "nodejs";
 
@@ -12,27 +15,18 @@ function debugPipelineEnabled() {
   return process.env.DEBUG_PIPELINE === "true";
 }
 
-function debugResponsePayload({ rawTd1Text, rawOpenAiDraftJson, alphaJson, validation, mocked, note, error }) {
-  if (!debugPipelineEnabled()) return {};
-
-  return {
-    debugPipeline: {
-      rawTd1Input: {
-        customer_text: rawTd1Text,
-      },
-      rawOpenAiDraftJson,
-      cleanedCanonicalAlphaJson: alphaJson,
-      validationResult: {
-        can_generate_pdf: validation.can_generate_pdf,
-        blocking_errors: validation.blocking_errors || [],
-        follow_ups: validation.follow_ups || [],
-        warnings: validation.warnings || [],
-      },
-      source: mocked ? "local-draft-parser" : "openai",
-      note: note || "",
-      error: error || "",
-    },
-  };
+function debugResponsePayload({ rawTd1Text, rawOpenAiDraftJson, draftSchemaWarnings = [], alphaJson, validation, mocked, note, error }) {
+  return buildDebugPipelinePayload({
+    enabled: debugPipelineEnabled(),
+    rawTd1Text,
+    rawOpenAiDraftJson,
+    draftSchemaWarnings,
+    alphaJson,
+    validation,
+    mocked,
+    note,
+    error,
+  });
 }
 
 function getReasoningEffort(model) {
@@ -133,7 +127,9 @@ export async function POST(request) {
       ],
     });
     const rawOpenAiDraftJson = JSON.parse(response.choices[0]?.message?.content || "{}");
-    const alphaJson = normalizeToAlphaJsonV14(rawOpenAiDraftJson, customerText, intake);
+    const parsedDraft = parseOpenAiDraft(rawOpenAiDraftJson);
+    const normalizerInput = openAiDraftToNormalizerInput(parsedDraft.draft, { rawInput: customerText, intake });
+    const alphaJson = normalizeToAlphaJsonV14(normalizerInput, customerText, intake);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       caseId,
@@ -148,6 +144,7 @@ export async function POST(request) {
       ...debugResponsePayload({
         rawTd1Text: customerText || "",
         rawOpenAiDraftJson,
+        draftSchemaWarnings: parsedDraft.warnings,
         alphaJson,
         validation,
         mocked: false,

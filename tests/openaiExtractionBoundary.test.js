@@ -1,0 +1,427 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { resolveServiceAddress } from "../lib/addressResolver.js";
+import { buildDebugPipelinePayload } from "../lib/debugPipeline.js";
+import { buildStructuredFollowUps } from "../lib/followUpBuilder.js";
+import { openAiDraftToNormalizerInput } from "../lib/openaiDraftAdapter.js";
+import { parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
+import { resolvePrice } from "../lib/priceResolver.js";
+import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
+import { validateAlphaJson } from "../lib/validateJson.js";
+
+const firstNames = ["Ava", "Ben", "Cara", "Drew", "Ella", "Finn", "Gina", "Hank", "Ivy", "Jake"];
+const lastNames = ["Reed", "Clay", "Mills", "Moss", "Knox", "Hale", "Price", "Bell", "Stone", "Fox"];
+const towns = ["Madison", "Hanover", "North Vernon", "Salem", "Seymour", "Austin", "Scottsburg", "Paoli", "Bedford", "Charlestown"];
+const streets = ["Walnut St", "Oak Lane", "Maple Ave", "Pine Road", "Cedar Dr", "Elm Street"];
+const species = ["maple", "oak", "pine", "ash", "cedar", "walnut"];
+
+function sampleCount(items, label) {
+  assert.equal(items.length, 60, `${label} should have 60 samples`);
+}
+
+function nameFor(index) {
+  return `${firstNames[index % firstNames.length]} ${lastNames[(index * 3) % lastNames.length]}`;
+}
+
+function phoneFor(index) {
+  return `812-555-${String(1000 + index).slice(-4)}`;
+}
+
+function emailFor(index) {
+  return `sample${index}@example.com`;
+}
+
+function townFor(index) {
+  return towns[index % towns.length];
+}
+
+function speciesFor(index) {
+  return species[index % species.length];
+}
+
+function streetFor(index) {
+  return streets[index % streets.length];
+}
+
+function houseFor(index) {
+  return 200 + index * 7;
+}
+
+function priceFor(index) {
+  return 900 + index * 25;
+}
+
+function rawNote(index) {
+  return [
+    nameFor(index),
+    phoneFor(index),
+    emailFor(index),
+    `service address ${houseFor(index)}${streetFor(index)} ${townFor(index)} Indiana.`,
+    `Remove one ${speciesFor(index)} tree near garage.`,
+    `Option A remove and haul ${priceFor(index)}.`,
+  ].join(" ");
+}
+
+function validationFromDraft(rawJson, rawInput) {
+  const parsed = parseOpenAiDraft(rawJson);
+  const normalizerInput = openAiDraftToNormalizerInput(parsed.draft, { rawInput });
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(normalizerInput, rawInput));
+  return { parsed, validation };
+}
+
+test("OpenAI draft adapter preserves separate option prices through canonical normalization", () => {
+  const raw = "Gina Price. Phone 812-555-0107. Email gina.price@example.com. Service address 2018 Cedar Dr Seymour Indiana. Remove 1 maple tree by garage. Option A cut and leave wood $900. Option B remove, haul away, and cleanup $1,450.";
+  const draft = {
+    draft_version: "alpha_extraction_v1",
+    raw_input: { customer_text: raw },
+    contact: {
+      customer_name: "Gina Price",
+      phone: "812-555-0107",
+      email: "gina.price@example.com",
+    },
+    job: {
+      work_scope: "Remove 1 maple tree by garage.",
+      tree_count: "1 tree",
+      tree_count_status: "explicit",
+      tree_type: "maple",
+      tree_size: "",
+      location_on_property: "by garage",
+      work_action: "remove",
+    },
+    options: [
+      {
+        raw_label: "Option A",
+        raw_text: "Option A cut and leave wood $900.",
+        scope: "cut and leave wood",
+        price_raw: "$900",
+        price_amount: 900,
+        price_status: "firm",
+        haul_away: "not_stated",
+        cleanup: "not_stated",
+        stump_grinding: "not_stated",
+        wood_handling: "leave",
+        evidence: "Option A cut and leave wood $900.",
+      },
+      {
+        raw_label: "Option B",
+        raw_text: "Option B remove, haul away, and cleanup $1,450.",
+        scope: "remove, haul away, and cleanup",
+        price_raw: "$1,450",
+        price_amount: 1450,
+        price_status: "firm",
+        haul_away: "included",
+        cleanup: "included",
+        stump_grinding: "not_stated",
+        wood_handling: "haul",
+        evidence: "Option B remove, haul away, and cleanup $1,450.",
+      },
+    ],
+    safety_access_notes: [],
+    normalization: {
+      corrections_made: [],
+      uncertainties: [],
+      field_evidence: {},
+    },
+  };
+
+  const { parsed, validation } = validationFromDraft(draft, raw);
+  const alphaJson = validation.alphaJson;
+
+  assert.equal(parsed.ok, true);
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$900", "$1,450"]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
+    "cut and leave wood",
+    "remove, haul away, and cleanup",
+  ]);
+  assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(alphaJson.job.tree_details.tree_type, "maple");
+});
+
+test("60 legacy model-output shapes fail draft schema but fall back to raw-note normalization", () => {
+  const samples = Array.from({ length: 60 }, (_, index) => {
+    const raw = rawNote(index);
+    return {
+      raw,
+      legacyModelOutput: {
+        normalization: {
+          corrected_interpretation: "Old prompt tried to write final customer prose.",
+          field_evidence: { service_address: "999 Wrong Road, Nowhere, IN", price: "$9,999" },
+        },
+        alphaJson: {
+          raw_input: { customer_text: raw },
+          customer: { name: "Wrong Customer", phone: "999-999-9999" },
+          job: { service_address: { display: "999 Wrong Road, Nowhere, IN" } },
+          service_options: { items: [{ label: "Option Z", description: "Wrong option", price: "$9,999" }] },
+          validation: { can_generate_pdf: true },
+        },
+      },
+    };
+  });
+  sampleCount(samples, "legacy model-output");
+
+  for (const sample of samples) {
+    const { parsed, validation } = validationFromDraft(sample.legacyModelOutput, sample.raw);
+    const alphaJson = validation.alphaJson;
+
+    assert.equal(parsed.ok, false);
+    assert.match(parsed.warnings.join(" "), /OpenAI draft failed schema validation/i);
+    assert.equal(parsed.draft.raw_input.customer_text, sample.raw);
+    assert.equal(validation.can_generate_pdf, true);
+    assert.equal(alphaJson.raw_input.customer_text, sample.raw);
+    assert.doesNotMatch(alphaJson.job.service_address.display, /Wrong Road|Nowhere/i);
+    assert.doesNotMatch(alphaJson.customer.name, /Wrong Customer/i);
+    assert.equal(alphaJson.service_options.items.length, 1);
+  }
+});
+
+test("60 malformed drafts with valid raw notes sanitize or fall back without crashing", () => {
+  const samples = Array.from({ length: 60 }, (_, index) => ({ raw: rawNote(index), index }));
+  sampleCount(samples, "malformed draft");
+
+  for (const sample of samples) {
+    const badRootDraft = {
+      draft_version: `wrong_version_${sample.index}`,
+      raw_input: { customer_text: sample.raw },
+      job: { tree_count_status: "guessed", work_action: "write_pdf" },
+      options: { raw_text: "not an array" },
+      safety_access_notes: "dog by gate",
+    };
+    const badFieldDraft = {
+      draft_version: "alpha_extraction_v1",
+      raw_input: { customer_text: sample.raw },
+      contact: { service_address: `Option A remove and haul ${priceFor(sample.index)}` },
+      job: { tree_count: "1 tree", tree_count_status: "guessed", work_action: "write_pdf" },
+      options: { raw_text: "not an array" },
+      safety_access_notes: "dog by gate",
+      normalization: { corrections_made: "bad", uncertainties: "bad", field_evidence: [] },
+    };
+
+    const fallback = validationFromDraft(badRootDraft, sample.raw);
+    assert.equal(fallback.parsed.ok, false);
+    assert.equal(fallback.validation.can_generate_pdf, true);
+    assert.equal(fallback.validation.alphaJson.raw_input.customer_text, sample.raw);
+
+    const sanitized = validationFromDraft(badFieldDraft, sample.raw);
+    assert.equal(sanitized.parsed.ok, true);
+    assert.match(sanitized.parsed.warnings.join(" "), /invalid status|not an array/i);
+    assert.equal(sanitized.validation.can_generate_pdf, true);
+    assert.equal(sanitized.validation.alphaJson.raw_input.customer_text, sample.raw);
+  }
+});
+
+test("60 price resolver samples distinguish firm prices from phone, route, gate, range, and non-firm text", () => {
+  const firm = Array.from({ length: 15 }, (_, index) => {
+    const amount = 1000 + index * 75;
+    return { kind: "firm", rawPrice: index % 2 ? `$${amount.toLocaleString("en-US")}` : String(amount), expectedAmount: amount };
+  });
+  const nonFirm = Array.from({ length: 15 }, (_, index) => {
+    const amount = 1200 + index * 50;
+    const text = [
+      `around ${amount}`,
+      `about $${amount}`,
+      `roughly ${amount}`,
+      `maybe ${amount}`,
+      "price depends",
+    ][index % 5];
+    return { kind: "non_firm", rawPrice: text };
+  });
+  const nonPrice = Array.from({ length: 15 }, (_, index) => {
+    const text = [
+      phoneFor(index),
+      `gate code ${1200 + index}`,
+      `Highway ${400 + index}`,
+      `Route ${250 + index}`,
+      `${houseFor(index)} Main St`,
+    ][index % 5];
+    return { kind: "not_price", rawPrice: text };
+  });
+  const rangeOrMissing = Array.from({ length: 15 }, (_, index) => {
+    if (index % 3 === 0) return { kind: "range", rawPrice: `${1200 + index} - ${1800 + index}` };
+    if (index % 3 === 1) return { kind: "missing", rawPrice: "" };
+    return { kind: "missing", rawPrice: "call customer later" };
+  });
+  const samples = [...firm, ...nonFirm, ...nonPrice, ...rangeOrMissing];
+  sampleCount(samples, "price resolver");
+
+  for (const sample of samples) {
+    const result = resolvePrice({
+      rawPrice: sample.rawPrice,
+      optionText: sample.kind === "firm" ? `remove and haul ${sample.rawPrice}` : sample.rawPrice,
+      rawText: `Price resolver sample ${sample.rawPrice}`,
+    });
+
+    if (sample.kind === "firm") {
+      assert.equal(result.priceStatus, "firm", sample.rawPrice);
+      assert.equal(result.amount, sample.expectedAmount, sample.rawPrice);
+      assert.match(result.display, /^\$[0-9,]+$/);
+    } else if (sample.kind === "non_firm") {
+      assert.equal(result.priceStatus, "non_firm", sample.rawPrice);
+      assert.equal(result.amount, null);
+      assert.ok(result.blockingIssues.length >= 1);
+    } else if (sample.kind === "range") {
+      assert.equal(result.priceStatus, "range", sample.rawPrice);
+      assert.equal(result.amount, null);
+    } else {
+      assert.notEqual(result.priceStatus, "firm", sample.rawPrice);
+      assert.equal(result.amount, null, sample.rawPrice);
+    }
+  }
+});
+
+test("60 address resolver samples prefer intake, format jammed addresses, and block unsafe candidates", () => {
+  const intakeWins = Array.from({ length: 15 }, (_, index) => ({
+    kind: "intake",
+    args: {
+      intake: { address: `${houseFor(index)}${streetFor(index)} ${townFor(index)} Indiana` },
+      draft: { contact: { service_address: "999 Wrong Road Nowhere Indiana" } },
+      rawInput: `${nameFor(index)} ${phoneFor(index)} service address 888 Wrong St Salem Indiana. Remove one tree.`,
+    },
+    source: "intake",
+  }));
+  const jammed = Array.from({ length: 15 }, (_, index) => ({
+    kind: "jammed",
+    args: {
+      draft: { contact: { service_address: `${houseFor(index)}${streetFor(index)} ${townFor(index)} Indiana` } },
+      rawInput: `${nameFor(index)} ${phoneFor(index)} Remove one ${speciesFor(index)} tree.`,
+    },
+    source: "openai_draft",
+  }));
+  const rejected = Array.from({ length: 15 }, (_, index) => ({
+    kind: "rejected",
+    args: {
+      draft: { contact: { service_address: `Option A remove and haul ${priceFor(index)}` } },
+      rawInput: `${nameFor(index)} ${phoneFor(index)} Location unavailable. Remove one ${speciesFor(index)} tree.`,
+    },
+    source: "none",
+  }));
+  const missing = Array.from({ length: 15 }, (_, index) => ({
+    kind: "missing",
+    args: {
+      draft: { contact: { service_address: "" } },
+      rawInput: `${nameFor(index)} ${phoneFor(index)} Location unavailable. Remove one ${speciesFor(index)} tree.`,
+    },
+    source: "none",
+  }));
+  const samples = [...intakeWins, ...jammed, ...rejected, ...missing];
+  sampleCount(samples, "address resolver");
+
+  for (const sample of samples) {
+    const result = resolveServiceAddress(sample.args);
+    assert.equal(result.source, sample.source, sample.kind);
+
+    if (sample.kind === "intake" || sample.kind === "jammed") {
+      assert.equal(result.status, "resolved");
+      assert.match(result.value, /\d+\s+[A-Za-z]/);
+      assert.match(result.value, /,\s*(?:Madison|Hanover|North Vernon|Salem|Seymour|Austin|Scottsburg|Paoli|Bedford|Charlestown),\s*Indiana/);
+      assert.deepEqual(result.blockingIssues, []);
+    } else {
+      assert.match(result.status, /missing|rejected/);
+      assert.equal(result.value, "");
+      assert.ok(result.blockingIssues.includes("Missing service address."));
+      if (sample.kind === "rejected") assert.match(result.warnings.join(" "), /Rejected openai_draft address candidate/i);
+    }
+  }
+});
+
+test("address resolver formats explicit unknown city with Indiana state", () => {
+  const samples = [
+    ["83 River Ave Jeffersonville IN", "83 River Ave, Jeffersonville, IN"],
+    ["707 Walnut Street Corydon IN", "707 Walnut Street, Corydon, IN"],
+    ["62 Roofline Rd New Albany IN", "62 Roofline Rd, New Albany, IN"],
+  ];
+
+  for (const [serviceAddress, expected] of samples) {
+    const result = resolveServiceAddress({
+      draft: { contact: { service_address: serviceAddress } },
+      rawInput: `Customer 812-555-0101 service address ${serviceAddress}. Remove one tree.`,
+    });
+
+    assert.equal(result.status, "resolved");
+    assert.equal(result.source, "openai_draft");
+    assert.equal(result.value, expected);
+    assert.deepEqual(result.blockingIssues, []);
+  }
+});
+
+test("60 debug pipeline samples expose raw input, raw draft, schema warnings, AlphaJSON, validation, and rendered fields", () => {
+  const samples = Array.from({ length: 60 }, (_, index) => ({
+    raw: rawNote(index),
+    index,
+    validation: {
+      can_generate_pdf: index % 2 === 0,
+      blocking_errors: index % 2 === 0 ? [] : ["Missing service address."],
+      follow_ups: index % 2 === 0 ? [] : ["What is the exact service address for this job?"],
+      structured_follow_ups: index % 2 === 0 ? [] : [{ id: "missing_service_address", blocks_pdf: true }],
+      warnings: index % 3 === 0 ? ["Safety/access note: Gate blocked."] : [],
+    },
+  }));
+  sampleCount(samples, "debug pipeline");
+
+  assert.deepEqual(buildDebugPipelinePayload({ enabled: false, rawTd1Text: "hidden" }), {});
+
+  for (const sample of samples) {
+    const payload = buildDebugPipelinePayload({
+      enabled: true,
+      rawTd1Text: sample.raw,
+      rawOpenAiDraftJson: { draft_version: "alpha_extraction_v1", sample: sample.index },
+      draftSchemaWarnings: [`schema warning ${sample.index}`],
+      alphaJson: {
+        raw_input: { customer_text: sample.raw },
+        job: { description: `Rendered job ${sample.index}` },
+      },
+      validation: sample.validation,
+      mocked: sample.index % 4 === 0,
+      note: `note ${sample.index}`,
+      error: sample.index % 10 === 0 ? `error ${sample.index}` : "",
+    });
+
+    assert.equal(payload.debugPipeline.rawTd1Input.customer_text, sample.raw);
+    assert.equal(payload.debugPipeline.rawOpenAiDraftJson.sample, sample.index);
+    assert.deepEqual(payload.debugPipeline.draftSchemaWarnings, [`schema warning ${sample.index}`]);
+    assert.equal(payload.debugPipeline.cleanedCanonicalAlphaJson.raw_input.customer_text, sample.raw);
+    assert.deepEqual(payload.debugPipeline.validationResult.structured_follow_ups, sample.validation.structured_follow_ups);
+    assert.deepEqual(payload.debugPipeline.validationResult.follow_ups, sample.validation.follow_ups);
+    assert.deepEqual(payload.debugPipeline.validationResult.warnings, sample.validation.warnings);
+    assert.match(payload.debugPipeline.source, /openai|local-draft-parser/);
+  }
+});
+
+test("60 structured follow-up samples keep stable IDs and PDF-blocking flags", () => {
+  const definitions = [
+    { message: "Missing service address.", expectedId: "missing_service_address", warning: false },
+    { message: "Service address looks unclear.", expectedId: "unclear_service_address", warning: false },
+    { message: "Missing customer phone or email.", expectedId: "missing_contact_method", warning: false },
+    { message: "Tree count is unclear.", expectedId: "vague_tree_count", warning: false },
+    { message: "Missing tree count or clear scope.", expectedId: "missing_tree_count_or_scope", warning: false },
+    { message: "Missing job description.", expectedId: "missing_job_description", warning: false },
+    { message: "Missing priced service option.", expectedId: "missing_priced_option", warning: false },
+    { message: "Option A is missing a clear price.", expectedId: "missing_option_price", warning: false },
+    { message: "Unclear work scope: remove, trim, or another service.", expectedId: "unclear_work_scope", warning: false },
+    { message: "Price is not firm enough for a customer-facing estimate.", expectedId: "non_firm_price", warning: false },
+    { message: "Stump inclusion is unclear.", expectedId: "unclear_stump_inclusion", warning: false },
+    { message: "Cleanup or haul-away scope is unclear.", expectedId: "unclear_cleanup_or_haul", warning: false },
+    { message: "Safety/access note: Aggressive dog in backyard.", expectedId: "safety_access_warning", warning: true },
+    { message: "One or more option descriptions may need cleanup.", expectedId: "possible_dirty_option_text", warning: true },
+    { message: "Service address may need city or state.", expectedId: "address_may_need_city_state", warning: true },
+  ];
+  const samples = Array.from({ length: 60 }, (_, index) => definitions[index % definitions.length]);
+  sampleCount(samples, "structured follow-up");
+
+  for (const sample of samples) {
+    const issues = buildStructuredFollowUps({
+      alphaJson: { raw_input: { customer_text: rawNote(samples.indexOf(sample)) } },
+      blocking_errors: sample.warning ? [] : [sample.message],
+      warnings: sample.warning ? [sample.message] : [],
+      follow_ups: [],
+    });
+    const issue = issues.find((item) => item.id === sample.expectedId);
+
+    assert.ok(issue, sample.expectedId);
+    assert.equal(issue.blocks_pdf, !sample.warning, sample.expectedId);
+    assert.equal(issue.severity, sample.warning ? "warning" : "blocking", sample.expectedId);
+    assert.ok(issue.message);
+    assert.ok(issue.question);
+    assert.ok(issue.ui_target);
+  }
+});

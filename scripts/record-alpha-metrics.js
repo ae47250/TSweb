@@ -133,6 +133,10 @@ function buildFollowUpAnswer(testCase, validation, round) {
     parts.push(`${treeCount} to remove`);
   }
 
+  if (/property responsibility|work scope/i.test(errors)) {
+    parts.push("scope confirmed and customer is responsible for this property work");
+  }
+
   if (/priced service option|clear price|price/i.test(errors)) {
     const prices = followUpPrices(testCase, validation);
     prices.forEach((price, index) => {

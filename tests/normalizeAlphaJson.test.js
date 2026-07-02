@@ -7,6 +7,8 @@ import {
   normalizeServiceAddress,
   normalizeTreeServiceText,
 } from "../lib/normalizeAlphaJson.js";
+import { parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
+import { openAiDraftToNormalizerInput } from "../lib/openaiDraftAdapter.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 
 const customerCases = [
@@ -190,6 +192,32 @@ test("extracts street suffix addresses with two-word trusted towns", () => {
   assert.equal(littleYork.can_generate_pdf, true);
   assert.deepEqual(northVernon.blocking_errors, []);
   assert.deepEqual(littleYork.blocking_errors, []);
+});
+
+test("captures explicit city and state even when city is not in trusted local-town list", () => {
+  const cases = [
+    {
+      input:
+        "Cara Mills 812-555-0103 cara@example.com. service address 83 River Ave Jeffersonville IN. option 1 remove only 1100. option 2 remove plus haul away and cleanup 2100. big tree by shed.",
+      expected: "83 River Ave, Jeffersonville, IN",
+    },
+    {
+      input:
+        "Gina Price 812-555-0107 gina@example.com. needs walnut tree remuved at 707 Walnut Street Corydon IN. big tree by garage. option 1 cut only 1500.",
+      expected: "707 Walnut Street, Corydon, IN",
+    },
+    {
+      input:
+        "Hank Bell 812-555-0108 hank@example.com. needs spruce tree remuved at 62 Roofline Rd New Albany IN. big tree by garage. option 1 drop only 1550.",
+      expected: "62 Roofline Rd, New Albany, IN",
+    },
+  ];
+
+  for (const sample of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, sample.input));
+    assert.equal(validation.alphaJson.job.service_address.display, sample.expected);
+    assert.doesNotMatch(validation.warnings.join(" "), /Service address may need city or state/);
+  }
 });
 
 test("keeps short typed local address for TD2 with city-state warning", () => {
@@ -1003,6 +1031,22 @@ test("one maple and one ash add to two trees", () => {
   assert.match(validation.alphaJson.job.description, /one maple and one ash/i);
 });
 
+test("two species joined by and count as two trees while or counts as one uncertain species", () => {
+  const andCase = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Cara Mills 812-555-0103 cara@example.com. 2970 Walnut St Madison Indiana. Remove oak and maple near power line. Option A remove trees $2,400.",
+  ));
+  const orCase = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Cara Mills 812-555-0103 cara@example.com. 2970 Walnut St Madison Indiana. Remove oak or maple near power line. Option A remove tree $2,400.",
+  ));
+
+  assert.equal(andCase.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.equal(andCase.alphaJson.job.tree_details.tree_type, "oak and maple");
+  assert.equal(orCase.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(orCase.alphaJson.job.tree_details.tree_type, "oak or maple");
+});
+
 test("tree count override wins and Unknown forces follow-up", () => {
   const manual = validateAlphaJson(normalizeToAlphaJsonV14(
     {},
@@ -1656,4 +1700,250 @@ test("vague customer-facing prose request blocks without inventing quote details
   assert.match(validation.blocking_errors.join(" "), /address|scope|price|option/i);
   assert.equal(alphaJson.job.service_address.display, "");
   assert.equal(alphaJson.service_options.items.length, 0);
+});
+
+test("OpenAI extraction draft schema sanitizes invalid optional collections and statuses", () => {
+  const parsed = parseOpenAiDraft({
+    draft_version: "alpha_extraction_v1",
+    raw_input: {
+      customer_text:
+        "Schema Case 812-555-3000 service address 257Walnut St North Vernon Indiana. Remove one maple. Option A remove and haul 1250.",
+    },
+    job: {
+      tree_count: "1 tree",
+      tree_count_status: "guessed",
+      work_action: "quote_pdf",
+    },
+    options: "not an array",
+    safety_access_notes: {},
+    normalization: {
+      corrections_made: "bad",
+      uncertainties: "bad",
+      field_evidence: { tree_count: "one maple" },
+    },
+  });
+
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.draft.job.tree_count_status, "found");
+  assert.equal(parsed.draft.job.work_action, "unclear");
+  assert.deepEqual(parsed.draft.options, []);
+  assert.deepEqual(parsed.draft.safety_access_notes, []);
+  assert.match(parsed.warnings.join(" "), /invalid status|not an array/i);
+});
+
+test("OpenAI extraction draft adapter preserves raw options while normalizer owns final labels", () => {
+  const draft = {
+    draft_version: "alpha_extraction_v1",
+    raw_input: {
+      customer_text:
+        "Rita Cole 812-555-3001 rita@example.com service address 257Walnut St North Vernon Indiana. Remove one maple tree near garage. Option B remove and haul 1250. Option A cut and leave wood 900.",
+    },
+    contact: {
+      customer_name: "Rita Cole",
+      phone: "812-555-3001",
+      email: "rita@example.com",
+      service_address: "257Walnut St North Vernon Indiana",
+    },
+    job: {
+      tree_count: "1 tree",
+      tree_count_status: "found",
+      tree_type: "maple",
+      tree_size: "",
+      work_action: "remove",
+      work_scope: "Remove one maple tree near garage.",
+      location_on_property: "near garage",
+    },
+    options: [
+      {
+        raw_label: "Option B",
+        raw_text: "Option B remove and haul 1250",
+        scope: "remove and haul",
+        price_raw: "1250",
+        price_amount: 1250,
+        price_status: "firm",
+        haul_away: "included",
+        cleanup: "not_stated",
+        stump_grinding: "not_stated",
+        wood_handling: "haul",
+        evidence: "Option B remove and haul 1250",
+      },
+      {
+        raw_label: "Option A",
+        raw_text: "Option A cut and leave wood 900",
+        scope: "cut and leave wood",
+        price_raw: "900",
+        price_amount: 900,
+        price_status: "firm",
+        haul_away: "excluded",
+        cleanup: "not_stated",
+        stump_grinding: "not_stated",
+        wood_handling: "leave",
+        evidence: "Option A cut and leave wood 900",
+      },
+    ],
+    safety_access_notes: [],
+    normalization: { corrections_made: [], uncertainties: [], field_evidence: { options: "Option A / Option B" } },
+  };
+
+  const parsed = parseOpenAiDraft(draft);
+  const normalizerInput = openAiDraftToNormalizerInput(parsed.draft);
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(normalizerInput, draft.raw_input.customer_text));
+
+  assert.equal(parsed.ok, true);
+  assert.equal(normalizerInput.service_options.items[0].raw_label, "Option B");
+  assert.equal(normalizerInput.service_options.items[1].raw_label, "Option A");
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.job.service_address.display, "257 Walnut St, North Vernon, Indiana");
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.label), ["Option A", "Option B"]);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$900", "$1,250"]);
+});
+
+test("OpenAI extraction draft vague tree count remains blocked with structured follow-up", () => {
+  const raw =
+    "Vague Draft 812-555-3002 vague@example.com. 10 Oak Lane Madison Indiana. Some trees behind shed, probably several. Remove and haul 1800.";
+  const draft = {
+    draft_version: "alpha_extraction_v1",
+    raw_input: { customer_text: raw },
+    contact: { customer_name: "Vague Draft", phone: "812-555-3002", email: "vague@example.com", service_address: "10 Oak Lane Madison Indiana" },
+    job: {
+      tree_count: "",
+      tree_count_status: "vague",
+      tree_type: "",
+      tree_size: "",
+      work_action: "remove",
+      work_scope: "Remove and haul trees behind shed.",
+      location_on_property: "behind shed",
+    },
+    options: [
+      {
+        raw_label: "",
+        raw_text: "Remove and haul 1800",
+        scope: "Remove and haul",
+        price_raw: "1800",
+        price_amount: 1800,
+        price_status: "firm",
+        haul_away: "included",
+        cleanup: "not_stated",
+        stump_grinding: "not_stated",
+        wood_handling: "haul",
+        evidence: "Remove and haul 1800",
+      },
+    ],
+    safety_access_notes: [],
+    normalization: {
+      corrections_made: [],
+      uncertainties: [{ field: "tree_count", issue: "Exact tree count is unclear.", evidence: "Some trees behind shed, probably several." }],
+      field_evidence: { tree_count: "Some trees behind shed, probably several." },
+    },
+  };
+
+  const parsed = parseOpenAiDraft(draft);
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(openAiDraftToNormalizerInput(parsed.draft), raw));
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "");
+  assert.match(validation.blocking_errors.join(" "), /Tree count is unclear/i);
+  assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "vague_tree_count"));
+});
+
+test("OpenAI extraction draft non-firm price stays non-customer-facing", () => {
+  const raw =
+    "Price Draft 812-555-3003 price@example.com. 12 Maple Ave Madison Indiana. Around 2k to remove one maple.";
+  const draft = {
+    draft_version: "alpha_extraction_v1",
+    raw_input: { customer_text: raw },
+    contact: { customer_name: "Price Draft", phone: "812-555-3003", email: "price@example.com", service_address: "12 Maple Ave Madison Indiana" },
+    job: {
+      tree_count: "1 tree",
+      tree_count_status: "found",
+      tree_type: "maple",
+      tree_size: "",
+      work_action: "remove",
+      work_scope: "Remove one maple.",
+      location_on_property: "",
+    },
+    options: [
+      {
+        raw_label: "",
+        raw_text: "Around 2k to remove one maple.",
+        scope: "Remove one maple.",
+        price_raw: "Around 2k",
+        price_amount: null,
+        price_status: "non_firm",
+        haul_away: "not_stated",
+        cleanup: "not_stated",
+        stump_grinding: "not_stated",
+        wood_handling: "not_stated",
+        evidence: "Around 2k",
+      },
+    ],
+    safety_access_notes: [],
+    normalization: {
+      corrections_made: [],
+      uncertainties: [{ field: "price", issue: "Price is not firm enough for a customer-facing estimate.", evidence: "Around 2k" }],
+      field_evidence: { price: "Around 2k" },
+    },
+  };
+
+  const parsed = parseOpenAiDraft(draft);
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(openAiDraftToNormalizerInput(parsed.draft), raw));
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /price|clear price/i);
+  assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "non_firm_price"));
+});
+
+test("structured follow-ups include missing contact and safety access warning IDs", () => {
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "Safety Contact 22 Oak Lane Madison Indiana. Aggressive dog in backyard. Remove one maple near garage. Option A remove and haul 1250.",
+    ),
+  );
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "missing_contact_method" && issue.blocks_pdf));
+  assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "safety_access_warning" && !issue.blocks_pdf));
+});
+
+test("singular incident tree phrases infer one tree", () => {
+  const cases = [
+    "Wes Coleman 812-555-2786 wes@example.com fallen tree on neighbor fence at 2824 Cherry Street, Madison, Indiana; price 2450",
+    "Rosa Crawford 812-555-1196 3680 Poplar Ridge Road Madison IN tree on house after storm, wants estimate sent now 2350",
+    "Shane Myers 812-555-3860 1582 River Bluff Lane Hanover IN leaning tree touching service drop, quote 2650 cleanup 3200",
+  ];
+
+  for (const input of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+    assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree", input);
+  }
+});
+
+test("singular incident tree inference avoids vague plural or multi-species notes", () => {
+  const cases = [
+    "Jenna Wu 812-555-4040 jenna@example.com. 300 Pine Ridge, Columbus IN. Tree stuff from last visit, use price from yesterday.",
+    "Paula King 812-555-2020 paula@example.com. 55 Maple St, Salem IN. Remove several trees behind shed. Budget price 3900.",
+    "Cara Mills 812-555-0103 cara@example.com. 2970 Walnut St Madison Indiana. Oak and maple near power line. Option A 2400.",
+    "Ron Blake 812-555-3030 ron@example.com. 91 Poplar Dr, Bedford IN. Might be one tree or several trees along back fence. 2200 if simple.",
+  ];
+
+  for (const input of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+    assert.notEqual(validation.alphaJson.job.tree_details.tree_count, "1 tree", input);
+  }
+});
+
+test("unclear scope or property responsibility blocks even when singular tree and price are clear", () => {
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "812.555.2786 wes.coleman778@example.com customer Wes Coleman fallen tree on neighbor fence at 2824 Cherry Street, Madison, Indiana; scope/property responsibility unclear; price 2450",
+    ),
+  );
+
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,450"]);
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /property responsibility|work scope/i);
+  assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "unclear_scope_property_responsibility" && issue.blocks_pdf));
 });

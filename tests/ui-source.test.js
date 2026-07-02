@@ -11,6 +11,8 @@ const cssSource = readFileSync("app/styles/globals.css", "utf8");
 const globalCssSource = readFileSync("styles-globals.css", "utf8");
 const customerRouteSource = readFileSync("app/e/[estimateId]/EstimateClient.jsx", "utf8");
 const openaiRouteSource = readFileSync("app/api/openai/route.js", "utf8");
+const openaiPromptSource = readFileSync("lib/openaiPrompt.js", "utf8");
+const debugPipelineSource = readFileSync("lib/debugPipeline.js", "utf8");
 
 test("normal UI does not render raw AlphaJSON debug panel", () => {
   assert.doesNotMatch(pageSource, /<h2>AlphaJSON<\/h2>/);
@@ -175,4 +177,18 @@ test("OpenAI route logs production case metrics without raw customer text", () =
   assert.match(openaiRouteSource, /error_message/);
   assert.match(openaiRouteSource, /validateAlphaJson/);
   assert.doesNotMatch(openaiRouteSource, /customerText,\s*$/m);
+});
+
+test("OpenAI prompt and route keep model output at extraction-draft boundary", () => {
+  assert.match(openaiPromptSource, /draft_version/);
+  assert.match(openaiPromptSource, /Do not create final AlphaJSON/);
+  assert.match(openaiPromptSource, /Do not decide whether PDF generation is allowed/);
+  assert.match(openaiPromptSource, /Do not sort or relabel options/);
+  assert.doesNotMatch(openaiPromptSource, /alphaJson must be compatible/i);
+  assert.doesNotMatch(openaiPromptSource, /Set validation\.can_generate_pdf/i);
+  assert.match(openaiRouteSource, /parseOpenAiDraft/);
+  assert.match(openaiRouteSource, /openAiDraftToNormalizerInput/);
+  assert.match(openaiRouteSource, /normalizeToAlphaJsonV14\(normalizerInput,\s*customerText,\s*intake\)/);
+  assert.match(openaiRouteSource, /buildDebugPipelinePayload/);
+  assert.match(debugPipelineSource, /structured_follow_ups/);
 });
