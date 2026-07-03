@@ -258,13 +258,16 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
   );
 }
 
-function OverrideWarningCard({ status, overrides, warningItems = [], onChange }) {
+function OverrideWarningCard({ status, overrides, warningItems = [], onChange, validation, busy = false, onTreeCountApply }) {
+  const [selectedCount, setSelectedCount] = useState("");
+  const hasTreeCountBlock = (validation?.blocking_errors || []).some((error) => TREE_COUNT_BLOCK_RE.test(error));
+  
   const hasOverrideControls = status.needsAddressOverride
     || status.needsContactOverride
     || status.needsPhoneOverride
     || status.needsEmailOverride
     || status.needsScopeOverride;
-  if (!hasOverrideControls && warningItems.length < 1) return null;
+  if (!hasOverrideControls && warningItems.length < 1 && !hasTreeCountBlock) return null;
 
   function toggle(key) {
     onChange?.({ ...overrides, [key]: !overrides[key] });
@@ -324,6 +327,32 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
           )}
         </div>
       )}
+      {hasTreeCountBlock && (
+        <div className="override-warning-item tree-count-item">
+          <p><strong>Tree count is unclear.</strong> Select number of trees.</p>
+          <div className="tree-count-override-row">
+            <label htmlFor="td2TreeCountOverride">
+              <select
+                id="td2TreeCountOverride"
+                value={selectedCount}
+                onChange={(event) => setSelectedCount(event.target.value)}
+              >
+                <option value="">Select count</option>
+                <option value="1 tree">1</option>
+                <option value="2 trees">2</option>
+                <option value="3+ trees">3+</option>
+                <option value="Still unclear but OK to proceed">Still unclear but OK to proceed</option>
+              </select>
+            </label>
+            <button
+              className="btn-orange override-ack-button"
+              type="button"
+              disabled={!selectedCount || busy}
+              onClick={() => onTreeCountApply(selectedCount)}
+            ></button>
+          </div>
+        </div>
+      )}
       {warningItems.length > 0 && (
         <div className="warning-card">
           <h4>Notes</h4>
@@ -366,42 +395,6 @@ function isOverrideRelatedWarning(warning, status = {}) {
   return false;
 }
 
-function TreeCountResolutionCard({ validation, busy = false, onApply }) {
-  const [selectedCount, setSelectedCount] = useState("");
-  const hasTreeCountBlock = (validation?.blocking_errors || []).some((error) => TREE_COUNT_BLOCK_RE.test(error));
-  if (!hasTreeCountBlock || !onApply) return null;
-
-  return (
-    <section className="summary-card override-warning-card">
-      <h3>Tree Count Is Unclear</h3>
-      <p>The notes do not make the number of trees clear. Select the count to continue.</p>
-      <div className="tree-count-override-row">
-        <label htmlFor="td2TreeCountOverride">
-          Tree count
-          <select
-            id="td2TreeCountOverride"
-            value={selectedCount}
-            onChange={(event) => setSelectedCount(event.target.value)}
-          >
-            <option value="">Select count</option>
-            <option value="1 tree">1</option>
-            <option value="2 trees">2</option>
-            <option value="3+ trees">3+</option>
-            <option value="Still unclear but OK to proceed">Still unclear but OK to proceed</option>
-          </select>
-        </label>
-        <button
-          className="btn-orange override-ack-button"
-          type="button"
-          disabled={!selectedCount || busy}
-          onClick={() => onApply(selectedCount)}
-        >
-          Use this tree count
-        </button>
-      </div>
-    </section>
-  );
-}
 
 export default function JsonReview({
   alphaJson,
@@ -522,6 +515,9 @@ export default function JsonReview({
           overrides={normalizedOverrides}
           warningItems={warningItems}
           onChange={onReviewOverridesChange}
+          validation={validation}
+          busy={busy}
+          onTreeCountApply={onTreeCountOverrideChange}
         />
       )}
       <div className="summary-card quote-options-card">
@@ -555,13 +551,6 @@ export default function JsonReview({
           alphaJson={alphaJson}
           validation={validation}
           renderedFields={renderedFields}
-        />
-      )}
-      {!isFinalConfirm && (
-        <TreeCountResolutionCard
-          validation={validation}
-          busy={busy}
-          onApply={onTreeCountOverrideChange}
         />
       )}
       {!canConfirmWithOverrides && (
