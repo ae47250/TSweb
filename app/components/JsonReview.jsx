@@ -487,7 +487,7 @@ export default function JsonReview({
           <p>{jobNotes}</p>
         </div>
       ) : (
-        <div className="review-grid">
+        <>
           <div className="summary-card customer-summary-card">
             <h3>Customer</h3>
             <div className="customer-info-grid">
@@ -506,38 +506,7 @@ export default function JsonReview({
               </p>
             )}
           </div>
-        </div>
-      )}
-      <h3>{isFinalConfirm ? "Customer Options" : "Quote Options"}</h3>
-      <div className="quote-options-grid">
-        {options.length > 0 ? options.map((option, index) => (
-          <article className="quote-option-card" key={option.label || index}>
-            <div className="quote-option-header">
-              <strong>{option.label || `Option ${index + 1}`}</strong>
-              <span>{option.price?.display || "Price missing"}</span>
-            </div>
-            <h4>{option.title || "Option details"}</h4>
-            <p>{option.description || "Add the work details for this option before informing the customer."}</p>
-          </article>
-        )) : (
-          <article className="quote-option-card missing-option-card">
-            <div className="quote-option-header">
-              <strong>Option 1</strong>
-              <span>Price missing</span>
-            </div>
-            <h4>Option needed</h4>
-            <p>Add at least one option and one price before informing the customer.</p>
-          </article>
-        )}
-      </div>
-      <p className="text-muted review-option-note">{optionNote}</p>
-      {!isFinalConfirm && (
-        <DebugPipelinePanel
-          debugPipeline={debugPipeline}
-          alphaJson={alphaJson}
-          validation={validation}
-          renderedFields={renderedFields}
-        />
+        </>
       )}
       {!isFinalConfirm && (
         <OverrideWarningCard
@@ -545,6 +514,39 @@ export default function JsonReview({
           overrides={normalizedOverrides}
           warningItems={warningItems}
           onChange={onReviewOverridesChange}
+        />
+      )}
+      <div className="summary-card quote-options-card">
+        <h3>{isFinalConfirm ? "Customer Options" : "Quote Options"}</h3>
+        <div className="quote-options-grid">
+          {options.length > 0 ? options.map((option, index) => (
+            <article className="quote-option-card" key={option.label || index}>
+              <div className="quote-option-header">
+                <strong>{option.label || `Option ${index + 1}`}</strong>
+                <span>{option.price?.display || "Price missing"}</span>
+              </div>
+              <h4>{option.title || "Option details"}</h4>
+              <p>{option.description || "Add the work details for this option before informing the customer."}</p>
+            </article>
+          )) : (
+            <article className="quote-option-card missing-option-card">
+              <div className="quote-option-header">
+                <strong>Option 1</strong>
+                <span>Price missing</span>
+              </div>
+              <h4>Option needed</h4>
+              <p>Add at least one option and one price before informing the customer.</p>
+            </article>
+          )}
+        </div>
+        <p className="text-muted review-option-note">{optionNote}</p>
+      </div>
+      {!isFinalConfirm && (
+        <DebugPipelinePanel
+          debugPipeline={debugPipeline}
+          alphaJson={alphaJson}
+          validation={validation}
+          renderedFields={renderedFields}
         />
       )}
       {!isFinalConfirm && (
