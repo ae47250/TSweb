@@ -460,15 +460,15 @@ export default function JsonReview({
               <p>{customerPhone}</p>
               <p className="customer-info-right">{customerEmail}</p>
             </div>
-          </div>
-          <div className="summary-card review-job-notes-card">
-            <h3>Jobby Notes</h3>
-            <p className="job-summary-text">{jobNotes}</p>
-            {showTreeCountOverride && (
-              <p className="manual-override-note">
-                Tree count set manually: {treeCountOverride}
-              </p>
-            )}
+            <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+              <h4 style={{ marginBottom: '0.75rem' }}>Jobby Notes</h4>
+              <p className="job-summary-text">{jobNotes}</p>
+              {showTreeCountOverride && (
+                <p className="manual-override-note">
+                  Tree count set manually: {treeCountOverride}
+                </p>
+              )}
+            </div>
           </div>
         </>
       )}
