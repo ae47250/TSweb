@@ -580,6 +580,40 @@ main {
   font-size: 13px;
 }
 
+.debug-stage-summary {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.debug-stage-card {
+  background: #fafafa;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.debug-stage-label {
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.debug-stage-card strong {
+  color: #111;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.debug-stage-card p {
+  color: #555;
+  font-size: 13px;
+  margin: 0;
+}
+
 .debug-json-block {
   font-size: 12px;
   line-height: 1.45;

@@ -122,6 +122,22 @@ function DebugOpenAiDraft({ debugPipeline }) {
   return <DebugJsonBlock value={debugPipeline.rawOpenAiDraftJson} />;
 }
 
+function DebugStageSummary({ stages = [] }) {
+  if (!stages.length) return null;
+
+  return (
+    <div className="debug-stage-summary" aria-label="Debug pipeline stages">
+      {stages.map((stage) => (
+        <div className="debug-stage-card" key={stage.label}>
+          <span className="debug-stage-label">{stage.label}</span>
+          <strong>{stage.status}</strong>
+          <p>{stage.meaning}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function DebugRenderedRows({ renderedFields }) {
   const rows = [
     ["Customer name", renderedFields.customerCard.name.value, renderedFields.customerCard.name.source],
@@ -196,7 +212,7 @@ function buildDebugExplanation(validation, renderedFields) {
 }
 
 function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFields }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   if (!debugPipeline) return null;
 
   const explanation = buildDebugExplanation(validation, renderedFields);
@@ -215,6 +231,7 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
             <p><strong>Suggested fix:</strong> {explanation.suggestion}</p>
             <p><strong>Why:</strong> {explanation.why}</p>
           </div>
+          <DebugStageSummary stages={debugPipeline.stages || []} />
 
           <h3>Raw TD1 Input</h3>
           <p className="debug-field-note">This is exactly what TD1 sent as <code>customer_text</code>.</p>
@@ -224,11 +241,11 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
           <p className="debug-field-note">This is the parsed OpenAI response before <code>normalizeToAlphaJsonV14()</code> cleaned it.</p>
           <DebugOpenAiDraft debugPipeline={debugPipeline} />
 
-          <h3>Cleaned Canonical AlphaJSON</h3>
-          <p className="debug-field-note">This is the AlphaJSON after <code>normalizeToAlphaJsonV14()</code>.</p>
+          <h3>TD2 Normalization Output</h3>
+          <p className="debug-field-note">This is the cleaned AlphaJSON after <code>normalizeToAlphaJsonV14()</code>. TD2 reads from this, not directly from the raw note.</p>
           <DebugJsonBlock value={debugPipeline.cleanedCanonicalAlphaJson || alphaJson} />
 
-          <h3>Validation Result</h3>
+          <h3>TD2 Validation Result</h3>
           <p className="debug-field-note">This decides whether TD2 can confirm the quote or needs more information.</p>
           <DebugJsonBlock value={debugPipeline.validationResult || validation} />
 

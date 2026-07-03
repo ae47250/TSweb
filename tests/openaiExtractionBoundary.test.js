@@ -407,6 +407,12 @@ test("60 debug pipeline samples expose raw input, raw draft, schema warnings, Al
       alphaJson: {
         raw_input: { customer_text: sample.raw },
         job: { description: `Rendered job ${sample.index}` },
+        service_options: {
+          items: sample.index % 2 === 0 ? [{ label: "Option A" }] : [],
+        },
+        normalization: {
+          uncertainties: sample.index % 2 === 0 ? [{ field: "price", issue: "Review price." }] : [],
+        },
       },
       validation: sample.validation,
       mocked: sample.index % 4 === 0,
@@ -421,6 +427,18 @@ test("60 debug pipeline samples expose raw input, raw draft, schema warnings, Al
     assert.deepEqual(payload.debugPipeline.validationResult.structured_follow_ups, sample.validation.structured_follow_ups);
     assert.deepEqual(payload.debugPipeline.validationResult.follow_ups, sample.validation.follow_ups);
     assert.deepEqual(payload.debugPipeline.validationResult.warnings, sample.validation.warnings);
+    assert.deepEqual(payload.debugPipeline.stages.map((stage) => stage.label), [
+      "Raw TD1 input",
+      sample.index % 4 === 0 ? "Local draft parser" : "OpenAI draft",
+      "TD2 normalization",
+      "TD2 validation",
+    ]);
+    assert.equal(
+      payload.debugPipeline.stages[2].status,
+      sample.index % 2 === 0
+        ? "0 corrections, 1 uncertainty flags, 1 options"
+        : "0 corrections, 0 uncertainty flags, 0 options",
+    );
     assert.match(payload.debugPipeline.source, /openai|local-draft-parser/);
   }
 });
