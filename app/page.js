@@ -382,7 +382,20 @@ export default function HomePage() {
       )}
 
       {stage === "review" && (
-        <div className="app-grid app-grid-initial">
+        <div className="app-grid">
+          <div>
+            <InputForm
+              ref={notesRef}
+              value={customerText}
+              onChange={setCustomerText}
+              contactValue={quoteContact}
+              onContactChange={setQuoteContact}
+              onSubmit={createReview}
+              onClear={clearQuoteForm}
+              busy={busy}
+              editMessage={editMessage}
+            />
+          </div>
           <div>
             <JsonReview
               mode="review"
