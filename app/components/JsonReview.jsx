@@ -498,7 +498,7 @@ export default function JsonReview({
             </div>
           </div>
           <div className="summary-card review-job-notes-card">
-            <h3>Job Notes</h3>
+            <h3>Jobby Notes</h3>
             <p className="job-summary-text">{jobNotes}</p>
             {showTreeCountOverride && (
               <p className="manual-override-note">

@@ -35,7 +35,7 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
     <section className="card new-quote-card" data-testid="customer-notes-card">
       <h2>New Estimate</h2>
       <p className="new-estimate-guidance">
-        Fill in the red fields and add Job Notes.
+        Fill in the red fields and add Jobby Notes.
       </p>
       {editMessage && <div className="alert" data-testid="edit-notes-message">{editMessage}</div>}
       <form onSubmit={submit}>
@@ -61,7 +61,7 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
           </div>
         </div>
         <div className="job-notes-card">
-          <label htmlFor="customerText" className="job-notes-title">Job Notes</label>
+          <label htmlFor="customerText" className="job-notes-title">Jobby Notes</label>
           <p className="job-notes-guidance">
             <span>Include</span> as much information as possible about the job, scope of work, and prices.
           </p>
