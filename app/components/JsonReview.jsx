@@ -438,14 +438,6 @@ export default function JsonReview({
     <section className="card">
       <h2>{title}</h2>
       <h3>{subtitle}</h3>
-      {!isFinalConfirm && reviewIssues.length > 0 && (
-        <div className="summary-card needs-info-card">
-          <h3>Needs More Info</h3>
-          <ul>
-            {reviewIssues.map((question) => <li key={question}>{question}</li>)}
-          </ul>
-        </div>
-      )}
       {!isFinalConfirm && reviewIssues.length === 0 && (
         <span className={`review-status ${canConfirmWithOverrides ? "review-status-ready" : "review-status-needs-info"}`}>
           {canConfirmWithOverrides ? "Review ready" : "Needs more info"}
