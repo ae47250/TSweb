@@ -328,7 +328,7 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange, v
       )}
       {warningItems.length > 0 && (
         <div className="warning-card">
-          <h4>Notes</h4>
+          <h3>Notes</h3>
           <ul>
             {warningItems.map((warning) => <li key={warning}>{warning}</li>)}
           </ul>
@@ -463,7 +463,7 @@ export default function JsonReview({
               <p className="customer-info-right">{customerEmail}</p>
             </div>
             <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
-              <h4 style={{ marginBottom: '0.5rem' }}>Jobby Notes</h4>
+              <h3 style={{ marginBottom: '0.5rem' }}>Jobby Notes</h3>
               <p className="job-summary-text">{jobNotes}</p>
               {showTreeCountOverride && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
