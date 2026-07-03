@@ -1163,6 +1163,19 @@ test("price then haul shorthand keeps base price before haul price", () => {
   assert.match(validation.blocking_errors.join(" "), /phone or email/i);
 });
 
+test("1b quote-cleanup shorthand preserves base and cleanup prices through TD2 fields", () => {
+  const input =
+    "Shane Myers 812-555-3860 shane@example.com. 1582 River Bluff Lane Hanover IN. Leaning tree touching service drop, quote 2650 cleanup 3200";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const options = validation.alphaJson.service_options.items;
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(options.length, 2);
+  assert.deepEqual(options.map((option) => option.price.display), ["$2,650", "$3,200"]);
+  assert.match(options[0].description, /base|removal-only/i);
+  assert.match(options[1].description, /cleanup|upgraded/i);
+});
+
 test("cheap way and full cleanup shorthand creates two priced options", () => {
   const input =
     "lady named Megan Rogers call/text 1-812-555-7929. 5428 Maple Avenue Hanover IN. take down 4 walnut trees. cheap way $1900 full cleanup $2750";
