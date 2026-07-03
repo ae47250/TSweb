@@ -488,6 +488,14 @@ export default function JsonReview({
         </div>
       ) : (
         <>
+          {reviewIssues.length > 0 && (
+            <div className="summary-card needs-info-card">
+              <h3>Needs More Info</h3>
+              <ul>
+                {reviewIssues.map((question) => <li key={question}>{question}</li>)}
+              </ul>
+            </div>
+          )}
           <div className="summary-card customer-summary-card">
             <h3>Customer</h3>
             <div className="customer-info-grid">
@@ -497,14 +505,6 @@ export default function JsonReview({
               <p className="customer-info-right">{customerEmail}</p>
             </div>
           </div>
-          {reviewIssues.length > 0 && (
-            <div className="summary-card needs-info-card">
-              <h3>Needs More Info</h3>
-              <ul>
-                {reviewIssues.map((question) => <li key={question}>{question}</li>)}
-              </ul>
-            </div>
-          )}
           <div className="summary-card review-job-notes-card">
             <h3>Jobby Notes</h3>
             <p className="job-summary-text">{jobNotes}</p>
