@@ -291,6 +291,13 @@ function OverrideWarningCard({ status, overrides, onChange }) {
 }
 
 const TREE_COUNT_BLOCK_RE = /Tree count is marked unknown|Tree count is unclear|Missing tree count or clear scope/i;
+const REVIEW_OVERRIDE_BLOCK_RE = /^(Missing service address|Service address looks unclear|Missing customer phone or email)\./i;
+const REVIEW_OVERRIDE_FOLLOW_UP_RE = /(exact service address|customer phone|phone number|customer email|email address)/i;
+
+function isReviewOverrideIssue(issue) {
+  const text = String(issue || "").trim();
+  return REVIEW_OVERRIDE_BLOCK_RE.test(text) || REVIEW_OVERRIDE_FOLLOW_UP_RE.test(text);
+}
 
 function TreeCountResolutionCard({ validation, busy = false, onApply }) {
   const [selectedCount, setSelectedCount] = useState("");
@@ -361,9 +368,10 @@ export default function JsonReview({
     || overrideStatus.needsPhoneOverride
     || overrideStatus.needsEmailOverride;
   const isFinalConfirm = mode === "confirm";
-  const reviewIssues = validation?.follow_ups?.length
+  const reviewIssueSource = validation?.follow_ups?.length
     ? validation.follow_ups
     : validation?.blocking_errors || [];
+  const reviewIssues = reviewIssueSource.filter((issue) => !isReviewOverrideIssue(issue));
   const treeCountOverride = alphaJson.normalization?.field_evidence?.tree_count_override || "";
   const showTreeCountOverride = treeCountOverride && treeCountOverride !== "Auto";
   const title = isFinalConfirm ? "Confirm Quote" : "AI Review";
