@@ -79,6 +79,38 @@ test("review overrides require acknowledgement for each missing send channel", (
   );
 });
 
+test("review overrides allow unclear scope only when a firm price is displayed", () => {
+  const validation = {
+    can_generate_pdf: false,
+    blocking_errors: ["Property responsibility or work scope is unclear."],
+  };
+  const alphaJsonWithPrice = {
+    customer: { phone_display: "812-555-0199", phone_primary: "812-555-0199", email: "sam@example.com" },
+    service_options: {
+      items: [{ price: { display: "$2,450", amount: 2450, is_unclear: false } }],
+    },
+  };
+  const alphaJsonWithoutPrice = {
+    customer: { phone_display: "812-555-0199", phone_primary: "812-555-0199", email: "sam@example.com" },
+    service_options: {
+      items: [{ price: { display: "", amount: null, is_unclear: false } }],
+    },
+  };
+
+  const needsOverride = getBlockingOverrideStatus(validation, {}, alphaJsonWithPrice);
+  assert.equal(needsOverride.canProceed, false);
+  assert.equal(needsOverride.needsScopeOverride, true);
+
+  const accepted = getBlockingOverrideStatus(validation, { unclearScopeWithPrice: true }, alphaJsonWithPrice);
+  assert.equal(accepted.canProceed, true);
+  assert.equal(accepted.acceptedOverrideWarnings[0].title, "Work scope unclear");
+
+  const noPrice = getBlockingOverrideStatus(validation, { unclearScopeWithPrice: true }, alphaJsonWithoutPrice);
+  assert.equal(noPrice.canProceed, false);
+  assert.equal(noPrice.needsScopeOverride, false);
+  assert.deepEqual(noPrice.remainingBlockingErrors, ["Property responsibility or work scope is unclear."]);
+});
+
 function pricedOptionsCase(prices) {
   return {
     raw_input: { customer_text: "Sam Price 812-555-0199 123 Oak Lane Madison IN remove one maple tree." },

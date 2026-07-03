@@ -1176,6 +1176,33 @@ test("1b quote-cleanup shorthand preserves base and cleanup prices through TD2 f
   assert.match(options[1].description, /cleanup|upgraded/i);
 });
 
+test("stump shorthand keeps stump price separate from removal price", () => {
+  const stumpOnlyOnRemoval =
+    "Sam Tree 812-555-1111 sam@example.com. 10 Oak Lane Madison Indiana. Remove one oak tree. stump 600";
+  const stumpOnlyValidation = validateAlphaJson(normalizeToAlphaJsonV14({}, stumpOnlyOnRemoval));
+  assert.deepEqual(stumpOnlyValidation.alphaJson.service_options.items.map((option) => option.price.display), ["$600"]);
+  assert.match(stumpOnlyValidation.alphaJson.service_options.items[0].description, /stump work/i);
+  assert.equal(stumpOnlyValidation.can_generate_pdf, false);
+  assert.match(stumpOnlyValidation.blocking_errors.join(" "), /confirm what this price covers/i);
+  assert.ok(stumpOnlyValidation.structured_follow_ups.some((issue) => issue.id === "unclear_work_scope" && issue.blocks_pdf));
+
+  const stumpGrindingOnly =
+    "Sam Tree 812-555-1111 sam@example.com. 10 Oak Lane Madison Indiana. Grind one stump. stump grind 600";
+  const stumpGrindingValidation = validateAlphaJson(normalizeToAlphaJsonV14({}, stumpGrindingOnly));
+  assert.equal(stumpGrindingValidation.can_generate_pdf, true);
+  assert.deepEqual(stumpGrindingValidation.alphaJson.service_options.items.map((option) => option.price.display), ["$600"]);
+  assert.match(stumpGrindingValidation.alphaJson.service_options.items[0].description, /stump grinding/i);
+
+  const removalPlusStump =
+    "Sam Tree 812-555-1111 sam@example.com. 10 Oak Lane Madison Indiana. Remove one oak tree 1500 stump 600";
+  const removalPlusStumpValidation = validateAlphaJson(normalizeToAlphaJsonV14({}, removalPlusStump));
+  assert.equal(removalPlusStumpValidation.can_generate_pdf, true);
+  assert.deepEqual(removalPlusStumpValidation.alphaJson.service_options.items.map((option) => option.label), ["Option A", "Option B"]);
+  assert.deepEqual(removalPlusStumpValidation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,500", "$600"]);
+  assert.match(removalPlusStumpValidation.alphaJson.service_options.items[0].description, /Remove one oak tree/i);
+  assert.match(removalPlusStumpValidation.alphaJson.service_options.items[1].description, /stump work/i);
+});
+
 test("cheap way and full cleanup shorthand creates two priced options", () => {
   const input =
     "lady named Megan Rogers call/text 1-812-555-7929. 5428 Maple Avenue Hanover IN. take down 4 walnut trees. cheap way $1900 full cleanup $2750";

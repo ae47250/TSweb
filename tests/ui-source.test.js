@@ -116,7 +116,8 @@ test("review and confirm screens separate AI review from final quote approval", 
   assert.match(reviewSource, /Do not choose an option here/);
   assert.match(reviewSource, /Needs More Info/);
   assert.match(reviewSource, /warningItems/);
-  assert.match(reviewSource, /Internal Warnings/);
+  assert.match(reviewSource, /Notes/);
+  assert.doesNotMatch(reviewSource, /Internal Warnings/);
   assert.match(reviewSource, /warning-card/);
   assert.match(reviewSource, /OverrideWarningCard/);
   assert.match(reviewSource, /TreeCountResolutionCard/);
@@ -130,6 +131,9 @@ test("review and confirm screens separate AI review from final quote approval", 
   assert.match(reviewSource, /Create Estimate without phone number/);
   assert.match(reviewSource, /Create Estimate without email/);
   assert.match(reviewSource, /Create Estimate without phone number or email/);
+  assert.match(reviewSource, /Create Estimate with unclear work scope/);
+  assert.match(reviewSource, /Prices are clear, but work scope needs Tree Dude approval/);
+  assert.match(reviewSource, /isOverrideRelatedWarning/);
   assert.match(reviewSource, /override-check-row/);
   assert.match(reviewSource, /type="checkbox"/);
   assert.match(reviewSource, /Fix missing info before confirming quote/);
@@ -192,6 +196,7 @@ test("review overrides are narrow and recorded separately from normal validation
   assert.match(reviewOverridesSource, /Service address is not clear, but was OK'd when the estimate was created/);
   assert.match(reviewOverridesSource, /Customer phone number is missing, but email is given/);
   assert.match(reviewOverridesSource, /Customer email is missing, but phone number is given/);
+  assert.match(reviewOverridesSource, /Work scope is unclear, but the displayed price was OK'd/);
   assert.match(reviewOverridesSource, /Sending Estimate SMS and Email will not be available/);
   assert.match(pdfRouteSource, /getBlockingOverrideStatus/);
   assert.match(pdfRouteSource, /canGenerateWithOverrides/);

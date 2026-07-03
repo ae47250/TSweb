@@ -54,6 +54,7 @@ const emptyReviewOverrides = {
   missingPhone: false,
   missingEmail: false,
   missingContact: false,
+  unclearScopeWithPrice: false,
 };
 
 function contactFromAlphaJson(alphaJson) {

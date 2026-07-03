@@ -241,8 +241,13 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
   );
 }
 
-function OverrideWarningCard({ status, overrides, onChange }) {
-  if (!status.needsAddressOverride && !status.needsContactOverride && !status.needsPhoneOverride && !status.needsEmailOverride) return null;
+function OverrideWarningCard({ status, overrides, warningItems = [], onChange }) {
+  const hasOverrideControls = status.needsAddressOverride
+    || status.needsContactOverride
+    || status.needsPhoneOverride
+    || status.needsEmailOverride
+    || status.needsScopeOverride;
+  if (!hasOverrideControls && warningItems.length < 1) return null;
 
   function toggle(key) {
     onChange?.({ ...overrides, [key]: !overrides[key] });
@@ -259,33 +264,57 @@ function OverrideWarningCard({ status, overrides, onChange }) {
   return (
     <section className="summary-card override-warning-card">
       <h3>Internal Warning</h3>
-      <p>This information is missing or unclear. Customer documents stay clean, but the contractor copy will record the warning.</p>
-      <div className="override-warning-actions">
-        {status.needsAddressOverride && (
-          <div className="override-warning-item">
-            <label className="override-check-row">
-              <input
-                type="checkbox"
-                checked={Boolean(overrides.missingAddress)}
-                onChange={() => toggle("missingAddress")}
-              />
-              <span>Create Estimate without exact address</span>
-            </label>
-          </div>
-        )}
-        {contactWarning && (
-          <div className="override-warning-item">
-            <label className="override-check-row">
-              <input
-                type="checkbox"
-                checked={contactAccepted}
-                onChange={() => toggle(contactWarning.key)}
-              />
-              <span>{contactCheckText}</span>
-            </label>
-          </div>
-        )}
-      </div>
+      {hasOverrideControls && (
+        <div className="override-warning-actions">
+          {status.needsAddressOverride && (
+            <div className="override-warning-item">
+              <label className="override-check-row">
+                <input
+                  type="checkbox"
+                  checked={Boolean(overrides.missingAddress)}
+                  onChange={() => toggle("missingAddress")}
+                />
+                <span>Create Estimate without exact address</span>
+              </label>
+            </div>
+          )}
+          {contactWarning && (
+            <div className="override-warning-item">
+              <label className="override-check-row">
+                <input
+                  type="checkbox"
+                  checked={contactAccepted}
+                  onChange={() => toggle(contactWarning.key)}
+                />
+                <span>{contactCheckText}</span>
+              </label>
+            </div>
+          )}
+          {status.needsScopeOverride && (
+            <div className="override-warning-item">
+              <label className="override-check-row">
+                <input
+                  type="checkbox"
+                  checked={Boolean(overrides.unclearScopeWithPrice)}
+                  onChange={() => toggle("unclearScopeWithPrice")}
+                />
+                <span>Create Estimate with unclear work scope</span>
+              </label>
+              <p className="override-warning-note">
+                Prices are clear, but work scope needs Tree Dude approval.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+      {warningItems.length > 0 && (
+        <div className="warning-card">
+          <h4>Notes</h4>
+          <ul>
+            {warningItems.map((warning) => <li key={warning}>{warning}</li>)}
+          </ul>
+        </div>
+      )}
     </section>
   );
 }
@@ -293,10 +322,31 @@ function OverrideWarningCard({ status, overrides, onChange }) {
 const TREE_COUNT_BLOCK_RE = /Tree count is marked unknown|Tree count is unclear|Missing tree count or clear scope/i;
 const REVIEW_OVERRIDE_BLOCK_RE = /^(Missing service address|Service address looks unclear|Missing customer phone or email)\./i;
 const REVIEW_OVERRIDE_FOLLOW_UP_RE = /(exact service address|customer phone|phone number|customer email|email address)/i;
+const SCOPE_OVERRIDE_BLOCK_RE = /^(Unclear work scope: remove, trim, or another service|Property responsibility or work scope is unclear|Work scope unclear; confirm what this price covers)\.?/i;
+const SCOPE_OVERRIDE_FOLLOW_UP_RE = /(Should this job be removal, trimming, or another specific service|Clarify the work scope and who is responsible|Confirm whether the stump price covers stump work only or the full job)/i;
 
-function isReviewOverrideIssue(issue) {
+function isReviewOverrideIssue(issue, status = {}) {
   const text = String(issue || "").trim();
+  if (status.needsScopeOverride && (SCOPE_OVERRIDE_BLOCK_RE.test(text) || SCOPE_OVERRIDE_FOLLOW_UP_RE.test(text))) return true;
   return REVIEW_OVERRIDE_BLOCK_RE.test(text) || REVIEW_OVERRIDE_FOLLOW_UP_RE.test(text);
+}
+
+function isOverrideRelatedWarning(warning, status = {}) {
+  const text = String(warning || "").trim();
+  if (status.needsAddressOverride && /\bservice\s+address|address\b/i.test(text)) return true;
+  if (
+    (status.needsContactOverride || status.needsPhoneOverride || status.needsEmailOverride) &&
+    /\b(contact|phone|email|sms)\b/i.test(text)
+  ) {
+    return true;
+  }
+  if (
+    status.needsScopeOverride &&
+    /\b(work\s+scope|scope|property\s+responsibility|option\s+descriptions?)\b/i.test(text)
+  ) {
+    return true;
+  }
+  return false;
 }
 
 function TreeCountResolutionCard({ validation, busy = false, onApply }) {
@@ -362,16 +412,16 @@ export default function JsonReview({
   const jobAddress = alphaJson.job?.service_address?.display || normalizeServiceAddress(intake.address) || "Address missing";
   const overrideStatus = getBlockingOverrideStatus(validation, normalizedOverrides, alphaJson);
   const canConfirmWithOverrides = overrideStatus.canProceed;
-  const hasAcceptedOverrideWarnings = overrideStatus.acceptedOverrideWarnings.length > 0;
   const needsOverrideAck = overrideStatus.needsAddressOverride
     || overrideStatus.needsContactOverride
     || overrideStatus.needsPhoneOverride
-    || overrideStatus.needsEmailOverride;
+    || overrideStatus.needsEmailOverride
+    || overrideStatus.needsScopeOverride;
   const isFinalConfirm = mode === "confirm";
   const reviewIssueSource = validation?.follow_ups?.length
     ? validation.follow_ups
     : validation?.blocking_errors || [];
-  const reviewIssues = reviewIssueSource.filter((issue) => !isReviewOverrideIssue(issue));
+  const reviewIssues = reviewIssueSource.filter((issue) => !isReviewOverrideIssue(issue, overrideStatus));
   const treeCountOverride = alphaJson.normalization?.field_evidence?.tree_count_override || "";
   const showTreeCountOverride = treeCountOverride && treeCountOverride !== "Auto";
   const title = isFinalConfirm ? "Confirm Quote" : "AI Review";
@@ -381,7 +431,7 @@ export default function JsonReview({
     : "Review these options. The customer chooses one later.";
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Quote") : "Confirm Quote";
   const editLabel = isFinalConfirm ? "Back" : "Edit Info";
-  const warningItems = validation?.warnings || [];
+  const warningItems = (validation?.warnings || []).filter((warning) => !isOverrideRelatedWarning(warning, overrideStatus));
   const renderedFields = {
     customerCard: {
       name: { value: customerName, source: "alphaJson.customer.name" },
@@ -476,6 +526,7 @@ export default function JsonReview({
         <OverrideWarningCard
           status={overrideStatus}
           overrides={normalizedOverrides}
+          warningItems={warningItems}
           onChange={onReviewOverridesChange}
         />
       )}
@@ -494,23 +545,12 @@ export default function JsonReview({
           </ul>
         </div>
       )}
-      {!isFinalConfirm && warningItems.length > 0 && (
-        <div className="summary-card warning-card">
-          <h3>Internal Warnings</h3>
-          <ul>
-            {warningItems.map((warning) => <li key={warning}>{warning}</li>)}
-          </ul>
-        </div>
-      )}
       {!canConfirmWithOverrides && (
         <p className="text-muted">
           {needsOverrideAck
             ? "Check the internal warning override or fix missing info before confirming quote."
             : "Fix missing info before confirming quote."}
         </p>
-      )}
-      {hasAcceptedOverrideWarnings && canConfirmWithOverrides && (
-        <p className="text-muted">Override accepted. Confirm Quote will create a contractor copy with internal warnings.</p>
       )}
       <div className="toolbar td2-action-toolbar mt-2">
         <button className="btn-primary" onClick={onApprove} disabled={!canConfirmWithOverrides || busy}>
