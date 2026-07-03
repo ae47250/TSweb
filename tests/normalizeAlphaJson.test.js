@@ -1143,7 +1143,12 @@ test("messy raw note parses implied one-tree removal while keeping safety notes 
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,200", "$9,000"]);
   assert.match(alphaJson.service_options.items[0].description, /remove only/i);
   assert.match(alphaJson.service_options.items[1].description, /remove.*haul away.*cleanup/i);
-  assert.match(validation.warnings.join(" "), /Safety\/access note/i);
+  const warningText = validation.warnings.join(" ");
+  assert.match(warningText, /Safety\/access note/i);
+  assert.match(warningText, /gate messed up/i);
+  assert.match(warningText, /aggressive/i);
+  assert.match(warningText, /might bite/i);
+  assert.doesNotMatch(warningText, /messd|aggresiv|mite bite/i);
   assert.doesNotMatch(customerFacingText, /dog|bite|gate|do not go|customer wants text|messd|aggresiv|mite bite/i);
 });
 
