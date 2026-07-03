@@ -83,6 +83,12 @@ function syntheticAddress(testCase) {
   return `${1000 + numericId} Oak Lane Madison IN`;
 }
 
+function completeFollowUpAddress(address) {
+  if (/\b(?:IN|Indiana|KY|Kentucky)\b/i.test(address)) return address;
+  if (/\b(?:Madison|Hanover|Jeffersonville|New Albany|Corydon)\b/i.test(address)) return `${address} IN`;
+  return `${address} Madison IN`;
+}
+
 function optionLetter(index) {
   return String.fromCharCode(65 + index);
 }
@@ -105,7 +111,7 @@ function buildFollowUpAnswer(testCase, validation, round) {
     const address = expected.service_address_should_include?.length
       ? expected.service_address_should_include.join(" ")
       : syntheticAddress(testCase);
-    parts.push(`service address ${address}`);
+    parts.push(`service address ${completeFollowUpAddress(address)}`);
   }
 
   if (/phone|email|contact/i.test(errors)) {
@@ -131,7 +137,7 @@ function buildFollowUpAnswer(testCase, validation, round) {
 
   if (!parts.length) {
     parts.push(`phone ${expected.phone_display || syntheticPhone(testCase)}`);
-    parts.push(`service address ${expected.service_address_should_include?.join(" ") || syntheticAddress(testCase)}`);
+    parts.push(`service address ${completeFollowUpAddress(expected.service_address_should_include?.join(" ") || syntheticAddress(testCase))}`);
     parts.push(`${expected.tree_count || "1 tree"} to remove`);
     parts.push("Option A cut and leave wood $1,000");
   }

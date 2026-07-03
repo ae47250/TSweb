@@ -38,7 +38,7 @@ test("signature over maximum length is invalid", () => {
 });
 
 test("2, 3, and 4 option jobs relabel by price", () => {
-  const base = "Jane 555-123-4567 123 Main Street remove 2 trees. ";
+  const base = "Jane 555-123-4567 123 Main Street Madison IN remove 2 trees. ";
   for (const optionText of [
     "basic $1000; premium $2000",
     "basic $1000; better $2000; best $3000",

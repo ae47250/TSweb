@@ -32,8 +32,8 @@ const patterns = [
   { text: "one large oak", count: "1 tree", type: "oak", blocker: false },
   { text: "one tree or several", count: "", type: "", blocker: true },
   { text: "a tree or maybe more", count: "", type: "", blocker: true },
-  { text: "remove maple avenue limb near driveway", count: "", type: "maple", blocker: true },
-  { text: "remove cherry street limb near roof", count: "", type: "cherry", blocker: true },
+  { text: "remove maple avenue limb near driveway", count: "", type: "", blocker: true },
+  { text: "remove cherry street limb near roof", count: "", type: "", blocker: true },
   { text: "one walnut tree at 2970 Walnut St", count: "1 tree", type: "walnut", blocker: false },
   { text: "2 trees at 55 Cherry Street", count: "2 trees", type: "", blocker: false },
 ];

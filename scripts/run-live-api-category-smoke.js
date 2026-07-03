@@ -3,7 +3,7 @@ import path from "node:path";
 import { buildCustomerJobSummary, normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 import { OPENAI_SYSTEM_PROMPT } from "../lib/openaiPrompt.js";
-import { parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
+import { OPENAI_DRAFT_RESPONSE_FORMAT, parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
 import { openAiDraftToNormalizerInput } from "../lib/openaiDraftAdapter.js";
 
 const REPORT_DIR = path.join(process.cwd(), "reports");
@@ -206,7 +206,7 @@ async function callOpenAi(caseItem, client) {
   const model = process.env.OPENAI_MODEL || "gpt-4o";
   const response = await client.chat.completions.create({
     model,
-    response_format: { type: "json_object" },
+    response_format: OPENAI_DRAFT_RESPONSE_FORMAT,
     messages: [
       {
         role: "system",

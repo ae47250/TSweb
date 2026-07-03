@@ -220,7 +220,7 @@ test("captures explicit city and state even when city is not in trusted local-to
   }
 });
 
-test("keeps short typed local address for TD2 with city-state warning", () => {
+test("keeps short typed local address in TD2 but blocks until city and state are confirmed", () => {
   const validation = validateAlphaJson(
     normalizeToAlphaJsonV14(
       {},
@@ -229,10 +229,10 @@ test("keeps short typed local address for TD2 with city-state warning", () => {
   );
 
   assert.equal(validation.alphaJson.job.service_address.display, "803 W 2nd");
-  assert.equal(validation.can_generate_pdf, true);
-  assert.deepEqual(validation.blocking_errors, []);
-  assert.deepEqual(validation.follow_ups, []);
-  assert.match(validation.warnings.join(" "), /Service address may need city or state/);
+  assert.equal(validation.can_generate_pdf, false);
+  assert.deepEqual(validation.blocking_errors, ["Service address needs city and state."]);
+  assert.match(validation.follow_ups.join(" "), /city and state/i);
+  assert.doesNotMatch(validation.warnings.join(" "), /Service address may need city or state/);
 });
 
 test("maps client and services shape into canonical AlphaJSON", () => {
@@ -1289,7 +1289,8 @@ test("messy raw note parses implied one-tree removal while keeping safety notes 
   ].join(" ");
 
   assert.equal(validation.can_generate_pdf, false);
-  assert.deepEqual(validation.blocking_errors, ["Missing customer phone or email."]);
+  assert.deepEqual(validation.blocking_errors, ["Service address needs city and state.", "Missing customer phone or email."]);
+  assert.match(validation.follow_ups.join(" "), /city and state/i);
   assert.match(validation.follow_ups.join(" "), /phone number or email/i);
   assert.equal(alphaJson.job.service_address.display, "148 maple st");
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
@@ -2243,6 +2244,54 @@ test("singular incident tree inference avoids vague plural or multi-species note
     const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
     assert.notEqual(validation.alphaJson.job.tree_details.tree_count, "1 tree", input);
   }
+});
+
+test("vague tree stuff and street-name species evidence require tree count review", () => {
+  const vagueCases = [
+    "Brenda Clark 812-555-1296 brenda@example.com. 1257 Woodland Drive Madison IN wants tree stuff done, $1,650 written in notes",
+    "Dana Cole 812-555-1002 dana@example.com. Service address 118 Maple Avenue Hanover Indiana. Remove maple avenue limb near driveway. Option A removal only $1600.",
+    "Morgan Hale 812-555-1003 morgan@example.com. Service address 55 Cherry Street Madison IN. Remove cherry street limb near roof. Option A removal only $1625.",
+  ];
+
+  for (const input of vagueCases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+    const treeIssueText = `${validation.blocking_errors.join(" ")} ${validation.follow_ups.join(" ")}`;
+    assert.equal(validation.alphaJson.job.tree_details.tree_count, "", input);
+    assert.equal(validation.alphaJson.job.tree_details.tree_type, "", input);
+    assert.match(treeIssueText, /tree count|how many trees/i, input);
+  }
+
+  const explicitCountAtStreet = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Casey Lane 812-555-1005 casey@example.com. Service address 88 Oak Lane Madison Indiana. Remove 2 trees at 55 Cherry Street. Option A removal only $1675.",
+  ));
+  assert.equal(explicitCountAtStreet.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.equal(explicitCountAtStreet.alphaJson.job.tree_details.tree_type, "");
+  assert.doesNotMatch(`${explicitCountAtStreet.blocking_errors.join(" ")} ${explicitCountAtStreet.follow_ups.join(" ")}`, /tree count|how many trees/i);
+
+  const realSpeciesNearStreet = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Lee Ford 812-555-1006 lee@example.com. Service address 88 Oak Lane Madison Indiana. Remove one walnut tree at 2970 Walnut St. Option A removal only $1700.",
+  ));
+  assert.equal(realSpeciesNearStreet.alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.equal(realSpeciesNearStreet.alphaJson.job.tree_details.tree_type, "walnut");
+});
+
+test("local number trace classifies phone address tree count and price numbers", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Trace Case 812-555-0812 trace@example.com at 812 Cedar Ave Madison IN. remove 3 trees by garage. option a removal only 1200.",
+  ));
+  const trace = validation.alphaJson.normalization.number_trace || [];
+  const classifications = new Set(trace.map((item) => item.classification));
+
+  assert.ok(classifications.has("phone"));
+  assert.ok(classifications.has("address"));
+  assert.ok(classifications.has("tree_count"));
+  assert.ok(classifications.has("price"));
+  assert.ok(trace.some((item) => item.raw === "812-555-0812" && item.field === "customer.phone"));
+  assert.ok(trace.some((item) => item.normalized === "3 trees" && item.field === "job.tree_details.tree_count"));
+  assert.ok(trace.some((item) => item.normalized === "$1,200" && item.field === "service_options.items.price"));
 });
 
 test("unclear scope or property responsibility blocks even when singular tree and price are clear", () => {

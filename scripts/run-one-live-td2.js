@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import OpenAI from "openai";
 import { OPENAI_SYSTEM_PROMPT } from "../lib/openaiPrompt.js";
-import { parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
+import { OPENAI_DRAFT_RESPONSE_FORMAT, parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
 import { openAiDraftToNormalizerInput } from "../lib/openaiDraftAdapter.js";
 import { buildCustomerJobSummary, normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
@@ -32,7 +32,7 @@ if (!process.env.OPENAI_API_KEY) {
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const response = await client.chat.completions.create({
   model: process.env.OPENAI_MODEL || "gpt-4o",
-  response_format: { type: "json_object" },
+  response_format: OPENAI_DRAFT_RESPONSE_FORMAT,
   messages: [
     { role: "system", content: OPENAI_SYSTEM_PROMPT },
     { role: "user", content: rawInput },

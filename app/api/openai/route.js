@@ -3,7 +3,7 @@ import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../../../lib/validateJson.js";
 import { readJson, json } from "../../../lib/api.js";
 import { OPENAI_SYSTEM_PROMPT } from "../../../lib/openaiPrompt.js";
-import { parseOpenAiDraft } from "../../../lib/openaiDraftSchema.js";
+import { OPENAI_DRAFT_RESPONSE_FORMAT, parseOpenAiDraft } from "../../../lib/openaiDraftSchema.js";
 import { openAiDraftToNormalizerInput } from "../../../lib/openaiDraftAdapter.js";
 import { buildDebugPipelinePayload } from "../../../lib/debugPipeline.js";
 
@@ -117,7 +117,7 @@ export async function POST(request) {
     const response = await client.chat.completions.create({
       model,
       ...(reasoningEffort ? { reasoning_effort: reasoningEffort } : {}),
-      response_format: { type: "json_object" },
+      response_format: OPENAI_DRAFT_RESPONSE_FORMAT,
       messages: [
         {
           role: "system",

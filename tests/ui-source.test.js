@@ -244,6 +244,8 @@ test("OpenAI prompt and route keep model output at extraction-draft boundary", (
   assert.doesNotMatch(openaiPromptSource, /Set validation\.can_generate_pdf/i);
   assert.match(openaiRouteSource, /parseOpenAiDraft/);
   assert.match(openaiRouteSource, /openAiDraftToNormalizerInput/);
+  assert.match(openaiRouteSource, /OPENAI_DRAFT_RESPONSE_FORMAT/);
+  assert.doesNotMatch(openaiRouteSource, /json_object/);
   assert.match(openaiRouteSource, /normalizeToAlphaJsonV14\(normalizerInput,\s*customerText,\s*intake\)/);
   assert.match(openaiRouteSource, /buildDebugPipelinePayload/);
   assert.match(debugPipelineSource, /structured_follow_ups/);

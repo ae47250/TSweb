@@ -4,7 +4,7 @@ import { resolveServiceAddress } from "../lib/addressResolver.js";
 import { buildDebugPipelinePayload } from "../lib/debugPipeline.js";
 import { buildStructuredFollowUps } from "../lib/followUpBuilder.js";
 import { openAiDraftToNormalizerInput } from "../lib/openaiDraftAdapter.js";
-import { parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
+import { OPENAI_DRAFT_RESPONSE_FORMAT, parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
 import { extractQuoteCleanupPricePair, resolvePrice } from "../lib/priceResolver.js";
 import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
@@ -14,6 +14,18 @@ const lastNames = ["Reed", "Clay", "Mills", "Moss", "Knox", "Hale", "Price", "Be
 const towns = ["Madison", "Hanover", "North Vernon", "Salem", "Seymour", "Austin", "Scottsburg", "Paoli", "Bedford", "Charlestown"];
 const streets = ["Walnut St", "Oak Lane", "Maple Ave", "Pine Road", "Cedar Dr", "Elm Street"];
 const species = ["maple", "oak", "pine", "ash", "cedar", "walnut"];
+
+test("OpenAI draft response format uses strict JSON schema instead of JSON mode", () => {
+  assert.equal(OPENAI_DRAFT_RESPONSE_FORMAT.type, "json_schema");
+  assert.equal(OPENAI_DRAFT_RESPONSE_FORMAT.json_schema.strict, true);
+  assert.equal(OPENAI_DRAFT_RESPONSE_FORMAT.json_schema.schema.additionalProperties, false);
+  assert.ok(OPENAI_DRAFT_RESPONSE_FORMAT.json_schema.schema.required.includes("normalization"));
+  assert.ok(OPENAI_DRAFT_RESPONSE_FORMAT.json_schema.schema.required.includes("low_confidence_spans"));
+  assert.ok(OPENAI_DRAFT_RESPONSE_FORMAT.json_schema.schema.required.includes("number_trace"));
+  assert.equal(OPENAI_DRAFT_RESPONSE_FORMAT.json_schema.schema.properties.options.items.additionalProperties, false);
+  assert.equal(OPENAI_DRAFT_RESPONSE_FORMAT.json_schema.schema.properties.low_confidence_spans.items.additionalProperties, false);
+  assert.equal(OPENAI_DRAFT_RESPONSE_FORMAT.json_schema.schema.properties.number_trace.items.additionalProperties, false);
+});
 
 function sampleCount(items, label) {
   assert.equal(items.length, 60, `${label} should have 60 samples`);
@@ -116,7 +128,9 @@ test("OpenAI draft adapter preserves separate option prices through canonical no
         evidence: "Option B remove, haul away, and cleanup $1,450.",
       },
     ],
+    number_trace: [],
     safety_access_notes: [],
+    low_confidence_spans: [],
     normalization: {
       corrections_made: [],
       uncertainties: [],
@@ -136,6 +150,69 @@ test("OpenAI draft adapter preserves separate option prices through canonical no
   ]);
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
   assert.equal(alphaJson.job.tree_details.tree_type, "maple");
+});
+
+test("OpenAI draft low-confidence spans survive canonical normalization", () => {
+  const raw = "Ivy Stone 812-555-0109 ivy@example.com. 220 Oak Lane Madison IN. remove maple maybe 1700, B maybe cleanup 2900.";
+  const draft = {
+    draft_version: "alpha_extraction_v1",
+    raw_input: { customer_text: raw },
+    contact: {
+      customer_name: "Ivy Stone",
+      phone: "812-555-0109",
+      email: "ivy@example.com",
+      service_address: "220 Oak Lane Madison IN",
+    },
+    job: {
+      tree_count: "",
+      tree_count_status: "uncertain",
+      tree_type: "maple",
+      tree_size: "",
+      work_action: "remove",
+      work_scope: "remove maple",
+      location_on_property: "",
+    },
+    options: [],
+    safety_access_notes: [],
+    low_confidence_spans: [
+      {
+        field: "price",
+        text: "maybe 1700",
+        reason: "Price is not firm.",
+        confidence: "low",
+      },
+    ],
+    number_trace: [
+      {
+        raw: "1700",
+        normalized: "$1,700",
+        classification: "price",
+        field: "service_options.items.price",
+        reason: "Maybe price.",
+        context: "maybe 1700",
+      },
+    ],
+    normalization: {
+      corrections_made: [],
+      uncertainties: [],
+      field_evidence: { price: "maybe 1700" },
+    },
+  };
+
+  const { parsed, validation } = validationFromDraft(draft, raw);
+
+  assert.equal(parsed.ok, true);
+  assert.deepEqual(validation.alphaJson.normalization.low_confidence_spans, [
+    {
+      field: "price",
+      text: "maybe 1700",
+      reason: "Price is not firm.",
+      confidence: "low",
+    },
+  ]);
+  assert.ok(validation.alphaJson.normalization.number_trace.some((trace) =>
+    trace.raw === "1700" && trace.classification === "price"
+  ));
 });
 
 test("60 legacy model-output shapes fail draft schema but fall back to raw-note normalization", () => {
@@ -436,8 +513,8 @@ test("60 debug pipeline samples expose raw input, raw draft, schema warnings, Al
     assert.equal(
       payload.debugPipeline.stages[2].status,
       sample.index % 2 === 0
-        ? "0 corrections, 1 uncertainty flags, 1 options"
-        : "0 corrections, 0 uncertainty flags, 0 options",
+        ? "0 corrections, 1 uncertainty flags, 0 low-confidence spans, 0 number traces, 1 options"
+        : "0 corrections, 0 uncertainty flags, 0 low-confidence spans, 0 number traces, 0 options",
     );
     assert.match(payload.debugPipeline.source, /openai|local-draft-parser/);
   }
