@@ -482,7 +482,7 @@ export default function JsonReview({
           </ul>
         </div>
       )}
-      {!isFinalConfirm && (
+      {!isFinalConfirm && reviewIssues.length === 0 && (
         <span className={`review-status ${canConfirmWithOverrides ? "review-status-ready" : "review-status-needs-info"}`}>
           {canConfirmWithOverrides ? "Review ready" : "Needs more info"}
         </span>
