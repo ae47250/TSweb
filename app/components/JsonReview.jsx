@@ -460,8 +460,8 @@ export default function JsonReview({
               <p>{customerPhone}</p>
               <p className="customer-info-right">{customerEmail}</p>
             </div>
-            <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
-              <h4 style={{ marginBottom: '0.75rem' }}>Jobby Notes</h4>
+            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>Jobby Notes</h4>
               <p className="job-summary-text">{jobNotes}</p>
               {showTreeCountOverride && (
                 <p className="manual-override-note">
