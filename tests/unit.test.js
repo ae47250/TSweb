@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createDraftAlphaJson } from "../lib/alphaJson.js";
 import { generateDocumentId } from "../lib/metadata.js";
+import { buildPriceInstrumentation, extractRawPriceEvidence } from "../lib/priceInstrumentation.js";
 import { checkRateLimit, resetRateLimiter } from "../lib/rateLimiter.js";
 import { getBlockingOverrideStatus } from "../lib/reviewOverrides.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
@@ -169,6 +170,64 @@ test("validation ignores unclear or missing prices for price-spread warning", ()
   assert.equal(missing.can_generate_pdf, false);
   assert.doesNotMatch(unclear.warnings.join(" "), /price spread/i);
   assert.doesNotMatch(missing.warnings.join(" "), /price spread/i);
+});
+
+test("price instrumentation separates raw price evidence from excluded numbers", () => {
+  const evidence = extractRawPriceEvidence("Call 812-555-1200. Address 1500 Maple Ave. remove oak option A 1800 option B 2400.");
+
+  assert.deepEqual(evidence.filter((item) => item.supported && !item.excluded).map((item) => item.value), ["$1,800", "$2,400"]);
+  assert.deepEqual(evidence.filter((item) => item.excluded).map((item) => item.exclusion_reason), ["phone", "address"]);
+});
+
+test("price instrumentation classifies unsupported expected labels and pipeline drop stages", () => {
+  const unsupportedExpected = buildPriceInstrumentation({
+    rawInput: "Remove one oak. option A 1200.",
+    expectedPrices: ["$1,200", "$1,800"],
+    alphaJsonAfterNormalization: {
+      service_options: {
+        items: [{ label: "Option A", price: { display: "$1,200", amount: 1200 } }],
+      },
+    },
+    validation: {
+      can_generate_pdf: true,
+      alphaJson: {
+        service_options: {
+          items: [{ label: "Option A", price: { display: "$1,200", amount: 1200 } }],
+        },
+      },
+    },
+  });
+
+  assert.equal(unsupportedExpected.expected_price_supported_by_raw_input[0].supported_by_raw_input, true);
+  assert.equal(unsupportedExpected.expected_price_supported_by_raw_input[1].supported_by_raw_input, false);
+  assert.equal(unsupportedExpected.price_failure_stage, "raw_expected_unsupported");
+
+  const normalizationDropped = buildPriceInstrumentation({
+    rawInput: "Remove one oak. option A 1200 option B 1800.",
+    expectedPrices: ["$1,200", "$1,800"],
+    alphaJsonBeforeNormalization: {
+      options: [
+        { label: "A", price: { display: "$1,200", amount: 1200 } },
+        { label: "B", price: { display: "$1,800", amount: 1800 } },
+      ],
+    },
+    alphaJsonAfterNormalization: {
+      service_options: {
+        items: [{ label: "Option A", price: { display: "$1,200", amount: 1200 } }],
+      },
+    },
+    validation: {
+      can_generate_pdf: true,
+      alphaJson: {
+        service_options: {
+          items: [{ label: "Option A", price: { display: "$1,200", amount: 1200 } }],
+        },
+      },
+    },
+  });
+
+  assert.ok(normalizationDropped.price_failure_stages.includes("normalization_dropped_price"));
+  assert.ok(normalizationDropped.price_failure_stages.includes("raw_supported_price_missing_in_td2"));
 });
 
 test("document IDs use expected EST date format", () => {
