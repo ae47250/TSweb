@@ -497,7 +497,22 @@ export default function JsonReview({
       )}
       {!isFinalConfirm && (validation?.blocking_errors || []).some((error) => TREE_COUNT_BLOCK_RE.test(error)) && (
         <div className="summary-card override-warning-card">
-          <p><strong>Tree count is unclear.</strong> Select number of trees.</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'space-between' }}>
+            <p style={{ margin: 0 }}><strong>Tree count is unclear.</strong> Select number of trees.</p>
+            {showTreeCountOverride && (
+              <button
+                type="button"
+                className="btn-edit-small"
+                onClick={() => {
+                  setDocumentResult(null);
+                  onEdit();
+                }}
+                style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', minWidth: 'auto', whiteSpace: 'nowrap' }}
+              >
+                Edit
+              </button>
+            )}
+          </div>
           <div className="tree-count-override-row">
             <label htmlFor="tree-count-select">
               <select
