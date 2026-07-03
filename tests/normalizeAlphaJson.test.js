@@ -904,6 +904,38 @@ test("cleans customer names from email, address, and missing-contact cues", () =
   }
 });
 
+test("rejects job text and numeric fragments as customer names", () => {
+  const jobLocationOnly = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "oak by garaje take down maybe 2500 and 2500 with stmp?? wrote stump 800 seperate but b look same price wrong maybe,.",
+  ));
+  assert.equal(jobLocationOnly.alphaJson.customer.name, "");
+
+  const numericFragment = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "2400 River 812-555-2400 needs oak removed price 2500",
+  ));
+  assert.equal(numericFragment.alphaJson.customer.name, "");
+
+  const customerPlaceholder = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "cust wants 2 mapels down at 1800 hill rd, opt a 1800, opt b 2400 with haila maybe. no name on paper, just says call back after 5.",
+  ));
+  assert.equal(customerPlaceholder.alphaJson.customer.name, "");
+
+  const writtenMaybeName = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "remuv walnut by fence, 1500 and stmp 500. customer wrote kay at top, could be name or means okay. address looks like 500 kay ln maybe.",
+  ));
+  assert.equal(writtenMaybeName.alphaJson.customer.name, "");
+
+  const explicitNoClearName = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "3 ded ceders behind barn, 700 each maybe, full hual 2500. note says talked to chris wife brother? no clear customer name, phone ends 2500.",
+  ));
+  assert.equal(explicitNoClearName.alphaJson.customer.name, "");
+});
+
 test("amount-before-work add-on phrasing becomes two clean options", () => {
   const input =
     "lady named Beth Ann maybe 5023104455 says place is 19 County Road 8 near Hanover Indiana, big oak out back near fence wants it down. 1000 to drop it and also add haul away for 1500 total if she wants cleanup.";
@@ -1359,6 +1391,26 @@ test("vague address fragments are blocked for follow-up", () => {
   const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
   assert.equal(validation.can_generate_pdf, false);
   assert.match(validation.blocking_errors.join(" "), /address/i);
+
+  const behindBarn = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "3 ded ceders behind barn, 700 each maybe, full hual 2500. note says talked to chris wife brother? no clear customer name, phone ends 2500.",
+  ));
+  assert.equal(behindBarn.alphaJson.job.service_address.display, "");
+  assert.match(behindBarn.blocking_errors.join(" "), /address/i);
+
+  const overShed = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "big pine over shed, 900 remove only, 1300 with clean up maybe. phone 812-555-1300.",
+  ));
+  assert.equal(overShed.alphaJson.job.service_address.display, "");
+  assert.match(overShed.blocking_errors.join(" "), /address/i);
+
+  const byFence = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "remuv walnut by fence, 1500 and stmp 500. no phone on paper.",
+  ));
+  assert.equal(byFence.alphaJson.job.service_address.display, "");
 });
 
 test("June 30 reviewed production cases preserve safe parser decisions", () => {
@@ -1943,6 +1995,45 @@ test("OpenAI extraction draft vague tree count remains blocked with structured f
   assert.equal(validation.alphaJson.job.tree_details.tree_count, "");
   assert.match(validation.blocking_errors.join(" "), /Tree count is unclear/i);
   assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "vague_tree_count"));
+});
+
+test("OpenAI extraction draft uncertain customer name is not accepted", () => {
+  const raw =
+    "remuv walnut by fence, 1500 and stmp 500. customer wrote kay at top, could be name or means okay. address looks like 500 kay ln maybe.";
+  const draft = {
+    draft_version: "alpha_extraction_v1",
+    raw_input: { customer_text: raw },
+    contact: { customer_name: "kay", phone: "", email: "", service_address: "500 kay ln" },
+    job: {
+      tree_count: "1 tree",
+      tree_count_status: "found",
+      tree_type: "walnut",
+      tree_size: "",
+      work_action: "remove",
+      work_scope: "",
+      location_on_property: "by fence",
+    },
+    options: [],
+    safety_access_notes: [],
+    normalization: {
+      corrections_made: [],
+      uncertainties: [
+        {
+          field: "customer_name",
+          issue: "May be a name or confirmation.",
+          evidence: "customer wrote kay at top, could be name or means okay.",
+        },
+      ],
+      field_evidence: {
+        customer_name: "customer wrote kay at top, could be name or means okay.",
+      },
+    },
+  };
+
+  const parsed = parseOpenAiDraft(draft);
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(openAiDraftToNormalizerInput(parsed.draft, { rawInput: raw }), raw));
+
+  assert.equal(validation.alphaJson.customer.name, "");
 });
 
 test("OpenAI extraction draft non-firm price stays non-customer-facing", () => {
