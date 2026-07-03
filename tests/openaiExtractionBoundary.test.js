@@ -5,7 +5,7 @@ import { buildDebugPipelinePayload } from "../lib/debugPipeline.js";
 import { buildStructuredFollowUps } from "../lib/followUpBuilder.js";
 import { openAiDraftToNormalizerInput } from "../lib/openaiDraftAdapter.js";
 import { parseOpenAiDraft } from "../lib/openaiDraftSchema.js";
-import { resolvePrice } from "../lib/priceResolver.js";
+import { extractQuoteCleanupPricePair, resolvePrice } from "../lib/priceResolver.js";
 import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 
@@ -267,6 +267,44 @@ test("60 price resolver samples distinguish firm prices from phone, route, gate,
       assert.equal(result.amount, null, sample.rawPrice);
     }
   }
+});
+
+test("1a helper extracts quote-cleanup shorthand price pairs before TD2", () => {
+  const cases = [
+    {
+      id: "case_0019",
+      raw: "Shane Myers 812-555-3860 1582 River Bluff Lane Hanover IN leaning tree touching service drop, quote $1100 cleanup $1,600",
+      expectedAmounts: [1100, 1600],
+      expectedDisplays: ["$1,100", "$1,600"],
+    },
+    {
+      id: "case_0540",
+      raw: "Shane Myers 812-555-3860 1582 River Bluff Lane Hanover IN leaning tree touching service drop, quote 2,600 cleanup 3150",
+      expectedAmounts: [2600, 3150],
+      expectedDisplays: ["$2,600", "$3,150"],
+    },
+  ];
+
+  for (const testCase of cases) {
+    const pair = extractQuoteCleanupPricePair(testCase.raw);
+    assert.equal(pair.length, 2, testCase.id);
+    assert.deepEqual(pair.map((option) => option.role), ["base_quote", "cleanup_option"], testCase.id);
+    assert.deepEqual(pair.map((option) => option.amount), testCase.expectedAmounts, testCase.id);
+    assert.deepEqual(pair.map((option) => option.display), testCase.expectedDisplays, testCase.id);
+    assert.match(pair[0].scope, /base|removal/i, testCase.id);
+    assert.match(pair[1].scope, /cleanup|upgraded/i, testCase.id);
+
+    for (const option of pair) {
+      assert.equal(
+        testCase.raw.slice(option.evidenceSpan.start, option.evidenceSpan.end),
+        option.evidenceSpan.text,
+        `${testCase.id}: evidence span must point back to raw text`,
+      );
+      assert.doesNotMatch(option.evidenceSpan.text, /812|3860|1582/, `${testCase.id}: non-price numbers must stay excluded`);
+    }
+  }
+
+  assert.deepEqual(extractQuoteCleanupPricePair("Call 812-555-3860 about cleanup tomorrow."), []);
 });
 
 test("60 address resolver samples prefer intake, format jammed addresses, and block unsafe candidates", () => {
