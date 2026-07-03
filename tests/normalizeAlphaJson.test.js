@@ -898,6 +898,11 @@ test("cleans customer names from email, address, and missing-contact cues", () =
     },
     {
       input:
+        "note from Ben Reed send quote to ben.reed721@example.com. at 3327 College Avenue in Hanover IN. remove three hickory trees. quote options: remove only 1000; remove plus cleanup $1700",
+      expectedName: "Ben Reed",
+    },
+    {
+      input:
         "Sofia Price said\nemail sofia.price634@example.com\nat 5682 Highway 421 in Hanover IN\ntake down 3 elm trees\nquote options: remove only $2650; remove plus cleanup 3,200",
       expectedName: "Sofia Price",
     },
@@ -922,6 +927,27 @@ test("cleans customer names from email, address, and missing-contact cues", () =
     const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, testCase.input));
     assert.equal(validation.alphaJson.customer.name, testCase.expectedName, testCase.input);
   }
+});
+
+test("cleans leading email from model-provided customer name candidate", () => {
+  const raw = {
+    customer: {
+      name: "ben.reed721@example.com Ben Reed",
+      email: "ben.reed721@example.com",
+      phone: "812-555-1721",
+      service_address: "3327 College Avenue, Hanover, IN",
+    },
+    service: {
+      tree_count_scope: "three hickory trees",
+      options: [
+        { description: "remove only", price: 1000 },
+        { description: "remove plus cleanup", price: 1700 },
+      ],
+    },
+  };
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(raw, "remove three hickory trees"));
+  assert.equal(validation.alphaJson.customer.name, "Ben Reed");
+  assert.equal(validation.alphaJson.customer.email, "ben.reed721@example.com");
 });
 
 test("rejects job text and numeric fragments as customer names", () => {
