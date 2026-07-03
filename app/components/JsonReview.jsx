@@ -530,18 +530,18 @@ export default function JsonReview({
             <article className="quote-option-card" key={option.label || index}>
               <div className="quote-option-header">
                 <strong>{option.label || `Option ${index + 1}`}</strong>
-                <span>{option.price?.display || "Price missing"}</span>
+                <strong>{option.price?.display || "Price missing"}</strong>
               </div>
-              <h4>{option.title || "Option details"}</h4>
+              <p>{option.title || "Option details"}</p>
               <p>{option.description || "Add the work details for this option before informing the customer."}</p>
             </article>
           )) : (
             <article className="quote-option-card missing-option-card">
               <div className="quote-option-header">
                 <strong>Option 1</strong>
-                <span>Price missing</span>
+                <strong>Price missing</strong>
               </div>
-              <h4>Option needed</h4>
+              <p>Option needed</p>
               <p>Add at least one option and one price before informing the customer.</p>
             </article>
           )}
