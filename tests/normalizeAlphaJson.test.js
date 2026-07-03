@@ -896,6 +896,26 @@ test("cleans customer names from email, address, and missing-contact cues", () =
         "note from Victor Peterson contact later 5888 Mill Street Madison IN; 3 maple trees removal; $2350/$2,700",
       expectedName: "Victor Peterson",
     },
+    {
+      input:
+        "Sofia Price said\nemail sofia.price634@example.com\nat 5682 Highway 421 in Hanover IN\ntake down 3 elm trees\nquote options: remove only $2650; remove plus cleanup 3,200",
+      expectedName: "Sofia Price",
+    },
+    {
+      input:
+        "1-812-555-5995 noah.hayes135@example.com Noah Hayes said -- Remove 3 pine trees. -- service address 263 Rolling Ridge Drive - Madison IN -- Option A cut and leave wood $2600. Option B cut, haul away debris, and cleanup 3000.",
+      expectedName: "Noah Hayes",
+    },
+    {
+      input:
+        "customer Scott Price; address 6587 Hanover Avenue Hanover IN; 812-555-2102 scott.price246@example.com; needs 4 bradford pear trees removal; Option A 2400 leave wood stacked. Option B $2,700 haul off debris.",
+      expectedName: "Scott Price",
+    },
+    {
+      input:
+        "Melinda Hughes; address 1345 Moffett Road - Hanover IN; 1-812-555-1629; needs Remove 4 locust trees.; Option A cut and leave wood 2,100. Option B cut, haul away debris, and cleanup $2,450.",
+      expectedName: "Melinda Hughes",
+    },
   ];
 
   for (const testCase of cases) {
@@ -1078,6 +1098,19 @@ test("phone-like numbers are stripped before tree count parsing", () => {
   assert.notEqual(validation.alphaJson.job.tree_details.tree_count, "555 trees");
   assert.notEqual(validation.alphaJson.job.tree_details.tree_count, "2400 trees");
   assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
+});
+
+test("price-like numbers near tree wording do not force high tree count confirmation", () => {
+  const cases = [
+    "customer Laura Carroll call/text 812.555.6883 3562 Mill Street - Madison IN $1100/$1,500 for tree? no note on haul or stump\nFollow-up 1: Follow-up details: 1 tree to remove. scope confirmed and customer is responsible for this property work. Option A cut and leave wood $1,100. Option B haul debris and cleanup $1,500.",
+    "Derek Cox said 812.555.8133 7221 Poplar Ridge Road - Hanover IN $1,300/1900 for tree? no note on haul or stump\nFollow-up 1: Follow-up details: 1 tree to remove. scope confirmed and customer is responsible for this property work. Option A cut and leave wood $1,300. Option B haul debris and cleanup $1,900.",
+  ];
+
+  for (const input of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+    assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
+    assert.doesNotMatch(validation.blocking_errors.join(" "), /Tree count is unclear/i);
+  }
 });
 
 test("model-provided high tree counts still require explicit user confirmation", () => {
