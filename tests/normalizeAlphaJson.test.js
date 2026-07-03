@@ -1047,6 +1047,38 @@ test("two species joined by and count as two trees while or counts as one uncert
   assert.equal(orCase.alphaJson.job.tree_details.tree_type, "oak or maple");
 });
 
+test("explicit tree count conflicting with species pair triggers TD2 tree count resolution", () => {
+  const unclearCases = [
+    "Caller says on tree and cedar and oak 1500 removal only",
+    "Caller says one tree cedar and oak 1500 removal only",
+    "Caller says three trees cedar and oak 1500 removal only",
+  ];
+
+  for (const input of unclearCases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+    assert.equal(validation.alphaJson.job.tree_details.tree_count, "", input);
+    assert.equal(validation.alphaJson.job.tree_details.tree_type, "cedar and oak", input);
+    assert.match(validation.blocking_errors.join(" "), /Tree count is unclear/i, input);
+  }
+
+  const completeUnclearCount = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Alex Reed 812-555-1001. Service address 2970 Walnut St Madison Indiana. Remove on tree and cedar and oak. Option A removal only $1200.",
+  ));
+
+  assert.equal(completeUnclearCount.alphaJson.job.tree_details.tree_count, "");
+  assert.equal(completeUnclearCount.alphaJson.job.tree_details.tree_type, "cedar and oak");
+  assert.match(completeUnclearCount.blocking_errors.join(" "), /Tree count is unclear/i);
+
+  const agreeingCount = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Caller says two trees cedar and oak 1500 removal only",
+  ));
+
+  assert.equal(agreeingCount.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.doesNotMatch(agreeingCount.blocking_errors.join(" "), /Tree count is unclear/i);
+});
+
 test("tree count override wins and Unknown forces follow-up", () => {
   const manual = validateAlphaJson(normalizeToAlphaJsonV14(
     {},

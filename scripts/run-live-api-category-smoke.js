@@ -10,7 +10,7 @@ const REPORT_DIR = path.join(process.cwd(), "reports");
 const REPLAY_PATH =
   process.env.LIVE_API_REPLAY_PATH ||
   path.join(REPORT_DIR, "replay-messy-inputs-2026-07-01_19-43-fresh-700-v2b.jsonl");
-const CASE_PLAN = [
+const DEFAULT_CASE_PLAN = [
   ["clean_baseline", 3],
   ["messy_job_description", 12],
   ["messy_service_address", 5],
@@ -19,6 +19,20 @@ const CASE_PLAN = [
   ["tree_count_tree_detail", 12],
   ["noise_heavy_notes", 10],
 ];
+
+function casePlanFromEnv() {
+  const rawPlan = process.env.LIVE_API_CASE_PLAN || "";
+  if (!rawPlan.trim()) return DEFAULT_CASE_PLAN;
+
+  return rawPlan.split(",").map((entry) => {
+    const [category, countText] = entry.split(":").map((part) => part.trim());
+    const count = Number(countText);
+    if (!category || !Number.isInteger(count) || count < 1) {
+      throw new Error(`Invalid LIVE_API_CASE_PLAN entry: ${entry}`);
+    }
+    return [category, count];
+  });
+}
 
 function loadEnvLocal() {
   const envPath = path.join(process.cwd(), ".env.local");
@@ -167,7 +181,7 @@ function loadReplayCases() {
     .filter(Boolean)
     .map((line) => JSON.parse(line));
 
-  return CASE_PLAN.flatMap(([category, count]) =>
+  return casePlanFromEnv().flatMap(([category, count]) =>
     rows
       .filter((row) => row.category === category)
       .slice(0, count)
@@ -306,8 +320,8 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 const stamp = timestamp();
-const label = `${stamp}-50cases`;
 const cases = loadReplayCases();
+const label = `${stamp}-${cases.length}cases`;
 const records = [];
 const { default: OpenAI } = await import("openai");
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
