@@ -463,13 +463,32 @@ main {
   background: #fff;
   border: 1px solid #fdba74;
   border-radius: 8px;
-  display: grid;
-  gap: 6px;
   padding: 10px;
 }
 
 .override-warning-item p {
   margin: 0;
+}
+
+.override-check-row {
+  align-items: center;
+  color: #111;
+  display: grid;
+  font-weight: 800;
+  gap: 8px;
+  grid-template-columns: 18px minmax(0, 1fr);
+  line-height: 1.3;
+  margin-left: 2ch;
+}
+
+.override-check-row input {
+  height: 18px;
+  margin: 0;
+  width: 18px;
+}
+
+.override-check-row span {
+  overflow-wrap: anywhere;
 }
 
 .override-ack-button {

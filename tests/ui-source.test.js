@@ -116,7 +116,7 @@ test("review and confirm screens separate AI review from final quote approval", 
   assert.match(reviewSource, /Do not choose an option here/);
   assert.match(reviewSource, /Needs More Info/);
   assert.match(reviewSource, /warningItems/);
-  assert.match(reviewSource, /Warnings/);
+  assert.match(reviewSource, /Internal Warnings/);
   assert.match(reviewSource, /warning-card/);
   assert.match(reviewSource, /OverrideWarningCard/);
   assert.match(reviewSource, /TreeCountResolutionCard/);
@@ -130,6 +130,8 @@ test("review and confirm screens separate AI review from final quote approval", 
   assert.match(reviewSource, /Create Estimate without phone number/);
   assert.match(reviewSource, /Create Estimate without email/);
   assert.match(reviewSource, /Create Estimate without phone number or email/);
+  assert.match(reviewSource, /override-check-row/);
+  assert.match(reviewSource, /type="checkbox"/);
   assert.match(reviewSource, /Fix missing info before confirming quote/);
   assert.match(reviewSource, /Edit Info/);
   assert.match(reviewSource, /customer-summary-card/);
@@ -139,6 +141,7 @@ test("review and confirm screens separate AI review from final quote approval", 
   assert.match(cssSource, /\.td2-action-toolbar/);
   assert.match(cssSource, /\.warning-card/);
   assert.match(cssSource, /\.override-warning-card/);
+  assert.match(cssSource, /\.override-check-row/);
   assert.match(cssSource, /border:\s*2px solid #f97316/);
   assert.match(cssSource, /grid-template-columns:\s*max-content minmax\(0, 1fr\)/);
   assert.match(cssSource, /\.customer-summary-card/);

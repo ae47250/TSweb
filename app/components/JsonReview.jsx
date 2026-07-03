@@ -249,15 +249,10 @@ function OverrideWarningCard({ status, overrides, onChange }) {
   }
 
   const contactWarning = status.contactWarning;
-  const contactButtonText = {
+  const contactCheckText = {
     missingPhone: "Create Estimate without phone number",
     missingEmail: "Create Estimate without email",
     missingContact: "Create Estimate without phone number or email",
-  }[contactWarning?.key];
-  const contactRecordedText = {
-    missingPhone: "OK recorded - phone number",
-    missingEmail: "OK recorded - email",
-    missingContact: "OK recorded - phone number and email",
   }[contactWarning?.key];
   const contactAccepted = contactWarning ? Boolean(overrides[contactWarning.key]) : false;
 
@@ -268,28 +263,26 @@ function OverrideWarningCard({ status, overrides, onChange }) {
       <div className="override-warning-actions">
         {status.needsAddressOverride && (
           <div className="override-warning-item">
-            <strong>{status.addressWarning?.title || "Service address missing or unclear"}</strong>
-            <p>{status.addressWarning?.message || "Service address is missing or unclear."}</p>
-            <button
-              className={`btn-orange override-ack-button ${overrides.missingAddress ? "override-ack-button-active" : ""}`}
-              type="button"
-              onClick={() => toggle("missingAddress")}
-            >
-              {overrides.missingAddress ? "OK recorded - address" : "Create Estimate without exact address"}
-            </button>
+            <label className="override-check-row">
+              <input
+                type="checkbox"
+                checked={Boolean(overrides.missingAddress)}
+                onChange={() => toggle("missingAddress")}
+              />
+              <span>Create Estimate without exact address</span>
+            </label>
           </div>
         )}
         {contactWarning && (
           <div className="override-warning-item">
-            <strong>{contactWarning.title}</strong>
-            <p>{contactWarning.message}</p>
-            <button
-              className={`btn-orange override-ack-button ${contactAccepted ? "override-ack-button-active" : ""}`}
-              type="button"
-              onClick={() => toggle(contactWarning.key)}
-            >
-              {contactAccepted ? contactRecordedText : contactButtonText}
-            </button>
+            <label className="override-check-row">
+              <input
+                type="checkbox"
+                checked={contactAccepted}
+                onChange={() => toggle(contactWarning.key)}
+              />
+              <span>{contactCheckText}</span>
+            </label>
           </div>
         )}
       </div>
@@ -495,7 +488,7 @@ export default function JsonReview({
       )}
       {!isFinalConfirm && warningItems.length > 0 && (
         <div className="summary-card warning-card">
-          <h3>Warnings</h3>
+          <h3>Internal Warnings</h3>
           <ul>
             {warningItems.map((warning) => <li key={warning}>{warning}</li>)}
           </ul>
@@ -504,7 +497,7 @@ export default function JsonReview({
       {!canConfirmWithOverrides && (
         <p className="text-muted">
           {needsOverrideAck
-            ? "Click the warning OK button or fix missing info before confirming quote."
+            ? "Check the internal warning override or fix missing info before confirming quote."
             : "Fix missing info before confirming quote."}
         </p>
       )}
