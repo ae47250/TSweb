@@ -49,6 +49,22 @@ const emptyQuoteContact = {
   treeCountOverride: "Auto",
 };
 
+const sampleQuoteContact = {
+  name: "Jennifer Hartman",
+  phone: "(555) 234-8901",
+  email: "j.hartman@email.com",
+  address: "1247 Maple Hill Road, Springfield, IL 62701",
+  treeCountOverride: "Auto",
+};
+
+const sampleCustomerText = `Two large oak trees in backyard, tight access through narrow side yard gate (4 feet wide). Trees are approximately 50-60 feet tall. One has a dead branch hanging over the deck.
+
+Option A: Cut and haul all material, clean up debris - $2,400
+Option B: Cut, chip, and grind stumps - $3,850
+Option C: Cut and stack logs for customer, haul branches only - $1,950
+
+Job needs to be completed by end of month due to HOA concerns. Customer is available weekdays after 2 PM or any time on weekends.`;
+
 const emptyReviewOverrides = {
   missingAddress: false,
   missingPhone: false,
@@ -67,13 +83,14 @@ function contactFromAlphaJson(alphaJson) {
   };
 }
 
-function FrontPage({ cards, onNewQuote, onNewInvoice, onOpenEstimate, onManualAcceptance, onCopyLink }) {
+function FrontPage({ cards, onNewQuote, onNewInvoice, onOpenEstimate, onManualAcceptance, onCopyLink, onSampleEstimate }) {
   const [showRecentEstimates, setShowRecentEstimates] = useState(false);
 
   return (
     <section className="front-page">
       <div className="front-actions">
         <button className="front-action front-action-primary" type="button" onClick={onNewQuote}>New Estimate</button>
+        <button className="front-action front-action-secondary" type="button" onClick={onSampleEstimate}>Sample Estimate</button>
         <button className="front-action front-action-secondary" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
         <button className="front-action front-action-invoice" type="button" onClick={onNewInvoice}>New Invoice</button>
         <button className="front-action front-action-recent" type="button" onClick={() => setShowRecentEstimates((current) => !current)}>Recent Estimates</button>
@@ -165,6 +182,23 @@ export default function HomePage() {
     }
     setStage("new");
     setNotice("");
+    setError("");
+    setEditMessage("");
+  }
+
+  function startSampleQuote() {
+    if (stage === "front") {
+      setCustomerText(sampleCustomerText);
+      setQuoteContact(sampleQuoteContact);
+      setSubmittedText("");
+      setAlphaJson(null);
+      setValidation(null);
+      setDebugPipeline(null);
+      setReviewOverrides(emptyReviewOverrides);
+      setDocumentResult(null);
+    }
+    setStage("new");
+    setNotice("Sample customer data loaded. Click 'Review Estimate' to proceed.");
     setError("");
     setEditMessage("");
   }
@@ -321,6 +355,7 @@ export default function HomePage() {
         <FrontPage
           cards={cards}
           onNewQuote={startNewQuote}
+          onSampleEstimate={startSampleQuote}
           onNewInvoice={() => setNotice("New invoice workflow is not connected yet.")}
           onOpenEstimate={openEstimate}
           onManualAcceptance={openManualFromFront}
