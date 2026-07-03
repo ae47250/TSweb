@@ -222,7 +222,7 @@ export default function HomePage() {
     setError("");
     setNotice("");
     setEditMessage("");
-    setSubmittedText(customerText);
+    setSubmittedText(fullText);
     try {
       const openai = await postJson("/api/openai", { customer_text: fullText, intake });
       const validated = await postJson("/api/validate", { alphaJson: openai.alphaJson, customer_text: fullText, intake });
@@ -231,11 +231,16 @@ export default function HomePage() {
       setDebugPipeline(openai.debugPipeline || null);
       setReviewOverrides(emptyReviewOverrides);
       setDocumentResult(null);
-      setStage("review");
+      // If already in review stage, stay there; otherwise move to review
+      if (stage !== "review") {
+        setStage("review");
+      }
     } catch (err) {
       setError(err.message);
       setEditMessage("Edit the notes above, add the missing information, then click Create Review again.");
-      setStage("new");
+      if (stage !== "review") {
+        setStage("new");
+      }
     } finally {
       setBusy(false);
     }
