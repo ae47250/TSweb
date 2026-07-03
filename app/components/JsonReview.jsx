@@ -497,6 +497,14 @@ export default function JsonReview({
               <p className="customer-info-right">{customerEmail}</p>
             </div>
           </div>
+          {reviewIssues.length > 0 && (
+            <div className="summary-card needs-info-card">
+              <h3>Needs More Info</h3>
+              <ul>
+                {reviewIssues.map((question) => <li key={question}>{question}</li>)}
+              </ul>
+            </div>
+          )}
           <div className="summary-card review-job-notes-card">
             <h3>Jobby Notes</h3>
             <p className="job-summary-text">{jobNotes}</p>
@@ -555,14 +563,6 @@ export default function JsonReview({
           busy={busy}
           onApply={onTreeCountOverrideChange}
         />
-      )}
-      {reviewIssues.length > 0 && (
-        <div className="summary-card needs-info-card">
-          <h3>Needs More Info</h3>
-          <ul>
-            {reviewIssues.map((question) => <li key={question}>{question}</li>)}
-          </ul>
-        </div>
       )}
       {!canConfirmWithOverrides && (
         <p className="text-muted">
