@@ -1,0 +1,1801 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sparse Change Dashboard Prototype</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #fffbe6; color: #172033; }
+    main { max-width: 1280px; margin: 0 auto; padding: 28px; }
+    header { background: #d9f0ff; border: 1px solid #b8ddf4; border-radius: 8px; padding: 18px; }
+    h1 { margin: 0 0 8px; padding: 12px; text-align: center; font-size: 30px; letter-spacing: 0; text-transform: uppercase; background: #123d66; color: #fff; border-radius: 6px; }
+    .meta { margin: 5px 0 0; color: #536071; line-height: 1.45; }
+    .dashboard-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 14px 0 10px; }
+    .dashboard-nav a { display: inline-block; border: 1px solid #98a2b3; border-radius: 6px; padding: 7px 10px; background: #fff; color: #123d66; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .dashboard-nav a[aria-current="page"] { background: #123d66; color: #fff; border-color: #123d66; }
+    .header-notes { margin: 12px 0 0; padding: 12px 18px 12px 30px; background: #fff; border: 1px solid #b8ddf4; border-radius: 6px; color: #294861; line-height: 1.45; }
+    .header-notes li + li { margin-top: 5px; }
+    .category-divider { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; margin: 30px 0 10px; color: #475467; font-size: 12px; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .category-divider::before, .category-divider::after { content: ""; height: 3px; background: #667085; border-radius: 999px; }
+    .panel { margin-top: 22px; background: #fff; border: 1px solid #d8dee8; border-radius: 8px; padding: 18px; }
+    .category-divider + .panel { margin-top: 0; }
+    .panel-head { margin-bottom: 14px; border-bottom: 3px solid #98a2b3; padding-bottom: 12px; text-align: center; }
+    .panel-head h2 { margin: 0 0 5px; font-size: 20px; letter-spacing: 0; }
+    .panel-head p { margin: 0; color: #667085; }
+    .lanes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    h3 { margin: 0 0 10px; font-size: 18px; letter-spacing: 0; text-align: center; text-transform: uppercase; }
+    .card { border: 1px solid #d8dee8; border-radius: 8px; padding: 14px; margin-bottom: 12px; background: #fbfcfd; }
+    .card.ai { border-left: 5px solid #176b87; }
+    .card.workflow { border-left: 5px solid #237a45; }
+    h4 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0; color: #123d66; text-align: center; }
+    .source, .meaning, .empty { color: #536071; line-height: 1.45; }
+    .source { margin: 4px 0 8px; font-size: 13px; text-align: center; }
+    .graph-subtitle { margin: 0 0 8px; color: #475467; font-size: 13px; font-weight: 700; line-height: 1.35; text-align: center; }
+    .sparse-chart { width: 100%; height: 220px; background: #fff; border: 1px solid #e6ebf1; border-radius: 6px; }
+    .axis { stroke: #c7cfda; stroke-width: 1; }
+    .plot-bg { fill: #f8fafc; stroke: #d8dee8; }
+    .bar-outline { fill: #fff; stroke: #111827; stroke-width: 1; opacity: 0.8; }
+    .bar-fill { fill: #176b87; }
+    .workflow .bar-fill { fill: #237a45; }
+    .flat-marker { fill: #f2b84b; stroke: #8a5a00; stroke-width: 1; }
+    .point-label, .axis-label, .scale-note { fill: #475467; font-size: 11px; font-weight: 700; }
+    .point-value { fill: #172033; font-size: 11px; font-weight: 700; }
+    .recent-note, .no-change-title { fill: #7a2e0e; font-size: 14px; font-weight: 700; }
+    .no-change-subtitle { fill: #536071; font-size: 12px; font-weight: 700; }
+    .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 10px 0; color: #667085; font-size: 12px; }
+    .stats strong { display: block; color: #172033; font-size: 14px; margin-top: 2px; }
+    .stats .improved strong { color: #188038; }
+    .stats .worse strong { color: #c0272d; }
+    .stats .unchanged strong { color: #667085; }
+    .progress-row { grid-column: 1 / -1; }
+    .progress-label { color: #667085; font-weight: 700; }
+    .progress-row strong { display: inline; margin-left: 6px; font-size: 18px; font-weight: 800; }
+    .progress-row.improved strong { color: #188038; }
+    .progress-row.worse strong { color: #c0272d; }
+    .progress-row.unchanged strong { color: #667085; }
+    .meaning { margin: 7px 0 0; font-size: 13px; }
+    @media (max-width: 880px) {
+      main { padding: 18px; }
+      .lanes { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>IS THIS GETTING BETTER</h1>
+      <nav class="dashboard-nav" aria-label="Dashboard pages">
+        <a href="index.html" aria-current="page">Sparse Change Dashboard</a>
+        <a href="../reports/alpha-problem-dashboard.html">Problem Dashboard</a>
+        <a href="../reports/IndexPriceParcing.html">IndexPriceParsing</a>
+      </nav>
+      <p class="meta">Page: <code>https://urveska.vercel.app/tsweb-dashboard/</code></p>
+      <p class="meta">Generated 07/03, 02:16 AM from current report data.</p>
+      <ul class="header-notes">
+        <li>Always show base and latest data points.</li>
+        <li>Hide repeated points unless the metric changed.</li>
+        <li>For long unchanged stretches, show every 10th point between base and latest.</li>
+        <li>If the last 10 observations did not change, say so inside the graph instead of drawing repeated bars.</li>
+      </ul>
+    </header>
+    <section class="panel">
+    <div class="panel-head">
+      <h2>ALL LOCAL SYNTHETIC CASES - 700 CURRENT CASES</h2>
+      <p>Seven internal 100-case groups, excluding the separate prior-regression stress bucket.</p>
+    </div>
+    <div class="lanes">
+      <div>
+        <h3>AI Parsing</h3>
+        <section class="card ai">
+    <h4>AI parsing failures across 700 stable synthetic cases</h4>
+    <p class="source">Internal 100-each: 7 groups x 100 cases</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="AI parsing failures across 700 stable synthetic cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="50.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="50.0" y="30.0" width="30.0" height="124.0"><title>07/01, 19:02 base: 160 (100% of base)</title></rect>
+      <text class="point-label" x="65.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="65.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="120.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="120.0" y="138.5" width="30.0" height="15.5"><title>07/01, 19:26 changed: 20 (13% of base)</title></rect>
+      <text class="point-label" x="135.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="135.0" y="214" text-anchor="middle">13%</text>
+    </g><g>
+      <rect class="bar-outline" x="190.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="190.0" y="154.0" width="30.0" height="0.0"><title>07/01, 19:29 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="205.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="205.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="260.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="260.0" y="146.3" width="30.0" height="7.8"><title>07/01, 19:41 changed: 10 (6% of base)</title></rect>
+      <text class="point-label" x="275.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="275.0" y="214" text-anchor="middle">6%</text>
+    </g><g>
+      <rect class="bar-outline" x="330.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="330.0" y="154.0" width="30.0" height="0.0"><title>07/01, 19:43 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="345.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="345.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="400.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="400.0" y="153.2" width="30.0" height="0.8"><title>07/02, 09:53 changed: 1 (1% of base)</title></rect>
+      <text class="point-label" x="415.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="415.0" y="214" text-anchor="middle">1%</text>
+    </g><g>
+      <rect class="bar-outline" x="470.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="470.0" y="154.0" width="30.0" height="0.0"><title>07/02, 10:02 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="485.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="485.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="540.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="540.0" y="154.0" width="30.0" height="0.0"><title>07/03, 00:47 latest: 0 (0% of base)</title></rect>
+      <text class="point-label" x="555.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="555.0" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 700</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>160.0</strong></span>
+      <span>Shown points <strong>8 of 18</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts failed cases across the seven current synthetic categories.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This tells us whether ordinary-to-messy local cases are staying stable while we work on harder inputs.</p>
+  </section>
+      </div>
+      <div>
+        <h3>Workflow</h3>
+        <section class="card workflow">
+    <h4>Workflow passes across 700 stable synthetic cases</h4>
+    <p class="source">Internal 100-each: 7 groups x 100 cases</p>
+    <p class="graph-subtitle">This graph shows fraction of total possible success.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Workflow passes across 700 stable synthetic cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of possible</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="50.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="50.0" y="58.3" width="30.0" height="95.7"><title>07/01, 19:02 base: 540 (77% of possible)</title></rect>
+      <text class="point-label" x="65.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="65.0" y="214" text-anchor="middle">77%</text>
+    </g><g>
+      <rect class="bar-outline" x="120.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="120.0" y="33.5" width="30.0" height="120.5"><title>07/01, 19:26 changed: 680 (97% of possible)</title></rect>
+      <text class="point-label" x="135.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="135.0" y="214" text-anchor="middle">97%</text>
+    </g><g>
+      <rect class="bar-outline" x="190.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="190.0" y="30.0" width="30.0" height="124.0"><title>07/01, 19:29 changed: 700 (100% of possible)</title></rect>
+      <text class="point-label" x="205.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="205.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="260.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="260.0" y="31.8" width="30.0" height="122.2"><title>07/01, 19:41 changed: 690 (99% of possible)</title></rect>
+      <text class="point-label" x="275.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="275.0" y="214" text-anchor="middle">99%</text>
+    </g><g>
+      <rect class="bar-outline" x="330.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="330.0" y="30.0" width="30.0" height="124.0"><title>07/01, 19:43 changed: 700 (100% of possible)</title></rect>
+      <text class="point-label" x="345.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="345.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="400.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="400.0" y="30.2" width="30.0" height="123.8"><title>07/02, 09:53 changed: 699 (100% of possible)</title></rect>
+      <text class="point-label" x="415.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="415.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="470.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="470.0" y="30.0" width="30.0" height="124.0"><title>07/02, 10:02 changed: 700 (100% of possible)</title></rect>
+      <text class="point-label" x="485.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="485.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="540.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="540.0" y="30.0" width="30.0" height="124.0"><title>07/03, 00:47 latest: 700 (100% of possible)</title></rect>
+      <text class="point-label" x="555.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="555.0" y="214" text-anchor="middle">100%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>700.0 / 700</strong></span>
+      <span>MA (prev 3) <strong>700.0</strong></span>
+      <span>Base <strong>540.0</strong></span>
+      <span>Shown points <strong>8 of 18</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases that passed the local workflow expectations.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Higher number is good; lower number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of total possible success.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This is the broad smoke signal that the prototype path still works on the main local data set.</p>
+  </section>
+      </div>
+    </div>
+  </section>
+<div class="category-divider"><span>Dataset category 2</span></div><section class="panel">
+    <div class="panel-head">
+      <h2>LIVE API / GPT EXTRACTION - 50 CASE SMOKE RUNS</h2>
+      <p>Saved live OpenAI API runs against the local API route. These are model-dependent GPT extraction checks, so read them separately from deterministic local test data.</p>
+    </div>
+    <div class="lanes">
+      <div>
+        <h3>AI Parsing</h3>
+        <section class="card ai">
+    <h4>GPT extraction failures in 50 live API cases</h4>
+    <p class="source">LIVEapi smoke summaries</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="GPT extraction failures in 50 live API cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of fallback scale</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="46.1" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="46.1" y="154.0" width="30.0" height="0.0"><title>07/01, 19:55 base: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="61.1" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="61.1" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="108.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="108.3" y="30.0" width="30.0" height="124.0"><title>07/01, 22:46 changed: 50 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="123.3" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="123.3" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="170.6" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="170.6" y="154.0" width="30.0" height="0.0"><title>07/01, 22:48 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="185.6" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="185.6" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="232.8" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="232.8" y="30.0" width="30.0" height="124.0"><title>07/02, 00:46 changed: 50 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="247.8" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="247.8" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="37.4" width="30.0" height="116.6"><title>07/02, 01:00 changed: 47 (94% of fallback scale)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">94%</text>
+    </g><g>
+      <rect class="bar-outline" x="357.2" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="357.2" y="154.0" width="30.0" height="0.0"><title>07/02, 01:08 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="372.2" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="372.2" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="419.4" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="419.4" y="30.0" width="30.0" height="124.0"><title>07/02, 09:54 changed: 50 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="434.4" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="434.4" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="481.7" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="481.7" y="151.5" width="30.0" height="2.5"><title>07/02, 09:55 changed: 1 (2% of fallback scale)</title></rect>
+      <text class="point-label" x="496.7" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="496.7" y="214" text-anchor="middle">2%</text>
+    </g><g>
+      <rect class="bar-outline" x="543.9" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="543.9" y="151.5" width="30.0" height="2.5"><title>07/02, 10:02 latest: 1 (2% of fallback scale)</title></rect>
+      <text class="point-label" x="558.9" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="558.9" y="214" text-anchor="middle">2%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>1.0 / 50</strong></span>
+      <span>MA (prev 3) <strong>17.0</strong></span>
+      <span>Base <strong>0.0</strong></span>
+      <span>Shown points <strong>9 of 10</strong></span>
+      <span class="progress-row worse"><span class="progress-label">Progress:</span> <strong>App worsening</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts failed cases from saved live OpenAI API extraction runs.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This shows whether the real GPT-backed extraction path is moving in the same direction as local parser tests.</p>
+  </section>
+<section class="card ai">
+    <h4>Tree-count/detail failures in 12 live GPT tree-detail cases</h4>
+    <p class="source">LIVEapi category: tree_count_tree_detail</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Tree-count/detail failures in 12 live GPT tree-detail cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of fallback scale</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="46.1" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="46.1" y="154.0" width="30.0" height="0.0"><title>07/01, 19:55 base: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="61.1" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="61.1" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="108.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="108.3" y="30.0" width="30.0" height="124.0"><title>07/01, 22:46 changed: 12 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="123.3" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="123.3" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="170.6" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="170.6" y="154.0" width="30.0" height="0.0"><title>07/01, 22:48 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="185.6" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="185.6" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="232.8" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="232.8" y="30.0" width="30.0" height="124.0"><title>07/02, 00:46 changed: 12 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="247.8" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="247.8" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="40.3" width="30.0" height="113.7"><title>07/02, 01:00 changed: 11 (92% of fallback scale)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">92%</text>
+    </g><g>
+      <rect class="bar-outline" x="357.2" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="357.2" y="154.0" width="30.0" height="0.0"><title>07/02, 01:08 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="372.2" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="372.2" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="419.4" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="419.4" y="30.0" width="30.0" height="124.0"><title>07/02, 09:54 changed: 12 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="434.4" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="434.4" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="481.7" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="481.7" y="143.7" width="30.0" height="10.3"><title>07/02, 09:55 changed: 1 (8% of fallback scale)</title></rect>
+      <text class="point-label" x="496.7" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="496.7" y="214" text-anchor="middle">8%</text>
+    </g><g>
+      <rect class="bar-outline" x="543.9" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="543.9" y="143.7" width="30.0" height="10.3"><title>07/02, 10:02 latest: 1 (8% of fallback scale)</title></rect>
+      <text class="point-label" x="558.9" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="558.9" y="214" text-anchor="middle">8%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>1.0 / 12</strong></span>
+      <span>MA (prev 3) <strong>4.3</strong></span>
+      <span>Base <strong>0.0</strong></span>
+      <span>Shown points <strong>9 of 10</strong></span>
+      <span class="progress-row worse"><span class="progress-label">Progress:</span> <strong>App worsening</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts live GPT extraction failures in the tree-count and tree-detail category.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This is the closest live API check for messy tree count/detail interpretation.</p>
+  </section>
+<section class="card ai">
+    <h4>Messy job description failures in 12 live GPT cases</h4>
+    <p class="source">LIVEapi category: messy_job_description</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Messy job description failures in 12 live GPT cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of fallback scale</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="46.1" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="46.1" y="154.0" width="30.0" height="0.0"><title>07/01, 19:55 base: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="61.1" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="61.1" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="108.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="108.3" y="30.0" width="30.0" height="124.0"><title>07/01, 22:46 changed: 12 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="123.3" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="123.3" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="170.6" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="170.6" y="154.0" width="30.0" height="0.0"><title>07/01, 22:48 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="185.6" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="185.6" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="232.8" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="232.8" y="30.0" width="30.0" height="124.0"><title>07/02, 00:46 changed: 12 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="247.8" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="247.8" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="40.3" width="30.0" height="113.7"><title>07/02, 01:00 changed: 11 (92% of fallback scale)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">92%</text>
+    </g><g>
+      <rect class="bar-outline" x="357.2" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="357.2" y="154.0" width="30.0" height="0.0"><title>07/02, 01:08 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="372.2" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="372.2" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="419.4" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="419.4" y="30.0" width="30.0" height="124.0"><title>07/02, 09:54 changed: 12 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="434.4" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="434.4" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="481.7" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="481.7" y="154.0" width="30.0" height="0.0"><title>07/02, 09:55 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="496.7" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="496.7" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="543.9" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="543.9" y="154.0" width="30.0" height="0.0"><title>07/02, 10:02 latest: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="558.9" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="558.9" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 12</strong></span>
+      <span>MA (prev 3) <strong>4.0</strong></span>
+      <span>Base <strong>0.0</strong></span>
+      <span>Shown points <strong>9 of 10</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts live GPT failures on messy job-description extraction cases.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This checks whether real API extraction handles the kind of rough input text the app is built around.</p>
+  </section>
+      </div>
+      <div>
+        <h3>Workflow</h3>
+        <section class="card workflow">
+    <h4>Live API passed cases in 50 GPT extraction runs</h4>
+    <p class="source">LIVEapi smoke summaries</p>
+    <p class="graph-subtitle">This graph shows fraction of total possible success.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Live API passed cases in 50 GPT extraction runs sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of possible</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="46.1" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="46.1" y="30.0" width="30.0" height="124.0"><title>07/01, 19:55 base: 50 (100% of possible)</title></rect>
+      <text class="point-label" x="61.1" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="61.1" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="108.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="108.3" y="154.0" width="30.0" height="0.0"><title>07/01, 22:46 changed: 0 (0% of possible)</title></rect>
+      <text class="point-label" x="123.3" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="123.3" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="170.6" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="170.6" y="30.0" width="30.0" height="124.0"><title>07/01, 22:48 changed: 50 (100% of possible)</title></rect>
+      <text class="point-label" x="185.6" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="185.6" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="232.8" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="232.8" y="154.0" width="30.0" height="0.0"><title>07/02, 00:46 changed: 0 (0% of possible)</title></rect>
+      <text class="point-label" x="247.8" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="247.8" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="146.6" width="30.0" height="7.4"><title>07/02, 01:00 changed: 3 (6% of possible)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">6%</text>
+    </g><g>
+      <rect class="bar-outline" x="357.2" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="357.2" y="30.0" width="30.0" height="124.0"><title>07/02, 01:08 changed: 50 (100% of possible)</title></rect>
+      <text class="point-label" x="372.2" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="372.2" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="419.4" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="419.4" y="154.0" width="30.0" height="0.0"><title>07/02, 09:54 changed: 0 (0% of possible)</title></rect>
+      <text class="point-label" x="434.4" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="434.4" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="481.7" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="481.7" y="32.5" width="30.0" height="121.5"><title>07/02, 09:55 changed: 49 (98% of possible)</title></rect>
+      <text class="point-label" x="496.7" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="496.7" y="214" text-anchor="middle">98%</text>
+    </g><g>
+      <rect class="bar-outline" x="543.9" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="543.9" y="32.5" width="30.0" height="121.5"><title>07/02, 10:02 latest: 49 (98% of possible)</title></rect>
+      <text class="point-label" x="558.9" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="558.9" y="214" text-anchor="middle">98%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>49.0 / 50</strong></span>
+      <span>MA (prev 3) <strong>33.0</strong></span>
+      <span>Base <strong>50.0</strong></span>
+      <span>Shown points <strong>9 of 10</strong></span>
+      <span class="progress-row worse"><span class="progress-label">Progress:</span> <strong>App worsening</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts saved live API cases that passed the smoke-test expectations.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Higher number is good; lower number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of total possible success.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This is the workflow-facing signal that GPT extraction still produces usable structured output.</p>
+  </section>
+<section class="card workflow">
+    <h4>Local fallback/mock use in 50 live API cases</h4>
+    <p class="source">LIVEapi smoke summaries</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Local fallback/mock use in 50 live API cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of fallback scale</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="50.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="50.0" y="154.0" width="30.0" height="0.0"><title>07/01, 19:55 base: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="65.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="65.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="120.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="120.0" y="30.0" width="30.0" height="124.0"><title>07/01, 22:46 changed: 50 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="135.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="135.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="190.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="190.0" y="154.0" width="30.0" height="0.0"><title>07/01, 22:48 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="205.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="205.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="260.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="260.0" y="30.0" width="30.0" height="124.0"><title>07/02, 00:46 changed: 50 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="275.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="275.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="330.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="330.0" y="154.0" width="30.0" height="0.0"><title>07/02, 01:00 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="345.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="345.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="400.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="400.0" y="30.0" width="30.0" height="124.0"><title>07/02, 09:54 changed: 50 (100% of fallback scale)</title></rect>
+      <text class="point-label" x="415.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="415.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="470.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="470.0" y="154.0" width="30.0" height="0.0"><title>07/02, 09:55 changed: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="485.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="485.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="540.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="540.0" y="154.0" width="30.0" height="0.0"><title>07/02, 10:02 latest: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="555.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="555.0" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 50</strong></span>
+      <span>MA (prev 3) <strong>16.7</strong></span>
+      <span>Base <strong>0.0</strong></span>
+      <span>Shown points <strong>8 of 10</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases that did not use the live OpenAI path in saved API runs.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This confirms the API/GPT panel is based on live extraction rather than mock fallback behavior.</p>
+  </section>
+      </div>
+    </div>
+  </section>
+<div class="category-divider"><span>Dataset category 3</span></div><section class="panel">
+    <div class="panel-head">
+      <h2>TERRIBLE PRIOR-REGRESSION INPUTS - 100 STRESS CASES</h2>
+      <p>A deliberately hard bucket. Some cases can produce more than one finding, so finding counts can exceed 100.</p>
+    </div>
+    <div class="lanes">
+      <div>
+        <h3>AI Parsing</h3>
+        <section class="card ai">
+    <h4>Price extraction findings in 100 prior-regression cases</h4>
+    <p class="source">Internal prior-regression bucket</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Price extraction findings in 100 prior-regression cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="71.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="71.0" y="30.0" width="30.0" height="124.0"><title>07/01, 19:02 base: 117 (100% of base)</title></rect>
+      <text class="point-label" x="86.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="86.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="183.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="183.0" y="154.0" width="30.0" height="0.0"><title>07/01, 19:41 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="198.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="198.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="30.0" width="30.0" height="124.0"><title>07/02, 01:13 changed: 117 (100% of base)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="407.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="407.0" y="38.5" width="30.0" height="115.5"><title>07/03, 00:29 changed: 109 (93% of base)</title></rect>
+      <text class="point-label" x="422.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="422.0" y="214" text-anchor="middle">93%</text>
+    </g><g>
+      <rect class="bar-outline" x="519.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="519.0" y="38.5" width="30.0" height="115.5"><title>07/03, 00:47 latest: 109 (93% of base)</title></rect>
+      <text class="point-label" x="534.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="534.0" y="214" text-anchor="middle">93%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>109.0 / 100</strong></span>
+      <span>MA (prev 3) <strong>114.3</strong></span>
+      <span>Base <strong>117.0</strong></span>
+      <span>Shown points <strong>5 of 18</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts missing or wrong price findings; a single case may have more than one price finding.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> Prices are the worst current parser problem and directly affect estimate accuracy.</p>
+  </section>
+<section class="card ai">
+    <h4>Tree-count mismatches in 100 prior-regression cases</h4>
+    <p class="source">Internal prior-regression bucket</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Tree-count mismatches in 100 prior-regression cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="71.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="71.0" y="30.0" width="30.0" height="124.0"><title>07/01, 19:02 base: 84 (100% of base)</title></rect>
+      <text class="point-label" x="86.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="86.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="183.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="183.0" y="31.5" width="30.0" height="122.5"><title>07/01, 19:29 changed: 83 (99% of base)</title></rect>
+      <text class="point-label" x="198.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="198.0" y="214" text-anchor="middle">99%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="154.0" width="30.0" height="0.0"><title>07/01, 19:41 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="407.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="407.0" y="43.3" width="30.0" height="110.7"><title>07/02, 01:13 changed: 75 (89% of base)</title></rect>
+      <text class="point-label" x="422.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="422.0" y="214" text-anchor="middle">89%</text>
+    </g><g>
+      <rect class="bar-outline" x="519.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="519.0" y="43.3" width="30.0" height="110.7"><title>07/03, 00:47 latest: 75 (89% of base)</title></rect>
+      <text class="point-label" x="534.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="534.0" y="214" text-anchor="middle">89%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>75.0 / 100</strong></span>
+      <span>MA (prev 3) <strong>75.0</strong></span>
+      <span>Base <strong>84.0</strong></span>
+      <span>Shown points <strong>5 of 18</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases where structured tree count did not match expected output.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This is where AI parsing should improve over time, even though TD2 can now resolve unclear counts.</p>
+  </section>
+      </div>
+      <div>
+        <h3>Workflow</h3>
+        <section class="card workflow">
+    <h4>Missing warnings in 100 prior-regression cases</h4>
+    <p class="source">Internal prior-regression bucket</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Missing warnings in 100 prior-regression cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="85.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="85.0" y="30.0" width="30.0" height="124.0"><title>07/01, 19:02 base: 68 (100% of base)</title></rect>
+      <text class="point-label" x="100.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="100.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="225.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="225.0" y="154.0" width="30.0" height="0.0"><title>07/01, 19:41 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="240.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="240.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="365.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="365.0" y="30.0" width="30.0" height="124.0"><title>07/02, 01:13 changed: 68 (100% of base)</title></rect>
+      <text class="point-label" x="380.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="380.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="505.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="505.0" y="30.0" width="30.0" height="124.0"><title>07/03, 00:47 latest: 68 (100% of base)</title></rect>
+      <text class="point-label" x="520.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="520.0" y="214" text-anchor="middle">100%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>68.0 / 100</strong></span>
+      <span>MA (prev 3) <strong>68.0</strong></span>
+      <span>Base <strong>68.0</strong></span>
+      <span>Shown points <strong>4 of 18</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts expected warnings that were not shown.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> Warnings let the contractor see uncertainty without blocking every estimate.</p>
+  </section>
+<section class="card workflow">
+    <h4>Missing follow-up in 100 prior-regression cases</h4>
+    <p class="source">Internal prior-regression bucket</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Missing follow-up in 100 prior-regression cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="85.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="85.0" y="30.0" width="30.0" height="124.0"><title>07/01, 19:02 base: 84 (100% of base)</title></rect>
+      <text class="point-label" x="100.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="100.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="225.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="225.0" y="154.0" width="30.0" height="0.0"><title>07/01, 19:41 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="240.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="240.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="365.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="365.0" y="59.5" width="30.0" height="94.5"><title>07/02, 01:13 changed: 64 (76% of base)</title></rect>
+      <text class="point-label" x="380.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="380.0" y="214" text-anchor="middle">76%</text>
+    </g><g>
+      <rect class="bar-outline" x="505.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="505.0" y="59.5" width="30.0" height="94.5"><title>07/03, 00:47 latest: 64 (76% of base)</title></rect>
+      <text class="point-label" x="520.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="520.0" y="214" text-anchor="middle">76%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>64.0 / 100</strong></span>
+      <span>MA (prev 3) <strong>64.0</strong></span>
+      <span>Base <strong>84.0</strong></span>
+      <span>Shown points <strong>4 of 18</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts expected clarification prompts that were not shown.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> Follow-up is the handoff from messy AI interpretation to contractor-provided clarity.</p>
+  </section>
+<section class="card workflow">
+    <h4>Unexpected-ready in 100 prior-regression cases</h4>
+    <p class="source">Internal prior-regression bucket</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Unexpected-ready in 100 prior-regression cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="85.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="85.0" y="30.0" width="30.0" height="124.0"><title>07/01, 19:02 base: 30 (100% of base)</title></rect>
+      <text class="point-label" x="100.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="100.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="225.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="225.0" y="154.0" width="30.0" height="0.0"><title>07/01, 19:41 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="240.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="240.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="365.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="365.0" y="112.7" width="30.0" height="41.3"><title>07/02, 01:13 changed: 10 (33% of base)</title></rect>
+      <text class="point-label" x="380.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="380.0" y="214" text-anchor="middle">33%</text>
+    </g><g>
+      <rect class="bar-outline" x="505.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="505.0" y="112.7" width="30.0" height="41.3"><title>07/03, 00:47 latest: 10 (33% of base)</title></rect>
+      <text class="point-label" x="520.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="520.0" y="214" text-anchor="middle">33%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>10.0 / 100</strong></span>
+      <span>MA (prev 3) <strong>10.0</strong></span>
+      <span>Base <strong>30.0</strong></span>
+      <span>Shown points <strong>4 of 18</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases where estimate creation was available before expected clarification.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This protects against the button appearing too early on truly unclear work.</p>
+  </section>
+      </div>
+    </div>
+  </section>
+<div class="category-divider"><span>Dataset category 4</span></div><section class="panel">
+    <div class="panel-head">
+      <h2>HARD KNOWN-FAIL ALPHA CASES - 150 CASES</h2>
+      <p>Legacy hard fixture used to measure strict parser quality separately from workflow recovery.</p>
+    </div>
+    <div class="lanes">
+      <div>
+        <h3>AI Parsing</h3>
+        <section class="card ai">
+    <h4>Strict parser/readiness failures in 150 hard cases</h4>
+    <p class="source">Alpha hard-knownfail cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Strict parser/readiness failures in 150 hard cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="71.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="71.0" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 142 (100% of base)</title></rect>
+      <text class="point-label" x="86.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="86.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="183.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="183.0" y="33.5" width="30.0" height="120.5"><title>06/30, 20:37 changed: 138 (97% of base)</title></rect>
+      <text class="point-label" x="198.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="198.0" y="214" text-anchor="middle">97%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="34.4" width="30.0" height="119.6"><title>06/30, 23:54 changed: 137 (96% of base)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">96%</text>
+    </g><g>
+      <rect class="bar-outline" x="407.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="407.0" y="37.0" width="30.0" height="117.0"><title>07/01, 23:45 changed: 134 (94% of base)</title></rect>
+      <text class="point-label" x="422.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="422.0" y="214" text-anchor="middle">94%</text>
+    </g><g>
+      <rect class="bar-outline" x="519.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="519.0" y="37.0" width="30.0" height="117.0"><title>07/03, 00:29 latest: 134 (94% of base)</title></rect>
+      <text class="point-label" x="534.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="534.0" y="214" text-anchor="middle">94%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>134.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>134.0</strong></span>
+      <span>Base <strong>142.0</strong></span>
+      <span>Shown points <strong>5 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts strict fixture mismatches before giving credit for TD2 resolution.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This remains a parser-improvement score, not the product workflow success score.</p>
+  </section>
+<section class="card ai">
+    <h4>Tree-count parser misses in 150 hard cases</h4>
+    <p class="source">Alpha hard-knownfail cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Tree-count parser misses in 150 hard cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="55.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="55.0" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 122 (100% of base)</title></rect>
+      <text class="point-label" x="70.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="70.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="135.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="135.0" y="31.0" width="30.0" height="123.0"><title>06/30, 23:54 changed: 121 (99% of base)</title></rect>
+      <text class="point-label" x="150.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="150.0" y="214" text-anchor="middle">99%</text>
+    </g><g>
+      <rect class="bar-outline" x="215.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="215.0" y="35.1" width="30.0" height="118.9"><title>07/01, 23:45 changed: 117 (96% of base)</title></rect>
+      <text class="point-label" x="230.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="230.0" y="214" text-anchor="middle">96%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="43.2" width="30.0" height="110.8"><title>07/02, 01:23 changed: 109 (89% of base)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">89%</text>
+    </g><g>
+      <rect class="bar-outline" x="375.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="375.0" y="35.1" width="30.0" height="118.9"><title>07/02, 01:23 changed: 117 (96% of base)</title></rect>
+      <text class="point-label" x="390.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="390.0" y="214" text-anchor="middle">96%</text>
+    </g><g>
+      <rect class="bar-outline" x="455.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="455.0" y="43.2" width="30.0" height="110.8"><title>07/02, 01:23 changed: 109 (89% of base)</title></rect>
+      <text class="point-label" x="470.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="470.0" y="214" text-anchor="middle">89%</text>
+    </g><g>
+      <rect class="bar-outline" x="535.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="535.0" y="43.2" width="30.0" height="110.8"><title>07/03, 00:29 latest: 109 (89% of base)</title></rect>
+      <text class="point-label" x="550.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="550.0" y="214" text-anchor="middle">89%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>109.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>109.0</strong></span>
+      <span>Base <strong>122.0</strong></span>
+      <span>Shown points <strong>7 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts hard cases where AI did not infer the expected tree count by itself.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This measures future AI improvement in converting confusing count language into structured data.</p>
+  </section>
+<section class="card ai">
+    <h4>Price-option parser misses in 150 hard cases</h4>
+    <p class="source">Alpha hard-knownfail cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Price-option parser misses in 150 hard cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="85.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="85.0" y="44.9" width="30.0" height="109.1"><title>06/30, 19:35 base: 95 (100% of base)</title></rect>
+      <text class="point-label" x="100.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="100.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="225.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="225.0" y="49.5" width="30.0" height="104.5"><title>06/30, 20:37 changed: 91 (96% of base)</title></rect>
+      <text class="point-label" x="240.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="240.0" y="214" text-anchor="middle">96%</text>
+    </g><g>
+      <rect class="bar-outline" x="365.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="365.0" y="30.0" width="30.0" height="124.0"><title>07/01, 02:31 changed: 108 (114% of base)</title></rect>
+      <text class="point-label" x="380.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="380.0" y="214" text-anchor="middle">114%</text>
+    </g><g>
+      <rect class="bar-outline" x="505.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="505.0" y="49.5" width="30.0" height="104.5"><title>07/03, 00:29 latest: 91 (96% of base)</title></rect>
+      <text class="point-label" x="520.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="520.0" y="214" text-anchor="middle">96%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>91.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>108.0</strong></span>
+      <span>Base <strong>95.0</strong></span>
+      <span>Shown points <strong>4 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts hard cases where option pricing did not match expectation.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> Price parsing is high-risk because it affects the estimate amount.</p>
+  </section>
+      </div>
+      <div>
+        <h3>Workflow</h3>
+        <section class="card workflow">
+    <h4>Recovered after follow-up in 150 hard cases</h4>
+    <p class="source">Alpha hard-knownfail cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of total possible success.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Recovered after follow-up in 150 hard cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of possible</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="55.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="55.0" y="77.9" width="30.0" height="76.1"><title>06/30, 19:35 base: 92 (61% of possible)</title></rect>
+      <text class="point-label" x="70.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="70.0" y="214" text-anchor="middle">61%</text>
+    </g><g>
+      <rect class="bar-outline" x="135.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="135.0" y="77.1" width="30.0" height="76.9"><title>06/30, 20:37 changed: 93 (62% of possible)</title></rect>
+      <text class="point-label" x="150.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="150.0" y="214" text-anchor="middle">62%</text>
+    </g><g>
+      <rect class="bar-outline" x="215.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="215.0" y="63.9" width="30.0" height="90.1"><title>07/01, 00:49 changed: 109 (73% of possible)</title></rect>
+      <text class="point-label" x="230.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="230.0" y="214" text-anchor="middle">73%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="47.4" width="30.0" height="106.6"><title>07/02, 01:23 changed: 129 (86% of possible)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">86%</text>
+    </g><g>
+      <rect class="bar-outline" x="375.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="375.0" y="63.9" width="30.0" height="90.1"><title>07/02, 01:23 changed: 109 (73% of possible)</title></rect>
+      <text class="point-label" x="390.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="390.0" y="214" text-anchor="middle">73%</text>
+    </g><g>
+      <rect class="bar-outline" x="455.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="455.0" y="47.4" width="30.0" height="106.6"><title>07/02, 01:25 changed: 129 (86% of possible)</title></rect>
+      <text class="point-label" x="470.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="470.0" y="214" text-anchor="middle">86%</text>
+    </g><g>
+      <rect class="bar-outline" x="535.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="535.0" y="47.4" width="30.0" height="106.6"><title>07/03, 00:29 latest: 129 (86% of possible)</title></rect>
+      <text class="point-label" x="550.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="550.0" y="214" text-anchor="middle">86%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>129.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>129.0</strong></span>
+      <span>Base <strong>92.0</strong></span>
+      <span>Shown points <strong>7 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts hard cases that became estimate-ready after clarification.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Higher number is good; lower number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of total possible success.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This is good: unclear AI interpretation is resolved through contractor/follow-up workflow.</p>
+  </section>
+<section class="card workflow">
+    <h4>Still blocked after follow-up in 150 hard cases</h4>
+    <p class="source">Alpha hard-knownfail cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Still blocked after follow-up in 150 hard cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of fallback scale</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="71.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="71.0" y="154.0" width="30.0" height="0.0"><title>06/30, 19:35 base: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="86.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="86.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="183.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="198.0" cy="149.0" r="4"><title>07/01, 00:09 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="198.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="198.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="310.0" cy="149.0" r="4"><title>07/01, 02:45 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="407.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="422.0" cy="149.0" r="4"><title>07/02, 14:35 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="422.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="422.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="519.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="519.0" y="154.0" width="30.0" height="0.0"><title>07/03, 00:29 latest: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="534.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="534.0" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>0.0</strong></span>
+      <span>Shown points <strong>5 of 34</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases still unable to reach estimate generation after simulated follow-up.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> For the workflow, this is the key success measure: if it reaches estimate creation, the workflow worked.</p>
+  </section>
+      </div>
+    </div>
+  </section>
+<div class="category-divider"><span>Dataset category 5</span></div><section class="panel">
+    <div class="panel-head">
+      <h2>UBER MESSY ALPHA CASES - 300 CASES</h2>
+      <p>Uber-messy and uber-plus-messy cohorts. These are more important than easy/medium cases for measuring messy-input progress.</p>
+    </div>
+    <div class="lanes">
+      <div>
+        <h3>AI Parsing</h3>
+        <section class="card ai">
+    <h4>Tree-count parser misses in 150 uber-messy cases</h4>
+    <p class="source">Alpha uber-messy cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Tree-count parser misses in 150 uber-messy cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="71.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="71.0" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 20 (100% of base)</title></rect>
+      <text class="point-label" x="86.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="86.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="183.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="198.0" cy="149.0" r="4"><title>07/01, 00:09 unchanged: 20 (100% of base)</title></circle>
+      <text class="point-label" x="198.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="198.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="310.0" cy="149.0" r="4"><title>07/01, 02:45 unchanged: 20 (100% of base)</title></circle>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="407.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="407.0" y="42.4" width="30.0" height="111.6"><title>07/01, 23:45 changed: 18 (90% of base)</title></rect>
+      <text class="point-label" x="422.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="422.0" y="214" text-anchor="middle">90%</text>
+    </g><g>
+      <rect class="bar-outline" x="519.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="519.0" y="42.4" width="30.0" height="111.6"><title>07/03, 00:29 latest: 18 (90% of base)</title></rect>
+      <text class="point-label" x="534.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="534.0" y="214" text-anchor="middle">90%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>18.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>18.0</strong></span>
+      <span>Base <strong>20.0</strong></span>
+      <span>Shown points <strong>5 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts tree-count parser misses on the messiest alpha cohort.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This is a direct measure of whether AI is getting better at confusing count language.</p>
+  </section>
+<section class="card ai">
+    <h4>Strict failures in 150 uber-messy cases</h4>
+    <p class="source">Alpha uber-messy cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Strict failures in 150 uber-messy cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="85.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="85.0" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 22 (100% of base)</title></rect>
+      <text class="point-label" x="100.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="100.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="225.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="225.0" y="41.3" width="30.0" height="112.7"><title>07/01, 00:09 changed: 20 (91% of base)</title></rect>
+      <text class="point-label" x="240.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="240.0" y="214" text-anchor="middle">91%</text>
+    </g><g>
+      <rect class="bar-outline" x="365.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="365.0" y="52.5" width="30.0" height="101.5"><title>07/01, 23:45 changed: 18 (82% of base)</title></rect>
+      <text class="point-label" x="380.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="380.0" y="214" text-anchor="middle">82%</text>
+    </g><g>
+      <rect class="bar-outline" x="505.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="505.0" y="52.5" width="30.0" height="101.5"><title>07/03, 00:29 latest: 18 (82% of base)</title></rect>
+      <text class="point-label" x="520.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="520.0" y="214" text-anchor="middle">82%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>18.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>18.0</strong></span>
+      <span>Base <strong>22.0</strong></span>
+      <span>Shown points <strong>4 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts strict fixture failures in the uber-messy cohort.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This is the parser-quality view before giving workflow credit for clarification.</p>
+  </section>
+<section class="card ai">
+    <h4>Strict failures in 150 uber-plus-messy cases</h4>
+    <p class="source">Alpha uber-plus-messy cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Strict failures in 150 uber-plus-messy cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="43.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="43.0" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 46 (100% of base)</title></rect>
+      <text class="point-label" x="58.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="58.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="99.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="99.0" y="62.3" width="30.0" height="91.7"><title>06/30, 20:37 changed: 34 (74% of base)</title></rect>
+      <text class="point-label" x="114.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="114.0" y="214" text-anchor="middle">74%</text>
+    </g><g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="113.6" width="30.0" height="40.4"><title>06/30, 20:39 changed: 15 (33% of base)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">33%</text>
+    </g><g>
+      <rect class="bar-outline" x="211.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="211.0" y="119.0" width="30.0" height="35.0"><title>06/30, 20:40 changed: 13 (28% of base)</title></rect>
+      <text class="point-label" x="226.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="226.0" y="214" text-anchor="middle">28%</text>
+    </g><g>
+      <rect class="bar-outline" x="267.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="267.0" y="124.3" width="30.0" height="29.7"><title>06/30, 23:54 changed: 11 (24% of base)</title></rect>
+      <text class="point-label" x="282.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="282.0" y="214" text-anchor="middle">24%</text>
+    </g><g>
+      <rect class="bar-outline" x="323.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="323.0" y="151.3" width="30.0" height="2.7"><title>07/01, 00:09 changed: 1 (2% of base)</title></rect>
+      <text class="point-label" x="338.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="338.0" y="214" text-anchor="middle">2%</text>
+    </g><g>
+      <rect class="bar-outline" x="379.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="379.0" y="154.0" width="30.0" height="0.0"><title>07/01, 00:12 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="394.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="394.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="450.0" cy="149.0" r="4"><title>07/01, 03:11 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="491.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="506.0" cy="149.0" r="4"><title>07/02, 14:55 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="506.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="506.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="547.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="547.0" y="154.0" width="30.0" height="0.0"><title>07/03, 00:29 latest: 0 (0% of base)</title></rect>
+      <text class="point-label" x="562.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="562.0" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>46.0</strong></span>
+      <span>Shown points <strong>10 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts strict fixture failures in the extra messy plus cohort.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This confirms whether the broader messy parser coverage is staying stable.</p>
+  </section>
+      </div>
+      <div>
+        <h3>Workflow</h3>
+        <section class="card workflow">
+    <h4>Recovered after follow-up in 300 uber messy cases</h4>
+    <p class="source">Alpha uber + uber-plus cohorts</p>
+    <p class="graph-subtitle">This graph shows fraction of total possible success.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Recovered after follow-up in 300 uber messy cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of possible</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="61.7" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="61.7" y="50.3" width="30.0" height="103.7"><title>06/30, 19:35 base: 251 (84% of possible)</title></rect>
+      <text class="point-label" x="76.7" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="76.7" y="214" text-anchor="middle">84%</text>
+    </g><g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="45.3" width="30.0" height="108.7"><title>06/30, 20:37 changed: 263 (88% of possible)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">88%</text>
+    </g><g>
+      <rect class="bar-outline" x="248.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="248.3" y="44.9" width="30.0" height="109.1"><title>07/01, 00:12 changed: 264 (88% of possible)</title></rect>
+      <text class="point-label" x="263.3" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="263.3" y="214" text-anchor="middle">88%</text>
+    </g><g>
+      <rect class="bar-outline" x="341.7" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="356.7" cy="149.0" r="4"><title>07/01, 03:11 unchanged: 264 (88% of possible)</title></circle>
+      <text class="point-label" x="356.7" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="356.7" y="214" text-anchor="middle">88%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="450.0" cy="149.0" r="4"><title>07/02, 14:55 unchanged: 264 (88% of possible)</title></circle>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">88%</text>
+    </g><g>
+      <rect class="bar-outline" x="528.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="528.3" y="44.9" width="30.0" height="109.1"><title>07/03, 00:29 latest: 264 (88% of possible)</title></rect>
+      <text class="point-label" x="543.3" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="543.3" y="214" text-anchor="middle">88%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>264.0 / 300</strong></span>
+      <span>MA (prev 3) <strong>264.0</strong></span>
+      <span>Base <strong>251.0</strong></span>
+      <span>Shown points <strong>6 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts uber messy cases that required follow-up and then became ready.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Higher number is good; lower number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of total possible success.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This shows the clarification workflow is doing useful work instead of treating AI uncertainty as failure.</p>
+  </section>
+<section class="card workflow">
+    <h4>Still blocked after follow-up in 300 uber messy cases</h4>
+    <p class="source">Alpha uber + uber-plus cohorts</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Still blocked after follow-up in 300 uber messy cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of fallback scale</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="71.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="71.0" y="154.0" width="30.0" height="0.0"><title>06/30, 19:35 base: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="86.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="86.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="183.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="198.0" cy="149.0" r="4"><title>07/01, 00:09 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="198.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="198.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="310.0" cy="149.0" r="4"><title>07/01, 02:45 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="407.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="422.0" cy="149.0" r="4"><title>07/02, 14:35 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="422.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="422.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="519.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="519.0" y="154.0" width="30.0" height="0.0"><title>07/03, 00:29 latest: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="534.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="534.0" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 300</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>0.0</strong></span>
+      <span>Shown points <strong>5 of 34</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts uber messy cases still blocked after simulated clarification.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> If this is zero, the workflow can reach estimate creation even when AI needed help.</p>
+  </section>
+      </div>
+    </div>
+  </section>
+<div class="category-divider"><span>Dataset category 6</span></div><section class="panel">
+    <div class="panel-head">
+      <h2>OTHER ALPHA COHORTS - 600 CASES</h2>
+      <p>Easy, medium, medium-messy, and very-messy cohorts. Worst bars are placed first.</p>
+    </div>
+    <div class="lanes">
+      <div>
+        <h3>AI Parsing</h3>
+        <section class="card ai">
+    <h4>Strict failures in 150 very-messy cases</h4>
+    <p class="source">Alpha very-messy cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Strict failures in 150 very-messy cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="55.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="55.0" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 8 (100% of base)</title></rect>
+      <text class="point-label" x="70.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="70.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="135.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="135.0" y="107.5" width="30.0" height="46.5"><title>06/30, 20:39 changed: 3 (38% of base)</title></rect>
+      <text class="point-label" x="150.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="150.0" y="214" text-anchor="middle">38%</text>
+    </g><g>
+      <rect class="bar-outline" x="215.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="215.0" y="123.0" width="30.0" height="31.0"><title>06/30, 23:54 changed: 2 (25% of base)</title></rect>
+      <text class="point-label" x="230.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="230.0" y="214" text-anchor="middle">25%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="295.0" y="154.0" width="30.0" height="0.0"><title>07/01, 00:09 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="375.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="390.0" cy="149.0" r="4"><title>07/01, 02:45 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="390.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="390.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="455.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="470.0" cy="149.0" r="4"><title>07/02, 14:35 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="470.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="470.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="535.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="535.0" y="154.0" width="30.0" height="0.0"><title>07/03, 00:29 latest: 0 (0% of base)</title></rect>
+      <text class="point-label" x="550.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="550.0" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>8.0</strong></span>
+      <span>Shown points <strong>7 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts strict failures in very messy but not uber-messy inputs.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This checks whether lower-tier messy input remains under control.</p>
+  </section>
+<section class="card ai">
+    <h4>Strict failures in 150 medium-messy cases</h4>
+    <p class="source">Alpha medium-messy cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Strict failures in 150 medium-messy cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="61.7" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="61.7" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 10 (100% of base)</title></rect>
+      <text class="point-label" x="76.7" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="76.7" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="129.2" width="30.0" height="24.8"><title>06/30, 20:37 changed: 2 (20% of base)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">20%</text>
+    </g><g>
+      <rect class="bar-outline" x="248.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="248.3" y="154.0" width="30.0" height="0.0"><title>06/30, 23:54 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="263.3" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="263.3" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="341.7" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="356.7" cy="149.0" r="4"><title>07/01, 02:31 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="356.7" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="356.7" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="450.0" cy="149.0" r="4"><title>07/02, 01:25 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="528.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="528.3" y="154.0" width="30.0" height="0.0"><title>07/03, 00:29 latest: 0 (0% of base)</title></rect>
+      <text class="point-label" x="543.3" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="543.3" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>10.0</strong></span>
+      <span>Shown points <strong>6 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts strict failures in medium-messy inputs.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This should stay low while improvements target harder cases.</p>
+  </section>
+<section class="card ai">
+    <h4>Strict failures in 150 medium cases</h4>
+    <p class="source">Alpha medium cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Strict failures in 150 medium cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="61.7" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="61.7" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 6 (100% of base)</title></rect>
+      <text class="point-label" x="76.7" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="76.7" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="71.3" width="30.0" height="82.7"><title>06/30, 23:54 changed: 4 (67% of base)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">67%</text>
+    </g><g>
+      <rect class="bar-outline" x="248.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="248.3" y="154.0" width="30.0" height="0.0"><title>07/01, 00:09 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="263.3" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="263.3" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="341.7" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="356.7" cy="149.0" r="4"><title>07/01, 02:45 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="356.7" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="356.7" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="450.0" cy="149.0" r="4"><title>07/02, 14:35 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="528.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="528.3" y="154.0" width="30.0" height="0.0"><title>07/03, 00:29 latest: 0 (0% of base)</title></rect>
+      <text class="point-label" x="543.3" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="543.3" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>6.0</strong></span>
+      <span>Shown points <strong>6 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts strict failures in medium difficulty inputs.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> Regression here would mean we broke normal parser behavior.</p>
+  </section>
+<section class="card ai">
+    <h4>Strict failures in 150 easy cases</h4>
+    <p class="source">Alpha easy cohort</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Strict failures in 150 easy cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="61.7" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="61.7" y="30.0" width="30.0" height="124.0"><title>06/30, 19:35 base: 6 (100% of base)</title></rect>
+      <text class="point-label" x="76.7" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="76.7" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="50.7" width="30.0" height="103.3"><title>06/30, 23:54 changed: 5 (83% of base)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">83%</text>
+    </g><g>
+      <rect class="bar-outline" x="248.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="248.3" y="154.0" width="30.0" height="0.0"><title>07/01, 00:09 changed: 0 (0% of base)</title></rect>
+      <text class="point-label" x="263.3" y="201" text-anchor="middle">changed</text>
+      <text class="point-value" x="263.3" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="341.7" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="356.7" cy="149.0" r="4"><title>07/01, 02:45 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="356.7" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="356.7" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="450.0" cy="149.0" r="4"><title>07/02, 14:35 unchanged: 0 (0% of base)</title></circle>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="528.3" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="528.3" y="154.0" width="30.0" height="0.0"><title>07/03, 00:29 latest: 0 (0% of base)</title></rect>
+      <text class="point-label" x="543.3" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="543.3" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 150</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>6.0</strong></span>
+      <span>Shown points <strong>6 of 34</strong></span>
+      <span class="progress-row improved"><span class="progress-label">Progress:</span> <strong>App improving</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts strict failures in easy inputs.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> Easy cases should remain clean while hard-case work continues.</p>
+  </section>
+      </div>
+      <div>
+        <h3>Workflow</h3>
+        <section class="card workflow">
+    <h4>Recovered after follow-up in 600 other alpha cases</h4>
+    <p class="source">Alpha easy + medium + medium-messy + very-messy cohorts</p>
+    <p class="graph-subtitle">This graph shows fraction of total possible success.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Recovered after follow-up in 600 other alpha cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of possible</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="71.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="71.0" y="147.6" width="30.0" height="6.4"><title>06/30, 19:35 base: 31 (5% of possible)</title></rect>
+      <text class="point-label" x="86.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="86.0" y="214" text-anchor="middle">5%</text>
+    </g><g>
+      <rect class="bar-outline" x="183.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="198.0" cy="149.0" r="4"><title>07/01, 00:09 unchanged: 31 (5% of possible)</title></circle>
+      <text class="point-label" x="198.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="198.0" y="214" text-anchor="middle">5%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="310.0" cy="149.0" r="4"><title>07/01, 02:45 unchanged: 31 (5% of possible)</title></circle>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">5%</text>
+    </g><g>
+      <rect class="bar-outline" x="407.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="422.0" cy="149.0" r="4"><title>07/02, 14:35 unchanged: 31 (5% of possible)</title></circle>
+      <text class="point-label" x="422.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="422.0" y="214" text-anchor="middle">5%</text>
+    </g><g>
+      <rect class="bar-outline" x="519.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="519.0" y="147.6" width="30.0" height="6.4"><title>07/03, 00:29 latest: 31 (5% of possible)</title></rect>
+      <text class="point-label" x="534.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="534.0" y="214" text-anchor="middle">5%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>31.0 / 600</strong></span>
+      <span>MA (prev 3) <strong>31.0</strong></span>
+      <span>Base <strong>31.0</strong></span>
+      <span>Shown points <strong>5 of 34</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts non-uber cases that became ready after clarification.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Higher number is good; lower number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of total possible success.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This shows follow-up is being tracked separately from parser weakness.</p>
+  </section>
+<section class="card workflow">
+    <h4>Still blocked after follow-up in 600 other alpha cases</h4>
+    <p class="source">Alpha easy + medium + medium-messy + very-messy cohorts</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Still blocked after follow-up in 600 other alpha cases sparse change chart">
+    <text class="recent-note" x="310" y="20" text-anchor="middle">No metric change in the last 10 observations</text>
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of fallback scale</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="71.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="71.0" y="154.0" width="30.0" height="0.0"><title>06/30, 19:35 base: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="86.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="86.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="183.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="198.0" cy="149.0" r="4"><title>07/01, 00:09 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="198.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="198.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="295.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="310.0" cy="149.0" r="4"><title>07/01, 02:45 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="310.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="310.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="407.0" y="30" width="30.0" height="124" />
+      <circle class="flat-marker" cx="422.0" cy="149.0" r="4"><title>07/02, 14:35 unchanged: 0 (0% of fallback scale)</title></circle>
+      <text class="point-label" x="422.0" y="201" text-anchor="middle">10th</text>
+      <text class="point-value" x="422.0" y="214" text-anchor="middle">0%</text>
+    </g><g>
+      <rect class="bar-outline" x="519.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="519.0" y="154.0" width="30.0" height="0.0"><title>07/03, 00:29 latest: 0 (0% of fallback scale)</title></rect>
+      <text class="point-label" x="534.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="534.0" y="214" text-anchor="middle">0%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>0.0 / 600</strong></span>
+      <span>MA (prev 3) <strong>0.0</strong></span>
+      <span>Base <strong>0.0</strong></span>
+      <span>Shown points <strong>5 of 34</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases still blocked after simulated follow-up across non-uber cohorts.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This confirms normal and moderately messy workflows still reach estimate creation.</p>
+  </section>
+      </div>
+    </div>
+  </section>
+<div class="category-divider"><span>Dataset category 7</span></div><section class="panel">
+    <div class="panel-head">
+      <h2>FOCUSED REGRESSION BATTERY - 14 CASES</h2>
+      <p>Small hand-picked cases that catch behavior we have historically handled poorly.</p>
+    </div>
+    <div class="lanes">
+      <div>
+        <h3>AI Parsing</h3>
+        <section class="card ai">
+    <h4>Misleading summary wording in 14 focused cases</h4>
+    <p class="source">Focused regression battery</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Misleading summary wording in 14 focused cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="30.0" width="30.0" height="124.0"><title>07/02, 09:35 base: 1 (100% of base)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="435.0" y="30.0" width="30.0" height="124.0"><title>07/02, 19:41 latest: 1 (100% of base)</title></rect>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">100%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>1.0 / 14</strong></span>
+      <span>MA (prev 3) <strong>1.0</strong></span>
+      <span>Base <strong>1.0</strong></span>
+      <span>Shown points <strong>2 of 8</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts focused cases where TD2 job summary wording changed the work meaning.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This measures conversion of messy input into clean, accurate structured work text.</p>
+  </section>
+<section class="card ai">
+    <h4>Uncertain prices finalized in 14 focused cases</h4>
+    <p class="source">Focused regression battery</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Uncertain prices finalized in 14 focused cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="30.0" width="30.0" height="124.0"><title>07/02, 09:35 base: 1 (100% of base)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="435.0" y="30.0" width="30.0" height="124.0"><title>07/02, 19:41 latest: 1 (100% of base)</title></rect>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">100%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>1.0 / 14</strong></span>
+      <span>MA (prev 3) <strong>1.0</strong></span>
+      <span>Base <strong>1.0</strong></span>
+      <span>Shown points <strong>2 of 8</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases where maybe/around prices still looked firm.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> Uncertain prices must stay visible to the contractor instead of becoming customer estimate amounts.</p>
+  </section>
+      </div>
+      <div>
+        <h3>Workflow</h3>
+        <section class="card workflow">
+    <h4>Unexpected-ready failures in 14 focused cases</h4>
+    <p class="source">Focused regression battery</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Unexpected-ready failures in 14 focused cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="30.0" width="30.0" height="124.0"><title>07/02, 09:35 base: 4 (100% of base)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="435.0" y="30.0" width="30.0" height="124.0"><title>07/02, 19:41 latest: 4 (100% of base)</title></rect>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">100%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>4.0 / 14</strong></span>
+      <span>MA (prev 3) <strong>4.0</strong></span>
+      <span>Base <strong>4.0</strong></span>
+      <span>Shown points <strong>2 of 8</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases where the app allowed estimate creation before expected clarification.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This is the focused workflow guardrail against moving too fast on unclear inputs.</p>
+  </section>
+<section class="card workflow">
+    <h4>Missing follow-up failures in 14 focused cases</h4>
+    <p class="source">Focused regression battery</p>
+    <p class="graph-subtitle">This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <svg class="sparse-chart" viewBox="0 0 620 220" role="img" aria-label="Missing follow-up failures in 14 focused cases sparse change chart">
+    
+    <text class="scale-note" x="590" y="20" text-anchor="end">scale: of base</text>
+    <line class="axis" x1="30" y1="154" x2="590" y2="154" />
+    <g>
+      <rect class="bar-outline" x="155.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="155.0" y="30.0" width="30.0" height="124.0"><title>07/02, 09:35 base: 4 (100% of base)</title></rect>
+      <text class="point-label" x="170.0" y="201" text-anchor="middle">base</text>
+      <text class="point-value" x="170.0" y="214" text-anchor="middle">100%</text>
+    </g><g>
+      <rect class="bar-outline" x="435.0" y="30" width="30.0" height="124" />
+      <rect class="bar-fill" x="435.0" y="30.0" width="30.0" height="124.0"><title>07/02, 19:41 latest: 4 (100% of base)</title></rect>
+      <text class="point-label" x="450.0" y="201" text-anchor="middle">latest</text>
+      <text class="point-value" x="450.0" y="214" text-anchor="middle">100%</text>
+    </g>
+  </svg>
+    <div class="stats">
+      <span>Most recent <strong>4.0 / 14</strong></span>
+      <span>MA (prev 3) <strong>4.0</strong></span>
+      <span>Base <strong>4.0</strong></span>
+      <span>Shown points <strong>2 of 8</strong></span>
+      <span class="progress-row unchanged"><span class="progress-label">Progress:</span> <strong>App unchanged</strong></span>
+    </div>
+    <p class="meaning"><strong>What this test shows:</strong> Counts cases where clarification text was expected but missing.</p>
+    <p class="meaning"><strong>Good/bad direction:</strong> Lower number is good; higher number is bad for this metric.</p>
+    <p class="meaning"><strong>How bars are scaled:</strong> This graph shows fraction of the first data point, the base. Values can rise above 100% if the metric got worse than base.</p>
+    <p class="meaning"><strong>Why it matters:</strong> This keeps follow-up visible as its own workflow result.</p>
+  </section>
+      </div>
+    </div>
+  </section>
+  </main>
+</body>
+</html>

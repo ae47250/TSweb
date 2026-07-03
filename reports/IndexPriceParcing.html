@@ -3,13 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IndexPriceParcing</title>
+  <title>IndexPriceParsing</title>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: #f6f8fb; color: #172033; }
     main { max-width: 1220px; margin: 0 auto; padding: 26px; }
     header { background: #ffffff; border: 1px solid #d8dee8; border-radius: 8px; padding: 18px; }
     h1 { margin: 0 0 8px; font-size: 30px; letter-spacing: 0; }
     .lede { margin: 6px 0; color: #526071; line-height: 1.45; }
+    .dashboard-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 10px; }
+    .dashboard-nav a { display: inline-block; border: 1px solid #98a2b3; border-radius: 6px; padding: 7px 10px; background: #fff; color: #123d66; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .dashboard-nav a[aria-current="page"] { background: #123d66; color: #fff; border-color: #123d66; }
     .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
     .summary div { border: 1px solid #d8dee8; border-radius: 8px; padding: 12px; background: #fbfcfd; }
     .summary strong { display: block; margin-top: 4px; font-size: 22px; color: #123d66; }
@@ -44,10 +47,15 @@
 <body>
   <main>
     <header>
-      <h1>IndexPriceParcing</h1>
+      <h1>IndexPriceParsing</h1>
+      <nav class="dashboard-nav" aria-label="Dashboard pages">
+        <a href="../tsweb-dashboard/index.html">Sparse Change Dashboard</a>
+        <a href="alpha-problem-dashboard.html">Problem Dashboard</a>
+        <a href="IndexPriceParcing.html" aria-current="page">IndexPriceParsing</a>
+      </nav>
       <p class="lede">Parsing-only visual index for option price work. It uses existing saved local and live benchmark artifacts; it does not call the live API.</p>
       <p class="lede">Rule remembered and reused: higher-good metrics are percent of possible total; lower-good metrics are percent of base score. If the latest score is unchanged from the previous period, the previous duplicate bar is hidden and the card says it was the same score.</p>
-      <p class="lede">Generated Jul 2, 2026, 7:59 PM.</p>
+      <p class="lede">Generated Jul 3, 2026, 2:16 AM.</p>
       <div class="summary">
         <div>Metrics shown<strong>17</strong></div>
         <div>Changed vs previous<strong>2</strong></div>
@@ -70,7 +78,7 @@
         <text class="bar-percent" x="176.0" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="442.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="442.0" y="164.0" width="44.0" height="0.0"><title>07/02, 07:44 PM current: 0 (0% of fallback scale)</title></rect>
+        <rect class="bar-fill" x="442.0" y="164.0" width="44.0" height="0.0"><title>07/03, 12:50 AM current: 0 (0% of fallback scale)</title></rect>
         <text class="bar-reason" x="464.0" y="192" text-anchor="middle">current</text>
         <text class="bar-percent" x="464.0" y="208" text-anchor="middle">0%</text>
       </g>
@@ -78,14 +86,14 @@
     <div class="stats">
       <span>Base <strong>0</strong></span>
       <span>Current <strong>0 / 20</strong></span>
-      <span>Shown <strong>2 of 3</strong></span>
+      <span>Shown <strong>2 of 4</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
     <p class="note">Same score as previous period: 0. The previous period is not drawn as a separate bar unless it was also a change point.</p>
     <p class="note"><strong class="direction">Lower is better</strong>. Percent = value divided by the base value, so improvement moves toward 0%.</p>
     <p class="note">Lower is better. Firm price was present, but TD2 missed it or made it unclear.</p>
   </article>
-<article class="metric better">
+<article class="metric same">
     <div class="metric-head">
       <h2>Live firm/control price rows OK</h2>
       <p>saved live option-price parsing summaries</p>
@@ -94,28 +102,33 @@
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of possible</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
-        <rect class="bar-frame" x="154.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="154.0" y="65.0" width="44.0" height="99.0"><title>07/02, 06:23 PM base: 6 (75% of possible)</title></rect>
-        <text class="bar-reason" x="176.0" y="192" text-anchor="middle">base</text>
-        <text class="bar-percent" x="176.0" y="208" text-anchor="middle">75%</text>
+        <rect class="bar-frame" x="106.0" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="106.0" y="65.0" width="44.0" height="99.0"><title>07/02, 06:23 PM base: 6 (75% of possible)</title></rect>
+        <text class="bar-reason" x="128.0" y="192" text-anchor="middle">base</text>
+        <text class="bar-percent" x="128.0" y="208" text-anchor="middle">75%</text>
       </g><g>
-        <rect class="bar-frame" x="442.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="442.0" y="32.0" width="44.0" height="132.0"><title>07/02, 07:44 PM current: 8 (100% of possible)</title></rect>
-        <text class="bar-reason" x="464.0" y="192" text-anchor="middle">current</text>
-        <text class="bar-percent" x="464.0" y="208" text-anchor="middle">100%</text>
+        <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/02, 07:44 PM changed: 8 (100% of possible)</title></rect>
+        <text class="bar-reason" x="320.0" y="192" text-anchor="middle">changed</text>
+        <text class="bar-percent" x="320.0" y="208" text-anchor="middle">100%</text>
+      </g><g>
+        <rect class="bar-frame" x="490.0" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="490.0" y="32.0" width="44.0" height="132.0"><title>07/03, 12:50 AM current: 8 (100% of possible)</title></rect>
+        <text class="bar-reason" x="512.0" y="192" text-anchor="middle">current</text>
+        <text class="bar-percent" x="512.0" y="208" text-anchor="middle">100%</text>
       </g>
   </svg>
     <div class="stats">
       <span>Base <strong>6</strong></span>
       <span>Current <strong>8 / 8</strong></span>
-      <span>Shown <strong>2 of 3</strong></span>
-      <span>Status <strong>Improved since previous period</strong></span>
+      <span>Shown <strong>3 of 4</strong></span>
+      <span>Status <strong>Same score as previous period</strong></span>
     </div>
-    <p class="note">Changed since previous period: 6 -&gt; 8; better.</p>
+    <p class="note">Same score as previous period: 8. The previous period is not drawn as a separate bar unless it was also a change point.</p>
     <p class="note"><strong class="direction">Higher is better</strong>. Percent = value divided by possible total.</p>
     <p class="note">Higher is better. Controls prove the app can still extract firm option prices.</p>
   </article>
-<article class="metric better">
+<article class="metric same">
     <div class="metric-head">
       <h2>Live missing/vague prices correctly blocked</h2>
       <p>saved live option-price parsing summaries</p>
@@ -124,24 +137,29 @@
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of possible</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
-        <rect class="bar-frame" x="154.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="154.0" y="76.0" width="44.0" height="88.0"><title>07/02, 06:23 PM base: 8 (67% of possible)</title></rect>
-        <text class="bar-reason" x="176.0" y="192" text-anchor="middle">base</text>
-        <text class="bar-percent" x="176.0" y="208" text-anchor="middle">67%</text>
+        <rect class="bar-frame" x="106.0" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="106.0" y="76.0" width="44.0" height="88.0"><title>07/02, 06:23 PM base: 8 (67% of possible)</title></rect>
+        <text class="bar-reason" x="128.0" y="192" text-anchor="middle">base</text>
+        <text class="bar-percent" x="128.0" y="208" text-anchor="middle">67%</text>
       </g><g>
-        <rect class="bar-frame" x="442.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="442.0" y="32.0" width="44.0" height="132.0"><title>07/02, 07:44 PM current: 12 (100% of possible)</title></rect>
-        <text class="bar-reason" x="464.0" y="192" text-anchor="middle">current</text>
-        <text class="bar-percent" x="464.0" y="208" text-anchor="middle">100%</text>
+        <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/02, 07:44 PM changed: 12 (100% of possible)</title></rect>
+        <text class="bar-reason" x="320.0" y="192" text-anchor="middle">changed</text>
+        <text class="bar-percent" x="320.0" y="208" text-anchor="middle">100%</text>
+      </g><g>
+        <rect class="bar-frame" x="490.0" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="490.0" y="32.0" width="44.0" height="132.0"><title>07/03, 12:50 AM current: 12 (100% of possible)</title></rect>
+        <text class="bar-reason" x="512.0" y="192" text-anchor="middle">current</text>
+        <text class="bar-percent" x="512.0" y="208" text-anchor="middle">100%</text>
       </g>
   </svg>
     <div class="stats">
       <span>Base <strong>8</strong></span>
       <span>Current <strong>12 / 12</strong></span>
-      <span>Shown <strong>2 of 3</strong></span>
-      <span>Status <strong>Improved since previous period</strong></span>
+      <span>Shown <strong>3 of 4</strong></span>
+      <span>Status <strong>Same score as previous period</strong></span>
     </div>
-    <p class="note">Changed since previous period: 8 -&gt; 12; better.</p>
+    <p class="note">Same score as previous period: 12. The previous period is not drawn as a separate bar unless it was also a change point.</p>
     <p class="note"><strong class="direction">Higher is better</strong>. Percent = value divided by possible total.</p>
     <p class="note">Higher is better. This focuses on simply missing prices plus vague or non-firm price language.</p>
   </article>
@@ -160,7 +178,7 @@
         <text class="bar-percent" x="176.0" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="442.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="442.0" y="164.0" width="44.0" height="0.0"><title>07/02, 07:44 PM current: 0 (0% of fallback scale)</title></rect>
+        <rect class="bar-fill" x="442.0" y="164.0" width="44.0" height="0.0"><title>07/03, 12:50 AM current: 0 (0% of fallback scale)</title></rect>
         <text class="bar-reason" x="464.0" y="192" text-anchor="middle">current</text>
         <text class="bar-percent" x="464.0" y="208" text-anchor="middle">0%</text>
       </g>
@@ -168,7 +186,7 @@
     <div class="stats">
       <span>Base <strong>0</strong></span>
       <span>Current <strong>0 / 20</strong></span>
-      <span>Shown <strong>2 of 3</strong></span>
+      <span>Shown <strong>2 of 4</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
     <p class="note">Same score as previous period: 0. The previous period is not drawn as a separate bar unless it was also a change point.</p>
@@ -190,7 +208,7 @@
         <text class="bar-percent" x="176.0" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="442.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="442.0" y="164.0" width="44.0" height="0.0"><title>07/02, 07:44 PM current: 0 (0% of fallback scale)</title></rect>
+        <rect class="bar-fill" x="442.0" y="164.0" width="44.0" height="0.0"><title>07/03, 12:50 AM current: 0 (0% of fallback scale)</title></rect>
         <text class="bar-reason" x="464.0" y="192" text-anchor="middle">current</text>
         <text class="bar-percent" x="464.0" y="208" text-anchor="middle">0%</text>
       </g>
@@ -198,7 +216,7 @@
     <div class="stats">
       <span>Base <strong>0</strong></span>
       <span>Current <strong>0 / 2</strong></span>
-      <span>Shown <strong>2 of 3</strong></span>
+      <span>Shown <strong>2 of 4</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
     <p class="note">Same score as previous period: 0. The previous period is not drawn as a separate bar unless it was also a change point.</p>
@@ -208,21 +226,21 @@
 <article class="metric same">
     <div class="metric-head">
       <h2>Full local price benchmark failures</h2>
-      <p>reports\local-price-benchmark-2026-07-02_19-44-summary.json</p>
+      <p>reports\local-price-benchmark-2026-07-03_00-47-summary.json</p>
     </div>
     <svg viewBox="0 0 640 218" role="img" aria-label="Full local price benchmark failures">
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of base</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
         <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/02/2026, 07:44:35 PM EDT base/current: 201 (100% of base)</title></rect>
+        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/03/2026, 12:47:13 AM EDT base/current: 176 (100% of base)</title></rect>
         <text class="bar-reason" x="320.0" y="192" text-anchor="middle">base/current</text>
         <text class="bar-percent" x="320.0" y="208" text-anchor="middle">100%</text>
       </g>
   </svg>
     <div class="stats">
-      <span>Base <strong>201</strong></span>
-      <span>Current <strong>201 / 1750</strong></span>
+      <span>Base <strong>176</strong></span>
+      <span>Current <strong>176 / 1750</strong></span>
       <span>Shown <strong>1 of 1</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
@@ -233,21 +251,21 @@
 <article class="metric same">
     <div class="metric-head">
       <h2>Full local firm-price extraction passes</h2>
-      <p>reports\local-price-benchmark-2026-07-02_19-44-summary.json</p>
+      <p>reports\local-price-benchmark-2026-07-03_00-47-summary.json</p>
     </div>
     <svg viewBox="0 0 640 218" role="img" aria-label="Full local firm-price extraction passes">
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of possible</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
         <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="298.0" y="47.8" width="44.0" height="116.2"><title>07/02/2026, 07:44:35 PM EDT base/current: 1481 (88% of possible)</title></rect>
+        <rect class="bar-fill" x="298.0" y="45.8" width="44.0" height="118.2"><title>07/03/2026, 12:47:13 AM EDT base/current: 1506 (90% of possible)</title></rect>
         <text class="bar-reason" x="320.0" y="192" text-anchor="middle">base/current</text>
-        <text class="bar-percent" x="320.0" y="208" text-anchor="middle">88%</text>
+        <text class="bar-percent" x="320.0" y="208" text-anchor="middle">90%</text>
       </g>
   </svg>
     <div class="stats">
-      <span>Base <strong>1481</strong></span>
-      <span>Current <strong>1481 / 1682</strong></span>
+      <span>Base <strong>1506</strong></span>
+      <span>Current <strong>1506 / 1682</strong></span>
       <span>Shown <strong>1 of 1</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
@@ -258,14 +276,14 @@
 <article class="metric same">
     <div class="metric-head">
       <h2>Stable 700 replay price rows passing</h2>
-      <p>reports\local-price-benchmark-2026-07-02_19-44-summary.json</p>
+      <p>reports\local-price-benchmark-2026-07-03_00-47-summary.json</p>
     </div>
     <svg viewBox="0 0 640 218" role="img" aria-label="Stable 700 replay price rows passing">
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of possible</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
         <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/02/2026, 07:44:35 PM EDT base/current: 700 (100% of possible)</title></rect>
+        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/03/2026, 12:47:13 AM EDT base/current: 700 (100% of possible)</title></rect>
         <text class="bar-reason" x="320.0" y="192" text-anchor="middle">base/current</text>
         <text class="bar-percent" x="320.0" y="208" text-anchor="middle">100%</text>
       </g>
@@ -283,21 +301,21 @@
 <article class="metric same">
     <div class="metric-head">
       <h2>Hard-knownfail price-slice failures</h2>
-      <p>reports\local-price-benchmark-2026-07-02_19-44-summary.json</p>
+      <p>reports\local-price-benchmark-2026-07-03_00-47-summary.json</p>
     </div>
     <svg viewBox="0 0 640 218" role="img" aria-label="Hard-knownfail price-slice failures">
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of base</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
         <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/02/2026, 07:44:35 PM EDT base/current: 108 (100% of base)</title></rect>
+        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/03/2026, 12:47:13 AM EDT base/current: 91 (100% of base)</title></rect>
         <text class="bar-reason" x="320.0" y="192" text-anchor="middle">base/current</text>
         <text class="bar-percent" x="320.0" y="208" text-anchor="middle">100%</text>
       </g>
   </svg>
     <div class="stats">
-      <span>Base <strong>108</strong></span>
-      <span>Current <strong>108 / 150</strong></span>
+      <span>Base <strong>91</strong></span>
+      <span>Current <strong>91 / 150</strong></span>
       <span>Shown <strong>1 of 1</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
@@ -308,14 +326,14 @@
 <article class="metric same">
     <div class="metric-head">
       <h2>Firm prices missing</h2>
-      <p>reports\local-price-benchmark-2026-07-02_19-44-summary.json</p>
+      <p>reports\local-price-benchmark-2026-07-03_00-47-summary.json</p>
     </div>
     <svg viewBox="0 0 640 218" role="img" aria-label="Firm prices missing">
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of base</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
         <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/02/2026, 07:44:35 PM EDT base/current: 103 (100% of base)</title></rect>
+        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/03/2026, 12:47:13 AM EDT base/current: 103 (100% of base)</title></rect>
         <text class="bar-reason" x="320.0" y="192" text-anchor="middle">base/current</text>
         <text class="bar-percent" x="320.0" y="208" text-anchor="middle">100%</text>
       </g>
@@ -333,21 +351,21 @@
 <article class="metric same">
     <div class="metric-head">
       <h2>Firm prices wrong</h2>
-      <p>reports\local-price-benchmark-2026-07-02_19-44-summary.json</p>
+      <p>reports\local-price-benchmark-2026-07-03_00-47-summary.json</p>
     </div>
     <svg viewBox="0 0 640 218" role="img" aria-label="Firm prices wrong">
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of base</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
         <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/02/2026, 07:44:35 PM EDT base/current: 98 (100% of base)</title></rect>
+        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/03/2026, 12:47:13 AM EDT base/current: 73 (100% of base)</title></rect>
         <text class="bar-reason" x="320.0" y="192" text-anchor="middle">base/current</text>
         <text class="bar-percent" x="320.0" y="208" text-anchor="middle">100%</text>
       </g>
   </svg>
     <div class="stats">
-      <span>Base <strong>98</strong></span>
-      <span>Current <strong>98 / 1750</strong></span>
+      <span>Base <strong>73</strong></span>
+      <span>Current <strong>73 / 1750</strong></span>
       <span>Shown <strong>1 of 1</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
@@ -358,14 +376,14 @@
 <article class="metric same">
     <div class="metric-head">
       <h2>Missing or vague price invented</h2>
-      <p>reports\local-price-benchmark-2026-07-02_19-44-summary.json</p>
+      <p>reports\local-price-benchmark-2026-07-03_00-47-summary.json</p>
     </div>
     <svg viewBox="0 0 640 218" role="img" aria-label="Missing or vague price invented">
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of fallback scale</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
         <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="298.0" y="164.0" width="44.0" height="0.0"><title>07/02/2026, 07:44:35 PM EDT base/current: 0 (0% of fallback scale)</title></rect>
+        <rect class="bar-fill" x="298.0" y="164.0" width="44.0" height="0.0"><title>07/03/2026, 12:47:13 AM EDT base/current: 0 (0% of fallback scale)</title></rect>
         <text class="bar-reason" x="320.0" y="192" text-anchor="middle">base/current</text>
         <text class="bar-percent" x="320.0" y="208" text-anchor="middle">0%</text>
       </g>
@@ -389,38 +407,53 @@
     <text class="scale-label" x="608" y="20" text-anchor="end">scale: of base</text>
     <line class="axis" x1="32" y1="164" x2="608" y2="164" />
     <g>
-        <rect class="bar-frame" x="82.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="82.0" y="32.0" width="44.0" height="132.0"><title>07/01, 07:02 PM base: 117 (100% of base)</title></rect>
-        <text class="bar-reason" x="104.0" y="192" text-anchor="middle">base</text>
-        <text class="bar-percent" x="104.0" y="208" text-anchor="middle">100%</text>
+        <rect class="bar-frame" x="51.1" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="51.1" y="32.0" width="44.0" height="132.0"><title>07/01, 07:02 PM base: 117 (100% of base)</title></rect>
+        <text class="bar-reason" x="73.1" y="192" text-anchor="middle">base</text>
+        <text class="bar-percent" x="73.1" y="208" text-anchor="middle">100%</text>
       </g><g>
-        <rect class="bar-frame" x="226.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="226.0" y="164.0" width="44.0" height="0.0"><title>07/01, 07:41 PM changed: 0 (0% of base)</title></rect>
-        <text class="bar-reason" x="248.0" y="192" text-anchor="middle">changed</text>
-        <text class="bar-percent" x="248.0" y="208" text-anchor="middle">0%</text>
+        <rect class="bar-frame" x="133.4" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="133.4" y="164.0" width="44.0" height="0.0"><title>07/01, 07:41 PM changed: 0 (0% of base)</title></rect>
+        <text class="bar-reason" x="155.4" y="192" text-anchor="middle">changed</text>
+        <text class="bar-percent" x="155.4" y="208" text-anchor="middle">0%</text>
       </g><g>
-        <rect class="bar-frame" x="370.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="370.0" y="32.0" width="44.0" height="132.0"><title>07/02, 01:13 AM changed: 117 (100% of base)</title></rect>
-        <text class="bar-reason" x="392.0" y="192" text-anchor="middle">changed</text>
-        <text class="bar-percent" x="392.0" y="208" text-anchor="middle">100%</text>
+        <rect class="bar-frame" x="215.7" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="215.7" y="32.0" width="44.0" height="132.0"><title>07/02, 01:13 AM changed: 117 (100% of base)</title></rect>
+        <text class="bar-reason" x="237.7" y="192" text-anchor="middle">changed</text>
+        <text class="bar-percent" x="237.7" y="208" text-anchor="middle">100%</text>
       </g><g>
-        <rect class="bar-frame" x="514.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="514.0" y="32.0" width="44.0" height="132.0"><title>07/02, 07:41 PM current: 117 (100% of base)</title></rect>
-        <text class="bar-reason" x="536.0" y="192" text-anchor="middle">current</text>
-        <text class="bar-percent" x="536.0" y="208" text-anchor="middle">100%</text>
+        <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="298.0" y="32.0" width="44.0" height="132.0"><title>07/02, 10:02 AM yday 10am: 117 (100% of base)</title></rect>
+        <text class="bar-reason" x="320.0" y="192" text-anchor="middle">yday 10am</text>
+        <text class="bar-percent" x="320.0" y="208" text-anchor="middle">100%</text>
+      </g><g>
+        <rect class="bar-frame" x="380.3" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="380.3" y="32.0" width="44.0" height="132.0"><title>07/02, 02:55 PM yday 5pm: 117 (100% of base)</title></rect>
+        <text class="bar-reason" x="402.3" y="192" text-anchor="middle">yday 5pm</text>
+        <text class="bar-percent" x="402.3" y="208" text-anchor="middle">100%</text>
+      </g><g>
+        <rect class="bar-frame" x="462.6" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="462.6" y="41.0" width="44.0" height="123.0"><title>07/03, 12:29 AM changed: 109 (93% of base)</title></rect>
+        <text class="bar-reason" x="484.6" y="192" text-anchor="middle">changed</text>
+        <text class="bar-percent" x="484.6" y="208" text-anchor="middle">93%</text>
+      </g><g>
+        <rect class="bar-frame" x="544.9" y="32" width="44.0" height="132" />
+        <rect class="bar-fill" x="544.9" y="41.0" width="44.0" height="123.0"><title>07/03, 12:47 AM current: 109 (93% of base)</title></rect>
+        <text class="bar-reason" x="566.9" y="192" text-anchor="middle">current</text>
+        <text class="bar-percent" x="566.9" y="208" text-anchor="middle">93%</text>
       </g>
   </svg>
     <div class="stats">
       <span>Base <strong>117</strong></span>
-      <span>Current <strong>117 / 120</strong></span>
-      <span>Shown <strong>4 of 16</strong></span>
+      <span>Current <strong>109 / 120</strong></span>
+      <span>Shown <strong>7 of 18</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
-    <p class="note">Same score as previous period: 117. The previous period is not drawn as a separate bar unless it was also a change point.</p>
+    <p class="note">Same score as previous period: 109. The previous period is not drawn as a separate bar unless it was also a change point.</p>
     <p class="note"><strong class="direction">Lower is better</strong>. Percent = value divided by the base value, so improvement moves toward 0%.</p>
     <p class="note">Lower is better. This is the recurring 100-case stress bucket; finding count can exceed case count because one case can have more than one price issue.</p>
   </article>
-<article class="metric same">
+<article class="metric better">
     <div class="metric-head">
       <h2>All Alpha parser_price_options failures</h2>
       <p>reports/alpha-metrics-history.jsonl</p>
@@ -455,32 +488,32 @@
         <text class="bar-percent" x="356.0" y="208" text-anchor="middle">84%</text>
       </g><g>
         <rect class="bar-frame" x="408.2" y="32" width="39.6" height="132" />
-        <rect class="bar-fill" x="408.2" y="53.5" width="39.6" height="110.5"><title>07/01, 03:30 AM yday 10am: 108 (84% of base)</title></rect>
+        <rect class="bar-fill" x="408.2" y="53.5" width="39.6" height="110.5"><title>07/02, 02:35 PM yday 10am: 108 (84% of base)</title></rect>
         <text class="bar-reason" x="428.0" y="192" text-anchor="middle">yday 10am</text>
         <text class="bar-percent" x="428.0" y="208" text-anchor="middle">84%</text>
       </g><g>
         <rect class="bar-frame" x="480.2" y="32" width="39.6" height="132" />
-        <rect class="bar-fill" x="480.2" y="53.5" width="39.6" height="110.5"><title>07/01, 11:45 PM yday 5pm: 108 (84% of base)</title></rect>
+        <rect class="bar-fill" x="480.2" y="53.5" width="39.6" height="110.5"><title>07/02, 02:55 PM yday 5pm: 108 (84% of base)</title></rect>
         <text class="bar-reason" x="500.0" y="192" text-anchor="middle">yday 5pm</text>
         <text class="bar-percent" x="500.0" y="208" text-anchor="middle">84%</text>
       </g><g>
         <rect class="bar-frame" x="552.2" y="32" width="39.6" height="132" />
-        <rect class="bar-fill" x="552.2" y="53.5" width="39.6" height="110.5"><title>07/02, 07:41 PM current: 108 (84% of base)</title></rect>
+        <rect class="bar-fill" x="552.2" y="70.9" width="39.6" height="93.1"><title>07/03, 12:29 AM current: 91 (71% of base)</title></rect>
         <text class="bar-reason" x="572.0" y="192" text-anchor="middle">current</text>
-        <text class="bar-percent" x="572.0" y="208" text-anchor="middle">84%</text>
+        <text class="bar-percent" x="572.0" y="208" text-anchor="middle">71%</text>
       </g>
   </svg>
     <div class="stats">
       <span>Base <strong>129</strong></span>
-      <span>Current <strong>108 / 1050</strong></span>
-      <span>Shown <strong>8 of 33</strong></span>
-      <span>Status <strong>Same score as previous period</strong></span>
+      <span>Current <strong>91 / 1050</strong></span>
+      <span>Shown <strong>8 of 34</strong></span>
+      <span>Status <strong>Improved since previous period</strong></span>
     </div>
-    <p class="note">Same score as previous period: 108. The previous period is not drawn as a separate bar unless it was also a change point.</p>
+    <p class="note">Changed since previous period: 108 -&gt; 91; better.</p>
     <p class="note"><strong class="direction">Lower is better</strong>. Percent = value divided by the base value, so improvement moves toward 0%.</p>
     <p class="note">Lower is better. Direct parser price-option mismatch across all Alpha fixture cohorts.</p>
   </article>
-<article class="metric same">
+<article class="metric better">
     <div class="metric-head">
       <h2>Hard-knownfail parser_price_options failures</h2>
       <p>reports/alpha-metrics-history.jsonl</p>
@@ -505,28 +538,28 @@
         <text class="bar-percent" x="272.0" y="208" text-anchor="middle">114%</text>
       </g><g>
         <rect class="bar-frame" x="346.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="346.0" y="32.0" width="44.0" height="132.0"><title>07/01, 03:30 AM yday 10am: 108 (114% of base)</title></rect>
+        <rect class="bar-fill" x="346.0" y="32.0" width="44.0" height="132.0"><title>07/02, 02:35 PM yday 10am: 108 (114% of base)</title></rect>
         <text class="bar-reason" x="368.0" y="192" text-anchor="middle">yday 10am</text>
         <text class="bar-percent" x="368.0" y="208" text-anchor="middle">114%</text>
       </g><g>
         <rect class="bar-frame" x="442.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="442.0" y="32.0" width="44.0" height="132.0"><title>07/01, 11:45 PM yday 5pm: 108 (114% of base)</title></rect>
+        <rect class="bar-fill" x="442.0" y="32.0" width="44.0" height="132.0"><title>07/02, 02:55 PM yday 5pm: 108 (114% of base)</title></rect>
         <text class="bar-reason" x="464.0" y="192" text-anchor="middle">yday 5pm</text>
         <text class="bar-percent" x="464.0" y="208" text-anchor="middle">114%</text>
       </g><g>
         <rect class="bar-frame" x="538.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="538.0" y="32.0" width="44.0" height="132.0"><title>07/02, 07:41 PM current: 108 (114% of base)</title></rect>
+        <rect class="bar-fill" x="538.0" y="52.8" width="44.0" height="111.2"><title>07/03, 12:29 AM current: 91 (96% of base)</title></rect>
         <text class="bar-reason" x="560.0" y="192" text-anchor="middle">current</text>
-        <text class="bar-percent" x="560.0" y="208" text-anchor="middle">114%</text>
+        <text class="bar-percent" x="560.0" y="208" text-anchor="middle">96%</text>
       </g>
   </svg>
     <div class="stats">
       <span>Base <strong>95</strong></span>
-      <span>Current <strong>108 / 150</strong></span>
-      <span>Shown <strong>6 of 33</strong></span>
-      <span>Status <strong>Same score as previous period</strong></span>
+      <span>Current <strong>91 / 150</strong></span>
+      <span>Shown <strong>6 of 34</strong></span>
+      <span>Status <strong>Improved since previous period</strong></span>
     </div>
-    <p class="note">Same score as previous period: 108. The previous period is not drawn as a separate bar unless it was also a change point.</p>
+    <p class="note">Changed since previous period: 108 -&gt; 91; better.</p>
     <p class="note"><strong class="direction">Lower is better</strong>. Percent = value divided by the base value, so improvement moves toward 0%.</p>
     <p class="note">Lower is better. This is the historic hard price/options backlog.</p>
   </article>
@@ -555,17 +588,17 @@
         <text class="bar-percent" x="272.0" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="346.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="346.0" y="164.0" width="44.0" height="0.0"><title>07/01, 03:30 AM yday 10am: 0 (0% of base)</title></rect>
+        <rect class="bar-fill" x="346.0" y="164.0" width="44.0" height="0.0"><title>07/02, 02:35 PM yday 10am: 0 (0% of base)</title></rect>
         <text class="bar-reason" x="368.0" y="192" text-anchor="middle">yday 10am</text>
         <text class="bar-percent" x="368.0" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="442.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="442.0" y="164.0" width="44.0" height="0.0"><title>07/01, 11:45 PM yday 5pm: 0 (0% of base)</title></rect>
+        <rect class="bar-fill" x="442.0" y="164.0" width="44.0" height="0.0"><title>07/02, 02:55 PM yday 5pm: 0 (0% of base)</title></rect>
         <text class="bar-reason" x="464.0" y="192" text-anchor="middle">yday 5pm</text>
         <text class="bar-percent" x="464.0" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="538.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="538.0" y="164.0" width="44.0" height="0.0"><title>07/02, 07:41 PM current: 0 (0% of base)</title></rect>
+        <rect class="bar-fill" x="538.0" y="164.0" width="44.0" height="0.0"><title>07/03, 12:29 AM current: 0 (0% of base)</title></rect>
         <text class="bar-reason" x="560.0" y="192" text-anchor="middle">current</text>
         <text class="bar-percent" x="560.0" y="208" text-anchor="middle">0%</text>
       </g>
@@ -573,7 +606,7 @@
     <div class="stats">
       <span>Base <strong>21</strong></span>
       <span>Current <strong>0 / 150</strong></span>
-      <span>Shown <strong>6 of 33</strong></span>
+      <span>Shown <strong>6 of 34</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
     <p class="note">Same score as previous period: 0. The previous period is not drawn as a separate bar unless it was also a change point.</p>
@@ -600,17 +633,17 @@
         <text class="bar-percent" x="204.8" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="298.0" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="298.0" y="164.0" width="44.0" height="0.0"><title>07/01, 03:30 AM yday 10am: 0 (0% of base)</title></rect>
+        <rect class="bar-fill" x="298.0" y="164.0" width="44.0" height="0.0"><title>07/02, 02:35 PM yday 10am: 0 (0% of base)</title></rect>
         <text class="bar-reason" x="320.0" y="192" text-anchor="middle">yday 10am</text>
         <text class="bar-percent" x="320.0" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="413.2" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="413.2" y="164.0" width="44.0" height="0.0"><title>07/01, 11:45 PM yday 5pm: 0 (0% of base)</title></rect>
+        <rect class="bar-fill" x="413.2" y="164.0" width="44.0" height="0.0"><title>07/02, 02:55 PM yday 5pm: 0 (0% of base)</title></rect>
         <text class="bar-reason" x="435.2" y="192" text-anchor="middle">yday 5pm</text>
         <text class="bar-percent" x="435.2" y="208" text-anchor="middle">0%</text>
       </g><g>
         <rect class="bar-frame" x="528.4" y="32" width="44.0" height="132" />
-        <rect class="bar-fill" x="528.4" y="164.0" width="44.0" height="0.0"><title>07/02, 07:41 PM current: 0 (0% of base)</title></rect>
+        <rect class="bar-fill" x="528.4" y="164.0" width="44.0" height="0.0"><title>07/03, 12:29 AM current: 0 (0% of base)</title></rect>
         <text class="bar-reason" x="550.4" y="192" text-anchor="middle">current</text>
         <text class="bar-percent" x="550.4" y="208" text-anchor="middle">0%</text>
       </g>
@@ -618,7 +651,7 @@
     <div class="stats">
       <span>Base <strong>5</strong></span>
       <span>Current <strong>0 / 150</strong></span>
-      <span>Shown <strong>5 of 33</strong></span>
+      <span>Shown <strong>5 of 34</strong></span>
       <span>Status <strong>Same score as previous period</strong></span>
     </div>
     <p class="note">Same score as previous period: 0. The previous period is not drawn as a separate bar unless it was also a change point.</p>

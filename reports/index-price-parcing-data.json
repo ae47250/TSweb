@@ -1,0 +1,1063 @@
+{
+  "generated_at": "2026-07-03T06:16:22.096Z",
+  "cards": [
+    {
+      "title": "Live firm-price extraction misses",
+      "source": "saved live option-price parsing summaries",
+      "goodWhenHigh": false,
+      "denominator": 20,
+      "note": "Lower is better. Firm price was present, but TD2 missed it or made it unclear.",
+      "points": [
+        {
+          "label": "07/02, 06:23 PM",
+          "timestamp": "2026-07-02T22:23:58.426Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 06:26 PM",
+          "timestamp": "2026-07-02T22:26:18.695Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 07:44 PM",
+          "timestamp": "2026-07-02T23:44:29.553Z",
+          "value": 0
+        },
+        {
+          "label": "07/03, 12:50 AM",
+          "timestamp": "2026-07-03T04:50:27.576Z",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "title": "Live firm/control price rows OK",
+      "source": "saved live option-price parsing summaries",
+      "goodWhenHigh": true,
+      "denominator": 8,
+      "note": "Higher is better. Controls prove the app can still extract firm option prices.",
+      "points": [
+        {
+          "label": "07/02, 06:23 PM",
+          "timestamp": "2026-07-02T22:23:58.426Z",
+          "value": 6
+        },
+        {
+          "label": "07/02, 06:26 PM",
+          "timestamp": "2026-07-02T22:26:18.695Z",
+          "value": 6
+        },
+        {
+          "label": "07/02, 07:44 PM",
+          "timestamp": "2026-07-02T23:44:29.553Z",
+          "value": 8
+        },
+        {
+          "label": "07/03, 12:50 AM",
+          "timestamp": "2026-07-03T04:50:27.576Z",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "title": "Live missing/vague prices correctly blocked",
+      "source": "saved live option-price parsing summaries",
+      "goodWhenHigh": true,
+      "denominator": 12,
+      "note": "Higher is better. This focuses on simply missing prices plus vague or non-firm price language.",
+      "points": [
+        {
+          "label": "07/02, 06:23 PM",
+          "timestamp": "2026-07-02T22:23:58.426Z",
+          "value": 8
+        },
+        {
+          "label": "07/02, 06:26 PM",
+          "timestamp": "2026-07-02T22:26:18.695Z",
+          "value": 8
+        },
+        {
+          "label": "07/02, 07:44 PM",
+          "timestamp": "2026-07-02T23:44:29.553Z",
+          "value": 12
+        },
+        {
+          "label": "07/03, 12:50 AM",
+          "timestamp": "2026-07-03T04:50:27.576Z",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "title": "Live invented prices from no usable input",
+      "source": "saved live option-price parsing summaries",
+      "goodWhenHigh": false,
+      "denominator": 20,
+      "note": "Lower is better. This should stay at zero.",
+      "points": [
+        {
+          "label": "07/02, 06:23 PM",
+          "timestamp": "2026-07-02T22:23:58.426Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 06:26 PM",
+          "timestamp": "2026-07-02T22:26:18.695Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 07:44 PM",
+          "timestamp": "2026-07-02T23:44:29.553Z",
+          "value": 0
+        },
+        {
+          "label": "07/03, 12:50 AM",
+          "timestamp": "2026-07-03T04:50:27.576Z",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "title": "Live phone/address number price confusion",
+      "source": "saved live option-price parsing summaries",
+      "goodWhenHigh": false,
+      "denominator": 2,
+      "note": "Lower is better. Phone and address numbers should not become prices.",
+      "points": [
+        {
+          "label": "07/02, 06:23 PM",
+          "timestamp": "2026-07-02T22:23:58.426Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 06:26 PM",
+          "timestamp": "2026-07-02T22:26:18.695Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 07:44 PM",
+          "timestamp": "2026-07-02T23:44:29.553Z",
+          "value": 0
+        },
+        {
+          "label": "07/03, 12:50 AM",
+          "timestamp": "2026-07-03T04:50:27.576Z",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "title": "Full local price benchmark failures",
+      "source": "reports\\local-price-benchmark-2026-07-03_00-47-summary.json",
+      "goodWhenHigh": false,
+      "denominator": 1750,
+      "note": "Lower is better. Includes firm price missing and firm price wrong. First full local price benchmark, so base and current are the same score.",
+      "points": [
+        {
+          "label": "07/03/2026, 12:47:13 AM EDT",
+          "timestamp": "2026-07-03T04:47:18.900Z",
+          "value": 176
+        }
+      ]
+    },
+    {
+      "title": "Full local firm-price extraction passes",
+      "source": "reports\\local-price-benchmark-2026-07-03_00-47-summary.json",
+      "goodWhenHigh": true,
+      "denominator": 1682,
+      "note": "Higher is better. Measures whether firm option prices made it into TD2. First full local price benchmark, so base and current are the same score.",
+      "points": [
+        {
+          "label": "07/03/2026, 12:47:13 AM EDT",
+          "timestamp": "2026-07-03T04:47:18.900Z",
+          "value": 1506
+        }
+      ]
+    },
+    {
+      "title": "Stable 700 replay price rows passing",
+      "source": "reports\\local-price-benchmark-2026-07-03_00-47-summary.json",
+      "goodWhenHigh": true,
+      "denominator": 700,
+      "note": "Higher is better. This isolates the stable broad replay input set. First full local price benchmark, so base and current are the same score.",
+      "points": [
+        {
+          "label": "07/03/2026, 12:47:13 AM EDT",
+          "timestamp": "2026-07-03T04:47:18.900Z",
+          "value": 700
+        }
+      ]
+    },
+    {
+      "title": "Hard-knownfail price-slice failures",
+      "source": "reports\\local-price-benchmark-2026-07-03_00-47-summary.json",
+      "goodWhenHigh": false,
+      "denominator": 150,
+      "note": "Lower is better. This remains the main price parser backlog. First full local price benchmark, so base and current are the same score.",
+      "points": [
+        {
+          "label": "07/03/2026, 12:47:13 AM EDT",
+          "timestamp": "2026-07-03T04:47:18.900Z",
+          "value": 91
+        }
+      ]
+    },
+    {
+      "title": "Firm prices missing",
+      "source": "reports\\local-price-benchmark-2026-07-03_00-47-summary.json",
+      "goodWhenHigh": false,
+      "denominator": 1750,
+      "note": "Lower is better. Price was expected but TD2 had no usable price. First full local price benchmark, so base and current are the same score.",
+      "points": [
+        {
+          "label": "07/03/2026, 12:47:13 AM EDT",
+          "timestamp": "2026-07-03T04:47:18.900Z",
+          "value": 103
+        }
+      ]
+    },
+    {
+      "title": "Firm prices wrong",
+      "source": "reports\\local-price-benchmark-2026-07-03_00-47-summary.json",
+      "goodWhenHigh": false,
+      "denominator": 1750,
+      "note": "Lower is better. TD2 had a price, but not the expected price set. First full local price benchmark, so base and current are the same score.",
+      "points": [
+        {
+          "label": "07/03/2026, 12:47:13 AM EDT",
+          "timestamp": "2026-07-03T04:47:18.900Z",
+          "value": 73
+        }
+      ]
+    },
+    {
+      "title": "Missing or vague price invented",
+      "source": "reports\\local-price-benchmark-2026-07-03_00-47-summary.json",
+      "goodWhenHigh": false,
+      "denominator": 1750,
+      "note": "Lower is better. This is the safety metric for not turning vague/no-price text into a customer-facing amount. First full local price benchmark, so base and current are the same score.",
+      "points": [
+        {
+          "label": "07/03/2026, 12:47:13 AM EDT",
+          "timestamp": "2026-07-03T04:47:18.900Z",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "title": "Prior-regression price-missing findings",
+      "source": "internal-100-each-summary history",
+      "goodWhenHigh": false,
+      "denominator": 120,
+      "note": "Lower is better. This is the recurring 100-case stress bucket; finding count can exceed case count because one case can have more than one price issue.",
+      "points": [
+        {
+          "label": "07/01, 07:02 PM",
+          "timestamp": "2026-07-01T23:02:57.229Z",
+          "value": 117
+        },
+        {
+          "label": "07/01, 07:26 PM",
+          "timestamp": "2026-07-01T23:26:24.685Z",
+          "value": 117
+        },
+        {
+          "label": "07/01, 07:29 PM",
+          "timestamp": "2026-07-01T23:29:11.019Z",
+          "value": 117
+        },
+        {
+          "label": "07/01, 07:35 PM",
+          "timestamp": "2026-07-01T23:35:02.870Z",
+          "value": 117
+        },
+        {
+          "label": "07/01, 07:41 PM",
+          "timestamp": "2026-07-01T23:41:48.737Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 07:43 PM",
+          "timestamp": "2026-07-01T23:43:20.132Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 11:41 PM",
+          "timestamp": "2026-07-02T03:41:44.354Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 12:45 AM",
+          "timestamp": "2026-07-02T04:45:31.594Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 12:49 AM",
+          "timestamp": "2026-07-02T04:49:12.004Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 12:57 AM",
+          "timestamp": "2026-07-02T04:57:18.830Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:13 AM",
+          "timestamp": "2026-07-02T05:13:48.410Z",
+          "value": 117
+        },
+        {
+          "label": "07/02, 09:53 AM",
+          "timestamp": "2026-07-02T13:53:54.833Z",
+          "value": 117
+        },
+        {
+          "label": "07/02, 10:02 AM",
+          "timestamp": "2026-07-02T14:02:18.705Z",
+          "value": 117
+        },
+        {
+          "label": "07/02, 02:36 PM",
+          "timestamp": "2026-07-02T18:36:14.270Z",
+          "value": 117
+        },
+        {
+          "label": "07/02, 02:55 PM",
+          "timestamp": "2026-07-02T18:55:42.889Z",
+          "value": 117
+        },
+        {
+          "label": "07/02, 07:41 PM",
+          "timestamp": "2026-07-02T23:41:19.893Z",
+          "value": 117
+        },
+        {
+          "label": "07/03, 12:29 AM",
+          "timestamp": "2026-07-03T04:29:40.514Z",
+          "value": 109
+        },
+        {
+          "label": "07/03, 12:47 AM",
+          "timestamp": "2026-07-03T04:47:16.407Z",
+          "value": 109
+        }
+      ]
+    },
+    {
+      "title": "All Alpha parser_price_options failures",
+      "source": "reports/alpha-metrics-history.jsonl",
+      "goodWhenHigh": false,
+      "denominator": 1050,
+      "note": "Lower is better. Direct parser price-option mismatch across all Alpha fixture cohorts.",
+      "points": [
+        {
+          "label": "06/30, 07:35 PM",
+          "timestamp": "2026-06-30T23:35:40.593Z",
+          "value": 129
+        },
+        {
+          "label": "06/30, 07:37 PM",
+          "timestamp": "2026-06-30T23:37:55.847Z",
+          "value": 129
+        },
+        {
+          "label": "06/30, 07:54 PM",
+          "timestamp": "2026-06-30T23:54:29.333Z",
+          "value": 129
+        },
+        {
+          "label": "06/30, 07:59 PM",
+          "timestamp": "2026-06-30T23:59:45.657Z",
+          "value": 129
+        },
+        {
+          "label": "06/30, 08:13 PM",
+          "timestamp": "2026-07-01T00:13:47.743Z",
+          "value": 129
+        },
+        {
+          "label": "06/30, 08:21 PM",
+          "timestamp": "2026-07-01T00:21:18.962Z",
+          "value": 129
+        },
+        {
+          "label": "06/30, 08:37 PM",
+          "timestamp": "2026-07-01T00:37:47.284Z",
+          "value": 117
+        },
+        {
+          "label": "06/30, 08:39 PM",
+          "timestamp": "2026-07-01T00:39:37.552Z",
+          "value": 93
+        },
+        {
+          "label": "06/30, 08:40 PM",
+          "timestamp": "2026-07-01T00:40:46.797Z",
+          "value": 91
+        },
+        {
+          "label": "06/30, 11:54 PM",
+          "timestamp": "2026-07-01T03:54:31.081Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 12:09 AM",
+          "timestamp": "2026-07-01T04:09:22.976Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 12:12 AM",
+          "timestamp": "2026-07-01T04:12:28.449Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 12:37 AM",
+          "timestamp": "2026-07-01T04:37:41.367Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 12:49 AM",
+          "timestamp": "2026-07-01T04:49:43.492Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 01:25 AM",
+          "timestamp": "2026-07-01T05:25:07.047Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 01:35 AM",
+          "timestamp": "2026-07-01T05:35:50.573Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 01:53 AM",
+          "timestamp": "2026-07-01T05:53:08.096Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 02:14 AM",
+          "timestamp": "2026-07-01T06:14:54.266Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 02:15 AM",
+          "timestamp": "2026-07-01T06:15:56.490Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 02:31 AM",
+          "timestamp": "2026-07-01T06:31:15.491Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 02:45 AM",
+          "timestamp": "2026-07-01T06:45:06.915Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 03:11 AM",
+          "timestamp": "2026-07-01T07:11:41.694Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 03:28 AM",
+          "timestamp": "2026-07-01T07:28:50.350Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 03:30 AM",
+          "timestamp": "2026-07-01T07:30:53.653Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 11:45 PM",
+          "timestamp": "2026-07-02T03:45:21.898Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:34.878Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.263Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.318Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.418Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:25 AM",
+          "timestamp": "2026-07-02T05:25:43.404Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 02:35 PM",
+          "timestamp": "2026-07-02T18:35:56.687Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 02:55 PM",
+          "timestamp": "2026-07-02T18:55:23.100Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 07:41 PM",
+          "timestamp": "2026-07-02T23:41:16.991Z",
+          "value": 108
+        },
+        {
+          "label": "07/03, 12:29 AM",
+          "timestamp": "2026-07-03T04:29:51.090Z",
+          "value": 91
+        }
+      ]
+    },
+    {
+      "title": "Hard-knownfail parser_price_options failures",
+      "source": "reports/alpha-metrics-history.jsonl",
+      "goodWhenHigh": false,
+      "denominator": 150,
+      "note": "Lower is better. This is the historic hard price/options backlog.",
+      "points": [
+        {
+          "label": "06/30, 07:35 PM",
+          "timestamp": "2026-06-30T23:35:40.593Z",
+          "value": 95
+        },
+        {
+          "label": "06/30, 07:37 PM",
+          "timestamp": "2026-06-30T23:37:55.847Z",
+          "value": 95
+        },
+        {
+          "label": "06/30, 07:54 PM",
+          "timestamp": "2026-06-30T23:54:29.333Z",
+          "value": 95
+        },
+        {
+          "label": "06/30, 07:59 PM",
+          "timestamp": "2026-06-30T23:59:45.657Z",
+          "value": 95
+        },
+        {
+          "label": "06/30, 08:13 PM",
+          "timestamp": "2026-07-01T00:13:47.743Z",
+          "value": 95
+        },
+        {
+          "label": "06/30, 08:21 PM",
+          "timestamp": "2026-07-01T00:21:18.962Z",
+          "value": 95
+        },
+        {
+          "label": "06/30, 08:37 PM",
+          "timestamp": "2026-07-01T00:37:47.284Z",
+          "value": 91
+        },
+        {
+          "label": "06/30, 08:39 PM",
+          "timestamp": "2026-07-01T00:39:37.552Z",
+          "value": 91
+        },
+        {
+          "label": "06/30, 08:40 PM",
+          "timestamp": "2026-07-01T00:40:46.797Z",
+          "value": 91
+        },
+        {
+          "label": "06/30, 11:54 PM",
+          "timestamp": "2026-07-01T03:54:31.081Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 12:09 AM",
+          "timestamp": "2026-07-01T04:09:22.976Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 12:12 AM",
+          "timestamp": "2026-07-01T04:12:28.449Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 12:37 AM",
+          "timestamp": "2026-07-01T04:37:41.367Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 12:49 AM",
+          "timestamp": "2026-07-01T04:49:43.492Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 01:25 AM",
+          "timestamp": "2026-07-01T05:25:07.047Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 01:35 AM",
+          "timestamp": "2026-07-01T05:35:50.573Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 01:53 AM",
+          "timestamp": "2026-07-01T05:53:08.096Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 02:14 AM",
+          "timestamp": "2026-07-01T06:14:54.266Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 02:15 AM",
+          "timestamp": "2026-07-01T06:15:56.490Z",
+          "value": 91
+        },
+        {
+          "label": "07/01, 02:31 AM",
+          "timestamp": "2026-07-01T06:31:15.491Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 02:45 AM",
+          "timestamp": "2026-07-01T06:45:06.915Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 03:11 AM",
+          "timestamp": "2026-07-01T07:11:41.694Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 03:28 AM",
+          "timestamp": "2026-07-01T07:28:50.350Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 03:30 AM",
+          "timestamp": "2026-07-01T07:30:53.653Z",
+          "value": 108
+        },
+        {
+          "label": "07/01, 11:45 PM",
+          "timestamp": "2026-07-02T03:45:21.898Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:34.878Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.263Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.318Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.418Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 01:25 AM",
+          "timestamp": "2026-07-02T05:25:43.404Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 02:35 PM",
+          "timestamp": "2026-07-02T18:35:56.687Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 02:55 PM",
+          "timestamp": "2026-07-02T18:55:23.100Z",
+          "value": 108
+        },
+        {
+          "label": "07/02, 07:41 PM",
+          "timestamp": "2026-07-02T23:41:16.991Z",
+          "value": 108
+        },
+        {
+          "label": "07/03, 12:29 AM",
+          "timestamp": "2026-07-03T04:29:51.090Z",
+          "value": 91
+        }
+      ]
+    },
+    {
+      "title": "Uber-plus parser_price_options failures",
+      "source": "reports/alpha-metrics-history.jsonl",
+      "goodWhenHigh": false,
+      "denominator": 150,
+      "note": "Lower is better. This should stay at zero in the non-backlog messy set.",
+      "points": [
+        {
+          "label": "06/30, 07:35 PM",
+          "timestamp": "2026-06-30T23:35:40.593Z",
+          "value": 21
+        },
+        {
+          "label": "06/30, 07:37 PM",
+          "timestamp": "2026-06-30T23:37:55.847Z",
+          "value": 21
+        },
+        {
+          "label": "06/30, 07:54 PM",
+          "timestamp": "2026-06-30T23:54:29.333Z",
+          "value": 21
+        },
+        {
+          "label": "06/30, 07:59 PM",
+          "timestamp": "2026-06-30T23:59:45.657Z",
+          "value": 21
+        },
+        {
+          "label": "06/30, 08:13 PM",
+          "timestamp": "2026-07-01T00:13:47.743Z",
+          "value": 21
+        },
+        {
+          "label": "06/30, 08:21 PM",
+          "timestamp": "2026-07-01T00:21:18.962Z",
+          "value": 21
+        },
+        {
+          "label": "06/30, 08:37 PM",
+          "timestamp": "2026-07-01T00:37:47.284Z",
+          "value": 21
+        },
+        {
+          "label": "06/30, 08:39 PM",
+          "timestamp": "2026-07-01T00:39:37.552Z",
+          "value": 2
+        },
+        {
+          "label": "06/30, 08:40 PM",
+          "timestamp": "2026-07-01T00:40:46.797Z",
+          "value": 0
+        },
+        {
+          "label": "06/30, 11:54 PM",
+          "timestamp": "2026-07-01T03:54:31.081Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 12:09 AM",
+          "timestamp": "2026-07-01T04:09:22.976Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 12:12 AM",
+          "timestamp": "2026-07-01T04:12:28.449Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 12:37 AM",
+          "timestamp": "2026-07-01T04:37:41.367Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 12:49 AM",
+          "timestamp": "2026-07-01T04:49:43.492Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 01:25 AM",
+          "timestamp": "2026-07-01T05:25:07.047Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 01:35 AM",
+          "timestamp": "2026-07-01T05:35:50.573Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 01:53 AM",
+          "timestamp": "2026-07-01T05:53:08.096Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 02:14 AM",
+          "timestamp": "2026-07-01T06:14:54.266Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 02:15 AM",
+          "timestamp": "2026-07-01T06:15:56.490Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 02:31 AM",
+          "timestamp": "2026-07-01T06:31:15.491Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 02:45 AM",
+          "timestamp": "2026-07-01T06:45:06.915Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 03:11 AM",
+          "timestamp": "2026-07-01T07:11:41.694Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 03:28 AM",
+          "timestamp": "2026-07-01T07:28:50.350Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 03:30 AM",
+          "timestamp": "2026-07-01T07:30:53.653Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 11:45 PM",
+          "timestamp": "2026-07-02T03:45:21.898Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:34.878Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.263Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.318Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.418Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:25 AM",
+          "timestamp": "2026-07-02T05:25:43.404Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 02:35 PM",
+          "timestamp": "2026-07-02T18:35:56.687Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 02:55 PM",
+          "timestamp": "2026-07-02T18:55:23.100Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 07:41 PM",
+          "timestamp": "2026-07-02T23:41:16.991Z",
+          "value": 0
+        },
+        {
+          "label": "07/03, 12:29 AM",
+          "timestamp": "2026-07-03T04:29:51.090Z",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "title": "Very-messy parser_price_options failures",
+      "source": "reports/alpha-metrics-history.jsonl",
+      "goodWhenHigh": false,
+      "denominator": 150,
+      "note": "Lower is better. This should stay at zero in the smaller price-option slice.",
+      "points": [
+        {
+          "label": "06/30, 07:35 PM",
+          "timestamp": "2026-06-30T23:35:40.593Z",
+          "value": 5
+        },
+        {
+          "label": "06/30, 07:37 PM",
+          "timestamp": "2026-06-30T23:37:55.847Z",
+          "value": 5
+        },
+        {
+          "label": "06/30, 07:54 PM",
+          "timestamp": "2026-06-30T23:54:29.333Z",
+          "value": 5
+        },
+        {
+          "label": "06/30, 07:59 PM",
+          "timestamp": "2026-06-30T23:59:45.657Z",
+          "value": 5
+        },
+        {
+          "label": "06/30, 08:13 PM",
+          "timestamp": "2026-07-01T00:13:47.743Z",
+          "value": 5
+        },
+        {
+          "label": "06/30, 08:21 PM",
+          "timestamp": "2026-07-01T00:21:18.962Z",
+          "value": 5
+        },
+        {
+          "label": "06/30, 08:37 PM",
+          "timestamp": "2026-07-01T00:37:47.284Z",
+          "value": 5
+        },
+        {
+          "label": "06/30, 08:39 PM",
+          "timestamp": "2026-07-01T00:39:37.552Z",
+          "value": 0
+        },
+        {
+          "label": "06/30, 08:40 PM",
+          "timestamp": "2026-07-01T00:40:46.797Z",
+          "value": 0
+        },
+        {
+          "label": "06/30, 11:54 PM",
+          "timestamp": "2026-07-01T03:54:31.081Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 12:09 AM",
+          "timestamp": "2026-07-01T04:09:22.976Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 12:12 AM",
+          "timestamp": "2026-07-01T04:12:28.449Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 12:37 AM",
+          "timestamp": "2026-07-01T04:37:41.367Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 12:49 AM",
+          "timestamp": "2026-07-01T04:49:43.492Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 01:25 AM",
+          "timestamp": "2026-07-01T05:25:07.047Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 01:35 AM",
+          "timestamp": "2026-07-01T05:35:50.573Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 01:53 AM",
+          "timestamp": "2026-07-01T05:53:08.096Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 02:14 AM",
+          "timestamp": "2026-07-01T06:14:54.266Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 02:15 AM",
+          "timestamp": "2026-07-01T06:15:56.490Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 02:31 AM",
+          "timestamp": "2026-07-01T06:31:15.491Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 02:45 AM",
+          "timestamp": "2026-07-01T06:45:06.915Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 03:11 AM",
+          "timestamp": "2026-07-01T07:11:41.694Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 03:28 AM",
+          "timestamp": "2026-07-01T07:28:50.350Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 03:30 AM",
+          "timestamp": "2026-07-01T07:30:53.653Z",
+          "value": 0
+        },
+        {
+          "label": "07/01, 11:45 PM",
+          "timestamp": "2026-07-02T03:45:21.898Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:34.878Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.263Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.318Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:23 AM",
+          "timestamp": "2026-07-02T05:23:46.418Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 01:25 AM",
+          "timestamp": "2026-07-02T05:25:43.404Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 02:35 PM",
+          "timestamp": "2026-07-02T18:35:56.687Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 02:55 PM",
+          "timestamp": "2026-07-02T18:55:23.100Z",
+          "value": 0
+        },
+        {
+          "label": "07/02, 07:41 PM",
+          "timestamp": "2026-07-02T23:41:16.991Z",
+          "value": 0
+        },
+        {
+          "label": "07/03, 12:29 AM",
+          "timestamp": "2026-07-03T04:29:51.090Z",
+          "value": 0
+        }
+      ]
+    }
+  ]
+}
