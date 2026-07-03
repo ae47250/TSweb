@@ -452,7 +452,7 @@ export default function JsonReview({
         </div>
       ) : (
         <>
-          <div className="summary-card customer-summary-card" style={{ borderLeft: '4px solid #3b82f6' }}>
+          <div className="summary-card customer-summary-card" style={{ border: '2px solid #3b82f6' }}>
             <h3>Customer</h3>
             <div className="customer-info-grid">
               <p>{customerName}</p>
