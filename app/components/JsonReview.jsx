@@ -473,7 +473,7 @@ export default function JsonReview({
   return (
     <section className="card">
       <h2>{title}</h2>
-      <p className="text-muted">{subtitle}</p>
+      <h3>{subtitle}</h3>
       {!isFinalConfirm && reviewIssues.length > 0 && (
         <div className="summary-card needs-info-card">
           <h3>Needs More Info</h3>
