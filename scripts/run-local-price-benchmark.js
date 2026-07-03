@@ -405,9 +405,26 @@ function remapSavedLiveBucket(record) {
   return (record.failure_flags || []).length ? "firm_price_wrong" : "firm_price_correct";
 }
 
+function rowFailureStages(row) {
+  const stages = Array.isArray(row.price_failure_stages) ? row.price_failure_stages : [];
+  if (stages.length) return stages.filter(Boolean);
+  return row.price_failure_stage ? [row.price_failure_stage] : [];
+}
+
+function adjustedPriceStatus(row) {
+  if (row.price_status !== "fail") return row.price_status;
+  const stages = rowFailureStages(row);
+  const trueFailureStages = stages.filter((stage) => stage !== "raw_expected_unsupported");
+  return stages.includes("raw_expected_unsupported") && trueFailureStages.length === 0
+    ? "unsupported_expected"
+    : "fail";
+}
+
 function summarize(rows) {
   const summary = {
     total: rows.length,
+    raw_price_status: { pass: 0, fail: 0 },
+    adjusted_price_status: { pass: 0, fail: 0, unsupported_expected: 0 },
     by_bucket: {},
     by_failure_stage: {},
     by_dataset: {},
@@ -422,20 +439,24 @@ function summarize(rows) {
   };
 
   for (const row of rows) {
+    const adjustedStatus = adjustedPriceStatus(row);
+    summary.raw_price_status[row.price_status] += 1;
+    summary.adjusted_price_status[adjustedStatus] += 1;
     summary.by_bucket[row.price_bucket] = (summary.by_bucket[row.price_bucket] || 0) + 1;
     summary.by_failure_stage[row.price_failure_stage] = (summary.by_failure_stage[row.price_failure_stage] || 0) + 1;
-    summary.by_dataset[row.dataset_name] ||= { total: 0, pass: 0, fail: 0 };
+    summary.by_dataset[row.dataset_name] ||= { total: 0, pass: 0, fail: 0, unsupported_expected: 0 };
     summary.by_dataset[row.dataset_name].total += 1;
-    summary.by_dataset[row.dataset_name][row.price_status] += 1;
+    summary.by_dataset[row.dataset_name][adjustedStatus] += 1;
 
-    const status = row.price_status === "pass" ? "pass" : "fail";
+    if (adjustedStatus === "unsupported_expected") continue;
+    const status = adjustedStatus === "pass" ? "pass" : "fail";
     if (row.price_bucket.startsWith("firm_price")) summary.by_axis.firm_price_extraction[status] += 1;
     if (row.price_bucket.startsWith("no_price")) summary.by_axis.missing_price_handling[status] += 1;
     if (row.price_bucket.startsWith("unclear_price")) summary.by_axis.unclear_price_handling[status] += 1;
     if (row.price_bucket === "no_price_invented") summary.by_axis.invented_price_prevention.fail += 1;
     if (row.price_bucket === "no_price_correctly_blocked") summary.by_axis.invented_price_prevention.pass += 1;
     if (row.price_bucket === "phone_or_address_number_mistaken_for_price") summary.by_axis.phone_address_number_exclusion.fail += 1;
-    if (row.source_category === "phone_number_not_price") summary.by_axis.phone_address_number_exclusion.pass += row.price_status === "pass" ? 1 : 0;
+    if (row.source_category === "phone_number_not_price") summary.by_axis.phone_address_number_exclusion.pass += adjustedStatus === "pass" ? 1 : 0;
 
     const needsFollowUp = /blocked|missing|unclear|invented|treated_as_firm/i.test(row.price_bucket);
     const hasFollowUp = (row.follow_up_questions || []).length > 0;
@@ -469,6 +490,7 @@ function renderCsv(rows) {
     "model_quote_options",
     "normalized_quote_options",
     "price_status",
+    "adjusted_price_status",
     "price_bucket",
     "price_failure_stage",
     "price_failure_stages",
@@ -480,7 +502,8 @@ function renderCsv(rows) {
     "excluded_numbers",
     "price_evidence_spans",
   ];
-  return `${fields.join(",")}\n${rows.map((row) => fields.map((field) => csvEscape(row[field])).join(",")).join("\n")}\n`;
+  const rowsWithAdjustedStatus = rows.map((row) => ({ ...row, adjusted_price_status: adjustedPriceStatus(row) }));
+  return `${fields.join(",")}\n${rowsWithAdjustedStatus.map((row) => fields.map((field) => csvEscape(row[field])).join(",")).join("\n")}\n`;
 }
 
 function renderMarkdown(rows, summary, meta, paths) {
@@ -504,8 +527,11 @@ function renderMarkdown(rows, summary, meta, paths) {
     "## Summary",
     "",
     `- Total rows: ${summary.total}`,
-    `- Passing price rows: ${rows.filter((row) => row.price_status === "pass").length}`,
-    `- Failing price rows: ${rows.filter((row) => row.price_status === "fail").length}`,
+    `- Raw passing price rows: ${summary.raw_price_status.pass}`,
+    `- Raw failing price rows: ${summary.raw_price_status.fail}`,
+    `- Adjusted passing price rows: ${summary.adjusted_price_status.pass}`,
+    `- Adjusted failing price rows: ${summary.adjusted_price_status.fail}`,
+    `- Unsupported expected labels separated from parser misses: ${summary.adjusted_price_status.unsupported_expected}`,
     "",
     "## Buckets",
     "",
@@ -522,9 +548,9 @@ function renderMarkdown(rows, summary, meta, paths) {
     lines.push(`| ${stage} | ${count} |`);
   }
 
-  lines.push("", "## Dataset Results", "", "| Dataset | Total | Pass | Fail |", "|---|---:|---:|---:|");
+  lines.push("", "## Dataset Results", "", "| Dataset | Total | Adjusted pass | Adjusted fail | Unsupported expected |", "|---|---:|---:|---:|---:|");
   for (const [dataset, item] of Object.entries(summary.by_dataset)) {
-    lines.push(`| ${dataset} | ${item.total} | ${item.pass} | ${item.fail} |`);
+    lines.push(`| ${dataset} | ${item.total} | ${item.pass} | ${item.fail} | ${item.unsupported_expected} |`);
   }
 
   lines.push("", "## Required Reporting Axes", "", "| Axis | Pass | Fail |", "|---|---:|---:|");
@@ -532,8 +558,8 @@ function renderMarkdown(rows, summary, meta, paths) {
     lines.push(`| ${axis} | ${item.pass} | ${item.fail} |`);
   }
 
-  lines.push("", "## First 75 Failing Rows", "", "| Case | Dataset | Bucket | Stage | Expected | Actual | Follow-up |", "|---|---|---|---|---|---|---|");
-  for (const row of rows.filter((item) => item.price_status === "fail").slice(0, 75)) {
+  lines.push("", "## First 75 Adjusted Failing Rows", "", "| Case | Dataset | Bucket | Stage | Expected | Actual | Follow-up |", "|---|---|---|---|---|---|---|");
+  for (const row of rows.filter((item) => adjustedPriceStatus(item) === "fail").slice(0, 75)) {
     lines.push(
       [
         row.case_id,

@@ -740,7 +740,7 @@ test("blocked-case summaries preserve safe partial meaning without weakening val
       input:
         "lady named Joan Blair text 812-555-2406 5816 Poplar Ridge Road Hanover IN option A $1850 option B 2350, no descriptions",
       expectedSummary: "Priced service options need work-scope descriptions.",
-      expectedBlocking: /Priced option descriptions are missing/i,
+      expectedBlocking: /Work scope unclear/i,
     },
   ];
 
@@ -950,7 +950,7 @@ test("bare slash prices extract prices but block unclear option scope", () => {
   const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
   assert.equal(validation.can_generate_pdf, false);
   assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,600", "$2,950"]);
-  assert.match(validation.blocking_errors.join(" "), /option descriptions|stump/i);
+  assert.match(validation.blocking_errors.join(" "), /Work scope unclear|option descriptions|stump/i);
 });
 
 test("gate codes are not treated as prices", () => {
@@ -1334,7 +1334,7 @@ test("June 30 reviewed production cases preserve safe parser decisions", () => {
   assert.equal(case0039.alphaJson.job.tree_details.tree_count, "4 trees");
   assert.equal(case0039.alphaJson.job.tree_details.tree_type, "pine");
   assert.deepEqual(case0039.alphaJson.service_options.items.map((option) => option.price.display), ["$1,900", "$2,450"]);
-  assert.match(case0039.alphaJson.service_options.items[0].description, /Service Option A/i);
+  assert.match(case0039.alphaJson.service_options.items[0].description, /work scope unclear|Service Option A/i);
   assert.match(case0039.alphaJson.service_options.items[1].description, /haul/i);
   assert.match(case0039.follow_ups.join(" "), /exact service address/i);
 
@@ -1344,8 +1344,8 @@ test("June 30 reviewed production cases preserve safe parser decisions", () => {
   ));
   assert.equal(case0259.can_generate_pdf, false);
   assert.deepEqual(case0259.alphaJson.service_options.items.map((option) => option.price.display), ["$1,800", "$2,200"]);
-  assert.match(case0259.blocking_errors.join(" "), /option descriptions/i);
-  assert.match(case0259.follow_ups[0], /what does each priced option include/i);
+  assert.match(case0259.blocking_errors.join(" "), /Work scope unclear|option descriptions/i);
+  assert.match(case0259.follow_ups.join(" "), /what work each displayed price covers|what does each priced option include/i);
 
   const case0330 = validateAlphaJson(normalizeToAlphaJsonV14(
     {},
@@ -2008,4 +2008,53 @@ test("unclear scope or property responsibility blocks even when singular tree an
   assert.equal(validation.can_generate_pdf, false);
   assert.match(validation.blocking_errors.join(" "), /property responsibility|work scope/i);
   assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "unclear_scope_property_responsibility" && issue.blocks_pdf));
+});
+
+test("bare A/B prices are preserved when work scope is vague", () => {
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "Sam Tree 812-555-1111 sam@example.com. 10 Oak Lane Madison Indiana. A 1200 B 1800. scope just says take care of maple by garage.",
+    ),
+  );
+
+  const options = validation.alphaJson.service_options.items;
+  assert.deepEqual(options.map((option) => option.price.display), ["$1,200", "$1,800"]);
+  assert.deepEqual(options.map((option) => option.description), ["work scope unclear", "work scope unclear"]);
+  assert.ok(options.every((option) => option.preserve_order && option.scope_unclear));
+  assert.equal(validation.can_generate_pdf, false);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Missing priced service option/i);
+  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "unclear_work_scope" && issue.blocks_pdf));
+});
+
+test("price slash notes with only one clear scope preserve both prices but require scope confirmation", () => {
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "Dana Smith 812-555-1111 dana@example.com. 10 Oak Lane Madison Indiana. prices 1000 / 1500 only clear option cut down only. customer also mentioned stump.",
+    ),
+  );
+
+  const options = validation.alphaJson.service_options.items;
+  assert.deepEqual(options.map((option) => option.price.display), ["$1,000", "$1,500"]);
+  assert.deepEqual(options.map((option) => option.description), ["work scope unclear", "work scope unclear"]);
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+});
+
+test("price-only labeled options keep both prices and avoid invented scope", () => {
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      {},
+      "Lee Carter 812-555-1111 lee@example.com. 10 Oak Lane Madison Indiana. option 1 1000 option 2 1500. not sure if trim or remove, customer said fix it.",
+    ),
+  );
+
+  const options = validation.alphaJson.service_options.items;
+  assert.deepEqual(options.map((option) => option.price.display), ["$1,000", "$1,500"]);
+  assert.deepEqual(options.map((option) => option.description), ["work scope unclear", "work scope unclear"]);
+  assert.ok(options.every((option) => option.preserve_order && option.scope_unclear));
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
 });
