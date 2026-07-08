@@ -34,11 +34,42 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
   return (
     <section className="card new-quote-card" data-testid="customer-notes-card">
       <h2>New Estimate</h2>
-      <p className="new-estimate-guidance">
-        Fill in the red fields and add Job Notes.
-      </p>
       {editMessage && <div className="alert" data-testid="edit-notes-message">{editMessage}</div>}
       <form onSubmit={submit}>
+        <div className="job-notes-standalone">
+          <div className="job-notes-card">
+            <label htmlFor="customerText" className="job-notes-title">Job Notes</label>
+            <p className="job-notes-guidance">
+              <span>Include</span> as much information as possible about the job, scope of work, and prices.
+            </p>
+            <p className="job-notes-example">
+              <span>Example:</span>
+              <span className="job-notes-example-text">2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.</span>
+            </p>
+          </div>
+          <label htmlFor="customerText" className="text-inbox-title">
+            Paste or type everything here:<br />
+            customer info, phone/email, address, work requested, options, prices, notes
+          </label>
+          <textarea
+            ref={ref}
+            id="customerText"
+            className={`job-notes-textarea ${requiredClass(notesFilled)}`}
+            rows={10}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder="Add the number of trees, prices, and customer options here."
+          />
+        </div>
+        <div className="toolbar job-notes-actions">
+          <button className="btn-primary btn-create-review" type="submit" disabled={busy || value.trim().length < 10}>
+            {busy ? "Structuring..." : "Review Estimate"}
+          </button>
+          <button className="btn-secondary" type="button" onClick={onClear} disabled={busy}>
+            Clear
+          </button>
+        </div>
+        <p className="customer-info-title">Optionally fill in Customer Info below</p>
         <div className="contact-fields">
           <label htmlFor="customerName">
             Customer name
@@ -59,33 +90,6 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
               <input className={requiredClass(contactFilled)} id="customerEmail" value={contactValue.email} onChange={(event) => updateContact("email", event.target.value)} />
             </label>
           </div>
-        </div>
-        <div className="job-notes-card">
-          <label htmlFor="customerText" className="job-notes-title">Job Notes</label>
-          <p className="job-notes-guidance">
-            <span>Include</span> as much information as possible about the job, scope of work, and prices.
-          </p>
-          <p className="job-notes-example">
-            <span>Example:</span>
-            <span className="job-notes-example-text">2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.</span>
-          </p>
-          <textarea
-            ref={ref}
-            id="customerText"
-            className={`job-notes-textarea ${requiredClass(notesFilled)}`}
-            rows={10}
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            placeholder="Add the number of trees, prices, and customer options here."
-          />
-        </div>
-        <div className="toolbar">
-          <button className="btn-primary btn-create-review" type="submit" disabled={busy || value.trim().length < 10}>
-            {busy ? "Structuring..." : "Review Estimate"}
-          </button>
-          <button className="btn-secondary" type="button" onClick={onClear} disabled={busy}>
-            Clear
-          </button>
         </div>
       </form>
     </section>

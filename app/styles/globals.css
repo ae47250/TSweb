@@ -28,7 +28,7 @@ main {
 }
 
 .app-grid-initial > div:first-child {
-  width: min(100%, 720px);
+  width: min(100%, 980px);
 }
 
 .toolbar {
@@ -148,7 +148,7 @@ main {
 }
 
 .new-quote-card {
-  max-width: 860px;
+  max-width: 100%;
 }
 
 .new-estimate-guidance {
@@ -240,6 +240,28 @@ main {
   padding: 16px;
 }
 
+.job-notes-standalone {
+  display: grid;
+  gap: 10px;
+}
+
+.job-notes-standalone .job-notes-textarea {
+  width: 100%;
+}
+
+.text-inbox-title,
+.customer-info-title {
+  color: #111;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.customer-info-title {
+  margin-top: 6px;
+}
+
 .required-marker {
   color: #b91c1c;
   font-size: 0.7em;
@@ -299,6 +321,10 @@ main {
   line-height: 1.35;
   resize: vertical;
   margin-bottom: 0;
+}
+
+.job-notes-actions {
+  margin-top: 14px;
 }
 
 .notes-card,
