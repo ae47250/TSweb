@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { buildCustomerJobSummary, normalizeServiceAddress, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../lib/reviewOverrides.js";
 
@@ -403,6 +403,233 @@ function TreeCountResolutionCard({ validation, busy = false, onApply }) {
   );
 }
 
+function normalizeDisplayText(value) {
+  return normalizeTreeServiceText(value).toLowerCase();
+}
+
+function optionDescriptionAddsDetail(option = {}) {
+  const title = normalizeDisplayText(option.title || "");
+  const description = normalizeDisplayText(option.description || "");
+  return Boolean(description && description !== title);
+}
+
+function optionNeedsDescriptionReview(option = {}) {
+  return Boolean(option.review_flags?.scope_unclear || option.scope_unclear);
+}
+
+function optionNeedsPriceReview(option = {}) {
+  return Boolean(!option.price?.display || option.price?.is_unclear);
+}
+
+function hasBlockingError(validation, pattern) {
+  return (validation?.blocking_errors || []).some((error) => pattern.test(String(error || "")));
+}
+
+function InlineFieldEditor({
+  label,
+  value = "",
+  placeholder = "",
+  busy = false,
+  multiline = false,
+  type = "text",
+  onChange,
+}) {
+  const [draft, setDraft] = useState(value || "");
+
+  useEffect(() => {
+    setDraft(value || "");
+  }, [value]);
+
+  function applyChange() {
+    const nextValue = draft.trim();
+    if (nextValue && nextValue !== String(value || "").trim()) {
+      onChange?.(nextValue);
+    }
+  }
+
+  const commonProps = {
+    className: "td2-inline-editor td2-inline-editor-warning",
+    disabled: busy,
+    onBlur: applyChange,
+    onChange: (event) => setDraft(event.target.value),
+    placeholder,
+    spellCheck: "true",
+    value: draft,
+  };
+
+  return (
+    <label className="td2-inline-field">
+      <span>{label}</span>
+      {multiline ? (
+        <textarea {...commonProps} rows={3} />
+      ) : (
+        <input {...commonProps} type={type} />
+      )}
+    </label>
+  );
+}
+
+function RequiredInfoEditor({
+  alphaJson,
+  validation,
+  busy = false,
+  onCustomerFieldChange,
+  onJobDescriptionChange,
+}) {
+  const customer = alphaJson.customer || {};
+  const job = alphaJson.job || {};
+  const phone = customer.phone_display || customer.phone_primary || "";
+  const serviceAddress = job.service_address?.display || "";
+  const jobDescription = job.description || "";
+  const needsAddress = hasBlockingError(validation, /Missing service address|Service address looks unclear/i);
+  const needsPhone = hasBlockingError(validation, /Missing customer phone or email/i) && !phone;
+  const needsJobDescription = hasBlockingError(validation, /Missing job description/i);
+
+  if (!needsAddress && !needsPhone && !needsJobDescription) return null;
+
+  return (
+    <section className="summary-card td2-required-info-card">
+      <h3>Fill In Required Info</h3>
+      <div className="td2-inline-field-grid">
+        {needsPhone && (
+          <InlineFieldEditor
+            label="Customer phone"
+            value={phone}
+            placeholder="812-555-1234"
+            busy={busy}
+            onChange={(value) => onCustomerFieldChange?.("phone", value)}
+          />
+        )}
+        {needsAddress && (
+          <InlineFieldEditor
+            label="Service address"
+            value={serviceAddress}
+            placeholder="2400 River Rd"
+            busy={busy}
+            onChange={(value) => onCustomerFieldChange?.("address", value)}
+          />
+        )}
+        {needsJobDescription && (
+          <InlineFieldEditor
+            label="Job description"
+            value={jobDescription}
+            placeholder="Remove one oak tree near driveway"
+            busy={busy}
+            multiline
+            onChange={onJobDescriptionChange}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
+
+function OptionDescriptionEditor({ option, index, busy = false, onChange }) {
+  const [value, setValue] = useState(option.description || "");
+
+  useEffect(() => {
+    setValue(option.description || "");
+  }, [option.description]);
+
+  function applyChange() {
+    const nextValue = value.trim();
+    if (nextValue && nextValue !== (option.description || "").trim()) {
+      onChange?.(index, nextValue);
+    }
+  }
+
+  return (
+    <textarea
+      aria-label={`${option.label || `Option ${index + 1}`} description`}
+      className="option-description-editor option-description-editor-warning"
+      disabled={busy}
+      onBlur={applyChange}
+      onChange={(event) => setValue(event.target.value)}
+      spellCheck="true"
+      value={value}
+    />
+  );
+}
+
+function OptionPriceEditor({ option, index, busy = false, onChange }) {
+  const [value, setValue] = useState(option.price?.display || "");
+
+  useEffect(() => {
+    setValue(option.price?.display || "");
+  }, [option.price?.display]);
+
+  function applyChange() {
+    const nextValue = value.trim();
+    if (nextValue && nextValue !== String(option.price?.display || "").trim()) {
+      onChange?.(index, nextValue);
+    }
+  }
+
+  return (
+    <label className="option-price-editor">
+      <span>Price</span>
+      <input
+        aria-label={`${option.label || `Option ${index + 1}`} price`}
+        className="td2-inline-editor td2-inline-editor-warning"
+        disabled={busy}
+        onBlur={applyChange}
+        onChange={(event) => setValue(event.target.value)}
+        placeholder="$1,500"
+        value={value}
+      />
+    </label>
+  );
+}
+
+function MissingOptionEditor({ jobNotes = "", busy = false, onApply }) {
+  const initialDescription = /No job notes supplied/i.test(jobNotes) ? "" : jobNotes;
+  const [description, setDescription] = useState(initialDescription);
+  const [price, setPrice] = useState("");
+
+  useEffect(() => {
+    setDescription(initialDescription);
+  }, [initialDescription]);
+
+  function applyOption() {
+    if (!description.trim() || !price.trim()) return;
+    onApply?.({ description: description.trim(), price: price.trim() });
+  }
+
+  return (
+    <article className="quote-option-card quote-option-card-warning missing-option-card">
+      <div className="quote-option-header">
+        <strong>Option A</strong>
+        <span>Price missing</span>
+      </div>
+      <label className="td2-inline-field">
+        <span>Option details</span>
+        <textarea
+          className="td2-inline-editor td2-inline-editor-warning"
+          disabled={busy}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Remove tree and leave wood"
+          rows={3}
+          spellCheck="true"
+          value={description}
+        />
+      </label>
+      <label className="td2-inline-field">
+        <span>Price</span>
+        <input
+          className="td2-inline-editor td2-inline-editor-warning"
+          disabled={busy}
+          onChange={(event) => setPrice(event.target.value)}
+          placeholder="$1,500"
+          value={price}
+        />
+      </label>
+      <button className="btn-orange override-ack-button" type="button" disabled={busy || !description.trim() || !price.trim()} onClick={applyOption}>
+        Add option
+      </button>
+    </article>
+  );
+}
+
 export default function JsonReview({
   alphaJson,
   validation,
@@ -413,6 +640,11 @@ export default function JsonReview({
   reviewOverrides = {},
   onReviewOverridesChange,
   onTreeCountOverrideChange,
+  onOptionDescriptionChange,
+  onOptionPriceChange,
+  onAddOption,
+  onCustomerFieldChange,
+  onJobDescriptionChange,
   onApprove,
   onEdit,
   busy = false,
@@ -449,6 +681,11 @@ export default function JsonReview({
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Quote") : "Confirm Quote";
   const editLabel = isFinalConfirm ? "Back" : "Edit Info";
   const warningItems = (validation?.warnings || []).filter((warning) => !isOverrideRelatedWarning(warning, overrideStatus));
+  const hasRequiredInlineFixes = !isFinalConfirm && (
+    hasBlockingError(validation, /Missing service address|Service address looks unclear|Missing customer phone or email|Missing job description/i) ||
+    options.some(optionNeedsPriceReview) ||
+    (options.length < 1 && hasBlockingError(validation, /Missing priced service option/i))
+  );
   const renderedFields = {
     customerCard: {
       name: { value: customerName, source: "alphaJson.customer.name" },
@@ -461,7 +698,7 @@ export default function JsonReview({
       label: option.label || `Option ${index + 1}`,
       price: option.price?.display || "Price missing",
       title: option.title || "Option details",
-      description: option.description || "Add the work details for this option before informing the customer.",
+      description: optionDescriptionAddsDetail(option) ? option.description : "",
       source: `service_options.items[${index}]`,
     })),
     needsMoreInfo: {
@@ -478,6 +715,9 @@ export default function JsonReview({
         <span className={`review-status ${canConfirmWithOverrides ? "review-status-ready" : "review-status-needs-info"}`}>
           {canConfirmWithOverrides ? "Review ready" : "Needs more info"}
         </span>
+      )}
+      {!isFinalConfirm && !canConfirmWithOverrides && (
+        <p className="td2-required-warning">More info is needed to complete Estimate</p>
       )}
       {isFinalConfirm ? (
         <div className="summary-card final-summary-card">
@@ -508,26 +748,64 @@ export default function JsonReview({
           </div>
         </div>
       )}
+      {!isFinalConfirm && (
+        <RequiredInfoEditor
+          alphaJson={alphaJson}
+          validation={validation}
+          busy={busy}
+          onCustomerFieldChange={onCustomerFieldChange}
+          onJobDescriptionChange={onJobDescriptionChange}
+        />
+      )}
       <h3>{isFinalConfirm ? "Customer Options" : "Quote Options"}</h3>
       <div className="quote-options-grid">
         {options.length > 0 ? options.map((option, index) => (
-          <article className="quote-option-card" key={option.label || index}>
+          <article
+            className={`quote-option-card${optionNeedsDescriptionReview(option) ? " quote-option-card-warning" : ""}`}
+            key={option.label || index}
+          >
             <div className="quote-option-header">
               <strong>{option.label || `Option ${index + 1}`}</strong>
-              <span>{option.price?.display || "Price missing"}</span>
+              {!isFinalConfirm && optionNeedsPriceReview(option) && onOptionPriceChange ? (
+                <OptionPriceEditor
+                  busy={busy}
+                  index={index}
+                  option={option}
+                  onChange={onOptionPriceChange}
+                />
+              ) : (
+                <span>{option.price?.display || "Price missing"}</span>
+              )}
             </div>
             <h4>{option.title || "Option details"}</h4>
-            <p>{option.description || "Add the work details for this option before informing the customer."}</p>
+            {!isFinalConfirm && optionNeedsDescriptionReview(option) && onOptionDescriptionChange ? (
+              <OptionDescriptionEditor
+                busy={busy}
+                index={index}
+                option={option}
+                onChange={onOptionDescriptionChange}
+              />
+            ) : optionDescriptionAddsDetail(option) ? (
+              <p>{option.description || "Add the work details for this option before informing the customer."}</p>
+            ) : null}
           </article>
         )) : (
-          <article className="quote-option-card missing-option-card">
-            <div className="quote-option-header">
-              <strong>Option 1</strong>
-              <span>Price missing</span>
-            </div>
-            <h4>Option needed</h4>
-            <p>Add at least one option and one price before informing the customer.</p>
-          </article>
+          !isFinalConfirm && onAddOption ? (
+            <MissingOptionEditor
+              busy={busy}
+              jobNotes={jobNotes}
+              onApply={onAddOption}
+            />
+          ) : (
+            <article className="quote-option-card missing-option-card">
+              <div className="quote-option-header">
+                <strong>Option 1</strong>
+                <span>Price missing</span>
+              </div>
+              <h4>Option needed</h4>
+              <p>Add at least one option and one price before informing the customer.</p>
+            </article>
+          )
         )}
       </div>
       <p className="text-muted review-option-note">{optionNote}</p>
@@ -554,7 +832,7 @@ export default function JsonReview({
           onApply={onTreeCountOverrideChange}
         />
       )}
-      {reviewIssues.length > 0 && (
+      {reviewIssues.length > 0 && !hasRequiredInlineFixes && (
         <div className="summary-card needs-info-card">
           <h3>Needs More Info</h3>
           <ul>

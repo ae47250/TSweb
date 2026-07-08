@@ -44,8 +44,12 @@ export default function PdfGenerator({
   const customerEmail = alphaJson.customer?.email || "";
   const customerUrl = documentResult.customerEstimateUrl || `/e/${documentResult.documentId}`;
   const estimateFile = documentResult.full || documentResult.mobile;
-  const overrideWarnings = documentResult.overrideWarnings || alphaJson.review?.override_warnings || [];
-  const hasContractorWarnings = overrideWarnings.length > 0;
+  const contractorWarnings = documentResult.contractorWarnings
+    || alphaJson.review?.contractor_warnings
+    || documentResult.overrideWarnings
+    || alphaJson.review?.override_warnings
+    || [];
+  const hasContractorWarnings = contractorWarnings.length > 0;
   const treeDudeFile = hasContractorWarnings
     ? documentResult.treeDude || documentResult.documents?.treeDude || documentResult.documents?.["tree-dude"]
     : null;

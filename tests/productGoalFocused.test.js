@@ -5,16 +5,15 @@ import { validateAlphaJson } from "../lib/validateJson.js";
 
 const focusedCases = [
   {
-    id: "scope-property-unclear-blocks",
+    id: "scope-property-unclear-warns",
     input:
       "812.555.2786 wes.coleman778@example.com customer Wes Coleman fallen tree on neighbor fence at 2824 Cherry Street, Madison, Indiana; scope/property responsibility unclear; price 2450",
     expected: {
-      ready: false,
+      ready: true,
       treeCount: "1 tree",
       prices: ["$2,450"],
       absentPrices: ["$3,450"],
-      blocker: /property responsibility|work scope/i,
-      followUpId: "unclear_scope_property_responsibility",
+      warning: /property responsibility|contractor review/i,
     },
   },
   {
@@ -35,6 +34,7 @@ const focusedCases = [
       ready: true,
       treeCount: "1 tree",
       prices: ["$2,350"],
+      warning: /contractor review|Emergency|Safety/i,
     },
   },
   {
@@ -113,6 +113,7 @@ for (const item of focusedCases) {
     const validation = runCase(item.input);
     const actualPrices = priceDisplays(validation);
     const blockingText = validation.blocking_errors.join(" ");
+    const warningText = validation.warnings.join(" ");
 
     assert.equal(validation.can_generate_pdf, item.expected.ready);
     if (item.expected.treeCount) assert.equal(validation.alphaJson.job.tree_details.tree_count, item.expected.treeCount);
@@ -120,6 +121,7 @@ for (const item of focusedCases) {
     for (const price of item.expected.prices || []) assert.ok(actualPrices.includes(price), `${item.id} missing ${price}`);
     for (const price of item.expected.absentPrices || []) assert.ok(!actualPrices.includes(price), `${item.id} invented ${price}`);
     if (item.expected.blocker) assert.match(blockingText, item.expected.blocker);
+    if (item.expected.warning) assert.match(warningText, item.expected.warning);
     if (item.expected.followUpId) {
       assert.ok(
         validation.structured_follow_ups.some((issue) => issue.id === item.expected.followUpId && issue.blocks_pdf),
@@ -153,8 +155,8 @@ test("product focused: 100 neighbor permission and responsibility samples split 
       assert.equal(validation.can_generate_pdf, true, `confirmed permission should allow case ${index}`);
       assert.ok(!followUpIds.includes("unclear_scope_property_responsibility"), `confirmed case ${index} should not keep unclear scope blocker`);
     } else {
-      assert.equal(validation.can_generate_pdf, false, `unclear permission should block case ${index}`);
-      assert.ok(followUpIds.includes("unclear_scope_property_responsibility"), `unclear case ${index} missing structured blocker`);
+      assert.equal(validation.can_generate_pdf, true, `unclear permission should warn but allow case ${index}`);
+      assert.match(validation.warnings.join(" "), /property responsibility|contractor review/i, `unclear case ${index} missing contractor warning`);
     }
   }
 });

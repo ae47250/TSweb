@@ -67,6 +67,16 @@ function contactFromAlphaJson(alphaJson) {
   };
 }
 
+function normalizeEditedPrice(value) {
+  const digits = String(value || "").replace(/[^\d]/g, "");
+  if (!digits) return { display: "", amount: null };
+  const amount = Number(digits);
+  return {
+    display: `$${amount.toLocaleString("en-US")}`,
+    amount,
+  };
+}
+
 function FrontPage({ cards, onNewQuote, onNewInvoice, onOpenEstimate, onManualAcceptance, onCopyLink }) {
   const [showRecentEstimates, setShowRecentEstimates] = useState(false);
 
@@ -262,6 +272,174 @@ export default function HomePage() {
     }
   }
 
+  async function validateEditedAlphaJson(nextAlphaJson, nextContact = quoteContact, successMessage = "Review updated.") {
+    const validated = await postJson("/api/validate", {
+      alphaJson: nextAlphaJson,
+      customer_text: submittedText,
+      intake: nextContact,
+    });
+    setAlphaJson(validated.alphaJson);
+    setValidation(validated);
+    setNotice(successMessage);
+    setDocumentResult(null);
+    return validated;
+  }
+
+  async function applyCustomerFieldEdit(field, value) {
+    const nextValue = String(value || "").replace(/\s+/g, " ").trim();
+    if (!nextValue) return;
+
+    setBusy(true);
+    setError("");
+    try {
+      const nextAlphaJson = structuredClone(alphaJson || {});
+      nextAlphaJson.customer = nextAlphaJson.customer || {};
+      nextAlphaJson.job = nextAlphaJson.job || {};
+      nextAlphaJson.job.service_address = nextAlphaJson.job.service_address || {};
+      const nextContact = { ...quoteContact };
+
+      if (field === "phone") {
+        nextAlphaJson.customer.phone_display = nextValue;
+        nextAlphaJson.customer.phone_primary = nextValue;
+        nextContact.phone = nextValue;
+      } else if (field === "email") {
+        nextAlphaJson.customer.email = nextValue.toLowerCase();
+        nextContact.email = nextValue.toLowerCase();
+      } else if (field === "address") {
+        nextAlphaJson.job.service_address.display = nextValue;
+        nextContact.address = nextValue;
+      }
+
+      setQuoteContact(nextContact);
+      await validateEditedAlphaJson(nextAlphaJson, nextContact, "Required info updated.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function applyJobDescriptionEdit(description) {
+    const nextDescription = String(description || "").replace(/\s+/g, " ").trim();
+    if (!nextDescription) return;
+
+    setBusy(true);
+    setError("");
+    try {
+      const nextAlphaJson = structuredClone(alphaJson || {});
+      nextAlphaJson.job = nextAlphaJson.job || {};
+      nextAlphaJson.job.description = nextDescription;
+      await validateEditedAlphaJson(nextAlphaJson, quoteContact, "Job description updated.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function applyOptionDescriptionEdit(optionIndex, description) {
+    const nextDescription = String(description || "").replace(/\s+/g, " ").trim();
+    if (!nextDescription) return;
+
+    setBusy(true);
+    setError("");
+    try {
+      const nextAlphaJson = structuredClone(alphaJson || {});
+      const items = Array.isArray(nextAlphaJson.service_options?.items)
+        ? nextAlphaJson.service_options.items
+        : [];
+      if (!items[optionIndex]) return;
+
+      items[optionIndex] = {
+        ...items[optionIndex],
+        description: nextDescription,
+        scope_unclear: false,
+        review_flags: {
+          ...(items[optionIndex].review_flags || {}),
+          scope_unclear: false,
+          scope_warning: "",
+          description_edited_by_td: true,
+        },
+      };
+
+      await validateEditedAlphaJson(nextAlphaJson, quoteContact, "Option description updated.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function applyOptionPriceEdit(optionIndex, priceText) {
+    const normalizedPrice = normalizeEditedPrice(priceText);
+    if (!normalizedPrice.display) return;
+
+    setBusy(true);
+    setError("");
+    try {
+      const nextAlphaJson = structuredClone(alphaJson || {});
+      const items = Array.isArray(nextAlphaJson.service_options?.items)
+        ? nextAlphaJson.service_options.items
+        : [];
+      if (!items[optionIndex]) return;
+
+      items[optionIndex] = {
+        ...items[optionIndex],
+        price: {
+          ...(items[optionIndex].price || {}),
+          display: normalizedPrice.display,
+          amount: normalizedPrice.amount,
+          price_type: items[optionIndex].price?.price_type || "fixed",
+          is_unclear: false,
+          status: "firm",
+        },
+      };
+
+      await validateEditedAlphaJson(nextAlphaJson, quoteContact, "Option price updated.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function applyAddOption({ description, price }) {
+    const nextDescription = String(description || "").replace(/\s+/g, " ").trim();
+    const normalizedPrice = normalizeEditedPrice(price);
+    if (!nextDescription || !normalizedPrice.display) return;
+
+    setBusy(true);
+    setError("");
+    try {
+      const nextAlphaJson = structuredClone(alphaJson || {});
+      nextAlphaJson.service_options = nextAlphaJson.service_options || {};
+      const items = Array.isArray(nextAlphaJson.service_options.items)
+        ? nextAlphaJson.service_options.items
+        : [];
+      nextAlphaJson.service_options.items = [
+        ...items,
+        {
+          label: `Option ${String.fromCharCode(65 + items.length)}`,
+          title: nextDescription,
+          description: nextDescription,
+          price: {
+            display: normalizedPrice.display,
+            amount: normalizedPrice.amount,
+            price_type: "fixed",
+            is_unclear: false,
+            status: "firm",
+          },
+        },
+      ];
+
+      await validateEditedAlphaJson(nextAlphaJson, quoteContact, "Option added.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function copyRecentLink(card) {
     await navigator.clipboard?.writeText(card.customerEstimateUrl || `/e/${card.documentId}`);
     setNotice("Link copied.");
@@ -357,6 +535,11 @@ export default function HomePage() {
               reviewOverrides={reviewOverrides}
               onReviewOverridesChange={setReviewOverrides}
               onTreeCountOverrideChange={applyTreeCountOverride}
+              onOptionDescriptionChange={applyOptionDescriptionEdit}
+              onOptionPriceChange={applyOptionPriceEdit}
+              onAddOption={applyAddOption}
+              onCustomerFieldChange={applyCustomerFieldEdit}
+              onJobDescriptionChange={applyJobDescriptionEdit}
               intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={() => setStage("confirm")}

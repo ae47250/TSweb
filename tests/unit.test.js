@@ -40,7 +40,7 @@ test("review overrides allow only accepted address and contact blocking issues",
 
   assert.equal(getBlockingOverrideStatus(addressAndContactValidation, {}, alphaJsonMissingContact).canProceed, false);
   assert.equal(getBlockingOverrideStatus(addressAndContactValidation, { missingAddress: true }, alphaJsonMissingContact).canProceed, false);
-  assert.equal(getBlockingOverrideStatus(addressAndContactValidation, { missingAddress: true, missingContact: true }, alphaJsonMissingContact).canProceed, true);
+  assert.equal(getBlockingOverrideStatus(addressAndContactValidation, { missingAddress: true, missingPhone: true }, alphaJsonMissingContact).canProceed, true);
 
   const unrelatedValidation = {
     can_generate_pdf: false,
@@ -52,7 +52,7 @@ test("review overrides allow only accepted address and contact blocking issues",
   assert.deepEqual(status.remainingBlockingErrors, ["Missing priced service option."]);
 });
 
-test("review overrides require acknowledgement for each missing send channel", () => {
+test("missing one send channel does not block quote confirmation", () => {
   const validation = { can_generate_pdf: true, blocking_errors: [] };
 
   const missingPhone = getBlockingOverrideStatus(
@@ -60,30 +60,22 @@ test("review overrides require acknowledgement for each missing send channel", (
     {},
     { customer: { phone_display: "", phone_primary: "", email: "sam@example.com" } },
   );
-  assert.equal(missingPhone.canProceed, false);
+  assert.equal(missingPhone.canProceed, true);
   assert.equal(missingPhone.contactWarning.message, "Customer phone number is missing, but email is given. Sending Estimate SMS will not be available.");
-  assert.equal(
-    getBlockingOverrideStatus(validation, { missingPhone: true }, { customer: { phone_display: "", phone_primary: "", email: "sam@example.com" } }).canProceed,
-    true,
-  );
 
   const missingEmail = getBlockingOverrideStatus(
     validation,
     {},
     { customer: { phone_display: "812-555-0199", phone_primary: "812-555-0199", email: "" } },
   );
-  assert.equal(missingEmail.canProceed, false);
+  assert.equal(missingEmail.canProceed, true);
   assert.equal(missingEmail.contactWarning.message, "Customer email is missing, but phone number is given. Sending Estimate Email will not be available.");
-  assert.equal(
-    getBlockingOverrideStatus(validation, { missingEmail: true }, { customer: { phone_display: "812-555-0199", phone_primary: "812-555-0199", email: "" } }).canProceed,
-    true,
-  );
 });
 
 test("review overrides allow unclear scope only when a firm price is displayed", () => {
   const validation = {
     can_generate_pdf: false,
-    blocking_errors: ["Property responsibility or work scope is unclear."],
+    blocking_errors: ["Work scope unclear; confirm what this price covers."],
   };
   const alphaJsonWithPrice = {
     customer: { phone_display: "812-555-0199", phone_primary: "812-555-0199", email: "sam@example.com" },
@@ -109,7 +101,7 @@ test("review overrides allow unclear scope only when a firm price is displayed",
   const noPrice = getBlockingOverrideStatus(validation, { unclearScopeWithPrice: true }, alphaJsonWithoutPrice);
   assert.equal(noPrice.canProceed, false);
   assert.equal(noPrice.needsScopeOverride, false);
-  assert.deepEqual(noPrice.remainingBlockingErrors, ["Property responsibility or work scope is unclear."]);
+  assert.deepEqual(noPrice.remainingBlockingErrors, ["Work scope unclear; confirm what this price covers."]);
 });
 
 function pricedOptionsCase(prices) {
@@ -143,6 +135,32 @@ test("validation warns on 3x firm option price spread without blocking", () => {
   assert.equal(result.can_generate_pdf, true);
   assert.deepEqual(result.blocking_errors, []);
   assert.match(result.warnings.join(" "), /Large price spread.*Option B \$9,025.*3x\+.*Option A \$1,250.*Confirm price quote.*edit info/i);
+});
+
+test("validation downgrades firm-price option scope uncertainty to warning metadata", () => {
+  const result = validateAlphaJson({
+    raw_input: { customer_text: "Sam Price 812-555-0199 123 Oak Lane Madison IN remove one maple tree." },
+    customer: { name: "Sam Price", phone_display: "812-555-0199" },
+    job: {
+      description: "Remove one maple tree.",
+      service_address: { display: "123 Oak Lane, Madison, IN" },
+      tree_details: { tree_count: "1 tree", tree_type: "maple" },
+    },
+    service_options: {
+      items: [{
+        label: "Option A",
+        title: "Option A",
+        description: "work scope unclear",
+        scope_unclear: true,
+        price: { display: "$1,800", amount: 1800, is_unclear: false },
+      }],
+    },
+  });
+
+  assert.equal(result.can_generate_pdf, true);
+  assert.deepEqual(result.blocking_errors, []);
+  assert.match(result.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.equal(result.alphaJson.service_options.items[0].review_flags.scope_unclear, true);
 });
 
 test("validation does not warn when firm option price spread is below 3x", () => {

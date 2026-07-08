@@ -49,10 +49,18 @@ export async function POST(request) {
   alphaJson.review.review_completed = true;
   alphaJson.review.overrides = reviewOverrides;
   alphaJson.review.override_warnings = overrideStatus.acceptedOverrideWarnings;
+  alphaJson.review.contractor_warnings = [
+    ...overrideStatus.acceptedOverrideWarnings,
+    ...(validation.warnings || []).map((warning) => ({
+      title: "Review note",
+      message: warning,
+    })),
+  ];
   alphaJson.validation.can_generate_pdf = true;
   alphaJson.validation.overridden_blocking_errors = overrideStatus.acceptedOverrideWarnings.map((warning) => warning.title);
 
   const overrideWarnings = overrideStatus.acceptedOverrideWarnings;
+  const contractorWarnings = alphaJson.review.contractor_warnings;
   const fullHtml = renderCustomerDocument(alphaJson, { mobile: false });
   const mobileHtml = renderCustomerDocument(alphaJson, { mobile: true });
   const documentId = alphaJson.document.number;
@@ -61,8 +69,8 @@ export async function POST(request) {
     createDownloadFile(mobileHtml, { documentId, variant: "mobile", mobile: true }),
   ];
 
-  if (overrideWarnings.length > 0) {
-    const treeDudeHtml = renderTreeDudeDocument(alphaJson, { warnings: overrideWarnings });
+  if (contractorWarnings.length > 0) {
+    const treeDudeHtml = renderTreeDudeDocument(alphaJson, { warnings: contractorWarnings });
     documentJobs.push(createDownloadFile(treeDudeHtml, { documentId, variant: "tree-dude", mobile: false }));
   }
 
@@ -95,6 +103,7 @@ export async function POST(request) {
     mobile,
     treeDude,
     overrideWarnings,
+    contractorWarnings,
     mockedStorage: !hasBlobConfig(),
     blobStorage: record.blobStorage,
     note:

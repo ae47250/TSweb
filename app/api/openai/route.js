@@ -6,6 +6,15 @@ import { OPENAI_SYSTEM_PROMPT } from "../../../lib/openaiPrompt.js";
 import { OPENAI_DRAFT_RESPONSE_FORMAT, parseOpenAiDraft } from "../../../lib/openaiDraftSchema.js";
 import { openAiDraftToNormalizerInput } from "../../../lib/openaiDraftAdapter.js";
 import { buildDebugPipelinePayload } from "../../../lib/debugPipeline.js";
+import { normalizeContactFields } from "../../../lib/contactNormalizer.js";
+import { applyContactNormalizationOverlay } from "../../../lib/contactNormalizationOverlay.js";
+import { buildOptionPriceCandidateView } from "../../../lib/optionPriceNormalizer.js";
+import { reconcileSidecarPrices } from "../../../lib/priceReconciliation.js";
+import {
+  buildEvidenceBackedTextCleanupResult,
+  buildPreNormalizerParserInput,
+  textCleanupNormalizer,
+} from "../../../lib/textCleanupNormalizer.js";
 
 export const runtime = "nodejs";
 
@@ -15,7 +24,50 @@ function debugPipelineEnabled() {
   return process.env.DEBUG_PIPELINE === "true";
 }
 
-function debugResponsePayload({ rawTd1Text, rawOpenAiDraftJson, draftSchemaWarnings = [], alphaJson, validation, mocked, note, error }) {
+function td1PreNormalizersEnabled() {
+  return process.env.ENABLE_TD1_PRE_NORMALIZERS === "true";
+}
+
+function td1PriceNormalizerEnabled(body = {}) {
+  if (typeof body.enable_price_normalizer === "boolean") return body.enable_price_normalizer;
+  if (typeof body.enablePriceNormalizer === "boolean") return body.enablePriceNormalizer;
+  return process.env.ENABLE_TD1_PRICE_NORMALIZER !== "false";
+}
+
+function protectedContactSpans(contactNormalizationResult = {}) {
+  return [
+    ...((contactNormalizationResult?.phone?.candidates || [])
+      .filter((candidate) => candidate.accepted && candidate.span)
+      .map((candidate) => ({
+        start: candidate.span.start,
+        end: candidate.span.end,
+        kind: "phone",
+        raw: candidate.raw,
+      }))),
+    ...((contactNormalizationResult?.email?.candidates || [])
+      .filter((candidate) => candidate.accepted && candidate.span)
+      .map((candidate) => ({
+        start: candidate.span.start,
+        end: candidate.span.end,
+        kind: "email",
+        raw: candidate.raw,
+      }))),
+  ];
+}
+
+function debugResponsePayload({
+  rawTd1Text,
+  rawOpenAiDraftJson,
+  draftSchemaWarnings = [],
+  alphaJson,
+  validation,
+  mocked,
+  note,
+  error,
+  textCleanupResult,
+  contactNormalizationResult,
+  optionPriceCandidateView,
+}) {
   return buildDebugPipelinePayload({
     enabled: debugPipelineEnabled(),
     rawTd1Text,
@@ -26,6 +78,9 @@ function debugResponsePayload({ rawTd1Text, rawOpenAiDraftJson, draftSchemaWarni
     mocked,
     note,
     error,
+    textCleanupResult,
+    contactNormalizationResult,
+    optionPriceCandidateView,
   });
 }
 
@@ -78,16 +133,48 @@ export async function POST(request) {
   const customerText = body.customer_text || body.customerText || "";
   const intake = body.intake || body.structured_input || body.structuredInput || {};
   const caseId = caseIdFromBody(body);
-  const model = process.env.OPENAI_MODEL || "gpt-4o";
+  const model = process.env.OPENAI_MODEL || "gpt-4.1-nano";
   const reasoningEffort = getReasoningEffort(model);
 
   if (!customerText || customerText.trim().length < 10) {
     return json({ error: "Please provide customer/job notes before creating AlphaJSON." }, { status: 400 });
   }
 
+  const preNormalizersEnabled = td1PreNormalizersEnabled();
+  const priceNormalizerEnabled = td1PriceNormalizerEnabled(body);
+  const literalTextCleanupResult = preNormalizersEnabled ? textCleanupNormalizer(customerText) : null;
+  const contactNormalizationResult = preNormalizersEnabled
+    ? normalizeContactFields({ rawText: customerText, intake })
+    : null;
+  const optionPriceCandidateView = preNormalizersEnabled && priceNormalizerEnabled
+    ? buildOptionPriceCandidateView(customerText, protectedContactSpans(contactNormalizationResult), {
+        cleanedText: literalTextCleanupResult?.cleanedText,
+      })
+    : null;
+  const textCleanupResult = preNormalizersEnabled
+    ? buildEvidenceBackedTextCleanupResult({
+        textCleanupResult: literalTextCleanupResult,
+        contactNormalizationResult,
+        optionPriceCandidateView,
+      })
+    : null;
+  const parserCustomerText = preNormalizersEnabled
+    ? buildPreNormalizerParserInput({
+        textCleanupResult,
+        contactNormalizationResult,
+        optionPriceCandidateView,
+      })
+    : customerText;
+
   if (!process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true") {
     const rawOpenAiDraftJson = {};
-    const alphaJson = normalizeToAlphaJsonV14({}, customerText, intake);
+    const alphaJson = reconcileSidecarPrices(
+      applyContactNormalizationOverlay(
+        normalizeToAlphaJsonV14({}, customerText, intake),
+        contactNormalizationResult,
+      ),
+      optionPriceCandidateView,
+    );
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       caseId,
@@ -107,6 +194,9 @@ export async function POST(request) {
         validation,
         mocked: true,
         note: "OPENAI_API_KEY is not configured, so a local draft parser was used.",
+        textCleanupResult,
+        contactNormalizationResult,
+        optionPriceCandidateView,
       }),
     });
   }
@@ -123,13 +213,19 @@ export async function POST(request) {
           role: "system",
           content: OPENAI_SYSTEM_PROMPT,
         },
-        { role: "user", content: customerText },
+        { role: "user", content: parserCustomerText },
       ],
     });
     const rawOpenAiDraftJson = JSON.parse(response.choices[0]?.message?.content || "{}");
     const parsedDraft = parseOpenAiDraft(rawOpenAiDraftJson);
     const normalizerInput = openAiDraftToNormalizerInput(parsedDraft.draft, { rawInput: customerText, intake });
-    const alphaJson = normalizeToAlphaJsonV14(normalizerInput, customerText, intake);
+    const alphaJson = reconcileSidecarPrices(
+      applyContactNormalizationOverlay(
+        normalizeToAlphaJsonV14(normalizerInput, customerText, intake),
+        contactNormalizationResult,
+      ),
+      optionPriceCandidateView,
+    );
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       caseId,
@@ -148,11 +244,20 @@ export async function POST(request) {
         alphaJson,
         validation,
         mocked: false,
+        textCleanupResult,
+        contactNormalizationResult,
+        optionPriceCandidateView,
       }),
     });
   } catch (error) {
     const rawOpenAiDraftJson = {};
-    const alphaJson = normalizeToAlphaJsonV14({}, customerText, intake);
+    const alphaJson = reconcileSidecarPrices(
+      applyContactNormalizationOverlay(
+        normalizeToAlphaJsonV14({}, customerText, intake),
+        contactNormalizationResult,
+      ),
+      optionPriceCandidateView,
+    );
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       level: "error",
@@ -175,6 +280,9 @@ export async function POST(request) {
           validation,
           mocked: true,
           error: error.message,
+          textCleanupResult,
+          contactNormalizationResult,
+          optionPriceCandidateView,
         }),
       },
       { status: 200 },

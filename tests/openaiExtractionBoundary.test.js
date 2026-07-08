@@ -152,6 +152,75 @@ test("OpenAI draft adapter preserves separate option prices through canonical no
   assert.equal(alphaJson.job.tree_details.tree_type, "maple");
 });
 
+test("OpenAI draft adapter treats labeled maybe option prices as warnings, not blockers", () => {
+  const raw = "Corey Knight 812-555-0107 corey.knight@example.com. Service address 2018 Cedar Dr Seymour Indiana. Remove 2 maple trees. b maybe $1600 w stmp haull // a/$925.";
+  const draft = {
+    draft_version: "alpha_extraction_v1",
+    raw_input: { customer_text: raw },
+    contact: {
+      customer_name: "Corey Knight",
+      phone: "812-555-0107",
+      email: "corey.knight@example.com",
+      service_address: "2018 Cedar Dr Seymour Indiana",
+    },
+    job: {
+      work_scope: "Remove 2 maple trees.",
+      tree_count: "2 trees",
+      tree_count_status: "found",
+      tree_type: "maple",
+      tree_size: "",
+      location_on_property: "",
+      work_action: "remove",
+    },
+    options: [
+      {
+        raw_label: "B",
+        raw_text: "b maybe $1600 w stmp haull",
+        scope: "stump haul",
+        price_raw: "maybe $1600",
+        price_amount: 1600,
+        price_status: "non_firm",
+        haul_away: "included",
+        cleanup: "not_stated",
+        stump_grinding: "included",
+        wood_handling: "haul",
+        evidence: "b maybe $1600 w stmp haull",
+      },
+      {
+        raw_label: "A",
+        raw_text: "a/$925",
+        scope: "remove only",
+        price_raw: "$925",
+        price_amount: 925,
+        price_status: "firm",
+        haul_away: "not_stated",
+        cleanup: "not_stated",
+        stump_grinding: "not_stated",
+        wood_handling: "not_stated",
+        evidence: "a/$925",
+      },
+    ],
+    number_trace: [],
+    safety_access_notes: [],
+    low_confidence_spans: [],
+    normalization: {
+      corrections_made: [],
+      uncertainties: [],
+      field_evidence: {},
+    },
+  };
+
+  const { validation } = validationFromDraft(draft, raw);
+  const alphaJson = validation.alphaJson;
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.label), ["Option A", "Option B"]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$925", "$1,600"]);
+  assert.equal(alphaJson.service_options.items[1].price.status, "explicit_numeric_with_soft_language");
+  assert.equal(alphaJson.service_options.items[1].price.review_warning, true);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /not firm|clear price/i);
+});
+
 test("OpenAI draft low-confidence spans survive canonical normalization", () => {
   const raw = "Ivy Stone 812-555-0109 ivy@example.com. 220 Oak Lane Madison IN. remove maple maybe 1700, B maybe cleanup 2900.";
   const draft = {
@@ -518,6 +587,59 @@ test("60 debug pipeline samples expose raw input, raw draft, schema warnings, Al
     );
     assert.match(payload.debugPipeline.source, /openai|local-draft-parser/);
   }
+});
+
+test("debug pipeline can expose conservative TD1 text cleanup without customer output", () => {
+  const payload = buildDebugPipelinePayload({
+    enabled: true,
+    rawTd1Text: "  remvoe oak 2500$  ",
+    rawOpenAiDraftJson: {},
+    alphaJson: { normalization: {}, service_options: { items: [] } },
+    validation: { can_generate_pdf: false, blocking_errors: ["Missing service address."], follow_ups: [], warnings: [] },
+    mocked: true,
+    textCleanupResult: {
+      rawInput: "  remvoe oak 2500$  ",
+      cleanedText: "remove oak $2500",
+      changes: [
+        { type: "whitespace", before: "  ", after: "", reason: "Trimmed.", confidence: "high" },
+        { type: "spelling", before: "remvoe", after: "remove", reason: "Corrected typo.", confidence: "high" },
+      ],
+      warnings: ["numbers_present_preserved"],
+    },
+    contactNormalizationResult: {
+      email: { value: "sam@example.com", candidates: [{ valid: true, accepted: true }], warnings: [] },
+      phone: { value: "8125551212", display: "812-555-1212", candidates: [{ valid: true, accepted: true }], warnings: [] },
+      low_confidence_spans: [],
+      number_trace: [],
+    },
+    optionPriceCandidateView: {
+      raw_customer_note: "remove oak $2500",
+      pre_ai_option_price_candidate_clues: {
+        money_like_numbers: [{ raw: "$2500", price_display: "$2,500" }],
+        option_boundary_clues: [],
+        price_scope_ambiguity_warnings: [],
+      },
+      rendered_view: "Pre-AI option-price candidate clues:",
+    },
+  });
+
+  assert.equal(payload.debugPipeline.rawTd1Input.customer_text, "  remvoe oak 2500$  ");
+  assert.equal(payload.debugPipeline.td1TextCleanup.cleanedText, "remove oak $2500");
+  assert.deepEqual(payload.debugPipeline.td1TextCleanup.warnings, ["numbers_present_preserved"]);
+  assert.equal(payload.debugPipeline.td1ContactNormalization.phone.display, "812-555-1212");
+  assert.equal(payload.debugPipeline.td1OptionPriceCandidateView.pre_ai_option_price_candidate_clues.money_like_numbers[0].price_display, "$2,500");
+  assert.deepEqual(payload.debugPipeline.stages.map((stage) => stage.label), [
+    "Raw TD1 input",
+    "TD1 text cleanup",
+    "TD1 contact normalization",
+    "TD1 option/price clues",
+    "Local draft parser",
+    "TD2 normalization",
+    "TD2 validation",
+  ]);
+  assert.equal(payload.debugPipeline.stages[1].status, "2 safe changes, 1 warnings");
+  assert.equal(payload.debugPipeline.stages[2].status, "1 email candidates, 1 phone candidates");
+  assert.equal(payload.debugPipeline.stages[3].status, "1 money-like numbers, 0 option boundaries, 0 warnings");
 });
 
 test("60 structured follow-up samples keep stable IDs and PDF-blocking flags", () => {

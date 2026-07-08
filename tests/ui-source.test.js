@@ -175,9 +175,10 @@ test("customer-facing estimate documents use cleaned job notes without internal 
   assert.match(pdfRouteSource, /renderCustomerDocument\(alphaJson, \{ mobile: false \}\)/);
   assert.match(pdfRouteSource, /renderCustomerDocument\(alphaJson, \{ mobile: true \}\)/);
   assert.match(pdfRouteSource, /renderTreeDudeDocument/);
-  assert.match(pdfRouteSource, /overrideWarnings\.length > 0/);
+  assert.match(pdfRouteSource, /contractorWarnings\.length > 0/);
   assert.match(pdfRouteSource, /if \(treeDude\) recordPayload\.pdf_url_tree_dude/);
   assert.match(pdfRouteSource, /override_warnings/);
+  assert.match(pdfRouteSource, /contractor_warnings/);
   assert.doesNotMatch(customerRouteSource, /field_evidence/);
   assert.doesNotMatch(customerRouteSource, /uncertainties/);
   assert.doesNotMatch(customerDocumentSource, /field_evidence/);
@@ -197,11 +198,32 @@ test("review overrides are narrow and recorded separately from normal validation
   assert.match(reviewOverridesSource, /Customer phone number is missing, but email is given/);
   assert.match(reviewOverridesSource, /Customer email is missing, but phone number is given/);
   assert.match(reviewOverridesSource, /Work scope is unclear, but the displayed price was OK'd/);
-  assert.match(reviewOverridesSource, /Sending Estimate SMS and Email will not be available/);
+  assert.match(reviewOverridesSource, /Phone is the preferred contact method/);
   assert.match(pdfRouteSource, /getBlockingOverrideStatus/);
   assert.match(pdfRouteSource, /canGenerateWithOverrides/);
   assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /const canConfirmWithOverrides = overrideStatus\.canProceed/);
   assert.match(pdfRouteSource, /remainingBlockingErrors/);
+});
+
+test("TD2 can edit highlighted option descriptions in place", () => {
+  const pageSource = readFileSync("app/page.js", "utf8");
+  const reviewSource = readFileSync("app/components/JsonReview.jsx", "utf8");
+  const cssSource = readFileSync("app/styles/globals.css", "utf8");
+
+  assert.match(pageSource, /applyOptionDescriptionEdit/);
+  assert.match(pageSource, /onOptionDescriptionChange=\{applyOptionDescriptionEdit\}/);
+  assert.match(reviewSource, /optionNeedsDescriptionReview/);
+  assert.match(reviewSource, /OptionDescriptionEditor/);
+  assert.match(reviewSource, /OptionPriceEditor/);
+  assert.match(reviewSource, /RequiredInfoEditor/);
+  assert.match(reviewSource, /More info is needed to complete Estimate/);
+  assert.match(pageSource, /applyCustomerFieldEdit/);
+  assert.match(pageSource, /applyOptionPriceEdit/);
+  assert.match(pageSource, /applyAddOption/);
+  assert.match(reviewSource, /spellCheck="true"/);
+  assert.match(cssSource, /\.quote-option-card-warning/);
+  assert.match(cssSource, /border:\s*4px solid #b91c1c/);
+  assert.match(cssSource, /\.option-description-editor-warning/);
 });
 
 test("manual acceptance foundation exists without multi-company scope", () => {
@@ -217,7 +239,7 @@ test("OpenAI route can use reasoning effort without affecting non-reasoning mode
   assert.match(openaiRouteSource, /OPENAI_REASONING_EFFORT/);
   assert.match(openaiRouteSource, /reasoning_effort/);
   assert.match(openaiRouteSource, /gpt-5/);
-  assert.match(openaiRouteSource, /gpt-4o/);
+  assert.match(openaiRouteSource, /gpt-4\.1-nano/);
   assert.match(envExampleSource, /OPENAI_REASONING_EFFORT=/);
 });
 
@@ -245,8 +267,26 @@ test("OpenAI prompt and route keep model output at extraction-draft boundary", (
   assert.match(openaiRouteSource, /parseOpenAiDraft/);
   assert.match(openaiRouteSource, /openAiDraftToNormalizerInput/);
   assert.match(openaiRouteSource, /OPENAI_DRAFT_RESPONSE_FORMAT/);
+  assert.match(openaiRouteSource, /ENABLE_TD1_PRE_NORMALIZERS/);
+  assert.match(openaiRouteSource, /td1PreNormalizersEnabled/);
+  assert.match(openaiRouteSource, /preNormalizersEnabled\s*\?\s*textCleanupNormalizer\(customerText\)\s*:\s*null/);
+  assert.match(openaiRouteSource, /preNormalizersEnabled[\s\S]*normalizeContactFields\(\{\s*rawText:\s*customerText,\s*intake\s*\}\)/);
+  assert.match(openaiRouteSource, /protectedContactSpans/);
+  assert.match(openaiRouteSource, /buildOptionPriceCandidateView\(\s*customerText,\s*protectedContactSpans\(contactNormalizationResult\),\s*\{/);
+  assert.match(openaiRouteSource, /cleanedText:\s*literalTextCleanupResult\?\.cleanedText/);
+  assert.match(openaiRouteSource, /buildPreNormalizerParserInput\(\{/);
+  assert.match(openaiRouteSource, /contactNormalizationResult,\s*optionPriceCandidateView/s);
+  assert.match(openaiRouteSource, /:\s*customerText/);
+  assert.match(openaiRouteSource, /content:\s*parserCustomerText/);
+  assert.match(openaiRouteSource, /textCleanupResult/);
+  assert.match(openaiRouteSource, /contactNormalizationResult/);
+  assert.match(openaiRouteSource, /optionPriceCandidateView/);
+  assert.match(openaiRouteSource, /applyContactNormalizationOverlay/);
   assert.doesNotMatch(openaiRouteSource, /json_object/);
-  assert.match(openaiRouteSource, /normalizeToAlphaJsonV14\(normalizerInput,\s*customerText,\s*intake\)/);
+  assert.match(openaiRouteSource, /applyContactNormalizationOverlay\(\s*normalizeToAlphaJsonV14\(normalizerInput,\s*customerText,\s*intake\),\s*contactNormalizationResult/s);
   assert.match(openaiRouteSource, /buildDebugPipelinePayload/);
   assert.match(debugPipelineSource, /structured_follow_ups/);
+  assert.match(debugPipelineSource, /td1TextCleanup/);
+  assert.match(debugPipelineSource, /td1ContactNormalization/);
+  assert.match(debugPipelineSource, /td1OptionPriceCandidateView/);
 });

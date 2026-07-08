@@ -220,7 +220,37 @@ test("captures explicit city and state even when city is not in trusted local-to
   }
 });
 
-test("keeps short typed local address in TD2 but blocks until city and state are confirmed", () => {
+test("captures explicit city and any US state without appending Indiana", () => {
+  const cases = [
+    {
+      input:
+        "Joel Stone 812-555-0103 joel.stone19@example.com. service address 5370 Birch Street Versailles KY 47610. remove 3 trees. a/$1275 // b maybe 2,100 w stmp haull.",
+      expectedAddress: "5370 Birch Street, Versailles, KY 47610",
+      expectedName: "Joel Stone",
+      expectedPrices: ["$1,275", "$2,100"],
+    },
+    {
+      input:
+        "Sam Bryant 812-555-0104 sam.bryant@example.com. service address 5574 River Rd North Vernon OH 47082. remove 3 trees. b maybe $2,775 w stmp haull // a/1725.",
+      expectedAddress: "5574 River Rd, North Vernon, OH 47082",
+      expectedName: "Sam Bryant",
+      expectedPrices: ["$1,725", "$2,775"],
+    },
+  ];
+
+  for (const sample of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, sample.input));
+
+    assert.equal(validation.alphaJson.customer.name, sample.expectedName);
+    assert.equal(validation.alphaJson.job.service_address.display, sample.expectedAddress);
+    assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), sample.expectedPrices);
+    assert.equal(validation.can_generate_pdf, true);
+    assert.doesNotMatch(validation.blocking_errors.join(" "), /city and state|clear price|not firm/i);
+    assert.doesNotMatch(validation.alphaJson.job.service_address.display, /Indiana$/);
+  }
+});
+
+test("keeps short typed local address in TD2 with non-blocking town warning", () => {
   const validation = validateAlphaJson(
     normalizeToAlphaJsonV14(
       {},
@@ -229,9 +259,10 @@ test("keeps short typed local address in TD2 but blocks until city and state are
   );
 
   assert.equal(validation.alphaJson.job.service_address.display, "803 W 2nd");
-  assert.equal(validation.can_generate_pdf, false);
-  assert.deepEqual(validation.blocking_errors, ["Service address needs city and state."]);
-  assert.match(validation.follow_ups.join(" "), /city and state/i);
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.blocking_errors, []);
+  assert.deepEqual(validation.follow_ups, []);
+  assert.match(validation.warnings.join(" "), /town\/city/i);
   assert.doesNotMatch(validation.warnings.join(" "), /Service address may need city or state/);
 });
 
@@ -740,7 +771,7 @@ test("blocked-case summaries preserve safe partial meaning without weakening val
       input:
         "lady named Joan Blair text 812-555-2406 5816 Poplar Ridge Road Hanover IN option A $1850 option B 2350, no descriptions",
       expectedSummary: "Priced service options need work-scope descriptions.",
-      expectedBlocking: /Work scope unclear/i,
+      expectedBlocking: /Priced option descriptions are missing/i,
     },
   ];
 
@@ -893,6 +924,11 @@ test("cleans customer names from email, address, and missing-contact cues", () =
     },
     {
       input:
+        "sam.bryant31 @ trees.test // b maybe $2,775 w stmp haull // 3?? pop treee drivway // bryant sam // 5574 River Rd North Vernon OH 47082 // access ok no wire customer says yes // 812 555 2322 // a/1725",
+      expectedName: "Sam Bryant",
+    },
+    {
+      input:
         "note from Victor Peterson contact later 5888 Mill Street Madison IN; 3 maple trees removal; $2350/$2,700",
       expectedName: "Victor Peterson",
     },
@@ -1040,13 +1076,15 @@ test("slash prices preserve the amount before the slash", () => {
   assert.match(validation.alphaJson.service_options.items[1].description, /haul off/i);
 });
 
-test("bare slash prices extract prices but block unclear option scope", () => {
+test("bare slash prices extract prices and warn on unclear option scope", () => {
   const input =
     "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana 2600/2,950 for tree? no note on haul or stump";
   const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
-  assert.equal(validation.can_generate_pdf, false);
+  assert.equal(validation.can_generate_pdf, true);
   assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,600", "$2,950"]);
-  assert.match(validation.blocking_errors.join(" "), /Work scope unclear|option descriptions|stump/i);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear|option descriptions|stump/i);
+  assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.ok(validation.alphaJson.service_options.items.every((option) => option.review_flags?.scope_unclear));
 });
 
 test("gate codes are not treated as prices", () => {
@@ -1315,8 +1353,8 @@ test("messy raw note parses implied one-tree removal while keeping safety notes 
   ].join(" ");
 
   assert.equal(validation.can_generate_pdf, false);
-  assert.deepEqual(validation.blocking_errors, ["Service address needs city and state.", "Missing customer phone or email."]);
-  assert.match(validation.follow_ups.join(" "), /city and state/i);
+  assert.deepEqual(validation.blocking_errors, ["Missing customer phone or email."]);
+  assert.match(validation.warnings.join(" "), /town\/city/i);
   assert.match(validation.follow_ups.join(" "), /phone number or email/i);
   assert.equal(alphaJson.job.service_address.display, "148 maple st");
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
@@ -2320,7 +2358,7 @@ test("local number trace classifies phone address tree count and price numbers",
   assert.ok(trace.some((item) => item.normalized === "$1,200" && item.field === "service_options.items.price"));
 });
 
-test("unclear scope or property responsibility blocks even when singular tree and price are clear", () => {
+test("unclear scope or property responsibility warns even when singular tree and price are clear", () => {
   const validation = validateAlphaJson(
     normalizeToAlphaJsonV14(
       {},
@@ -2330,9 +2368,10 @@ test("unclear scope or property responsibility blocks even when singular tree an
 
   assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
   assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,450"]);
-  assert.equal(validation.can_generate_pdf, false);
-  assert.match(validation.blocking_errors.join(" "), /property responsibility|work scope/i);
-  assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "unclear_scope_property_responsibility" && issue.blocks_pdf));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /property responsibility|work scope/i);
+  assert.match(validation.warnings.join(" "), /property responsibility|contractor review/i);
+  assert.ok(validation.structured_follow_ups.some((issue) => issue.severity === "warning" && !issue.blocks_pdf));
 });
 
 test("bare A/B prices are preserved when work scope is vague", () => {
@@ -2347,9 +2386,11 @@ test("bare A/B prices are preserved when work scope is vague", () => {
   assert.deepEqual(options.map((option) => option.price.display), ["$1,200", "$1,800"]);
   assert.deepEqual(options.map((option) => option.description), ["work scope unclear", "work scope unclear"]);
   assert.ok(options.every((option) => option.preserve_order && option.scope_unclear));
+  assert.ok(options.every((option) => option.review_flags?.scope_unclear));
   assert.equal(validation.can_generate_pdf, false);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /Missing priced service option/i);
-  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
   assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "unclear_work_scope" && issue.blocks_pdf));
 });
 
@@ -2364,8 +2405,177 @@ test("price slash notes with only one clear scope preserve both prices but requi
   const options = validation.alphaJson.service_options.items;
   assert.deepEqual(options.map((option) => option.price.display), ["$1,000", "$1,500"]);
   assert.deepEqual(options.map((option) => option.description), ["work scope unclear", "work scope unclear"]);
-  assert.equal(validation.can_generate_pdf, false);
-  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.ok(options.every((option) => option.review_flags?.scope_unclear));
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+});
+
+test("high-risk safety and scope notes warn while preserving prices", () => {
+  const cases = [
+    {
+      raw: "Rosa Crawford 812-555-1196 rosa@example.com. 3680 Poplar Ridge Road Madison IN. Tree on house after storm. Option A remove one maple $2500.",
+      price: "$2,500",
+    },
+    {
+      raw: "Shane Myers 812-555-3860 shane@example.com. 1582 River Bluff Lane Hanover IN. Limb on service drop. Option A remove limb $1800.",
+      price: "$1,800",
+    },
+    {
+      raw: "Nora Bell 812-555-2020 nora@example.com. 40 Walnut St Madison IN. Tree leaning on garage. Option A remove one walnut $2200.",
+      price: "$2,200",
+    },
+    {
+      raw: "Wes Coleman 812-555-2786 wes@example.com. 2824 Cherry Street Madison IN. Branches on fence maybe damage. Option A clear branches $900.",
+      price: "$900",
+    },
+  ];
+
+  for (const item of cases) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, item.raw));
+    assert.equal(validation.can_generate_pdf, true, item.raw);
+    assert.ok(validation.alphaJson.service_options.items.some((option) => option.price.display === item.price), item.raw);
+    assert.match(validation.warnings.join(" "), /contractor review|Emergency|Safety/i, item.raw);
+    assert.doesNotMatch(validation.blocking_errors.join(" "), /contractor review|PDF generation|scope/i, item.raw);
+    assert.doesNotMatch(validation.follow_ups.join(" "), /Confirm the safety, access, damage, or scope details/i, item.raw);
+  }
+});
+
+test("storm and emergency review warnings do not add redundant scope blockers", () => {
+  const stormRaw =
+    "812.555.2786 wes.coleman778@example.com customer Wes Coleman fallen tree on neighbor fence at 2824 Cherry Street, Madison, Indiana; scope/property responsibility unclear; price 2450";
+  const assistedDraft = openAiDraftToNormalizerInput({
+    raw_input: { customer_text: stormRaw },
+    contact: {
+      customer_name: "Wes Coleman",
+      phone: "812-555-2786",
+      email: "wes.coleman778@example.com",
+      service_address: "2824 Cherry Street, Madison, Indiana",
+    },
+    job: {
+      tree_count: "1 tree",
+      tree_count_status: "found",
+      tree_type: "",
+      tree_size: "",
+      work_action: "remove",
+      work_scope: "Remove one tree.",
+      location_on_property: "",
+    },
+    options: [
+      {
+        raw_label: "Option A",
+        raw_text: "scope/property responsibility unclear",
+        scope: "scope/property responsibility unclear",
+        price_raw: "2450",
+        price_amount: 2450,
+        price_status: "firm",
+        scope_unclear: true,
+        evidence: "scope/property responsibility unclear; price 2450",
+      },
+    ],
+    safety_access_notes: [],
+    normalization: { corrections_made: [], uncertainties: [], field_evidence: {} },
+  }, { rawInput: stormRaw });
+  const storm = validateAlphaJson(normalizeToAlphaJsonV14(assistedDraft, stormRaw));
+
+  assert.equal(storm.can_generate_pdf, true);
+  assert.deepEqual(storm.alphaJson.service_options.items.map((option) => option.price.display), ["$2,450"]);
+  assert.match(storm.warnings.join(" "), /Storm damage details need review/i);
+  assert.doesNotMatch(storm.follow_ups.join(" "), /Clarify storm damage scope/i);
+  assert.doesNotMatch(storm.blocking_errors.join(" "), /confirm what this price covers/i);
+  assert.doesNotMatch(storm.warnings.join(" "), /\bcom customer\b/i);
+
+  const emergency = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Caleb Peterson 8125551703 7666 2nd Street Madison IN tree on house after storm, quote $1100 cleanup $1600",
+  ));
+
+  assert.equal(emergency.can_generate_pdf, true);
+  assert.deepEqual(emergency.alphaJson.service_options.items.map((option) => option.price.display), ["$1,100", "$1,600"]);
+  assert.match(emergency.warnings.join(" "), /Emergency or hazard requires review/i);
+  assert.doesNotMatch(emergency.follow_ups.join(" "), /Confirm safe access/i);
+
+  const windRaw =
+    "Renee Wallace call/text call 812-555-3840 3746 State Road 56, Madison, Indiana wind damage, not sure if it is one tree or several, haul debris $1300";
+  const windDraft = openAiDraftToNormalizerInput({
+    raw_input: { customer_text: windRaw },
+    contact: {
+      customer_name: "Renee Wallace",
+      phone: "812-555-3840",
+      email: "",
+      service_address: "3746 State Road 56, Madison, Indiana",
+    },
+    job: {
+      tree_count: "",
+      tree_count_status: "unclear",
+      tree_type: "",
+      tree_size: "",
+      work_action: "",
+      work_scope: "Haul debris.",
+      location_on_property: "",
+    },
+    options: [
+      {
+        raw_label: "Option A",
+        raw_text: "haul debris",
+        scope: "haul debris",
+        price_raw: "$1300",
+        price_amount: 1300,
+        price_status: "firm",
+        scope_unclear: true,
+        evidence: "haul debris $1300",
+      },
+    ],
+    safety_access_notes: [],
+    normalization: { corrections_made: [], uncertainties: [], field_evidence: {} },
+  }, { rawInput: windRaw });
+  const wind = validateAlphaJson(normalizeToAlphaJsonV14(windDraft, windRaw));
+
+  assert.equal(wind.can_generate_pdf, false);
+  assert.deepEqual(wind.alphaJson.service_options.items.map((option) => option.price.display), ["$1,300"]);
+  assert.match(wind.blocking_errors.join(" "), /Tree count is unclear/i);
+  assert.match(wind.warnings.join(" "), /Storm damage details need review/i);
+  assert.doesNotMatch(wind.blocking_errors.join(" "), /confirm what this price covers/i);
+
+  const serviceDropRaw =
+    "Caleb Peterson 8125551703 7666 2nd Street Madison IN leaning tree touching service drop, quote $1100 cleanup $1600";
+  const serviceDropDraft = openAiDraftToNormalizerInput({
+    raw_input: { customer_text: serviceDropRaw },
+    contact: {
+      customer_name: "Caleb Peterson",
+      phone: "812-555-1703",
+      email: "",
+      service_address: "7666 2nd Street Madison IN",
+    },
+    job: {
+      tree_count: "1 tree",
+      tree_count_status: "found",
+      tree_type: "",
+      tree_size: "",
+      work_action: "remove",
+      work_scope: "Remove leaning tree.",
+      location_on_property: "touching service drop",
+    },
+    options: [
+      {
+        raw_label: "Option A",
+        raw_text: "quote",
+        scope: "quote",
+        price_raw: "$1100",
+        price_amount: 1100,
+        price_status: "firm",
+        scope_unclear: true,
+        evidence: "quote $1100",
+      },
+    ],
+    safety_access_notes: [],
+    normalization: { corrections_made: [], uncertainties: [], field_evidence: {} },
+  }, { rawInput: serviceDropRaw });
+  const serviceDrop = validateAlphaJson(normalizeToAlphaJsonV14(serviceDropDraft, serviceDropRaw));
+
+  assert.equal(serviceDrop.can_generate_pdf, true);
+  assert.deepEqual(serviceDrop.alphaJson.service_options.items.map((option) => option.price.display), ["$1,100"]);
+  assert.match(serviceDrop.warnings.join(" "), /Emergency or hazard requires review/i);
+  assert.doesNotMatch(serviceDrop.blocking_errors.join(" "), /confirm what this price covers/i);
 });
 
 test("price-only labeled options keep both prices and avoid invented scope", () => {
@@ -2380,6 +2590,7 @@ test("price-only labeled options keep both prices and avoid invented scope", () 
   assert.deepEqual(options.map((option) => option.price.display), ["$1,000", "$1,500"]);
   assert.deepEqual(options.map((option) => option.description), ["work scope unclear", "work scope unclear"]);
   assert.ok(options.every((option) => option.preserve_order && option.scope_unclear));
-  assert.equal(validation.can_generate_pdf, false);
-  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.ok(options.every((option) => option.review_flags?.scope_unclear));
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
 });
