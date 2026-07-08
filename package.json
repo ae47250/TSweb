@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "test": "node --test tests/*.test.js",
-    "metrics:alpha": "node scripts/record-alpha-metrics.js"
+    "metrics:alpha": "node scripts/record-alpha-metrics.js",
+    "eval:offline": "node scripts/eval-offline-dataset.js"
   },
   "dependencies": {
     "@sparticuz/chromium": "latest",
