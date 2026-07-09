@@ -271,11 +271,7 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
   }
 
   const contactWarning = status.contactWarning;
-  const contactCheckText = {
-    missingPhone: "Create Estimate without phone number",
-    missingEmail: "Create Estimate without email",
-    missingContact: "Create Estimate without phone number or email",
-  }[contactWarning?.key];
+  const contactCheckText = contactOverrideText(contactWarning);
   const contactAccepted = contactWarning ? Boolean(overrides[contactWarning.key]) : false;
 
   return (
@@ -334,6 +330,52 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
       )}
     </section>
   );
+}
+
+function contactOverrideText(contactWarning) {
+  return {
+    missingPhone: "Create Estimate without phone number",
+    missingEmail: "Create Estimate without email",
+    missingContact: "Create Estimate without phone number or email",
+  }[contactWarning?.key];
+}
+
+function ContactOverrideCheckbox({ status, overrides, onChange }) {
+  const contactWarning = status?.contactWarning;
+  const contactCheckText = contactOverrideText(contactWarning);
+  if (!contactWarning || !contactCheckText) return null;
+
+  return (
+    <div className="override-warning-item">
+      <label className="override-check-row">
+        <input
+          type="checkbox"
+          checked={Boolean(overrides[contactWarning.key])}
+          onChange={() => onChange?.({ ...overrides, [contactWarning.key]: !overrides[contactWarning.key] })}
+        />
+        <span>{contactCheckText}</span>
+      </label>
+    </div>
+  );
+}
+
+function contactOnlyOverrideStatus(status) {
+  if (!status.needsContactOverride && !status.needsPhoneOverride && !status.needsEmailOverride) return null;
+  return {
+    ...status,
+    needsAddressOverride: false,
+    needsScopeOverride: false,
+  };
+}
+
+function withoutContactOverrideStatus(status) {
+  return {
+    ...status,
+    needsContactOverride: false,
+    needsPhoneOverride: false,
+    needsEmailOverride: false,
+    contactWarning: null,
+  };
 }
 
 const TREE_COUNT_BLOCK_RE = /Tree count is marked unknown|Tree count is unclear|Missing tree count or clear scope/i;
@@ -472,9 +514,12 @@ function InlineFieldEditor({
 function RequiredInfoEditor({
   alphaJson,
   validation,
+  contactOverrideStatus = null,
+  reviewOverrides,
   busy = false,
   onCustomerFieldChange,
   onJobDescriptionChange,
+  onReviewOverridesChange,
 }) {
   const customer = alphaJson.customer || {};
   const job = alphaJson.job || {};
@@ -492,13 +537,22 @@ function RequiredInfoEditor({
       <h3>Fill In Required Info</h3>
       <div className="td2-inline-field-grid">
         {needsPhone && (
-          <InlineFieldEditor
-            label="Customer phone"
-            value={phone}
-            placeholder="812-555-1234"
-            busy={busy}
-            onChange={(value) => onCustomerFieldChange?.("phone", value)}
-          />
+          <>
+            <InlineFieldEditor
+              label="Customer phone"
+              value={phone}
+              placeholder="812-555-1234"
+              busy={busy}
+              onChange={(value) => onCustomerFieldChange?.("phone", value)}
+            />
+            {contactOverrideStatus && (
+              <ContactOverrideCheckbox
+                status={contactOverrideStatus}
+                overrides={reviewOverrides}
+                onChange={onReviewOverridesChange}
+              />
+            )}
+          </>
         )}
         {needsAddress && (
           <InlineFieldEditor
@@ -681,6 +735,10 @@ export default function JsonReview({
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Quote") : "Confirm Quote";
   const editLabel = isFinalConfirm ? "Back" : "Edit Info";
   const warningItems = (validation?.warnings || []).filter((warning) => !isOverrideRelatedWarning(warning, overrideStatus));
+  const needsInlinePhoneEditor = hasBlockingError(validation, /Missing customer phone or email/i)
+    && !String(alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "").trim();
+  const inlineContactOverrideStatus = needsInlinePhoneEditor ? contactOnlyOverrideStatus(overrideStatus) : null;
+  const lowerOverrideStatus = inlineContactOverrideStatus ? withoutContactOverrideStatus(overrideStatus) : overrideStatus;
   const hasRequiredInlineFixes = !isFinalConfirm && (
     hasBlockingError(validation, /Missing service address|Service address looks unclear|Missing customer phone or email|Missing job description/i) ||
     options.some(optionNeedsPriceReview) ||
@@ -711,10 +769,8 @@ export default function JsonReview({
     <section className="card">
       <h2>{title}</h2>
       <p className="text-muted">{subtitle}</p>
-      {!isFinalConfirm && (
-        <span className={`review-status ${canConfirmWithOverrides ? "review-status-ready" : "review-status-needs-info"}`}>
-          {canConfirmWithOverrides ? "Review ready" : "Needs more info"}
-        </span>
+      {!isFinalConfirm && canConfirmWithOverrides && (
+        <span className="review-status review-status-ready">Review ready</span>
       )}
       {!isFinalConfirm && !canConfirmWithOverrides && (
         <p className="td2-required-warning">More info is needed to complete Estimate</p>
@@ -752,9 +808,12 @@ export default function JsonReview({
         <RequiredInfoEditor
           alphaJson={alphaJson}
           validation={validation}
+          contactOverrideStatus={inlineContactOverrideStatus}
+          reviewOverrides={normalizedOverrides}
           busy={busy}
           onCustomerFieldChange={onCustomerFieldChange}
           onJobDescriptionChange={onJobDescriptionChange}
+          onReviewOverridesChange={onReviewOverridesChange}
         />
       )}
       <h3>{isFinalConfirm ? "Customer Options" : "Quote Options"}</h3>
@@ -819,7 +878,7 @@ export default function JsonReview({
       )}
       {!isFinalConfirm && (
         <OverrideWarningCard
-          status={overrideStatus}
+          status={lowerOverrideStatus}
           overrides={normalizedOverrides}
           warningItems={warningItems}
           onChange={onReviewOverridesChange}

@@ -151,6 +151,10 @@ main {
   max-width: 100%;
 }
 
+.new-quote-card > h2 {
+  text-align: center;
+}
+
 .new-estimate-guidance {
   margin: 0 0 12px;
   color: #b91c1c;
@@ -303,7 +307,7 @@ main {
   align-items: start;
   margin: 0 0 12px;
   color: #111;
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.35;
 }
 
@@ -450,6 +454,7 @@ main {
 
 .td2-required-info-card h3 {
   color: #7f1d1d;
+  font-weight: 900;
   margin: 0 0 10px;
 }
 

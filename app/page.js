@@ -489,8 +489,8 @@ export default function HomePage() {
   return (
     <main>
       <section className="banner">
-        <h1>Alpha Tree Service</h1>
-        <p>Estimates and Customer Approvals</p>
+        <h1>Alpha Tree</h1>
+        <p>New Estimate to send to Customer</p>
       </section>
       {notice && <div className="alert alert-success">{notice}</div>}
       {error && <ErrorAlert errors={[error]} />}

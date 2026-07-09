@@ -82,7 +82,7 @@ button, .btn, .btn-primary, .btn-secondary, .btn-link {
 .banner { background: linear-gradient(135deg, #1f4229 0%, #3f7045 100%); color: white;
   padding: 8px 14px; border-radius: 8px; margin-bottom: 12px; text-align: center; }
 .banner h1 { color: white; margin: 0; font-size: 20px; }
-.banner p { margin: 0; font-size: 13px; line-height: 1.3; }
+.banner p { margin: 0; font-size: 20px; line-height: 1.3; }
 
 .text-muted { color: #666; font-size: 13px; }
 .text-center { text-align: center; }

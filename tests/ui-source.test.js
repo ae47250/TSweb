@@ -34,7 +34,7 @@ test("initial desktop layout centers the Customer Notes card", () => {
   assert.match(pageSource, /app-grid-initial/);
   assert.match(cssSource, /\.app-grid-initial\s*\{/);
   assert.match(cssSource, /justify-content:\s*center/);
-  assert.match(cssSource, /width:\s*min\(100%, 720px\)/);
+  assert.match(cssSource, /width:\s*min\(100%, 980px\)/);
 });
 
 test("workflow actions use customer-safe labels and clean estimate route", () => {
@@ -48,18 +48,17 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(cssSource, /\.front-action-invoice/);
   assert.match(cssSource, /\.front-action-recent/);
   assert.match(cssSource, /background:\s*#dbeafe/);
-  assert.match(inputFormSource, /Fill in the red fields and add Job Notes/);
+  assert.match(inputFormSource, /Paste or type everything here \(in ANY order\)/);
+  assert.match(inputFormSource, /Add customer info, number of trees, prices and service for each option/);
+  assert.match(inputFormSource, /Remove 2 maples for John, 22 Main street, Madison/);
   assert.match(inputFormSource, /Review Estimate/);
   assert.match(inputFormSource, /Clear/);
   assert.doesNotMatch(inputFormSource, /Tree count/);
   assert.doesNotMatch(inputFormSource, /<option value="Auto">Auto<\/option>/);
   assert.doesNotMatch(inputFormSource, /<option value="Unknown">Unknown<\/option>/);
-  assert.match(inputFormSource, /job-notes-card/);
-  assert.match(inputFormSource, /Include<\/span> as much information as possible about the job, scope of work, and prices/);
+  assert.doesNotMatch(inputFormSource, /job-notes-card/);
+  assert.doesNotMatch(inputFormSource, /Include<\/span> as much information as possible about the job, scope of work, and prices/);
   assert.match(inputFormSource, /btn-create-review/);
-  assert.match(cssSource, /\.job-notes-card/);
-  assert.match(cssSource, /border:\s*2px solid #b91c1c/);
-  assert.match(cssSource, /\.job-notes-guidance/);
   assert.match(globalCssSource, /\.btn-create-review/);
   assert.match(globalCssSource, /\.banner/);
   assert.match(globalCssSource, /padding:\s*8px 14px/);
@@ -96,7 +95,8 @@ test("review and confirm screens separate AI review from final quote approval", 
   assert.match(reviewSource, /AI Review/);
   assert.match(reviewSource, /Check details before confirming quote/);
   assert.match(reviewSource, /Review ready/);
-  assert.match(reviewSource, /Needs more info/);
+  assert.doesNotMatch(reviewSource, /review-status-needs-info/);
+  assert.match(cssSource, /\.td2-required-info-card h3\s*\{[^}]*font-weight:\s*900/s);
   assert.match(reviewSource, /Job Notes/);
   assert.doesNotMatch(reviewSource, /Include:/);
   assert.doesNotMatch(reviewSource, /job-notes-example-text/);
@@ -120,6 +120,11 @@ test("review and confirm screens separate AI review from final quote approval", 
   assert.doesNotMatch(reviewSource, /Internal Warnings/);
   assert.match(reviewSource, /warning-card/);
   assert.match(reviewSource, /OverrideWarningCard/);
+  assert.match(reviewSource, /ContactOverrideCheckbox/);
+  assert.match(reviewSource, /contactOnlyOverrideStatus/);
+  assert.match(reviewSource, /withoutContactOverrideStatus/);
+  assert.match(reviewSource, /contactOverrideStatus/);
+  assert.match(reviewSource, /lowerOverrideStatus/);
   assert.match(reviewSource, /TreeCountResolutionCard/);
   assert.match(reviewSource, /Internal Warning/);
   assert.doesNotMatch(reviewSource, /Tree Dude Warning/);

@@ -26,39 +26,29 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
     onSubmit([contactText, value].filter(Boolean).join("\n\n"), contactValue);
   }
 
-  const addressFilled = Boolean(contactValue.address.trim());
-  const contactFilled = Boolean(contactValue.phone.trim() || contactValue.email.trim());
   const notesFilled = Boolean(value.trim());
-  const requiredClass = (filled) => filled ? "required-input required-input-filled" : "required-input";
 
   return (
     <section className="card new-quote-card" data-testid="customer-notes-card">
-      <h2>New Estimate</h2>
       {editMessage && <div className="alert" data-testid="edit-notes-message">{editMessage}</div>}
       <form onSubmit={submit}>
         <div className="job-notes-standalone">
-          <div className="job-notes-card">
-            <label htmlFor="customerText" className="job-notes-title">Job Notes</label>
-            <p className="job-notes-guidance">
-              <span>Include</span> as much information as possible about the job, scope of work, and prices.
-            </p>
-            <p className="job-notes-example">
-              <span>Example:</span>
-              <span className="job-notes-example-text">2 maples behind fence, tight access, haul brush, option A cut and stack 1800, option B haul and grind stumps 2750.</span>
-            </p>
-          </div>
-          <label htmlFor="customerText" className="text-inbox-title">
-            Paste or type everything here:<br />
+          <p className="text-inbox-title">
+            Paste or type everything here (in ANY order):<br />
             customer info, phone/email, address, work requested, options, prices, notes
-          </label>
+          </p>
+          <p className="job-notes-example">
+            <span>Example:</span>
+            <span className="job-notes-example-text">Remove 2 maples for John, 22 Main street, Madison, option a remove only 1000, option b grind stumps and haul away 1900.</span>
+          </p>
           <textarea
             ref={ref}
             id="customerText"
-            className={`job-notes-textarea ${requiredClass(notesFilled)}`}
+            className={`job-notes-textarea ${notesFilled ? "required-input required-input-filled" : "required-input"}`}
             rows={10}
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            placeholder="Add the number of trees, prices, and customer options here."
+            placeholder="Add customer info, number of trees, prices and service for each option."
           />
         </div>
         <div className="toolbar job-notes-actions">
@@ -77,17 +67,17 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
           </label>
           <label htmlFor="serviceAddress">
             Service address
-            <input className={requiredClass(addressFilled)} id="serviceAddress" value={contactValue.address} onChange={(event) => updateContact("address", event.target.value)} />
+            <input id="serviceAddress" value={contactValue.address} onChange={(event) => updateContact("address", event.target.value)} />
           </label>
           <div className="contact-choice-row">
             <label htmlFor="customerPhone">
               Customer phone
-              <input className={requiredClass(contactFilled)} id="customerPhone" value={contactValue.phone} onChange={(event) => updateContact("phone", event.target.value)} />
+              <input id="customerPhone" value={contactValue.phone} onChange={(event) => updateContact("phone", event.target.value)} />
             </label>
             <span className="contact-or">or</span>
             <label htmlFor="customerEmail">
               Customer email
-              <input className={requiredClass(contactFilled)} id="customerEmail" value={contactValue.email} onChange={(event) => updateContact("email", event.target.value)} />
+              <input id="customerEmail" value={contactValue.email} onChange={(event) => updateContact("email", event.target.value)} />
             </label>
           </div>
         </div>
