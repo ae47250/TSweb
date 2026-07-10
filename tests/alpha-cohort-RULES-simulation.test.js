@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
@@ -7,6 +8,12 @@ import { validateAlphaJson } from "../lib/validateJson.js";
 
 const FIXTURE_DIR = "tests/fixtures";
 const EXPECTED_TIERS = ["easy", "medium", "medium-messy", "very-messy", "uber-messy", "uber-plus-messy", "hard-knownfail"];
+const UBER_MESSY_APPROVED_BASELINE_PATH = join(FIXTURE_DIR, "alpha-uber-messy-approved-baseline-2026-07-10.json");
+const VERY_MESSY_APPROVED_BASELINE_PATH = join(FIXTURE_DIR, "alpha-very-messy-approved-baseline-2026-07-10.json");
+const approvedAuditBaselines = new Map([
+  ["uber-messy", JSON.parse(readFileSync(UBER_MESSY_APPROVED_BASELINE_PATH, "utf8"))],
+  ["very-messy", JSON.parse(readFileSync(VERY_MESSY_APPROVED_BASELINE_PATH, "utf8"))],
+]);
 const fixtures = readdirSync(FIXTURE_DIR)
   .filter((name) => /^alpha-.*-cases\.json$/i.test(name))
   .sort()
@@ -14,6 +21,22 @@ const fixtures = readdirSync(FIXTURE_DIR)
     filename,
     data: JSON.parse(readFileSync(join(FIXTURE_DIR, filename), "utf8")),
   }));
+
+function fileSha256(filePath) {
+  return createHash("sha256").update(readFileSync(filePath)).digest("hex");
+}
+
+function approvedNonDefectIds(baseline) {
+  return baseline.approved_non_defect_failing_case_ids || baseline.approved_failing_case_ids || [];
+}
+
+function approvedNonDefectFailureCount(baseline) {
+  return baseline.summary?.approved_non_defect_failure_count ?? baseline.summary?.failure_count ?? 0;
+}
+
+function approvedNonDefectStillBlockedCount(baseline) {
+  return baseline.summary?.approved_non_defect_still_blocked_after_follow_up ?? baseline.summary?.still_blocked_after_follow_up ?? 0;
+}
 
 function isBlank(value) {
   return value == null || value === "";
@@ -267,6 +290,8 @@ function summarizeBenchmark(fixture) {
     byCategory: countBy(results, (result) => result.category || "unknown"),
     byDecision: countBy(results, (result) => result.decision || "unknown"),
     failureCategories: failureCategoryCounts,
+    failingCaseIds: failing.map((result) => result.id),
+    stillBlockedCaseIds: results.filter((result) => !result.finalReady).map((result) => result.id),
   };
 }
 
@@ -300,6 +325,37 @@ test("alpha cohort current error rates do not exceed stored initial baselines", 
     context.diagnostic(JSON.stringify({ fixture: filename, tier: data.tier, ...summary }));
 
     assert.equal(summary.total, data.initial_baseline.total, `${filename} total case count changed`);
+
+    if (approvedAuditBaselines.has(data.tier)) {
+      const approvedBaseline = approvedAuditBaselines.get(data.tier);
+      const approvedList = approvedNonDefectIds(approvedBaseline);
+      const approvedIds = new Set(approvedList);
+      const newFailingIds = summary.failingCaseIds.filter((caseId) => !approvedIds.has(caseId));
+      const approvedFailingIds = summary.failingCaseIds.filter((caseId) => approvedIds.has(caseId));
+      const approvedStillBlockedIds = summary.stillBlockedCaseIds.filter((caseId) => approvedIds.has(caseId));
+      const duplicateApprovedIds = approvedList.filter((caseId, index) => approvedList.indexOf(caseId) !== index);
+      const approvedFailureCount = approvedNonDefectFailureCount(approvedBaseline);
+      const approvedStillBlockedCount = approvedNonDefectStillBlockedCount(approvedBaseline);
+
+      assert.equal(approvedBaseline.approval?.status, "approved_by_user_request", `${filename} needs an approved audit baseline`);
+      assert.equal(
+        fileSha256(join(FIXTURE_DIR, filename)),
+        approvedBaseline.fixture?.sha256,
+        `${filename} changed without refreshing the approved audit baseline`,
+      );
+      assert.deepEqual(duplicateApprovedIds, [], `${filename} approved baseline has duplicate case IDs`);
+      assert.ok(
+        approvedFailingIds.length <= approvedFailureCount,
+        `${filename} regressed from approved non-defect ${approvedFailureCount} to ${approvedFailingIds.length} approved non-defect failing cases`,
+      );
+      assert.ok(
+        approvedStillBlockedIds.length <= approvedStillBlockedCount,
+        `${filename} has more unrecovered follow-up cases than its approved baseline`,
+      );
+      assert.deepEqual(newFailingIds, [], `${filename} has failing case IDs outside the approved non-defect audit baseline`);
+      continue;
+    }
+
     assert.ok(
       summary.failing <= data.initial_baseline.failing_cases,
       `${filename} regressed from ${data.initial_baseline.failing_cases} to ${summary.failing} failing cases`,
