@@ -1182,11 +1182,30 @@ test("bare slash prices extract prices and warn on unclear option scope", () => 
   const input =
     "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana 2600/2,950 for tree? no note on haul or stump";
   const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
-  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.can_generate_pdf, false);
   assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$2,600", "$2,950"]);
-  assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear|option descriptions|stump/i);
-  assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(validation.follow_ups.join(" "), /slash price/i);
   assert.ok(validation.alphaJson.service_options.items.every((option) => option.review_flags?.scope_unclear));
+  assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "unclear_work_scope" && issue.blocks_pdf));
+});
+
+test("explicit incomplete or relative service addresses block PDF readiness", () => {
+  const noCity = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree. Option A $2050 Option B $3,000",
+  ));
+  assert.equal(noCity.can_generate_pdf, false);
+  assert.match(noCity.blocking_errors.join(" "), /Service address needs exact location confirmation/i);
+  assert.match(noCity.follow_ups.join(" "), /exact service address/i);
+
+  const lotBeside = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "customer Sofia Cross 812-555-2380 sofia.cross740@example.com lot beside 7260 Meadow Lane. remove one bradford pear tree. Option A $950 Option B $1450",
+  ));
+  assert.equal(lotBeside.can_generate_pdf, false);
+  assert.match(lotBeside.blocking_errors.join(" "), /Service address needs exact location confirmation/i);
+  assert.match(lotBeside.follow_ups.join(" "), /exact service address/i);
 });
 
 test("gate codes are not treated as prices", () => {
