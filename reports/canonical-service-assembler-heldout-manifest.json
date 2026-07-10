@@ -1,11 +1,12 @@
 {
-  "generated_at": "2026-07-10T15:49:40.205Z",
+  "generated_at": "2026-07-10T18:03:37.115Z",
   "source_file": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\liveapi-20case-deep-dive.jsonl",
   "status": "BLOCKED - INSUFFICIENT GROUND TRUTH",
   "reason": "The available held-out file has expected prices and general readiness checks, but lacks authoritative service-kind, relationship, and canonical item labels.",
   "semantic_truth_available": false,
   "required_label_schema": {
     "case_id": "string",
+    "canonical_service_item_count": "number",
     "canonical_service_items": [
       {
         "expected_id": "string",
@@ -20,6 +21,7 @@
           "other_supported_service"
         ],
         "amount": "number",
+        "amount_to_service_kind_pairing": "string",
         "relationship_type": [
           "primary_service",
           "required_component",
@@ -32,8 +34,22 @@
           "unresolved_relationship"
         ],
         "required_source_span": "string",
+        "supported_action": "explicit | inferred | ambiguous | unsupported",
+        "supported_count": "explicit | inferred | ambiguous | unsupported",
+        "supported_species": "explicit | inferred | ambiguous | unsupported",
+        "supported_location": "explicit | inferred | ambiguous | unsupported",
+        "supported_inclusions": "explicit | inferred | ambiguous | unsupported",
+        "supported_exclusions": "explicit | inferred | ambiguous | unsupported",
+        "should_remain_blocked": "boolean",
         "reviewer_notes": "string"
       }
+    ],
+    "review_process": [
+      "Reviewer A labels independently.",
+      "Reviewer B labels independently.",
+      "Disagreements are adjudicated.",
+      "Labels are frozen before assembler evaluation.",
+      "Frozen labels receive a version and checksum."
     ],
     "forbidden_labels": [
       "Do not label from assembler output.",
@@ -51,9 +67,18 @@
         "$2,300"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -65,9 +90,18 @@
         "$2,314"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -79,9 +113,18 @@
         "$2,328"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -93,9 +136,18 @@
         "$2,342"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -107,9 +159,18 @@
         "$2,356"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -121,9 +182,18 @@
         "$2,370"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -135,9 +205,18 @@
         "$2,384"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -149,9 +228,18 @@
         "$2,398"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -163,9 +251,18 @@
         "$2,412"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -177,9 +274,18 @@
         "$2,426"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -191,9 +297,18 @@
         "$2,440"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -205,9 +320,18 @@
         "$2,454"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -219,9 +343,18 @@
         "$2,468"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -233,9 +366,18 @@
         "$2,482"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -247,9 +389,18 @@
         "$2,496"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -261,9 +412,18 @@
         "$2,510"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -275,9 +435,18 @@
         "$2,524"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -289,9 +458,18 @@
         "$2,538"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -303,9 +481,18 @@
         "$2,552"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     },
     {
@@ -317,9 +504,18 @@
         "$2,566"
       ],
       "missing_required_fields": [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
-        "canonical_service_items[].required_source_span"
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
       ]
     }
   ]

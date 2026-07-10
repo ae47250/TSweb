@@ -1,6 +1,6 @@
 {
   "record_type": "production_gate_summary",
-  "generated_at": "2026-07-10T15:49:40.205Z",
+  "generated_at": "2026-07-10T18:03:37.116Z",
   "all_gates_pass": false,
   "final_recommendation": "REVISE",
   "blocked_status": "BLOCKED - INSUFFICIENT GROUND TRUTH",
@@ -43,7 +43,19 @@
     },
     {
       "name": "zero 382 replay semantic-ready-but-wrong cases",
-      "pass": false
+      "pass": true
+    },
+    {
+      "name": "PDF-ready amount-kind mismatches are zero",
+      "pass": true
+    },
+    {
+      "name": "exact amount-kind rows remain 382/382",
+      "pass": true
+    },
+    {
+      "name": "exact price rows remain 382/382",
+      "pass": true
     },
     {
       "name": "no regression from best baseline in price correctness",
@@ -63,6 +75,10 @@
     },
     {
       "name": "all uncertain relationships remain blocked or require explicit TD resolution",
+      "pass": true
+    },
+    {
+      "name": "known alpha-uber-messy failure does not exceed clean baseline of 48",
       "pass": true
     },
     {

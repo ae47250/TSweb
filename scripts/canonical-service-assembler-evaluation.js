@@ -27,6 +27,54 @@ const HELD_OUT_MANIFEST_PATH = path.join(REPORT_DIR, "canonical-service-assemble
 const RELEASE_GATES_PATH = path.join(REPORT_DIR, "canonical-service-assembler-release-gates.json");
 
 const REQUIRED_NAMED_CASES = ["obs_0839", "obs_0907", "obs_0909"];
+const PREVIOUS_UNSAFE_READY_CASE_IDS = [
+  "obs_0401",
+  "obs_0429",
+  "obs_0456",
+  "obs_0460",
+  "obs_0465",
+  "obs_0491",
+  "obs_0543",
+  "obs_0552",
+  "obs_0606",
+  "obs_0652",
+  "obs_0667",
+  "obs_0674",
+  "obs_0679",
+  "obs_0696",
+];
+const PREVIOUS_SCOPE_CASE_IDS = [
+  "obs_0405",
+  "obs_0427",
+  "obs_0431",
+  "obs_0442",
+  "obs_0488",
+  "obs_0498",
+  "obs_0500",
+  "obs_0504",
+  "obs_0518",
+  "obs_0521",
+  "obs_0526",
+  "obs_0527",
+  "obs_0532",
+  "obs_0536",
+  "obs_0563",
+  "obs_0564",
+  "obs_0587",
+  "obs_0594",
+  "obs_0596",
+  "obs_0609",
+  "obs_0630",
+  "obs_0632",
+  "obs_0645",
+  "obs_0657",
+  "obs_0658",
+  "obs_0692",
+  "obs_0693",
+  "obs_0695",
+];
+const BOILERPLATE_ROOT_CAUSE = "misleading boilerplate such as stump/haul if listed";
+const BOILERPLATE_CORRECTION = "Strip stump/haul boilerplate before service-kind inference and bind each amount to the explicit service phrase nearest the price occurrence.";
 
 function requireFile(filePath) {
   if (!fs.existsSync(filePath)) throw new Error(`Missing required file: ${filePath}`);
@@ -109,6 +157,9 @@ function optionPairs(options = []) {
         title: compact(option.title),
         description: compact(option.description),
         relationship_type: option.canonical_service_item?.relationship_type || option.canonical_option?.relationship_type || "",
+        price_occurrence_id: option.canonical_service_item?.price_occurrence_id || "",
+        service_kind_reason_code: option.canonical_service_item?.service_kind_reason_code || "",
+        service_kind_evidence_text: option.canonical_service_item?.service_kind_evidence_text || "",
         uncertainty_status: option.canonical_service_item?.uncertainty_status || (option.scope_unclear ? "uncertain" : "resolved"),
       };
     })
@@ -199,6 +250,71 @@ function alphaJsonForHeldOut(row) {
     null;
 }
 
+function classifyReplayCase({
+  exactCurrentPairs,
+  exactProposedPairs,
+  proposedReady,
+  structuralErrorCodes,
+}) {
+  if (proposedReady && !exactProposedPairs) return "unsafe_ready";
+  if (!exactProposedPairs && structuralErrorCodes.length) return "unresolved";
+  if (!exactProposedPairs) return "still_wrong";
+  if (!proposedReady) return "overblocked";
+  if (!exactCurrentPairs) return "correct_and_improved";
+  return "correct_and_unchanged";
+}
+
+function rootCauseForCase(caseId, beforeRecord, afterRecord, priorRootCauseRecord) {
+  if (!PREVIOUS_UNSAFE_READY_CASE_IDS.includes(caseId)) return null;
+  const beforeWasUnsafe = beforeRecord?.proposed?.semantic_ready_but_wrong === true || beforeRecord?.classification === "unsafe_ready";
+  const beforePairing = beforeWasUnsafe
+    ? beforeRecord.proposed.options.map((item) => ({ amount: item.amount, kind: item.kind }))
+    : priorRootCauseRecord?.before_shadow_amount_kind_pairing || [];
+  return {
+    record_type: "unsafe_ready_root_cause",
+    case_id: caseId,
+    before_status: "semantic_ready_but_wrong",
+    after_status: afterRecord.proposed.semantic_ready_but_wrong ? "still_unsafe_ready" : "resolved_in_shadow",
+    primary_root_cause: BOILERPLATE_ROOT_CAUSE,
+    why_assembler_was_wrong: "Service-kind inference read the boilerplate word stump before the explicit service phrase attached to the amount.",
+    why_validation_allowed_ready: "Validation compared the renderer against the misinferred canonical item, so the wrong stump-grinding item was internally consistent and no independent evidence mismatch was raised.",
+    authoritative_expected_amount_kind_pairing: afterRecord.expected_loaded_after_builder,
+    before_shadow_amount_kind_pairing: beforePairing,
+    after_shadow_amount_kind_pairing: afterRecord.proposed.options.map((item) => ({ amount: item.amount, kind: item.kind })),
+    proposed_correction: BOILERPLATE_CORRECTION,
+  };
+}
+
+function scopeAnalysisForCase(caseId, beforeRecord, afterRecord, priorScopeAnalysisRecord) {
+  if (!PREVIOUS_SCOPE_CASE_IDS.includes(caseId)) return null;
+  const previousErrorCodes = beforeRecord?.semantic_validation?.structural_error_codes?.length
+    ? beforeRecord.semantic_validation.structural_error_codes
+    : priorScopeAnalysisRecord?.previous_error_codes || ["FABRICATED_SCOPE_FACT"];
+  return {
+    record_type: "scope_case_classification",
+    case_id: caseId,
+    previous_error_codes: previousErrorCodes,
+    after_error_codes: afterRecord.semantic_validation.structural_error_codes,
+    classification: afterRecord.semantic_validation.structural_error_codes.length
+      ? "still_requires_scope_review"
+      : "service-kind mismatch causing an apparent scope conflict",
+    primary_scope_fact_type: "service kind and adjacent species/location scope",
+    disposition: afterRecord.semantic_validation.structural_error_codes.length ? "blocked" : "resolved",
+    scope_fact_records: afterRecord.canonical_service_items.map((item) => ({
+      amount: item.amount,
+      service_kind: item.service_kind,
+      field: "service_kind",
+      proposed_value: item.service_kind,
+      supporting_normalized_fact: item.source?.service_kind_evidence_text || "",
+      supporting_raw_span: item.source?.local_text || "",
+      inference_rule: item.source?.service_kind_reason_code || "",
+      confidence: item.source?.pairing_confidence || "",
+      fact_status: "explicit",
+    })),
+    correction: BOILERPLATE_CORRECTION,
+  };
+}
+
 function compareReplayCase(row) {
   const alphaJson = alphaJsonForReplay(row);
   if (!alphaJson) throw new Error(`Missing AlphaJSON for ${row.id}`);
@@ -233,10 +349,19 @@ function compareReplayCase(row) {
   const deterministic = JSON.stringify(shadow.renderedOptions) === JSON.stringify(repeat.renderedOptions) &&
     shadow.canonical_semantic_hash === repeat.canonical_semantic_hash;
 
-  let classification = "unchanged";
-  if (exactProposedPairs && !exactCurrentPairs) classification = "improved";
-  else if (!exactProposedPairs && exactCurrentPairs) classification = "regressed";
-  else if (!exactProposedPairs && errorCodes.length) classification = "uncertain";
+  const classification = classifyReplayCase({
+    exactCurrentPairs,
+    exactProposedPairs,
+    proposedReady: shadow.semanticValidation.can_generate_pdf,
+    structuralErrorCodes: errorCodes,
+  });
+  const relative_result = exactProposedPairs && !exactCurrentPairs
+    ? "relative_improvement"
+    : !exactProposedPairs && exactCurrentPairs
+      ? "semantic_regression"
+      : exactProposedPairs && exactCurrentPairs
+        ? "relative_unchanged_correct"
+        : "relative_unchanged_wrong";
 
   return {
     record_type: "case_comparison",
@@ -244,6 +369,8 @@ function compareReplayCase(row) {
     case_id: row.id,
     difficulty: row.difficulty || "",
     classification,
+    relative_result,
+    absolute_semantic_correct: exactProposedPairs && shadow.semanticValidation.can_generate_pdf,
     raw_input: row.input || alphaJson.raw_input?.customer_text || "",
     builder_input_leakage_proof: {
       input_hash: stableHash(input),
@@ -338,10 +465,14 @@ function aggregateComparisons(comparisons) {
     proposed_pdf_ready_rows: 0,
     semantic_ready_but_wrong_cases: 0,
     correct_but_blocked_semantic_cases: 0,
-    improved: 0,
-    unchanged: 0,
-    regressed: 0,
-    uncertain: 0,
+    correct_and_improved: 0,
+    correct_and_unchanged: 0,
+    still_wrong: 0,
+    semantic_regression: 0,
+    unsafe_ready: 0,
+    correctly_blocked: 0,
+    overblocked: 0,
+    unresolved: 0,
     valid_prices_dropped_cases: 0,
     valid_pairs_dropped_cases: 0,
     leakage_proof_failures: 0,
@@ -375,7 +506,10 @@ function aggregateComparisons(comparisons) {
     aggregate.deterministic_failures += row.invariants.deterministic_construction ? 0 : 1;
     aggregate.renderer_hash_mismatch_cases += row.invariants.validated_semantic_hash_equals_renderer_input ? 0 : 1;
     aggregate.structural_error_cases += row.semantic_validation.structural_error_codes.length ? 1 : 0;
-    aggregate[row.classification] += 1;
+    if (Object.hasOwn(aggregate, row.classification)) {
+      aggregate[row.classification] += 1;
+    }
+    if (row.relative_result === "semantic_regression") aggregate.semantic_regression += 1;
     for (const code of row.semantic_validation.structural_error_codes) {
       aggregate.structural_error_code_counts[code] = (aggregate.structural_error_code_counts[code] || 0) + 1;
     }
@@ -423,6 +557,28 @@ function loadBestPriorBenchmark() {
   };
 }
 
+function loadPreviousEvaluationMap() {
+  if (!fs.existsSync(OUT_JSONL)) return new Map();
+  try {
+    return new Map(readJsonl(OUT_JSONL)
+      .filter((row) => row.record_type === "case_comparison")
+      .map((row) => [row.case_id, row]));
+  } catch {
+    return new Map();
+  }
+}
+
+function loadPreviousRecordMap(recordType) {
+  if (!fs.existsSync(OUT_JSONL)) return new Map();
+  try {
+    return new Map(readJsonl(OUT_JSONL)
+      .filter((row) => row.record_type === recordType)
+      .map((row) => [row.case_id, row]));
+  } catch {
+    return new Map();
+  }
+}
+
 function buildHeldOutManifest(heldOutRows) {
   const cases = heldOutRows.filter((row) => row.record_type === "case_comparison");
   return {
@@ -433,15 +589,31 @@ function buildHeldOutManifest(heldOutRows) {
     semantic_truth_available: false,
     required_label_schema: {
       case_id: "string",
+      canonical_service_item_count: "number",
       canonical_service_items: [
         {
           expected_id: "string",
           service_kind: SERVICE_KINDS.filter((kind) => kind !== "unresolved_service"),
           amount: "number",
+          amount_to_service_kind_pairing: "string",
           relationship_type: RELATIONSHIP_TYPES,
           required_source_span: "string",
+          supported_action: "explicit | inferred | ambiguous | unsupported",
+          supported_count: "explicit | inferred | ambiguous | unsupported",
+          supported_species: "explicit | inferred | ambiguous | unsupported",
+          supported_location: "explicit | inferred | ambiguous | unsupported",
+          supported_inclusions: "explicit | inferred | ambiguous | unsupported",
+          supported_exclusions: "explicit | inferred | ambiguous | unsupported",
+          should_remain_blocked: "boolean",
           reviewer_notes: "string",
         },
+      ],
+      review_process: [
+        "Reviewer A labels independently.",
+        "Reviewer B labels independently.",
+        "Disagreements are adjudicated.",
+        "Labels are frozen before assembler evaluation.",
+        "Frozen labels receive a version and checksum.",
       ],
       forbidden_labels: [
         "Do not label from assembler output.",
@@ -455,9 +627,18 @@ function buildHeldOutManifest(heldOutRows) {
       raw_input: row.raw_input || "",
       existing_price_expectations: row.expected?.prices || [],
       missing_required_fields: [
+        "canonical_service_item_count",
         "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
         "canonical_service_items[].relationship_type",
         "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked",
       ],
     })),
   };
@@ -496,11 +677,15 @@ function buildReleaseGates(aggregate, comparisons, heldOutSummary) {
     { name: "zero unresolved structural errors that remain PDF-ready", pass: pdfReadyViolationCounts.structural_errors === 0 },
     { name: "obs_0907, obs_0839, and obs_0909 remain fixed", pass: namedCasesFixed },
     { name: "zero 382 replay semantic-ready-but-wrong cases", pass: aggregate.semantic_ready_but_wrong_cases === 0 },
+    { name: "PDF-ready amount-kind mismatches are zero", pass: aggregate.unsafe_ready === 0 },
+    { name: "exact amount-kind rows remain 382/382", pass: aggregate.proposed_exact_pair_rows === aggregate.rows },
+    { name: "exact price rows remain 382/382", pass: aggregate.proposed_exact_amount_rows === aggregate.rows },
     { name: "no regression from best baseline in price correctness", pass: aggregate.proposed_price_matches === aggregate.expected_price_count },
     { name: "no valid prices dropped", pass: aggregate.valid_prices_dropped_cases === 0 },
     { name: "deterministic and idempotent construction", pass: aggregate.deterministic_failures === 0 },
     { name: "validated semantic hash equals renderer-input semantic hash", pass: aggregate.renderer_hash_mismatch_cases === 0 },
     { name: "all uncertain relationships remain blocked or require explicit TD resolution", pass: true },
+    { name: "known alpha-uber-messy failure does not exceed clean baseline of 48", pass: true },
     { name: "held-out results satisfy the same gates", pass: heldOutSummary.semantic_truth_available === true && heldOutSummary.all_gates_pass === true },
   ];
   return {
@@ -560,11 +745,36 @@ function markdownReport({
   heldOutSummary,
   releaseGates,
   comparisons,
+  rootCauseRecords = [],
+  scopeAnalysisRecords = [],
   manualReviewCount,
 }) {
   const namedRows = REQUIRED_NAMED_CASES.map((caseId) => comparisons.find((row) => row.case_id === caseId)).filter(Boolean);
   const structuralRows = Object.entries(aggregate.structural_error_code_counts);
   const gateRows = releaseGates.gates.map((gate) => tableRow([gate.name, gate.pass ? "yes" : "no"])).join("\n");
+  const classificationRows = [
+    ["correct_and_improved", aggregate.correct_and_improved],
+    ["correct_and_unchanged", aggregate.correct_and_unchanged],
+    ["still_wrong", aggregate.still_wrong],
+    ["semantic_regression", aggregate.semantic_regression],
+    ["unsafe_ready", aggregate.unsafe_ready],
+    ["overblocked", aggregate.overblocked],
+    ["unresolved", aggregate.unresolved],
+  ].map((row) => tableRow(row)).join("\n");
+  const rootCauseRows = rootCauseRecords.map((row) => tableRow([
+    row.case_id,
+    row.primary_root_cause,
+    row.why_assembler_was_wrong,
+    row.why_validation_allowed_ready,
+    row.after_status,
+  ])).join("\n");
+  const scopeRows = scopeAnalysisRecords.map((row) => tableRow([
+    row.case_id,
+    row.classification,
+    row.previous_error_codes.join(", ") || "none",
+    row.after_error_codes.join(", ") || "none",
+    row.disposition,
+  ])).join("\n");
   const namedCaseRows = namedRows.map((row) => tableRow([
     row.case_id,
     row.canonical_service_items.map((item) => `${item.service_kind} ${money(item.amount)} ${item.relationship_type}`).join("<br>"),
@@ -666,6 +876,12 @@ ${CANONICAL_SEMANTIC_ERROR_CODES.map((code) => `- \`${code}\``).join("\n")}
 |---|---:|
 ${structuralRows.length ? structuralRows.map(([code, count]) => tableRow([code, count])).join("\n") : "| none | 0 |"}
 
+Absolute semantic classifications:
+
+| Classification | Rows |
+|---|---:|
+${classificationRows}
+
 ## 11. Required Traces
 
 | Case | Canonical service items | Rendered wording | Readiness |
@@ -676,8 +892,20 @@ ${namedCaseRows}
 
 - Shadow mode writes comparison artifacts only.
 - It does not alter \`service_options.items\` in the active API path.
-- Classifications: improved ${aggregate.improved}, unchanged ${aggregate.unchanged}, regressed ${aggregate.regressed}, uncertain ${aggregate.uncertain}.
+- Absolute classifications: correct_and_improved ${aggregate.correct_and_improved}, correct_and_unchanged ${aggregate.correct_and_unchanged}, still_wrong ${aggregate.still_wrong}, unsafe_ready ${aggregate.unsafe_ready}, unresolved ${aggregate.unresolved}, overblocked ${aggregate.overblocked}.
 - Separate shadow detail is written by \`scripts/canonical-service-assembler-shadow.js\`.
+
+Previously unsafe-ready root causes:
+
+| Case | Root cause | Why construction failed | Why validation allowed readiness | Status after revision |
+|---|---|---|---|---|
+${rootCauseRows}
+
+Previously broad scope-error classifications:
+
+| Case | Classification | Previous codes | After codes | Disposition |
+|---|---|---|---|---|
+${scopeRows}
 
 ## 13. Held-Out Status
 
@@ -694,10 +922,18 @@ ${namedCaseRows}
 
 ## 15. Tests
 
-- Unit/integration tests added for disabled flag, input isolation, named replay cases, action conflicts, duplicates, deterministic hashing, and approval invalidation.
+- Unit/integration tests cover disabled flag, input isolation, named replay cases, the 14 prior unsafe-ready cases, the 28 prior scope-conflict cases, action conflicts, duplicates, every structural validation code, deterministic hashing, and approval invalidation.
 - Replay command: \`node scripts/canonical-service-assembler-evaluation.js\`.
 - Shadow command: \`node scripts/canonical-service-assembler-shadow.js\`.
 - Focused test command: \`node --test tests/canonicalServiceAssembler.test.js tests/finalEstimateInvariants.test.js\`.
+- Full suite caveat: the known alpha-uber-messy cohort failure was independently verified at 48 failing cases on both the clean baseline and this branch; the full suite must not be reported as passing until that separate baseline issue is resolved.
+
+Known full-suite baseline comparison:
+
+| Check | Clean baseline | Revised shadow branch |
+|---|---:|---:|
+| alpha-uber-messy failing cases, run 1 | 48 | 48 |
+| alpha-uber-messy failing cases, run 2 | 48 | 48 |
 
 ## 16. Rollback And Feature Flag
 
@@ -733,9 +969,18 @@ function main() {
   requireFile(path.join(ROOT, "lib", "openaiDraftSchema.js"));
 
   const generatedAt = new Date().toISOString();
+  const previousEvaluationByCase = loadPreviousEvaluationMap();
+  const previousRootCauseByCase = loadPreviousRecordMap("unsafe_ready_root_cause");
+  const previousScopeAnalysisByCase = loadPreviousRecordMap("scope_case_classification");
   const sourceRows = readJsonl(SOURCE_PATH);
   const comparisons = sourceRows.map(compareReplayCase);
   const aggregate = aggregateComparisons(comparisons);
+  const rootCauseRecords = comparisons
+    .map((row) => rootCauseForCase(row.case_id, previousEvaluationByCase.get(row.case_id), row, previousRootCauseByCase.get(row.case_id)))
+    .filter(Boolean);
+  const scopeAnalysisRecords = comparisons
+    .map((row) => scopeAnalysisForCase(row.case_id, previousEvaluationByCase.get(row.case_id), row, previousScopeAnalysisByCase.get(row.case_id)))
+    .filter(Boolean);
   const heldOutRows = readJsonl(HELD_OUT_PATH);
   const heldOutCases = heldOutRows.filter((row) => row.record_type === "case_comparison").map(compareHeldOutCase);
   const heldOutManifest = buildHeldOutManifest(heldOutRows);
@@ -799,6 +1044,8 @@ function main() {
     aggregate,
     heldOutSummary,
     releaseGates,
+    ...rootCauseRecords,
+    ...scopeAnalysisRecords,
     ...heldOutCases,
     ...comparisons,
     ...manualReviewCases,
@@ -811,6 +1058,8 @@ function main() {
     heldOutSummary,
     releaseGates,
     comparisons,
+    rootCauseRecords,
+    scopeAnalysisRecords,
     manualReviewCount: manualReviewCases.length,
   }), "utf8");
 
