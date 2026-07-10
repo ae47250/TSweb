@@ -1577,6 +1577,18 @@ test("drop haul cleanup shorthand creates three priced options", () => {
   assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,450", "$2,400", "$2,900"]);
 });
 
+test("old estimate scribble prefix still keeps drop haul and stump prices", () => {
+  const input =
+    "note from Alicia Blair 812 555 2249 alicia.blair277@example.com. 2061 Vaughn Drive Hanover IN. 2 oak trees removal. notes: old estimate scribble. drop $1250 haul brush 1800 stump 2,800";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,250", "$1,800", "$2,800"]);
+  assert.match(validation.alphaJson.service_options.items[0].description, /remove|drop|tree/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /haul|brush/i);
+  assert.match(validation.alphaJson.service_options.items[2].description, /stump/i);
+});
+
 test("more than four shorthand options keep first four by price and warn", () => {
   const input =
     "812.555.3294 kayla.hughes062@example.com note from Kayla Hughes -- take down 3 maple trees -- service address 881 State Road 56, Madison, Indiana -- A drop only 1,900 B drop stack wood $2,200 C haul brush 3150 D full cleanup 3,900 E cleanup plus stump grind $4,350";
