@@ -137,7 +137,7 @@ function parseLiveApiSummary(name) {
 
 function allLiveApiReports() {
   return readdirSync(REPORT_DIR)
-    .filter((name) => /^LIVEapi-summary-.*-50cases\.md$/i.test(name))
+    .filter((name) => /^LIVEapi-summary-.*cases\.md$/i.test(name))
     .map(parseLiveApiSummary)
     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 }
@@ -368,12 +368,12 @@ function buildPanels() {
       ],
     },
     {
-      title: "LIVE API / GPT EXTRACTION - 50 CASE SMOKE RUNS",
+      title: "LIVE API / GPT EXTRACTION - LIVE CASE SMOKE RUNS",
       subtitle: "Saved live OpenAI API runs against the local API route. These are model-dependent GPT extraction checks, so read them separately from deterministic local test data.",
       cards: [
         card({
           lane: "ai",
-          title: "GPT extraction failures in 50 live API cases",
+          title: "GPT extraction failures in live API cases",
           source: "LIVEapi smoke summaries",
           value: liveApi.failed,
           baseline: liveApiBase.failed,
@@ -384,7 +384,7 @@ function buildPanels() {
         }),
         card({
           lane: "ai",
-          title: "Tree-count/detail failures in 12 live GPT tree-detail cases",
+          title: "Tree-count/detail failures in live GPT tree-detail cases",
           source: "LIVEapi category: tree_count_tree_detail",
           value: liveTreeDetail.failed || 0,
           baseline: liveTreeDetailBase.failed || 0,
@@ -398,7 +398,7 @@ function buildPanels() {
         }),
         card({
           lane: "ai",
-          title: "Messy job description failures in 12 live GPT cases",
+          title: "Messy job description failures in live GPT cases",
           source: "LIVEapi category: messy_job_description",
           value: liveMessyJob.failed || 0,
           baseline: liveMessyJobBase.failed || 0,
@@ -412,7 +412,7 @@ function buildPanels() {
         }),
         card({
           lane: "workflow",
-          title: "Live API passed cases in 50 GPT extraction runs",
+          title: "Live API passed cases in GPT extraction runs",
           source: "LIVEapi smoke summaries",
           value: liveApi.passed,
           baseline: liveApiBase.passed,
@@ -424,7 +424,7 @@ function buildPanels() {
         }),
         card({
           lane: "workflow",
-          title: "Local fallback/mock use in 50 live API cases",
+          title: "Local fallback/mock use in live API cases",
           source: "LIVEapi smoke summaries",
           value: liveApi.fallback,
           baseline: liveApiBase.fallback,
