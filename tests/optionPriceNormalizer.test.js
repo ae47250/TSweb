@@ -406,6 +406,21 @@ test("location and address numbers do not become price candidates", () => {
       excluded: ["8125552400", "421 barn rd"],
       prices: ["$2,300"],
     },
+    {
+      raw: "remove oak, bubbi morthens, 123 main, madison, option 1 300 option b and haul 2000",
+      excluded: ["123 main madison"],
+      prices: ["$300", "$2,000"],
+    },
+    {
+      raw: "123 main madison remove oak option A 300 option B haul 2000",
+      excluded: ["123 main madison"],
+      prices: ["$300", "$2,000"],
+    },
+    {
+      raw: "803 w. 2nd remove maple option A 1200 option B haul 1800",
+      excluded: ["803 w. 2nd"],
+      prices: ["$1,200", "$1,800"],
+    },
   ];
 
   for (const item of cases) {

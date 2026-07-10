@@ -1,11 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { buildCustomerJobSummary, normalizeServiceAddress, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
+import { buildCustomerJobSummary, normalizeEditedServiceAddress, normalizeServiceAddress, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
+import { LOCAL_INDIANA_TOWNS } from "../../lib/localTowns.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../lib/reviewOverrides.js";
 
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const localTownDisplayPattern = LOCAL_INDIANA_TOWNS
+  .slice()
+  .sort((a, b) => b.length - a.length)
+  .map((town) => escapeRegExp(town).replace(/\s+/g, "\\s+"))
+  .join("|");
+
+function splitServiceAddressDisplay(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) return { street: "Address missing", cityState: "" };
+  if (/^Address missing$/i.test(text)) return { street: text, cityState: "" };
+
+  const parts = text.split(",").map((part) => part.trim()).filter(Boolean);
+  if (parts.length > 1) {
+    return { street: parts[0], cityState: parts.slice(1).join(", ") };
+  }
+
+  const townMatch = text.match(new RegExp(`^(.*?)\\s+(${localTownDisplayPattern})(?:\\s+(Indiana|IN))?$`, "i"));
+  if (townMatch?.[1]) {
+    return {
+      street: townMatch[1].trim(),
+      cityState: [townMatch[2], townMatch[3]].filter(Boolean).join(" "),
+    };
+  }
+
+  return { street: text, cityState: "" };
+}
+
+const REQUIRED_PHONE_DIGITS = 10;
+const PHONE_DIGIT_WARNING = `Phone number must be ${REQUIRED_PHONE_DIGITS} digits including area code.`;
+
+function phoneDigitCount(value) {
+  return String(value || "").replace(/\D/g, "").length;
+}
+
+function optionRenderKey(option, index) {
+  return `${option?.id || option?.option_id || option?.label || "option"}-${index}`;
 }
 
 const warningPattern = /\b(aggressive\s+dogs?|dogs?|warning|hazard|power\s*lines?|wires?|unsafe|locked\s+gate|gate\s+code|access|poison\s+ivy|bees?|wasps?)\b/i;
@@ -159,9 +198,9 @@ function DebugRenderedRows({ renderedFields }) {
       ))}
       {renderedFields.quoteOptions.length > 0 && (
         <div className="debug-rendered-options">
-          <span className="debug-rendered-label">Quote options</span>
-          {renderedFields.quoteOptions.map((option) => (
-            <div className="debug-rendered-option" key={option.label}>
+          <span className="debug-rendered-label">Estimate options</span>
+          {renderedFields.quoteOptions.map((option, index) => (
+            <div className="debug-rendered-option" key={optionRenderKey(option, index)}>
               <strong>{option.label}</strong>
               <span>{option.price}</span>
               <p>{option.title}</p>
@@ -184,7 +223,7 @@ function buildDebugExplanation(validation, renderedFields) {
     return {
       meaning: "The estimate is not ready for the customer yet. Validation found missing or unclear information.",
       suggestion: followUps[0] || blocking[0] || "Add the missing job details in TD1 and create the review again.",
-      why: "TD2 should only confirm quotes when the address, contact method, work scope, and priced option are clear enough for a customer-facing estimate.",
+      why: "TD2 should only confirm estimates when the address, contact method, work scope, and priced option are clear enough for a customer-facing estimate.",
     };
   }
 
@@ -192,13 +231,13 @@ function buildDebugExplanation(validation, renderedFields) {
     return {
       meaning: "The estimate can be generated, but one or more details should be reviewed.",
       suggestion: warnings[0],
-      why: "Warnings do not block the quote, but they usually point to safety, access, address, or cleanup details worth checking before sending.",
+      why: "Warnings do not block the estimate, but they usually point to safety, access, address, or cleanup details worth checking before sending.",
     };
   }
 
   if (renderedFields.quoteOptions.length < 1) {
     return {
-      meaning: "TD2 has no quote option to show.",
+      meaning: "TD2 has no estimate option to show.",
       suggestion: "Add at least one priced option in the notes, then create the review again.",
       why: "The customer needs a clear option and price before the estimate can be useful.",
     };
@@ -246,7 +285,7 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
           <DebugJsonBlock value={debugPipeline.cleanedCanonicalAlphaJson || alphaJson} />
 
           <h3>TD2 Validation Result</h3>
-          <p className="debug-field-note">This decides whether TD2 can confirm the quote or needs more information.</p>
+          <p className="debug-field-note">This decides whether TD2 can confirm the estimate or needs more information.</p>
           <DebugJsonBlock value={debugPipeline.validationResult || validation} />
 
           <h3>TD2 Rendered Fields</h3>
@@ -359,7 +398,24 @@ function ContactOverrideCheckbox({ status, overrides, onChange }) {
   );
 }
 
-function contactOnlyOverrideStatus(status) {
+function AddressOverrideCheckbox({ status, overrides, onChange }) {
+  if (!status?.needsAddressOverride) return null;
+
+  return (
+    <div className="override-warning-item">
+      <label className="override-check-row">
+        <input
+          type="checkbox"
+          checked={Boolean(overrides.missingAddress)}
+          onChange={() => onChange?.({ ...overrides, missingAddress: !overrides.missingAddress })}
+        />
+        <span>Create Estimate without exact address</span>
+      </label>
+    </div>
+  );
+}
+
+function inlineContactOverrideStatus(status) {
   if (!status.needsContactOverride && !status.needsPhoneOverride && !status.needsEmailOverride) return null;
   return {
     ...status,
@@ -368,19 +424,38 @@ function contactOnlyOverrideStatus(status) {
   };
 }
 
-function withoutContactOverrideStatus(status) {
+function inlineAddressOverrideStatus(status) {
+  if (!status.needsAddressOverride) return null;
   return {
     ...status,
     needsContactOverride: false,
     needsPhoneOverride: false,
     needsEmailOverride: false,
+    needsScopeOverride: false,
     contactWarning: null,
+  };
+}
+
+function withoutInlineOverrideStatus(status, { contact = false, address = false } = {}) {
+  return {
+    ...status,
+    needsAddressOverride: address ? false : status.needsAddressOverride,
+    needsContactOverride: contact ? false : status.needsContactOverride,
+    needsPhoneOverride: contact ? false : status.needsPhoneOverride,
+    needsEmailOverride: contact ? false : status.needsEmailOverride,
+    contactWarning: contact ? null : status.contactWarning,
   };
 }
 
 const TREE_COUNT_BLOCK_RE = /Tree count is marked unknown|Tree count is unclear|Missing tree count or clear scope/i;
 const REVIEW_OVERRIDE_BLOCK_RE = /^(Missing service address|Service address looks unclear|Missing customer phone or email)\./i;
 const REVIEW_OVERRIDE_FOLLOW_UP_RE = /(exact service address|customer phone|phone number|customer email|email address)/i;
+const TREE_COUNT_CHOICES = [
+  { value: "1 tree", label: "1" },
+  { value: "2 trees", label: "2" },
+  { value: "3+ trees", label: "3+" },
+  { value: "Still unclear but OK to proceed", label: "Still unclear but OK to proceed" },
+];
 const SCOPE_OVERRIDE_BLOCK_RE = /^(Unclear work scope: remove, trim, or another service|Property responsibility or work scope is unclear|Work scope unclear; confirm what this price covers)\.?/i;
 const SCOPE_OVERRIDE_FOLLOW_UP_RE = /(Should this job be removal, trimming, or another specific service|Clarify the work scope and who is responsible|Confirm whether the stump price covers stump work only or the full job)/i;
 
@@ -413,6 +488,13 @@ function TreeCountResolutionCard({ validation, busy = false, onApply }) {
   const hasTreeCountBlock = (validation?.blocking_errors || []).some((error) => TREE_COUNT_BLOCK_RE.test(error));
   if (!hasTreeCountBlock || !onApply) return null;
 
+  function handleSelect(event) {
+    const nextCount = event.target.value;
+    setSelectedCount(nextCount);
+    if (!nextCount) return;
+    onApply(nextCount);
+  }
+
   return (
     <section className="summary-card override-warning-card">
       <h3>Tree Count Is Unclear</h3>
@@ -423,30 +505,89 @@ function TreeCountResolutionCard({ validation, busy = false, onApply }) {
           <select
             id="td2TreeCountOverride"
             value={selectedCount}
-            onChange={(event) => setSelectedCount(event.target.value)}
+            disabled={busy}
+            onChange={handleSelect}
           >
             <option value="">Select count</option>
-            <option value="1 tree">1</option>
-            <option value="2 trees">2</option>
-            <option value="3+ trees">3+</option>
-            <option value="Still unclear but OK to proceed">Still unclear but OK to proceed</option>
+            {TREE_COUNT_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>{choice.label}</option>
+            ))}
           </select>
         </label>
-        <button
-          className="btn-orange override-ack-button"
-          type="button"
-          disabled={!selectedCount || busy}
-          onClick={() => onApply(selectedCount)}
-        >
-          Use this tree count
-        </button>
       </div>
     </section>
   );
 }
 
+function ManualTreeCountOverrideControl({ treeCountOverride, busy = false, onApply }) {
+  const [changeOpen, setChangeOpen] = useState(false);
+  const [selectedCount, setSelectedCount] = useState("");
+
+  useEffect(() => {
+    setChangeOpen(false);
+    setSelectedCount("");
+  }, [treeCountOverride]);
+
+  if (!treeCountOverride || treeCountOverride === "Auto") return null;
+
+  function handleToggle(event) {
+    const checked = event.target.checked;
+    setChangeOpen(checked);
+    if (!checked) setSelectedCount("");
+  }
+
+  function handleSelect(event) {
+    const nextCount = event.target.value;
+    setSelectedCount(nextCount);
+    if (!nextCount) return;
+    setChangeOpen(false);
+    setSelectedCount("");
+    onApply?.(nextCount);
+  }
+
+  return (
+    <div className="manual-tree-count-control">
+      <p className="manual-override-note">
+        Tree count set manually: {treeCountOverride}
+      </p>
+      {onApply && (
+        <label className="manual-tree-count-change">
+          <input
+            type="checkbox"
+            checked={changeOpen}
+            disabled={busy}
+            onChange={handleToggle}
+          />
+          <span>Change Tree Count</span>
+        </label>
+      )}
+      {changeOpen && onApply && (
+        <label className="manual-tree-count-picker" htmlFor="td2ManualTreeCountOverride">
+          Tree count
+          <select
+            id="td2ManualTreeCountOverride"
+            value={selectedCount}
+            disabled={busy}
+            onChange={handleSelect}
+          >
+            <option value="">Select count</option>
+            {TREE_COUNT_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>{choice.label}</option>
+            ))}
+          </select>
+        </label>
+      )}
+    </div>
+  );
+}
+
 function normalizeDisplayText(value) {
   return normalizeTreeServiceText(value).toLowerCase();
+}
+
+function formatOptionDisplayText(value) {
+  const text = normalizeTreeServiceText(value || "").trim();
+  return text.replace(/^([a-z])/, (letter) => letter.toUpperCase());
 }
 
 function optionDescriptionAddsDetail(option = {}) {
@@ -471,10 +612,15 @@ function InlineFieldEditor({
   label,
   value = "",
   placeholder = "",
+  helper = "",
+  helperPosition = "below",
+  error = "",
   busy = false,
+  fieldClassName = "",
   multiline = false,
   type = "text",
   onChange,
+  onDraftChange,
 }) {
   const [draft, setDraft] = useState(value || "");
 
@@ -482,8 +628,8 @@ function InlineFieldEditor({
     setDraft(value || "");
   }, [value]);
 
-  function applyChange() {
-    const nextValue = draft.trim();
+  function applyChange(rawValue = draft) {
+    const nextValue = String(rawValue || "").trim();
     if (nextValue && nextValue !== String(value || "").trim()) {
       onChange?.(nextValue);
     }
@@ -492,21 +638,40 @@ function InlineFieldEditor({
   const commonProps = {
     className: "td2-inline-editor td2-inline-editor-warning",
     disabled: busy,
-    onBlur: applyChange,
-    onChange: (event) => setDraft(event.target.value),
+    onBlur: (event) => applyChange(event.currentTarget.value),
+    onChange: (event) => {
+      setDraft(event.target.value);
+      onDraftChange?.(event.target.value);
+    },
+    onKeyDown: (event) => {
+      if (!multiline && event.key === "Enter") {
+        event.preventDefault();
+        applyChange(event.currentTarget.value);
+      }
+    },
     placeholder,
     spellCheck: "true",
     value: draft,
   };
 
   return (
-    <label className="td2-inline-field">
-      <span>{label}</span>
+    <label className={`td2-inline-field ${fieldClassName}`.trim()}>
+      {helper && helperPosition === "label" ? (
+        <span className="td2-inline-label-row">
+          <span>{label}</span>
+          <span className="td2-inline-help">{helper}</span>
+        </span>
+      ) : (
+        <span>{label}</span>
+      )}
+      {helper && helperPosition === "above" && <span className="td2-inline-help">{helper}</span>}
       {multiline ? (
         <textarea {...commonProps} rows={3} />
       ) : (
         <input {...commonProps} type={type} />
       )}
+      {error && <span className="td2-inline-field-error">{error}</span>}
+      {helper && !["above", "label"].includes(helperPosition) && <span className="td2-inline-help">{helper}</span>}
     </label>
   );
 }
@@ -514,6 +679,7 @@ function InlineFieldEditor({
 function RequiredInfoEditor({
   alphaJson,
   validation,
+  addressOverrideStatus = null,
   contactOverrideStatus = null,
   reviewOverrides,
   busy = false,
@@ -521,6 +687,7 @@ function RequiredInfoEditor({
   onJobDescriptionChange,
   onReviewOverridesChange,
 }) {
+  const [phoneWarning, setPhoneWarning] = useState("");
   const customer = alphaJson.customer || {};
   const job = alphaJson.job || {};
   const phone = customer.phone_display || customer.phone_primary || "";
@@ -528,22 +695,57 @@ function RequiredInfoEditor({
   const jobDescription = job.description || "";
   const needsAddress = hasBlockingError(validation, /Missing service address|Service address looks unclear/i);
   const needsPhone = hasBlockingError(validation, /Missing customer phone or email/i) && !phone;
+  const phoneOverrideAccepted = Boolean(reviewOverrides?.missingPhone || reviewOverrides?.missingContact);
   const needsJobDescription = hasBlockingError(validation, /Missing job description/i);
 
+  useEffect(() => {
+    if (!needsPhone || phoneOverrideAccepted) setPhoneWarning("");
+  }, [needsPhone, phoneOverrideAccepted]);
+
   if (!needsAddress && !needsPhone && !needsJobDescription) return null;
+
+  function handlePhoneChange(value) {
+    if (phoneDigitCount(value) !== REQUIRED_PHONE_DIGITS) {
+      if (phoneOverrideAccepted) {
+        setPhoneWarning("");
+        return;
+      }
+      setPhoneWarning(PHONE_DIGIT_WARNING);
+      return;
+    }
+    setPhoneWarning("");
+    onCustomerFieldChange?.("phone", value);
+  }
+
+  function handlePhoneDraftChange(value) {
+    if (phoneOverrideAccepted) {
+      setPhoneWarning("");
+      return;
+    }
+    if (!String(value || "").trim()) {
+      setPhoneWarning("");
+      return;
+    }
+    setPhoneWarning(phoneDigitCount(value) === REQUIRED_PHONE_DIGITS ? "" : PHONE_DIGIT_WARNING);
+  }
 
   return (
     <section className="summary-card td2-required-info-card">
       <h3>Fill In Required Info</h3>
       <div className="td2-inline-field-grid">
         {needsPhone && (
-          <>
+          <div className="td2-required-field-with-override td2-phone-required-row">
             <InlineFieldEditor
               label="Customer phone"
               value={phone}
-              placeholder="812-555-1234"
+              placeholder="Enter area code & phone #"
+              helper="Phone number is needed to SMS Estimate to Customer"
+              helperPosition="label"
+              error={phoneOverrideAccepted ? "" : phoneWarning}
+              fieldClassName="td2-phone-inline-field"
               busy={busy}
-              onChange={(value) => onCustomerFieldChange?.("phone", value)}
+              onDraftChange={handlePhoneDraftChange}
+              onChange={handlePhoneChange}
             />
             {contactOverrideStatus && (
               <ContactOverrideCheckbox
@@ -552,16 +754,25 @@ function RequiredInfoEditor({
                 onChange={onReviewOverridesChange}
               />
             )}
-          </>
+          </div>
         )}
         {needsAddress && (
-          <InlineFieldEditor
-            label="Service address"
-            value={serviceAddress}
-            placeholder="2400 River Rd"
-            busy={busy}
-            onChange={(value) => onCustomerFieldChange?.("address", value)}
-          />
+          <div className="td2-required-field-with-override td2-address-required-row">
+            <InlineFieldEditor
+              label="Service address"
+              value={serviceAddress}
+              placeholder="Enter Service Address or override-->"
+              busy={busy}
+              onChange={(value) => onCustomerFieldChange?.("address", value)}
+            />
+            {addressOverrideStatus && (
+              <AddressOverrideCheckbox
+                status={addressOverrideStatus}
+                overrides={reviewOverrides}
+                onChange={onReviewOverridesChange}
+              />
+            )}
+          </div>
         )}
         {needsJobDescription && (
           <InlineFieldEditor
@@ -607,6 +818,8 @@ function OptionDescriptionEditor({ option, index, busy = false, onChange }) {
 
 function OptionPriceEditor({ option, index, busy = false, onChange }) {
   const [value, setValue] = useState(option.price?.display || "");
+  const initialPrice = option.price?.initial_display || "";
+  const priceEditedByTd = Boolean(option.price?.edited_by_td || (initialPrice && initialPrice !== option.price?.display));
 
   useEffect(() => {
     setValue(option.price?.display || "");
@@ -621,16 +834,25 @@ function OptionPriceEditor({ option, index, busy = false, onChange }) {
 
   return (
     <label className="option-price-editor">
-      <span>Price</span>
-      <input
-        aria-label={`${option.label || `Option ${index + 1}`} price`}
-        className="td2-inline-editor td2-inline-editor-warning"
-        disabled={busy}
-        onBlur={applyChange}
-        onChange={(event) => setValue(event.target.value)}
-        placeholder="$1,500"
-        value={value}
-      />
+      <span className="option-price-control">
+        <span className={`option-price-label${priceEditedByTd ? " option-price-label-changed" : ""}`}>Price</span>
+        <input
+          aria-label={`${option.label || `Option ${index + 1}`} price`}
+          className={`td2-inline-editor option-price-input${optionNeedsPriceReview(option) ? " td2-inline-editor-warning" : ""}`}
+          disabled={busy}
+          onBlur={applyChange}
+          onChange={(event) => setValue(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              applyChange();
+            }
+          }}
+          placeholder="$1,500"
+          value={value}
+        />
+      </span>
+      {priceEditedByTd && <span className="option-price-change-note">Price was changed or added</span>}
     </label>
   );
 }
@@ -710,9 +932,13 @@ export default function JsonReview({
   const structuredJobSummary = buildCustomerJobSummary(alphaJson);
   const jobNotes = structuredJobSummary || cleanJobNotesForReview(sourceNotes, alphaJson);
   const customerName = alphaJson.customer?.name || "Name not available";
-  const customerPhone = alphaJson.customer?.phone_display || "Phone not available";
+  const customerPhoneValue = alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "";
+  const customerPhone = customerPhoneValue || "Phone not available";
+  const customerPhoneAvailable = Boolean(String(customerPhoneValue).trim());
   const customerEmail = alphaJson.customer?.email || "Email not available";
-  const jobAddress = alphaJson.job?.service_address?.display || normalizeServiceAddress(intake.address) || "Address missing";
+  const rawJobAddress = alphaJson.job?.service_address?.display || normalizeServiceAddress(intake.address) || "";
+  const jobAddress = rawJobAddress ? normalizeEditedServiceAddress(rawJobAddress) || rawJobAddress : "Address missing";
+  const customerAddressLines = splitServiceAddressDisplay(jobAddress);
   const overrideStatus = getBlockingOverrideStatus(validation, normalizedOverrides, alphaJson);
   const canConfirmWithOverrides = overrideStatus.canProceed;
   const needsOverrideAck = overrideStatus.needsAddressOverride
@@ -727,18 +953,25 @@ export default function JsonReview({
   const reviewIssues = reviewIssueSource.filter((issue) => !isReviewOverrideIssue(issue, overrideStatus));
   const treeCountOverride = alphaJson.normalization?.field_evidence?.tree_count_override || "";
   const showTreeCountOverride = treeCountOverride && treeCountOverride !== "Auto";
-  const title = isFinalConfirm ? "Confirm Quote" : "AI Review";
-  const subtitle = isFinalConfirm ? "This creates the customer estimate link." : "Check details before confirming quote.";
+  const title = isFinalConfirm ? "Confirm Estimate" : "AI Review";
+  const subtitle = isFinalConfirm ? "This creates the customer estimate link." : "Check details before confirming estimate.";
   const optionNote = isFinalConfirm
     ? `Do not choose an option here. ${customerName === "Name not available" ? "The customer" : customerName} will choose one when opening the estimate.`
     : "Review these options. The customer chooses one later.";
-  const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Quote") : "Confirm Quote";
+  const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Estimate") : "Confirm Estimate";
   const editLabel = isFinalConfirm ? "Back" : "Edit Info";
   const warningItems = (validation?.warnings || []).filter((warning) => !isOverrideRelatedWarning(warning, overrideStatus));
   const needsInlinePhoneEditor = hasBlockingError(validation, /Missing customer phone or email/i)
     && !String(alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "").trim();
-  const inlineContactOverrideStatus = needsInlinePhoneEditor ? contactOnlyOverrideStatus(overrideStatus) : null;
-  const lowerOverrideStatus = inlineContactOverrideStatus ? withoutContactOverrideStatus(overrideStatus) : overrideStatus;
+  const needsInlineAddressEditor = hasBlockingError(validation, /Missing service address|Service address looks unclear/i);
+  const contactOverrideStatus = needsInlinePhoneEditor ? inlineContactOverrideStatus(overrideStatus) : null;
+  const addressOverrideStatus = needsInlineAddressEditor ? inlineAddressOverrideStatus(overrideStatus) : null;
+  const lowerOverrideStatus = (contactOverrideStatus || addressOverrideStatus)
+    ? withoutInlineOverrideStatus(overrideStatus, {
+        contact: Boolean(contactOverrideStatus),
+        address: Boolean(addressOverrideStatus),
+      })
+    : overrideStatus;
   const hasRequiredInlineFixes = !isFinalConfirm && (
     hasBlockingError(validation, /Missing service address|Service address looks unclear|Missing customer phone or email|Missing job description/i) ||
     options.some(optionNeedsPriceReview) ||
@@ -755,8 +988,8 @@ export default function JsonReview({
     quoteOptions: options.map((option, index) => ({
       label: option.label || `Option ${index + 1}`,
       price: option.price?.display || "Price missing",
-      title: option.title || "Option details",
-      description: optionDescriptionAddsDetail(option) ? option.description : "",
+      title: formatOptionDisplayText(option.title || "Option details"),
+      description: optionDescriptionAddsDetail(option) ? formatOptionDisplayText(option.description) : "",
       source: `service_options.items[${index}]`,
     })),
     needsMoreInfo: {
@@ -770,7 +1003,7 @@ export default function JsonReview({
       <h2>{title}</h2>
       <p className="text-muted">{subtitle}</p>
       {!isFinalConfirm && canConfirmWithOverrides && (
-        <span className="review-status review-status-ready">Review ready</span>
+        <span className="review-status review-status-ready">Estimate ready to be Confirmed</span>
       )}
       {!isFinalConfirm && !canConfirmWithOverrides && (
         <p className="td2-required-warning">More info is needed to complete Estimate</p>
@@ -787,19 +1020,28 @@ export default function JsonReview({
           <div className="summary-card customer-summary-card">
             <h3>Customer</h3>
             <div className="customer-info-grid">
-              <p>{customerName}</p>
-              <p className="customer-info-right">{jobAddress}</p>
-              <p>{customerPhone}</p>
-              <p className="customer-info-right">{customerEmail}</p>
+              <p className="customer-name-line">{customerName}</p>
+              <p className="customer-address-line">
+                <span className="customer-street-line">{customerAddressLines.street}</span>
+                {customerAddressLines.cityState && (
+                  <span className="customer-city-state-line">, {customerAddressLines.cityState}</span>
+                )}
+              </p>
+              <p>{customerEmail}</p>
+              <p className={customerPhoneAvailable ? "customer-phone-line customer-phone-available" : "customer-phone-line"}>
+                {customerPhone}
+              </p>
             </div>
           </div>
           <div className="summary-card review-job-notes-card">
             <h3>Job Notes</h3>
             <p className="job-summary-text">{jobNotes}</p>
             {showTreeCountOverride && (
-              <p className="manual-override-note">
-                Tree count set manually: {treeCountOverride}
-              </p>
+              <ManualTreeCountOverrideControl
+                treeCountOverride={treeCountOverride}
+                busy={busy}
+                onApply={onTreeCountOverrideChange}
+              />
             )}
           </div>
         </div>
@@ -808,7 +1050,8 @@ export default function JsonReview({
         <RequiredInfoEditor
           alphaJson={alphaJson}
           validation={validation}
-          contactOverrideStatus={inlineContactOverrideStatus}
+          addressOverrideStatus={addressOverrideStatus}
+          contactOverrideStatus={contactOverrideStatus}
           reviewOverrides={normalizedOverrides}
           busy={busy}
           onCustomerFieldChange={onCustomerFieldChange}
@@ -816,16 +1059,16 @@ export default function JsonReview({
           onReviewOverridesChange={onReviewOverridesChange}
         />
       )}
-      <h3>{isFinalConfirm ? "Customer Options" : "Quote Options"}</h3>
+      <h3>Customer Options</h3>
       <div className="quote-options-grid">
         {options.length > 0 ? options.map((option, index) => (
           <article
             className={`quote-option-card${optionNeedsDescriptionReview(option) ? " quote-option-card-warning" : ""}`}
-            key={option.label || index}
+            key={optionRenderKey(option, index)}
           >
             <div className="quote-option-header">
               <strong>{option.label || `Option ${index + 1}`}</strong>
-              {!isFinalConfirm && optionNeedsPriceReview(option) && onOptionPriceChange ? (
+              {!isFinalConfirm && onOptionPriceChange ? (
                 <OptionPriceEditor
                   busy={busy}
                   index={index}
@@ -836,7 +1079,7 @@ export default function JsonReview({
                 <span>{option.price?.display || "Price missing"}</span>
               )}
             </div>
-            <h4>{option.title || "Option details"}</h4>
+            <h4>{formatOptionDisplayText(option.title || "Option details") || "Option details"}</h4>
             {!isFinalConfirm && optionNeedsDescriptionReview(option) && onOptionDescriptionChange ? (
               <OptionDescriptionEditor
                 busy={busy}
@@ -845,7 +1088,7 @@ export default function JsonReview({
                 onChange={onOptionDescriptionChange}
               />
             ) : optionDescriptionAddsDetail(option) ? (
-              <p>{option.description || "Add the work details for this option before informing the customer."}</p>
+              <p>{formatOptionDisplayText(option.description) || "Add the work details for this option before informing the customer."}</p>
             ) : null}
           </article>
         )) : (
@@ -902,8 +1145,8 @@ export default function JsonReview({
       {!canConfirmWithOverrides && (
         <p className="text-muted">
           {needsOverrideAck
-            ? "Check the internal warning override or fix missing info before confirming quote."
-            : "Fix missing info before confirming quote."}
+            ? "Check the internal warning override or fix missing info before confirming estimate."
+            : "Fix missing info before confirming estimate."}
         </p>
       )}
       <div className="toolbar td2-action-toolbar mt-2">

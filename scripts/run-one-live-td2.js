@@ -31,7 +31,7 @@ if (!process.env.OPENAI_API_KEY) {
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const response = await client.chat.completions.create({
-  model: process.env.OPENAI_MODEL || "gpt-4o",
+  model: process.env.OPENAI_MODEL || "gpt-4.1-nano",
   response_format: OPENAI_DRAFT_RESPONSE_FORMAT,
   messages: [
     { role: "system", content: OPENAI_SYSTEM_PROMPT },

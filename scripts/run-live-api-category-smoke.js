@@ -203,7 +203,7 @@ function tokenUsageFromResponse(response) {
 }
 
 async function callOpenAi(caseItem, client) {
-  const model = process.env.OPENAI_MODEL || "gpt-4o";
+  const model = process.env.OPENAI_MODEL || "gpt-4.1-nano";
   const response = await client.chat.completions.create({
     model,
     response_format: OPENAI_DRAFT_RESPONSE_FORMAT,
@@ -347,7 +347,7 @@ for (const [index, caseItem] of cases.entries()) {
     validation = validateAlphaJson(alphaJson);
     td2JobSummary = buildCustomerJobSummary(validation.alphaJson || alphaJson);
     findings = [{ severity: 100, code: "api_error", message: error?.message || String(error) }];
-    apiResult = { model: process.env.OPENAI_MODEL || "gpt-4o", usage: null, rawOpenAiDraftJson: null, error: error?.message || String(error) };
+    apiResult = { model: process.env.OPENAI_MODEL || "gpt-4.1-nano", usage: null, rawOpenAiDraftJson: null, error: error?.message || String(error) };
   }
 
   records.push({
@@ -359,7 +359,7 @@ for (const [index, caseItem] of cases.entries()) {
     pass: findings.length === 0,
     max_severity: findings[0]?.severity || 0,
     findings,
-    model: apiResult.model || process.env.OPENAI_MODEL || "gpt-4o",
+    model: apiResult.model || process.env.OPENAI_MODEL || "gpt-4.1-nano",
     token_usage: apiResult.usage || null,
     mocked: Boolean(apiResult.error),
     api_error: apiResult.error || "",

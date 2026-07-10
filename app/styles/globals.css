@@ -365,8 +365,7 @@ main {
 
 .customer-info-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(150px, 1fr));
-  column-gap: 10px;
+  grid-template-columns: 1fr;
   row-gap: 2px;
   min-width: min(100%, 320px);
 }
@@ -378,8 +377,20 @@ main {
   overflow-wrap: anywhere;
 }
 
-.customer-info-right {
-  text-align: right;
+.customer-name-line {
+  font-weight: 900;
+}
+
+.customer-address-line {
+  color: #374151;
+}
+
+.customer-street-line {
+  font-weight: 900;
+}
+
+.customer-phone-available {
+  font-weight: 900;
 }
 
 .final-summary-card {
@@ -419,14 +430,62 @@ main {
   padding: 3px 9px;
 }
 
-.review-status {
-  display: inline-flex;
-  width: fit-content;
-  margin-bottom: 12px;
-  padding: 5px 9px;
-  border-radius: 999px;
-  font-size: 12px;
+.manual-tree-count-control {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin-top: 10px;
+}
+
+.manual-tree-count-control .manual-override-note {
+  margin: 0;
+}
+
+.manual-tree-count-change {
+  align-items: center;
+  color: #111;
+  display: grid;
+  font-size: 15px;
+  font-weight: 800;
+  gap: 8px;
+  grid-template-columns: 22px max-content;
+  margin: 0;
+}
+
+.manual-tree-count-change input {
+  height: 22px;
+  margin: 0;
+  width: 22px;
+}
+
+.manual-tree-count-picker {
+  color: #111;
+  display: grid;
   font-weight: 700;
+  gap: 5px;
+  margin: 0;
+  min-width: 180px;
+}
+
+.manual-tree-count-picker select {
+  font-size: 16px;
+  min-height: 42px;
+}
+
+.review-status {
+  align-items: center;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  display: inline-flex;
+  font-size: 18px;
+  font-weight: 900;
+  justify-content: center;
+  margin: 10px auto 14px;
+  min-height: 64px;
+  min-width: 320px;
+  padding: 12px 22px;
+  text-align: center;
+  width: fit-content;
 }
 
 .review-status-ready {
@@ -463,6 +522,18 @@ main {
   gap: 10px;
 }
 
+.td2-required-field-with-override {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.td2-address-required-row {
+  gap: 4px;
+  grid-template-columns: 1fr;
+}
+
 .td2-inline-field {
   color: #111;
   display: grid;
@@ -490,6 +561,28 @@ main {
 .td2-inline-editor-warning {
   border: 3px solid #b91c1c;
   background: #fff;
+}
+
+.td2-phone-inline-field .td2-inline-editor {
+  width: 30ch;
+}
+
+.td2-inline-help {
+  color: #7f1d1d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.td2-inline-field-error {
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.td2-inline-label-row {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
 }
 
 .review-option-note {
@@ -547,6 +640,7 @@ main {
   border: 1px solid #fdba74;
   border-radius: 8px;
   padding: 10px;
+  width: fit-content;
 }
 
 .override-warning-item p {
@@ -559,19 +653,20 @@ main {
   display: grid;
   font-weight: 800;
   gap: 8px;
-  grid-template-columns: 18px minmax(0, 1fr);
+  grid-template-columns: 22px max-content;
   line-height: 1.3;
   margin-left: 2ch;
 }
 
 .override-check-row input {
-  height: 18px;
+  height: 22px;
   margin: 0;
-  width: 18px;
+  width: 22px;
 }
 
 .override-check-row span {
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .override-ack-button {
@@ -637,14 +732,36 @@ main {
 .option-price-editor {
   display: grid;
   gap: 4px;
-  min-width: 140px;
+  justify-items: end;
 }
 
-.option-price-editor span {
-  color: #7f1d1d;
+.option-price-control {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.option-price-input {
+  max-width: 8ch;
+  width: 8ch;
+}
+
+.option-price-label {
+  color: var(--green);
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
+}
+
+.option-price-label-changed,
+.option-price-change-note {
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.option-price-change-note {
+  text-transform: none;
 }
 
 .missing-option-card {
@@ -984,13 +1101,14 @@ pre {
     grid-template-columns: 1fr;
   }
 
+  .td2-required-field-with-override {
+    grid-template-columns: 1fr;
+  }
+
   .contact-or {
     justify-self: start;
     margin-left: 3ch;
     padding-bottom: 0;
   }
 
-  .customer-info-right {
-    text-align: left;
-  }
 }

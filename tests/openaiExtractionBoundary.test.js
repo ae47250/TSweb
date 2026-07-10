@@ -146,7 +146,7 @@ test("OpenAI draft adapter preserves separate option prices through canonical no
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$900", "$1,450"]);
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
     "cut and leave wood",
-    "remove, haul away, and cleanup",
+    "remove one maple tree and haul away and cleanup",
   ]);
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
   assert.equal(alphaJson.job.tree_details.tree_type, "maple");

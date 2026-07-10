@@ -5,6 +5,7 @@ import ErrorAlert from "./components/ErrorAlert.jsx";
 import InputForm from "./components/InputForm.jsx";
 import JsonReview from "./components/JsonReview.jsx";
 import PdfGenerator from "./components/PdfGenerator.jsx";
+import { normalizeEditedServiceAddress, normalizeTreeServiceText } from "../lib/normalizeAlphaJson.js";
 
 async function postJson(url, body) {
   const response = await fetch(url, {
@@ -17,11 +18,18 @@ async function postJson(url, body) {
   return data;
 }
 
+const REQUIRED_PHONE_DIGITS = 10;
+const PHONE_DIGIT_WARNING = `Phone number must be ${REQUIRED_PHONE_DIGITS} digits including area code.`;
+
+function phoneDigitCount(value) {
+  return String(value || "").replace(/\D/g, "").length;
+}
+
 const emptyRecentCards = [
   {
     documentId: "Slot 1",
-    customerName: "No recent quote yet",
-    status: "Start with New Quote",
+    customerName: "No recent estimate yet",
+    status: "Start with New Estimate",
     lastActivityTime: "",
     isPlaceholder: true,
   },
@@ -240,7 +248,7 @@ export default function HomePage() {
       setDocumentResult(result);
       setAlphaJson(result.alphaJson);
       setEditMessage("");
-      setNotice("Quote confirmed. Choose how to inform the customer.");
+      setNotice("Estimate confirmed. Choose how to inform the customer.");
       setStage("inform");
       refreshRecentCards();
     } catch (err) {
@@ -288,6 +296,10 @@ export default function HomePage() {
   async function applyCustomerFieldEdit(field, value) {
     const nextValue = String(value || "").replace(/\s+/g, " ").trim();
     if (!nextValue) return;
+    if (field === "phone" && phoneDigitCount(nextValue) !== REQUIRED_PHONE_DIGITS) {
+      setError(PHONE_DIGIT_WARNING);
+      return;
+    }
 
     setBusy(true);
     setError("");
@@ -306,8 +318,9 @@ export default function HomePage() {
         nextAlphaJson.customer.email = nextValue.toLowerCase();
         nextContact.email = nextValue.toLowerCase();
       } else if (field === "address") {
-        nextAlphaJson.job.service_address.display = nextValue;
-        nextContact.address = nextValue;
+        const normalizedAddress = normalizeEditedServiceAddress(nextValue) || nextValue;
+        nextAlphaJson.job.service_address.display = normalizedAddress;
+        nextContact.address = normalizedAddress;
       }
 
       setQuoteContact(nextContact);
@@ -338,7 +351,7 @@ export default function HomePage() {
   }
 
   async function applyOptionDescriptionEdit(optionIndex, description) {
-    const nextDescription = String(description || "").replace(/\s+/g, " ").trim();
+    const nextDescription = normalizeTreeServiceText(description);
     if (!nextDescription) return;
 
     setBusy(true);
@@ -387,11 +400,13 @@ export default function HomePage() {
         ...items[optionIndex],
         price: {
           ...(items[optionIndex].price || {}),
+          initial_display: items[optionIndex].price?.initial_display || items[optionIndex].price?.display || "",
           display: normalizedPrice.display,
           amount: normalizedPrice.amount,
           price_type: items[optionIndex].price?.price_type || "fixed",
           is_unclear: false,
           status: "firm",
+          edited_by_td: true,
         },
       };
 
@@ -478,7 +493,7 @@ export default function HomePage() {
   function openManualFromFront() {
     if (documentResult) {
       setStage("inform");
-      setNotice("Use Record Manual Acceptance on the quote panel.");
+      setNotice("Use Record Manual Acceptance on the estimate panel.");
       return;
     }
     setNotice("Create or open an estimate before recording manual acceptance.");

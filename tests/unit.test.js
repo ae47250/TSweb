@@ -175,6 +175,33 @@ test("validation does not warn when firm option price spread is below 3x", () =>
   assert.doesNotMatch(result.warnings.join(" "), /price spread/i);
 });
 
+test("validation warns when labeled option prices are not low to high", () => {
+  const input = pricedOptionsCase([
+    { display: "$2,000", amount: 2000 },
+    { display: "$1,000", amount: 1000 },
+  ]);
+  input.service_options.items[0].label = "Option A";
+  input.service_options.items[1].label = "Option B";
+  const result = validateAlphaJson(input);
+
+  assert.equal(result.can_generate_pdf, true);
+  assert.match(result.warnings.join(" "), /Option prices are not in expected low-to-high order.*Option A \$2,000.*Option B \$1,000/i);
+});
+
+test("price order override suppresses low-to-high warning placeholder", () => {
+  const input = pricedOptionsCase([
+    { display: "$2,000", amount: 2000 },
+    { display: "$1,000", amount: 1000 },
+  ]);
+  input.service_options.price_order_override = true;
+  input.service_options.items[0].label = "Option A";
+  input.service_options.items[1].label = "Option B";
+  const result = validateAlphaJson(input);
+
+  assert.equal(result.can_generate_pdf, true);
+  assert.doesNotMatch(result.warnings.join(" "), /expected low-to-high order/i);
+});
+
 test("validation ignores unclear or missing prices for price-spread warning", () => {
   const unclear = validateAlphaJson(
     pricedOptionsCase([

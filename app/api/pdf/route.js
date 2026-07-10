@@ -47,6 +47,7 @@ export async function POST(request) {
   alphaJson.document.approved_for_pdf = true;
   alphaJson.review.approved_for_pdf = true;
   alphaJson.review.review_completed = true;
+  alphaJson.review.approved_semantic_hash = alphaJson.validation?.estimate_semantic_hash || "";
   alphaJson.review.overrides = reviewOverrides;
   alphaJson.review.override_warnings = overrideStatus.acceptedOverrideWarnings;
   alphaJson.review.contractor_warnings = [

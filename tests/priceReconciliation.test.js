@@ -195,7 +195,7 @@ test("post-AI reconciliation sends high amount with weak pairing to review inste
   assert.match(validation.follow_ups.join(" "), /Confirm what work \$2,000 belongs to/i);
 });
 
-test("post-AI reconciliation blocks invented TD2 prices not found in sidecar evidence", () => {
+test("post-AI reconciliation records invented TD2 prices without keeping stale hidden blockers", () => {
   const raw =
     "Paula Anderson 812-396-5750 paula.a2@hotmial.com 3043 Meadow Ln Bedford IN take down dead ash by shed prices tree removal 2650 stump grinding 750";
   const sidecar = buildOptionPriceCandidateView(raw);
@@ -224,9 +224,13 @@ test("post-AI reconciliation blocks invented TD2 prices not found in sidecar evi
   const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14(inventedPriceDraft, raw), sidecar);
   const validation = validateAlphaJson(reconciled);
 
-  assert.match(validation.blocking_errors.join(" "), /TD2 price \$2 was not found in sidecar\/raw price evidence/i);
-  assert.match(validation.follow_ups.join(" "), /Confirm whether \$2 is a real quote price/i);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /TD2 price \$2 was not found in sidecar\/raw price evidence/i);
+  assert.doesNotMatch(validation.follow_ups.join(" "), /Confirm whether \$2 is a real quote price/i);
   assert.equal(validation.alphaJson.service_options.items.some((option) => option.price.display === "$2"), false);
+  assert.equal(
+    validation.alphaJson.normalization.sidecar_price_reconciliation.invented_prices[0].display,
+    "$2",
+  );
 });
 
 test("post-AI reconciliation quarantines sidecar-backed weak pairings before final TD2", () => {
@@ -257,8 +261,9 @@ test("post-AI reconciliation quarantines sidecar-backed weak pairings before fin
   const validation = validateAlphaJson(reconciled);
 
   assert.deepEqual(prices(validation), ["$700", "$300"]);
-  assert.match(validation.blocking_errors.join(" "), /TD2 price \$1,000 was quarantined/i);
-  assert.match(validation.follow_ups.join(" "), /Confirm whether \$1,000 is a real quote price/i);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /TD2 price \$1,000 was quarantined/i);
+  assert.doesNotMatch(validation.follow_ups.join(" "), /Confirm whether \$1,000 is a real quote price/i);
+  assert.match(validation.blocking_errors.join(" "), /High-confidence sidecar price \$1,000 needs TD2 review/i);
   assert.equal(
     validation.alphaJson.normalization.sidecar_price_reconciliation.quarantined_final_prices[0].display,
     "$1,000",

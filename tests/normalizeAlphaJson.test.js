@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   buildCustomerJobSummary,
+  normalizeEditedServiceAddress,
   normalizeToAlphaJsonV14,
   normalizePhone,
   normalizeServiceAddress,
@@ -170,6 +171,102 @@ test("trusted local towns append Indiana and avoid city-state warning", () => {
   assert.deepEqual(validation.blocking_errors, []);
   assert.deepEqual(validation.follow_ups, []);
   assert.doesNotMatch(validation.warnings.join(" "), /Service address may need city or state/);
+});
+
+test("cue-backed short street names can be accepted without a street suffix", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Remove two maple trees at 440 Walnut John, option 1 remove 700, B and haul 950",
+  ));
+
+  assert.equal(validation.alphaJson.job.service_address.display, "440 Walnut");
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$700", "$950"]);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.description), [
+    "remove two maple trees only",
+    "remove two maple trees and haul away",
+  ]);
+  assert.match(validation.warnings.join(" "), /Service address may be missing town\/city or state/i);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Missing service address/i);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Tree count is unclear/i);
+});
+
+test("safe raw option sidecar replaces a merged single-option AI draft", () => {
+  const raw = "Remove two maple trees at 440 Walnut John, option 1 remove 700, B and haul 950";
+  const alphaJson = normalizeToAlphaJsonV14(
+    {
+      job: {
+        description: "Remove two maple trees. Options include haul away.",
+        tree_details: { tree_count: "2 trees" },
+      },
+      service_options: {
+        items: [
+          {
+            label: "Option A",
+            title: "remove , B and haul",
+            description: "remove , B and haul",
+            price: { amount: 700, display: "$700" },
+          },
+        ],
+      },
+    },
+    raw,
+  );
+
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
+    "remove two maple trees only",
+    "remove two maple trees and haul away",
+  ]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$700", "$950"]);
+});
+
+test("clean option description can override polluted option title for base-only inference", () => {
+  const raw = "Remove two maple trees at 440 Walnut John, option 1 remove 700, B and haul 950";
+  const alphaJson = normalizeToAlphaJsonV14(
+    {
+      job: {
+        description: "Remove two maple trees. Options include haul away.",
+        tree_details: { tree_count: "2 trees" },
+      },
+      service_options: {
+        items: [
+          {
+            label: "Option A",
+            title: "remove, and haul",
+            description: "remove",
+            price: { amount: 700, display: "$700" },
+          },
+          {
+            label: "Option B",
+            title: "remove two maple trees and haul away",
+            description: "remove two maple trees and haul away",
+            price: { amount: 950, display: "$950" },
+          },
+        ],
+      },
+    },
+    raw,
+  );
+
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
+    "remove two maple trees only",
+    "remove two maple trees and haul away",
+  ]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.title), [
+    "remove two maple trees only",
+    "remove two maple trees and haul away",
+  ]);
+});
+
+test("short street-name rule does not turn walnut-tree counts into addresses or valid huge counts", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "John 8125551234 remove 440 walnut trees option A remove only 700",
+  ));
+
+  assert.equal(validation.alphaJson.job.service_address.display, "");
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "");
+  assert.match(validation.blocking_errors.join(" "), /Missing service address|Tree count is unclear/i);
 });
 
 test("extracts street suffix addresses with two-word trusted towns", () => {
@@ -388,12 +485,12 @@ test("reconciles clear normalized evidence into structured AlphaJSON fields", ()
   assert.match(alphaJson.job.service_address.display, /18 Maple Bend/i);
   assert.equal(alphaJson.job.description, "Remove two walnut trees. Options include haul away.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
-    "remove only",
-    "remove and haul away",
+    "remove two walnut trees only",
+    "remove two walnut trees and haul away",
   ]);
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.title), [
-    "remove only",
-    "remove and haul away",
+    "remove two walnut trees only",
+    "remove two walnut trees and haul away",
   ]);
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,500", "$2,400"]);
 });
@@ -813,6 +910,11 @@ test("job summary rejects awkward perform-tree and option-only fragments", () =>
   assert.equal(buildCustomerJobSummary(optionOnly), "Tree service work as described in the selected quote option.");
 });
 
+test("edited service address display is normalized and title-cased", () => {
+  assert.equal(normalizeEditedServiceAddress("123 main street madison indiana"), "123 Main Street Madison Indiana");
+  assert.equal(normalizeEditedServiceAddress("803w 2nd madison in"), "803 W 2nd Madison IN");
+});
+
 test("conditional cleanup and haul-away wording blocks after typo normalization", () => {
   const cases = [
     "Pat 8125558888 22 Pine Ln Madison IN remove one oak tree $1500 cleanup if customer wants",
@@ -1021,7 +1123,7 @@ test("rejects job text and numeric fragments as customer names", () => {
     {},
     "need 2 tree gone fence side, opt a 900 each maybe opt b all cleen 2400, name missing only says ask the guy in blue truck, stumpin maybe 500 if he says yes.",
   ));
-  assert.equal(conditionalStumpOption.alphaJson.service_options.items[1].scope_unclear, true);
+  assert.equal(conditionalStumpOption.alphaJson.service_options.items.some((option) => option.scope_unclear), true);
 
   const writtenMaybeName = validateAlphaJson(normalizeToAlphaJsonV14(
     {},
@@ -1073,7 +1175,7 @@ test("slash prices preserve the amount before the slash", () => {
   assert.equal(validation.can_generate_pdf, true);
   assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$950", "$1,700"]);
   assert.match(validation.alphaJson.service_options.items[0].description, /leave wood/i);
-  assert.match(validation.alphaJson.service_options.items[1].description, /haul off/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /remove one ash tree and haul away/i);
 });
 
 test("bare slash prices extract prices and warn on unclear option scope", () => {
@@ -1360,7 +1462,7 @@ test("messy raw note parses implied one-tree removal while keeping safety notes 
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
   assert.equal(alphaJson.job.description, "Remove one large tree near the garage. Options include haul away or cleanup.");
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$1,200", "$9,000"]);
-  assert.match(alphaJson.service_options.items[0].description, /remove only/i);
+  assert.match(alphaJson.service_options.items[0].description, /remove one tree only/i);
   assert.match(alphaJson.service_options.items[1].description, /remove.*haul away.*cleanup/i);
   const warningText = validation.warnings.join(" ");
   assert.match(warningText, /Safety\/access note/i);
@@ -1428,7 +1530,7 @@ test("1b quote-cleanup shorthand preserves base and cleanup prices through TD2 f
   assert.equal(validation.can_generate_pdf, true);
   assert.equal(options.length, 2);
   assert.deepEqual(options.map((option) => option.price.display), ["$2,650", "$3,200"]);
-  assert.match(options[0].description, /base|removal-only/i);
+  assert.match(options[0].description, /remove one tree only/i);
   assert.match(options[1].description, /cleanup|upgraded/i);
 });
 
@@ -1610,8 +1712,8 @@ test("June 30 reviewed production cases preserve safe parser decisions", () => {
   assert.equal(case0039.alphaJson.job.tree_details.tree_count, "4 trees");
   assert.equal(case0039.alphaJson.job.tree_details.tree_type, "pine");
   assert.deepEqual(case0039.alphaJson.service_options.items.map((option) => option.price.display), ["$1,900", "$2,450"]);
-  assert.match(case0039.alphaJson.service_options.items[0].description, /work scope unclear|Service Option A/i);
-  assert.match(case0039.alphaJson.service_options.items[1].description, /haul/i);
+  assert.match(case0039.alphaJson.service_options.items[0].description, /remove four pine trees/i);
+  assert.match(case0039.alphaJson.service_options.items[1].description, /remove four pine trees and haul away/i);
   assert.match(case0039.follow_ups.join(" "), /exact service address/i);
 
   const case0259 = validateAlphaJson(normalizeToAlphaJsonV14(
@@ -1961,7 +2063,7 @@ test("follow-up answers recover missing customer fields without leaking contact 
         phone: "812-555-3388",
         address: "63 Oak Lane",
         corrected: /two maples removed behind the garage/i,
-        optionB: "Cleanup and haul-away",
+        optionB: "remove two maple trees and haul away and cleanup",
       },
     },
   ];
@@ -2593,4 +2695,153 @@ test("price-only labeled options keep both prices and avoid invented scope", () 
   assert.ok(options.every((option) => option.review_flags?.scope_unclear));
   assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
   assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+});
+
+test("live draft fallback captures comma-separated name and infers option scopes from job notes", () => {
+  const raw = "remove oak, bubbi morthens, 123 main, madison, option 1 300 option b and haul 2000";
+  const alphaJson = normalizeToAlphaJsonV14(
+    {
+      customer: { name: "" },
+      job: {
+        service_address: { display: "123 main, madison, Indiana" },
+        description: "Remove one oak tree. Options include haul away.",
+        work_action: "remove",
+      },
+      service_options: {
+        items: [
+          { title: "option 1 300", description: "option 1 300", price: { amount: 300, display: "$300", status: "firm" } },
+          { title: "and haul 2000", description: "haul 2000", price: { amount: 2000, display: "$2,000", status: "firm" } },
+        ],
+      },
+    },
+    raw,
+  );
+
+  assert.equal(alphaJson.customer.name, "Bubbi Morthens");
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$300", "$2,000"]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
+    "remove one oak tree",
+    "remove one oak tree and haul away",
+  ]);
+  assert.equal(alphaJson.service_options.items[0].scope_unclear, false);
+  assert.equal(alphaJson.service_options.items[1].review_flags.inferred_from_job_scope, "remove one oak tree");
+  assert.doesNotMatch(
+    alphaJson.service_options.items.map((option) => `${option.title} ${option.description}`).join(" "),
+    /\boption\b|\b300\b|\b2000\b/i,
+  );
+});
+
+test("placeholder model option is collapsed when raw option evidence has the real prices", () => {
+  const raw = "remove oak, bubbi morthens, 123 main, madison, option 1 300 option b and haul 2000";
+  const alphaJson = normalizeToAlphaJsonV14(
+    {
+      customer: { name: "Bubbi Morthens" },
+      job: {
+        service_address: { display: "123 main, madison, Indiana" },
+        description: "Remove one oak tree. Options include haul away.",
+        work_action: "remove",
+      },
+      service_options: {
+        items: [
+          { title: "Remove one oak tree", description: "Remove one oak tree", price: { amount: 300, display: "$300", status: "firm" } },
+          { title: "Service Option B", description: "Service Option B", price: { amount: null, display: "", status: "unknown" } },
+          { title: "Remove one oak tree and haul away", description: "Remove one oak tree and haul away", price: { amount: 2000, display: "$2,000", status: "firm" } },
+        ],
+      },
+    },
+    raw,
+  );
+
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.label), ["Option A", "Option B"]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), ["$300", "$2,000"]);
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
+    "remove one oak tree",
+    "remove one oak tree and haul away",
+  ]);
+  assert.doesNotMatch(
+    alphaJson.service_options.items.map((option) => `${option.title} ${option.description}`).join(" "),
+    /Service Option B/i,
+  );
+});
+
+test("tree count override removes stale tree count warning from option scope", () => {
+  const raw = "Bubbi Morthens 8125551234 123 Main Madison remove some trees option 1 remove only 1000 option 2 remove and haul 1800";
+  const alphaJson = normalizeToAlphaJsonV14(
+    {
+      customer: { name: "Bubbi Morthens", phone: "812-555-1234" },
+      job: {
+        service_address: { display: "123 main, madison, Indiana" },
+        description: "Remove several trees. Exact tree count needs confirmation.",
+        work_action: "remove",
+        tree_details: { tree_count: "" },
+      },
+      service_options: {
+        items: [
+          { title: "remove only", description: "remove only", price: { amount: 1000, display: "$1,000", status: "firm" } },
+          {
+            title: "remove several trees. exact tree count needs confirmation and haul away",
+            description: "remove several trees. exact tree count needs confirmation and haul away",
+            price: { amount: 1800, display: "$1,800", status: "firm" },
+          },
+        ],
+      },
+    },
+    raw,
+    { treeCountOverride: "1 tree" },
+  );
+
+  assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.deepEqual(alphaJson.service_options.items.map((option) => option.description), [
+    "remove one tree only",
+    "remove one tree and haul away",
+  ]);
+  assert.equal(alphaJson.service_options.items[0].review_flags.inferred_base_only_scope, true);
+  assert.doesNotMatch(
+    alphaJson.service_options.items.map((option) => `${option.title} ${option.description}`).join(" "),
+    /exact tree count needs confirmation/i,
+  );
+
+  const changedCount = normalizeToAlphaJsonV14(alphaJson, raw, { treeCountOverride: "2 trees" });
+  assert.equal(changedCount.job.tree_details.tree_count, "2 trees");
+  assert.deepEqual(changedCount.service_options.items.map((option) => option.description), [
+    "remove two trees only",
+    "remove two trees and haul away",
+  ]);
+
+  const manuallyEdited = normalizeToAlphaJsonV14(
+    {
+      ...alphaJson,
+      service_options: {
+        ...alphaJson.service_options,
+        items: [
+          {
+            ...alphaJson.service_options.items[0],
+            description: "TD custom wording should stay",
+            review_flags: {
+              ...alphaJson.service_options.items[0].review_flags,
+              description_edited_by_td: true,
+            },
+          },
+          alphaJson.service_options.items[1],
+        ],
+      },
+    },
+    raw,
+    { treeCountOverride: "2 trees" },
+  );
+  assert.equal(manuallyEdited.service_options.items[0].description, "TD custom wording should stay");
+  assert.equal(manuallyEdited.service_options.items[1].description, "remove two trees and haul away");
+});
+
+test("numeric option labels sort as A/B and preserve mixed letter labels", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Sam Bell 812-555-1234 sam@example.com 18 Oak Lane Madison IN remove one oak tree option 2 remove and haul 1800 option 1 remove only 1000 option C remove haul and cleanup 2400",
+  ));
+
+  const options = validation.alphaJson.service_options.items;
+  assert.deepEqual(options.map((option) => option.label), ["Option A", "Option B", "Option C"]);
+  assert.deepEqual(options.map((option) => option.price.display), ["$1,000", "$1,800", "$2,400"]);
+  assert.match(options[0].description, /remove one oak tree only/i);
+  assert.match(options[1].description, /remove.*haul/i);
 });
