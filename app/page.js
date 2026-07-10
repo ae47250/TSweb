@@ -319,7 +319,15 @@ export default function HomePage() {
         nextContact.email = nextValue.toLowerCase();
       } else if (field === "address") {
         const normalizedAddress = normalizeEditedServiceAddress(nextValue) || nextValue;
-        nextAlphaJson.job.service_address.display = normalizedAddress;
+        nextAlphaJson.job.service_address = {
+          ...(nextAlphaJson.job.service_address || {}),
+          display: normalizedAddress,
+          review_flags: {
+            ...(nextAlphaJson.job.service_address?.review_flags || {}),
+            service_address_edited_by_td: true,
+            service_address_edited_by_td_value: normalizedAddress,
+          },
+        };
         nextContact.address = normalizedAddress;
       }
 
@@ -372,6 +380,7 @@ export default function HomePage() {
           scope_unclear: false,
           scope_warning: "",
           description_edited_by_td: true,
+          description_edited_by_td_value: nextDescription,
         },
       };
 

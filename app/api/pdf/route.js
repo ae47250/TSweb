@@ -6,6 +6,7 @@ import { saveEstimate } from "../../../lib/estimateStore.js";
 import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { checkRateLimit } from "../../../lib/rateLimiter.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../../lib/reviewOverrides.js";
+import { stampServerVerifiedTdEditProvenance } from "../../../lib/tdEditProvenance.js";
 import { validateAlphaJson } from "../../../lib/validateJson.js";
 
 export const runtime = "nodejs";
@@ -21,11 +22,18 @@ export async function POST(request) {
   }
 
   const body = await readJson(request);
+  const rawInput = body.customer_text || body.customerText || body.alphaJson?.raw_input?.customer_text || "";
+  const intake = body.intake || {};
   const alphaJsonForValidation = normalizeToAlphaJsonV14(
     body.alphaJson,
-    body.customer_text || body.customerText || body.alphaJson?.raw_input?.customer_text || "",
-    body.intake || {},
+    rawInput,
+    intake,
   );
+  stampServerVerifiedTdEditProvenance(alphaJsonForValidation, {
+    sourceAlphaJson: body.alphaJson,
+    rawInput,
+    intake,
+  });
   const validation = validateAlphaJson(alphaJsonForValidation);
   const reviewOverrides = normalizeReviewOverrides(body.reviewOverrides || body.overrides);
   const overrideStatus = getBlockingOverrideStatus(validation, reviewOverrides, alphaJsonForValidation);

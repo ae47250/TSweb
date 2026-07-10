@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   buildCustomerJobSummary,
   normalizeEditedServiceAddress,
@@ -1206,6 +1207,227 @@ test("explicit incomplete or relative service addresses block PDF readiness", ()
   assert.equal(lotBeside.can_generate_pdf, false);
   assert.match(lotBeside.blocking_errors.join(" "), /Service address needs exact location confirmation/i);
   assert.match(lotBeside.follow_ups.join(" "), /exact service address/i);
+});
+
+function blockingText(validation) {
+  return (validation.blocking_errors || []).join(" ");
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function withTdEditedServiceAddress(alphaJson, address) {
+  const edited = cloneJson(alphaJson);
+  edited.job = edited.job || {};
+  edited.job.service_address = {
+    ...(edited.job.service_address || {}),
+    display: address,
+    review_flags: {
+      ...(edited.job.service_address?.review_flags || {}),
+      service_address_edited_by_td: true,
+      service_address_edited_by_td_value: address,
+      service_address_server_verified_td_edit: true,
+      service_address_server_verified_td_edit_value: address,
+    },
+  };
+  return edited;
+}
+
+function withTdEditedOptionDescriptions(alphaJson, descriptions) {
+  const edited = cloneJson(alphaJson);
+  edited.service_options = edited.service_options || {};
+  edited.service_options.items = (edited.service_options.items || []).map((option, index) => {
+    const description = descriptions[index];
+    if (!description) return option;
+    return {
+      ...option,
+      title: description,
+      description,
+      scope_unclear: false,
+      review_flags: {
+        ...(option.review_flags || {}),
+        scope_unclear: false,
+        scope_warning: "",
+        description_edited_by_td: true,
+        description_edited_by_td_value: description,
+        description_server_verified_td_edit: true,
+        description_server_verified_td_edit_value: description,
+      },
+    };
+  });
+  return edited;
+}
+
+test("exact address follow-up resolution persists after later unrelated follow-up", () => {
+  const input =
+    "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree. Option A $2050 Option B $3,000\n" +
+    "Follow-up 1: Service address is 2040 Pine Court, Madison IN.\n" +
+    "Follow-up 2: Customer prefers text updates.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.doesNotMatch(blockingText(validation), /Service address needs exact location confirmation/i);
+});
+
+test("exact address follow-up order independence keeps unrelated answers from erasing resolution", () => {
+  const input =
+    "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree. Option A $2050 Option B $3,000\n" +
+    "Follow-up 1: Customer prefers text updates.\n" +
+    "Follow-up 2: Exact service address is 2040 Pine Court, Madison IN.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.doesNotMatch(blockingText(validation), /Service address needs exact location confirmation/i);
+});
+
+test("later address contradiction reopens exact-location blocker", () => {
+  const input =
+    "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree. Option A $2050 Option B $3,000\n" +
+    "Follow-up 1: Service address is 2040 Pine Court, Madison IN.\n" +
+    "Follow-up 2: City is still unknown; do not use Madison yet.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.match(blockingText(validation), /Service address needs exact location confirmation/i);
+});
+
+test("structured TD address edit clears explicit address gap blocker", () => {
+  const raw =
+    "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree. Option A $2050 Option B $3,000";
+  const edited = withTdEditedServiceAddress(
+    normalizeToAlphaJsonV14({}, raw),
+    "2040 Pine Court, Madison, IN",
+  );
+  const validation = validateAlphaJson(edited);
+
+  assert.doesNotMatch(blockingText(validation), /Service address needs exact location confirmation/i);
+});
+
+test("later follow-up contradiction reopens server-verified TD address edit", () => {
+  const raw =
+    "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree. Option A $2050 Option B $3,000\n" +
+    "Follow-up 1: City is still unknown; do not use Madison yet.";
+  const edited = withTdEditedServiceAddress(
+    normalizeToAlphaJsonV14({}, raw),
+    "2040 Pine Court, Madison, IN",
+  );
+  const validation = validateAlphaJson(edited);
+
+  assert.match(blockingText(validation), /Service address needs exact location confirmation/i);
+});
+
+test("relative lot address remains blocked after unrelated follow-up", () => {
+  const input =
+    "customer Sofia Cross 812-555-2380 sofia.cross740@example.com lot beside 7260 Meadow Lane. remove one bradford pear tree. Option A $950 Option B $1450\n" +
+    "Follow-up 1: Customer prefers email.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.match(blockingText(validation), /Service address needs exact location confirmation/i);
+});
+
+test("exact-looking relative lot follow-up remains blocked", () => {
+  const input =
+    "customer Sofia Cross 812-555-2380 sofia.cross740@example.com lot beside 7260 Meadow Lane. remove one bradford pear tree. Option A $950 Option B $1450\n" +
+    "Follow-up 1: Service address is the lot beside 7260 Meadow Lane, Madison IN.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.match(blockingText(validation), /Service address needs exact location confirmation/i);
+});
+
+test("city utility phrases do not create false exact-location blockers", () => {
+  const input =
+    "Sam City 812-555-1111 sam@example.com 123 Oak Lane Madison IN. Remove one maple tree outside city limits, no city sewer, no city water, no city permit required. Option A remove and haul $1,200.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.doesNotMatch(blockingText(validation), /Service address needs exact location confirmation/i);
+  assert.doesNotMatch(blockingText(validation), /Missing service address|Service address looks unclear/i);
+});
+
+test("slash price scope follow-up resolution persists after later unrelated follow-up", () => {
+  const input =
+    "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana remove one maple tree 2600/2,950 for tree? no note on haul or stump\n" +
+    "Follow-up 1: Follow-up details: Option A cut and leave wood $2,600. Option B haul debris and cleanup $2,950.\n" +
+    "Follow-up 2: Customer prefers text updates.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.doesNotMatch(blockingText(validation), /Work scope unclear; confirm what this price covers/i);
+});
+
+test("slash price scope follow-up order independence keeps later resolution authoritative", () => {
+  const input =
+    "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana remove one maple tree 2600/2,950 for tree? no note on haul or stump\n" +
+    "Follow-up 1: Customer prefers text updates.\n" +
+    "Follow-up 2: Follow-up details: Option A cut and leave wood $2,600. Option B haul debris and cleanup $2,950.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.doesNotMatch(blockingText(validation), /Work scope unclear; confirm what this price covers/i);
+});
+
+test("later slash price scope contradiction reopens blocker", () => {
+  const input =
+    "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana remove one maple tree 2600/2,950 for tree? no note on haul or stump\n" +
+    "Follow-up 1: Follow-up details: Option A cut and leave wood $2,600. Option B haul debris and cleanup $2,950.\n" +
+    "Follow-up 2: Those slash price scopes may be wrong; do not use them yet.";
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+
+  assert.match(blockingText(validation), /Work scope unclear; confirm what this price covers/i);
+});
+
+test("structured TD option edits clear slash scope only when every displayed price has edited scope", () => {
+  const raw =
+    "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana remove one maple tree 2600/2,950 for tree? no note on haul or stump";
+  const initial = normalizeToAlphaJsonV14({}, raw);
+  const oneEdited = validateAlphaJson(withTdEditedOptionDescriptions(initial, [
+    "cut down maple and leave wood",
+  ]));
+  assert.match(blockingText(oneEdited), /Work scope unclear; confirm what this price covers/i);
+
+  const allEdited = validateAlphaJson(withTdEditedOptionDescriptions(initial, [
+    "cut down maple and leave wood",
+    "cut down maple and haul debris",
+  ]));
+  assert.doesNotMatch(blockingText(allEdited), /Work scope unclear; confirm what this price covers/i);
+});
+
+test("later follow-up contradiction reopens server-verified TD option scope edits", () => {
+  const raw =
+    "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana remove one maple tree 2600/2,950 for tree? no note on haul or stump\n" +
+    "Follow-up 1: Those option scopes were wrong; do not use them yet.";
+  const edited = withTdEditedOptionDescriptions(normalizeToAlphaJsonV14({}, raw), [
+    "cut down maple and leave wood",
+    "cut down maple and haul debris",
+  ]);
+  const validation = validateAlphaJson(edited);
+
+  assert.match(blockingText(validation), /Work scope unclear; confirm what this price covers/i);
+});
+
+test("resolved address and slash scope validation remains idempotent", () => {
+  const input =
+    "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree 2600/2,950 for tree? no note on haul or stump\n" +
+    "Follow-up 1: Service address is 2040 Pine Court, Madison IN.\n" +
+    "Follow-up 2: Follow-up details: Option A cut and leave wood $2,600. Option B haul debris and cleanup $2,950.";
+  const first = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+  const second = validateAlphaJson(first.alphaJson);
+
+  assert.doesNotMatch(blockingText(first), /Service address needs exact location confirmation|Work scope unclear; confirm what this price covers/i);
+  assert.deepEqual(second.blocking_errors, first.blocking_errors);
+  assert.equal(second.can_generate_pdf, first.can_generate_pdf);
+  assert.equal(second.alphaJson.validation.estimate_semantic_hash, first.alphaJson.validation.estimate_semantic_hash);
+});
+
+test("approved uber-plus safe-block cases remain blocked without actual missing evidence", () => {
+  const baseline = JSON.parse(readFileSync(new URL("./fixtures/alpha-uber-plus-messy-approved-baseline-2026-07-10.json", import.meta.url), "utf8"));
+  const fixture = JSON.parse(readFileSync(new URL("./fixtures/alpha-uber-plus-messy-150-initial-39pct-2026-06-30-cases.json", import.meta.url), "utf8"));
+  const approvedIds = baseline.approved_non_defect_failing_case_ids || [];
+  const casesById = new Map(fixture.cases.map((testCase) => [testCase.id, testCase]));
+
+  assert.equal(approvedIds.length, 6);
+  for (const caseId of approvedIds) {
+    const testCase = casesById.get(caseId);
+    assert.ok(testCase, `missing fixture for ${caseId}`);
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, `${testCase.raw_customer_input}\nFollow-up 1: No additional details yet.`));
+    assert.equal(validation.can_generate_pdf, false, `${caseId} should remain blocked without evidence`);
+    assert.ok((validation.blocking_errors || []).length || (validation.follow_ups || []).length, `${caseId} should still request review`);
+  }
 });
 
 test("gate codes are not treated as prices", () => {
