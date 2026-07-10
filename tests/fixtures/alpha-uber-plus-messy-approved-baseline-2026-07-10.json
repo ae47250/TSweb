@@ -1,0 +1,1460 @@
+{
+  "schema_version": "alpha_cohort_approved_baseline_v1",
+  "approval": {
+    "status": "approved_by_user_request",
+    "approval_date": "2026-07-10",
+    "approved_by": "Human user request in Codex thread",
+    "note": "User approved auditing and freezing non-defect cases for the uber-plus-messy cohort. True defects remain excluded from the approved baseline."
+  },
+  "fixture": {
+    "path": "tests/fixtures/alpha-uber-plus-messy-150-initial-39pct-2026-06-30-cases.json",
+    "fixture_id": "alpha-uber-plus-messy",
+    "tier": "uber-plus-messy",
+    "case_count": 150,
+    "sha256": "00799f02c3a465db64e6f8583dbf48d3fa898692ef1a1aa7c4038386fa2cf75c"
+  },
+  "policy": {
+    "do_not_require_all_adversarial_cases_to_pass": true,
+    "allowed_classifications": [
+      "true_defect",
+      "correct_safe_block_follow_up",
+      "policy_ambiguity",
+      "stale_or_incorrect_expectation"
+    ],
+    "regression_rules": [
+      "Current non-defect failing case IDs must be a subset of approved_non_defect_failing_case_ids.",
+      "Current non-defect failing count must not exceed summary.approved_non_defect_failure_count.",
+      "Current still-blocked-after-follow-up count for approved non-defects must not exceed summary.approved_non_defect_still_blocked_after_follow_up.",
+      "Current true defects must still fail unless fixed.",
+      "The source fixture checksum must match fixture.sha256."
+    ]
+  },
+  "summary": {
+    "total_cases": 150,
+    "passing_cases": 118,
+    "failure_count": 32,
+    "approved_non_defect_failure_count": 6,
+    "pass_rate_percent": 78.67,
+    "initially_ready": 62,
+    "recovered_after_follow_up": 82,
+    "still_blocked_after_follow_up": 6,
+    "approved_non_defect_still_blocked_after_follow_up": 6,
+    "classifications": {
+      "true_defect": 26,
+      "correct_safe_block_follow_up": 6
+    },
+    "failure_categories": {
+      "validator_readiness": 26,
+      "follow_up_unrecovered": 6
+    },
+    "approved_non_defect_failure_categories": {
+      "follow_up_unrecovered": 6
+    }
+  },
+  "approved_failing_case_ids": [
+    "case_0928",
+    "case_1429",
+    "case_1510",
+    "case_1668",
+    "case_1719",
+    "case_1770"
+  ],
+  "approved_non_defect_failing_case_ids": [
+    "case_0928",
+    "case_1429",
+    "case_1510",
+    "case_1668",
+    "case_1719",
+    "case_1770"
+  ],
+  "true_defect_case_ids": [
+    "case_0708",
+    "case_1170",
+    "case_1409",
+    "case_1420",
+    "case_1870",
+    "case_0048",
+    "case_0949",
+    "case_1138",
+    "case_1629",
+    "case_1720",
+    "case_1748",
+    "case_1938",
+    "case_0288",
+    "case_1639",
+    "case_1899",
+    "case_1919",
+    "case_1959",
+    "case_1999",
+    "case_0189",
+    "case_0558",
+    "case_0698",
+    "case_0918",
+    "case_1260",
+    "case_1740",
+    "case_1790",
+    "case_1908"
+  ],
+  "audit": [
+    {
+      "case_id": "case_0708",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$2,600",
+          "$2,950"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$2,600",
+          "$2,950"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$2,600",
+          "$2,950"
+        ]
+      },
+      "raw_customer_input": "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana 2600/2,950 for tree? no note on haul or stump"
+    },
+    {
+      "case_id": "case_1170",
+      "category": "slash_prices",
+      "messiness": "high",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$2,650",
+          "$3,500"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$2,650",
+          "$3,500"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$2,650",
+          "$3,500"
+        ]
+      },
+      "raw_customer_input": "Megan Long said call/text call 812-555-8290 at 3584 Wilson Avenue in Madison Indiana slash price 2650/$3,500 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1409",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,300",
+          "$1,900"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,300",
+          "$1,900"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$1,300",
+          "$1,900"
+        ]
+      },
+      "raw_customer_input": "Derek Cox said 812.555.8133 7221 Poplar Ridge Road - Hanover IN $1,300/1900 for tree? no note on haul or stump"
+    },
+    {
+      "case_id": "case_1420",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$2,650",
+          "$3,350"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$2,650",
+          "$3,350"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$2,650",
+          "$3,350"
+        ]
+      },
+      "raw_customer_input": "Carmen Fox call 812-555-8540 carmen.fox420@example.com 421 Walnut Street, Hanover, Indiana 2,650/3,350 for tree? no note on haul or stump"
+    },
+    {
+      "case_id": "case_1870",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,700",
+          "$2,500"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,700",
+          "$2,500"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$1,700",
+          "$2,500"
+        ]
+      },
+      "raw_customer_input": "Paula Hale said 812-555-7190 paula.hale870@example.com at 2846 Meadow Lane in Hanover Indiana $1,700/$2,500 for tree? no note on haul or stump"
+    },
+    {
+      "case_id": "case_0048",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,600",
+          "$2,300"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,600",
+          "$2,300"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$1,600",
+          "$2,300"
+        ]
+      },
+      "raw_customer_input": "customer Luis Lucas 812 555 2776 5455 Creekside Drive, Madison, IN slash price 1,600/2300 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_0949",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$2,550",
+          "$3,150"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$2,550",
+          "$3,150"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$2,550",
+          "$3,150"
+        ]
+      },
+      "raw_customer_input": "customer Scott Griffin call/text 8125559113 1571 Highway 421 Hanover Indiana slash price $2550/3,150 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1138",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,450",
+          "$2,200"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,450",
+          "$2,200"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$1,450",
+          "$2,200"
+        ]
+      },
+      "raw_customer_input": "Tyler Bryant said call/text text 812-555-7106 2630 Main Street - Madison Indiana slash price $1,450/$2,200 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1629",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$2,450",
+          "$2,800"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$2,450",
+          "$2,800"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$2,450",
+          "$2,800"
+        ]
+      },
+      "raw_customer_input": "Grace Roberts said call/text 1-812-555-7273 1012 Hickory Lane - Hanover IN slash price $2450/$2800 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1720",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,300",
+          "$1,600"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,300",
+          "$1,600"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$1,300",
+          "$1,600"
+        ]
+      },
+      "raw_customer_input": "Oscar Diaz said call 812-555-1640 oscar.diaz720@example.com 6948 Hanover Avenue Hanover Indiana slash price $1300/1,600 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1748",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$950",
+          "$1,650"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$950",
+          "$1,650"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$950",
+          "$1,650"
+        ]
+      },
+      "raw_customer_input": "Dennis Long call/text (812) 555-2676 at 6507 Thomas Hill Road in Madison Indiana slash price 950/$1650 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1938",
+      "category": "slash_prices",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$2,500",
+          "$2,800"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$2,500",
+          "$2,800"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$2,500",
+          "$2,800"
+        ]
+      },
+      "raw_customer_input": "note from Evan Simmons 1-812-555-9706 7162 Ridge Road Hanover Indiana slash price $2500/$2800 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_0288",
+      "category": "slash_prices",
+      "messiness": "low",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$950",
+          "$1,350"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$950",
+          "$1,350"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$950",
+          "$1,350"
+        ]
+      },
+      "raw_customer_input": "Brenda Boyd said call 812-555-2656 brenda.boyd288@example.com 2747 Orchard Drive, Hanover, IN slash price $950/1,350 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1639",
+      "category": "slash_prices",
+      "messiness": "low",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,050",
+          "$1,650"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,050",
+          "$1,650"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$1,050",
+          "$1,650"
+        ]
+      },
+      "raw_customer_input": "Noah Parker said 8125557643 noah.parker639@example.com 7599 Maple Avenue, Hanover, IN slash price $1050/1650 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1899",
+      "category": "address_formats",
+      "messiness": "high",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$2,600",
+          "$3,600"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "2 trees",
+        "prices": [
+          "$2,600",
+          "$3,600"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "2 trees",
+        "prices": [
+          "$2,600",
+          "$3,600"
+        ]
+      },
+      "raw_customer_input": "James Klein said 812 555 8263 lot beside 7284 Hanover Avenue. cut down two cedar trees. Option A $2,600 Option B 3,600"
+    },
+    {
+      "case_id": "case_1919",
+      "category": "address_formats",
+      "messiness": "high",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "2 trees",
+        "service_option_prices": [
+          "$1,400",
+          "$2,250"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "2 trees",
+        "prices": [
+          "$1,400",
+          "$2,250"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "2 trees",
+        "prices": [
+          "$1,400",
+          "$2,250"
+        ]
+      },
+      "raw_customer_input": "note from Mason Sharp 1-812-555-9003 mason.sharp919@example.com 2184 Broadway Street no city. remove two walnut trees. Option A $1400 Option B 2,250"
+    },
+    {
+      "case_id": "case_1959",
+      "category": "slash_prices",
+      "messiness": "low",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$2,050",
+          "$2,800"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$2,050",
+          "$2,800"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$2,050",
+          "$2,800"
+        ]
+      },
+      "raw_customer_input": "guy Clara Ford call/text 812 555 1483 862 Ridge Road, Hanover, Indiana slash price $2,050/2800 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_1999",
+      "category": "slash_prices",
+      "messiness": "low",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,850",
+          "$2,350"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,850",
+          "$2,350"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "",
+        "prices": [
+          "$1,850",
+          "$2,350"
+        ]
+      },
+      "raw_customer_input": "customer Hannah Murray call 812-555-2963 6960 Walnut Street, Madison, IN slash price $1850/$2350 from truck notes, scope unclear"
+    },
+    {
+      "case_id": "case_0189",
+      "category": "address_formats",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,250",
+          "$1,650"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "3 trees",
+        "prices": [
+          "$1,250",
+          "$1,650"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "3 trees",
+        "prices": [
+          "$1,250",
+          "$1,650"
+        ]
+      },
+      "raw_customer_input": "Heather Owens call/text 812-555-7993 lot beside 1352 Liberty Road. cut down 3 oak trees. Option A 1250 Option B $1650"
+    },
+    {
+      "case_id": "case_0558",
+      "category": "address_formats",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$1,650",
+          "$2,550"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "3 trees",
+        "prices": [
+          "$1,650",
+          "$2,550"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "3 trees",
+        "prices": [
+          "$1,650",
+          "$2,550"
+        ]
+      },
+      "raw_customer_input": "note from Stella Palmer 1-812-555-3646 stella.palmer558@example.com lot beside 4985 Broadway Street. remove 3 sweet gum trees. Option A $1,650 Option B $2550"
+    },
+    {
+      "case_id": "case_0698",
+      "category": "address_formats",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$1,300",
+          "$2,150"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "4 trees",
+        "prices": [
+          "$1,300",
+          "$2,150"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "4 trees",
+        "prices": [
+          "$1,300",
+          "$2,150"
+        ]
+      },
+      "raw_customer_input": "Hannah Lawson 1-812-555-8826 hannah.lawson698@example.com 6358 Ferry Street no city. four sycamore trees removal. Option A $1,300 Option B 2,150"
+    },
+    {
+      "case_id": "case_0918",
+      "category": "address_formats",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "3 trees",
+        "service_option_prices": [
+          "$2,650",
+          "$3,000"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "3 trees",
+        "prices": [
+          "$2,650",
+          "$3,000"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "3 trees",
+        "prices": [
+          "$2,650",
+          "$3,000"
+        ]
+      },
+      "raw_customer_input": "Ivy Bennett said 8125557966 4777 Moffett Road no city. cut down three maple trees. Option A 2,650 Option B $3000"
+    },
+    {
+      "case_id": "case_1260",
+      "category": "address_formats",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$1,750",
+          "$2,600"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$1,750",
+          "$2,600"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$1,750",
+          "$2,600"
+        ]
+      },
+      "raw_customer_input": "customer Victor Goodwin call/text (812) 555-2620 lot beside 6379 Vaughn Drive. remove 1 maple tree. Option A $1750 Option B $2,600"
+    },
+    {
+      "case_id": "case_1740",
+      "category": "address_formats",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$950",
+          "$1,450"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$950",
+          "$1,450"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$950",
+          "$1,450"
+        ]
+      },
+      "raw_customer_input": "customer Sofia Cross 812-555-2380 sofia.cross740@example.com lot beside 7260 Meadow Lane. remove one bradford pear tree. Option A $950 Option B $1450"
+    },
+    {
+      "case_id": "case_1790",
+      "category": "address_formats",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "4 trees",
+        "service_option_prices": [
+          "$2,500",
+          "$3,250"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "4 trees",
+        "prices": [
+          "$2,500",
+          "$3,250"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "4 trees",
+        "prices": [
+          "$2,500",
+          "$3,250"
+        ]
+      },
+      "raw_customer_input": "Malik Boyd 812.555.4230 malik.boyd790@example.com lot beside 4355 Hanover Avenue. four hickory trees removal. Option A 2,500 Option B 3,250"
+    },
+    {
+      "case_id": "case_1908",
+      "category": "address_formats",
+      "messiness": "medium",
+      "failure_categories": [
+        "validator_readiness"
+      ],
+      "classification": "true_defect",
+      "rationale": "The parser was quote-ready even though this adversarial fixture expected a block.",
+      "initial_can_generate_pdf": true,
+      "final_can_generate_pdf_after_followups": true,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 0,
+      "initial_blocking_errors": [],
+      "final_blocking_errors": [],
+      "initial_follow_ups": [],
+      "final_follow_ups": [],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": "1 tree",
+        "service_option_prices": [
+          "$2,050",
+          "$3,000"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$2,050",
+          "$3,000"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$2,050",
+          "$3,000"
+        ]
+      },
+      "raw_customer_input": "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree. Option A $2050 Option B $3,000"
+    },
+    {
+      "case_id": "case_0928",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "high",
+      "failure_categories": [
+        "follow_up_unrecovered"
+      ],
+      "classification": "correct_safe_block_follow_up",
+      "rationale": "After synthetic follow-up, required evidence was still insufficient; keeping the case blocked is safer than guessing.",
+      "initial_can_generate_pdf": false,
+      "final_can_generate_pdf_after_followups": false,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 3,
+      "initial_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "final_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "initial_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "final_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,800",
+          "$2,600"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,800",
+          "$2,600"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$1,800",
+          "$2,600"
+        ]
+      },
+      "raw_customer_input": "Terry Rogers said call 812-555-8336 terry.rogers928@example.com 7160 Lanier Drive, Madison, IN option A $1,800 option B 2,600, no descriptions"
+    },
+    {
+      "case_id": "case_1429",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "high",
+      "failure_categories": [
+        "follow_up_unrecovered"
+      ],
+      "classification": "correct_safe_block_follow_up",
+      "rationale": "After synthetic follow-up, required evidence was still insufficient; keeping the case blocked is safer than guessing.",
+      "initial_can_generate_pdf": false,
+      "final_can_generate_pdf_after_followups": false,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 3,
+      "initial_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "final_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "initial_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "final_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$2,050",
+          "$2,450"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$2,050",
+          "$2,450"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$2,050",
+          "$2,450"
+        ]
+      },
+      "raw_customer_input": "note from Ivy French 8125558873 at 5453 Dogwood Court in Madison IN option A 2050 option B $2450, no descriptions"
+    },
+    {
+      "case_id": "case_1510",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "high",
+      "failure_categories": [
+        "follow_up_unrecovered"
+      ],
+      "classification": "correct_safe_block_follow_up",
+      "rationale": "After synthetic follow-up, required evidence was still insufficient; keeping the case blocked is safer than guessing.",
+      "initial_can_generate_pdf": false,
+      "final_can_generate_pdf_after_followups": false,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 3,
+      "initial_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "final_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "initial_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "final_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,050",
+          "$1,350"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,050",
+          "$1,350"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$1,050",
+          "$1,350"
+        ]
+      },
+      "raw_customer_input": "customer Joan Wells call/text 812-555-2870 at 1722 Rolling Ridge Drive in Madison Indiana option A $1050 option B $1350, no descriptions"
+    },
+    {
+      "case_id": "case_1668",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "high",
+      "failure_categories": [
+        "follow_up_unrecovered"
+      ],
+      "classification": "correct_safe_block_follow_up",
+      "rationale": "After synthetic follow-up, required evidence was still insufficient; keeping the case blocked is safer than guessing.",
+      "initial_can_generate_pdf": false,
+      "final_can_generate_pdf_after_followups": false,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 3,
+      "initial_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "final_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "initial_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "final_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,250",
+          "$1,650"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,250",
+          "$1,650"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$1,250",
+          "$1,650"
+        ]
+      },
+      "raw_customer_input": "customer is Rosa Lawson call/text 812-555-8716 6523 Main Street, Madison, IN option A 1250 option B $1,650, no descriptions"
+    },
+    {
+      "case_id": "case_1719",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "high",
+      "failure_categories": [
+        "follow_up_unrecovered"
+      ],
+      "classification": "correct_safe_block_follow_up",
+      "rationale": "After synthetic follow-up, required evidence was still insufficient; keeping the case blocked is safer than guessing.",
+      "initial_can_generate_pdf": false,
+      "final_can_generate_pdf_after_followups": false,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 3,
+      "initial_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "final_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "initial_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "final_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$850",
+          "$1,350"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$850",
+          "$1,350"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$850",
+          "$1,350"
+        ]
+      },
+      "raw_customer_input": "Felix Webb 812.555.1603 felix.webb719@example.com 947 Oak Lane, Madison, IN option A $850 option B 1350, no descriptions"
+    },
+    {
+      "case_id": "case_1770",
+      "category": "ambiguous_inputs_requiring_follow_up",
+      "messiness": "high",
+      "failure_categories": [
+        "follow_up_unrecovered"
+      ],
+      "classification": "correct_safe_block_follow_up",
+      "rationale": "After synthetic follow-up, required evidence was still insufficient; keeping the case blocked is safer than guessing.",
+      "initial_can_generate_pdf": false,
+      "final_can_generate_pdf_after_followups": false,
+      "recovered_after_follow_up": false,
+      "follow_up_rounds": 3,
+      "initial_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "final_blocking_errors": [
+        "Priced option descriptions are missing."
+      ],
+      "initial_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "final_follow_ups": [
+        "What does each priced option include?"
+      ],
+      "expected": {
+        "can_generate_pdf": false,
+        "tree_count": null,
+        "service_option_prices": [
+          "$1,050",
+          "$1,700"
+        ]
+      },
+      "actual_initial": {
+        "tree_count": "",
+        "prices": [
+          "$1,050",
+          "$1,700"
+        ]
+      },
+      "actual_after_followups": {
+        "tree_count": "1 tree",
+        "prices": [
+          "$1,050",
+          "$1,700"
+        ]
+      },
+      "raw_customer_input": "customer Logan Morgan 812 555 3490 logan.morgan770@example.com 4441 River Bluff Lane, Madison, IN option A $1050 option B 1700, no descriptions"
+    }
+  ]
+}

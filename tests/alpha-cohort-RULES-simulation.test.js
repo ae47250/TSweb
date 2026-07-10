@@ -10,9 +10,11 @@ const FIXTURE_DIR = "tests/fixtures";
 const EXPECTED_TIERS = ["easy", "medium", "medium-messy", "very-messy", "uber-messy", "uber-plus-messy", "hard-knownfail"];
 const UBER_MESSY_APPROVED_BASELINE_PATH = join(FIXTURE_DIR, "alpha-uber-messy-approved-baseline-2026-07-10.json");
 const VERY_MESSY_APPROVED_BASELINE_PATH = join(FIXTURE_DIR, "alpha-very-messy-approved-baseline-2026-07-10.json");
+const UBER_PLUS_MESSY_APPROVED_BASELINE_PATH = join(FIXTURE_DIR, "alpha-uber-plus-messy-approved-baseline-2026-07-10.json");
 const approvedAuditBaselines = new Map([
   ["uber-messy", JSON.parse(readFileSync(UBER_MESSY_APPROVED_BASELINE_PATH, "utf8"))],
   ["very-messy", JSON.parse(readFileSync(VERY_MESSY_APPROVED_BASELINE_PATH, "utf8"))],
+  ["uber-plus-messy", JSON.parse(readFileSync(UBER_PLUS_MESSY_APPROVED_BASELINE_PATH, "utf8"))],
 ]);
 const fixtures = readdirSync(FIXTURE_DIR)
   .filter((name) => /^alpha-.*-cases\.json$/i.test(name))
