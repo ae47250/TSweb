@@ -4,18 +4,18 @@
 - Manifest source: reports/human-review-34-readiness-reconciliation-manifest.jsonl
 - Total replay records: 382
 - Active PDF-ready records: 322
-- Newly blocked under shadow enforcement: 66
-- Potential regressions requiring held-out semantic review: 33
+- Newly blocked under shadow enforcement: 59
+- Potential regressions requiring held-out semantic review: 26
 
 ## Mutually Exclusive Categories
 
 | Category | Count |
 |---|---:|
-| shadow_correction_available_no_block | 254 |
+| shadow_correction_available_no_block | 261 |
 | unchanged_not_pdf_ready | 57 |
 | reviewed_authoritative_structural_block | 33 |
-| potential_regression_dependent_addon_structure | 17 |
 | potential_regression_other_structural | 16 |
+| potential_regression_dependent_addon_structure | 10 |
 | shadow_correction_available_already_blocked | 2 |
 | extra_regression_no_new_block | 1 |
 | reviewed_authoritative_no_new_block | 1 |
@@ -33,9 +33,9 @@
 
 | Bucket | Count |
 |---|---:|
-| none | 258 |
-| dependent_addon_structure | 54 |
+| none | 265 |
 | other_structural | 49 |
+| dependent_addon_structure | 47 |
 | ambiguous_or_unsupported_relationship | 21 |
 
 ## Structural Codes
@@ -46,9 +46,9 @@
 | INVALID_OPTION_LABEL_SEQUENCE | 88 |
 | AMBIGUOUS_OPTION_RELATIONSHIP | 56 |
 | DEPENDENT_ADDON_STANDALONE | 47 |
-| EXPANDED_SCOPE_INCOMPLETE | 17 |
 | REVERSED_BASE_ADDON_ORDER | 17 |
 | BASE_SCOPE_INCLUDES_ADDON | 10 |
+| EXPANDED_SCOPE_INCOMPLETE | 10 |
 | INCREMENTAL_ADDON_USED_AS_TOTAL | 10 |
 | EXPLICIT_QUANTITY_OMITTED_OR_CHANGED | 2 |
 
@@ -72,21 +72,14 @@
 - obs_0214
 - obs_0354
 - obs_0357
-- obs_0363
 - obs_0507
-- obs_0573
 - obs_0607
 - obs_0620
 - obs_0660
-- obs_0707
 - obs_0780
 - obs_0787
-- obs_0802
-- obs_0808
 - obs_0810
 - obs_0865
-- obs_0884
-- obs_0948
 
 ## Notes
 

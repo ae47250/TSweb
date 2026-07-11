@@ -8,16 +8,16 @@
       "total": 382,
       "active_ready": 322,
       "corrected_outputs": 289,
-      "newly_blocked_outputs": 66,
-      "unchanged_outputs": 258,
+      "newly_blocked_outputs": 59,
+      "unchanged_outputs": 265,
       "ambiguous_outputs": 56,
-      "potential_regressions": 33
+      "potential_regressions": 26
     },
     "byCode": {
       "INVALID_OPTION_LABEL_SEQUENCE": 88,
       "BASE_SCOPE_INCLUDES_ADDON": 10,
       "DEPENDENT_ADDON_STANDALONE": 47,
-      "EXPANDED_SCOPE_INCOMPLETE": 17,
+      "EXPANDED_SCOPE_INCOMPLETE": 10,
       "INCREMENTAL_ADDON_USED_AS_TOTAL": 10,
       "REVERSED_BASE_ADDON_ORDER": 17,
       "EXPLICIT_QUANTITY_OMITTED_OR_CHANGED": 2,
@@ -73,21 +73,14 @@
     "obs_0214",
     "obs_0354",
     "obs_0357",
-    "obs_0363",
     "obs_0507",
-    "obs_0573",
     "obs_0607",
     "obs_0620",
     "obs_0660",
-    "obs_0707",
     "obs_0780",
     "obs_0787",
-    "obs_0802",
-    "obs_0808",
     "obs_0810",
-    "obs_0865",
-    "obs_0884",
-    "obs_0948"
+    "obs_0865"
   ],
   "reviewed_case_ids_with_correction_available": [
     "obs_0839",
@@ -2046,15 +2039,13 @@
       "line": 145,
       "cohort": "full_382_only",
       "active_ready": true,
-      "would_block_under_enforcement": true,
+      "would_block_under_enforcement": false,
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
-      "structural_error_codes": [
-        "EXPANDED_SCOPE_INCOMPLETE"
-      ],
-      "category": "dependent_addon_structure",
+      "structural_error_codes": [],
+      "category": "none",
       "expected_human_not_ready": false,
-      "potential_regression": true
+      "potential_regression": false
     },
     {
       "observation_id": "obs_0368",
@@ -3027,15 +3018,13 @@
       "line": 211,
       "cohort": "full_382_only",
       "active_ready": true,
-      "would_block_under_enforcement": true,
+      "would_block_under_enforcement": false,
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
-      "structural_error_codes": [
-        "EXPANDED_SCOPE_INCOMPLETE"
-      ],
-      "category": "dependent_addon_structure",
+      "structural_error_codes": [],
+      "category": "none",
       "expected_human_not_ready": false,
-      "potential_regression": true
+      "potential_regression": false
     },
     {
       "observation_id": "obs_0576",
@@ -3678,15 +3667,13 @@
       "line": 254,
       "cohort": "full_382_only",
       "active_ready": true,
-      "would_block_under_enforcement": true,
+      "would_block_under_enforcement": false,
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
-      "structural_error_codes": [
-        "EXPANDED_SCOPE_INCOMPLETE"
-      ],
-      "category": "dependent_addon_structure",
+      "structural_error_codes": [],
+      "category": "none",
       "expected_human_not_ready": false,
-      "potential_regression": true
+      "potential_regression": false
     },
     {
       "observation_id": "obs_0711",
@@ -4221,15 +4208,13 @@
       "line": 292,
       "cohort": "full_382_only",
       "active_ready": true,
-      "would_block_under_enforcement": true,
+      "would_block_under_enforcement": false,
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
-      "structural_error_codes": [
-        "EXPANDED_SCOPE_INCOMPLETE"
-      ],
-      "category": "dependent_addon_structure",
+      "structural_error_codes": [],
+      "category": "none",
       "expected_human_not_ready": false,
-      "potential_regression": true
+      "potential_regression": false
     },
     {
       "observation_id": "obs_0803",
@@ -4275,15 +4260,13 @@
       "line": 296,
       "cohort": "full_382_only",
       "active_ready": true,
-      "would_block_under_enforcement": true,
+      "would_block_under_enforcement": false,
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
-      "structural_error_codes": [
-        "EXPANDED_SCOPE_INCOMPLETE"
-      ],
-      "category": "dependent_addon_structure",
+      "structural_error_codes": [],
+      "category": "none",
       "expected_human_not_ready": false,
-      "potential_regression": true
+      "potential_regression": false
     },
     {
       "observation_id": "obs_0810",
@@ -4692,15 +4675,13 @@
       "line": 324,
       "cohort": "full_382_only",
       "active_ready": true,
-      "would_block_under_enforcement": true,
+      "would_block_under_enforcement": false,
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
-      "structural_error_codes": [
-        "EXPANDED_SCOPE_INCOMPLETE"
-      ],
-      "category": "dependent_addon_structure",
+      "structural_error_codes": [],
+      "category": "none",
       "expected_human_not_ready": false,
-      "potential_regression": true
+      "potential_regression": false
     },
     {
       "observation_id": "obs_0885",
@@ -5213,15 +5194,13 @@
       "line": 361,
       "cohort": "full_382_only",
       "active_ready": true,
-      "would_block_under_enforcement": true,
+      "would_block_under_enforcement": false,
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
-      "structural_error_codes": [
-        "EXPANDED_SCOPE_INCOMPLETE"
-      ],
-      "category": "dependent_addon_structure",
+      "structural_error_codes": [],
+      "category": "none",
       "expected_human_not_ready": false,
-      "potential_regression": true
+      "potential_regression": false
     },
     {
       "observation_id": "obs_0950",

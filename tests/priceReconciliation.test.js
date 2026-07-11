@@ -253,6 +253,46 @@ test("post-AI reconciliation preserves explicit multi-tree scope in expanded stu
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
+test("post-AI reconciliation computes storm cleanup with lower haul-away add-on", () => {
+  const rawCases = [
+    [
+      "Renee Ramirez, 765-962-5554, renee.ramirez@icloud.com. Service address: 6440 Brookside Dr, Martinsville, IN. Please clear storm damage in back yard. Quote storm cleanup 1900 haul away 350.",
+      "$1,900",
+      "$2,250",
+    ],
+    [
+      "William Jackson, 765-714-8427, william46@outlook.com. Service address: 505 Northview Ct, Bloomington, IN. Please clear storm damage in back yard. Quote storm cleanup 1700 haul away 200.",
+      "$1,700",
+      "$1,900",
+    ],
+    [
+      "rober maybe Robert H 812 227 8614 no thats phone robert.hall@comcast.net 2584 Park Ave clear storm damage in back yard storm cleanup 1700 haul away 300 pls",
+      "$1,700",
+      "$2,000",
+    ],
+  ];
+
+  for (const [raw, basePrice, expandedPrice] of rawCases) {
+    const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, raw), buildOptionPriceCandidateView(raw));
+    const validation = validateAlphaJson(reconciled);
+
+    assert.deepEqual(
+      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+      [
+        ["Option A", "storm-damage cleanup in back yard", basePrice],
+        ["Option B", "storm-damage cleanup in back yard with debris haul-away", expandedPrice],
+      ],
+      raw,
+    );
+    assert.equal(
+      validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
+      INCREMENTAL_ADDON_PRICE,
+      raw,
+    );
+    assert.deepEqual(validation.structural_error_codes, [], raw);
+  }
+});
+
 test("computed add-on amount from sidecar is accepted as evidence, not invented", () => {
   const raw =
     "Karen Wright 463-994-6709 wright491@gmail.com 1256 Mill St Madison IN tree removal 1000 + stump grinding 400";

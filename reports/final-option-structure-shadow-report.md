@@ -8,7 +8,7 @@
 
 | Cohort | Corrected outputs | Newly blocked outputs | Unchanged outputs | Ambiguous outputs | Potential regressions |
 |---|---:|---:|---:|---:|---:|
-| Full 382 | 289 | 66 | 258 | 56 | 33 |
+| Full 382 | 289 | 59 | 265 | 56 | 26 |
 | Authoritative 34 | 1 | 33 | 0 | 11 | 0 |
 | Extra regression | 1 | 0 | 1 | 0 | 0 |
 
@@ -18,9 +18,9 @@
 - INVALID_OPTION_LABEL_SEQUENCE: 88
 - AMBIGUOUS_OPTION_RELATIONSHIP: 56
 - DEPENDENT_ADDON_STANDALONE: 47
-- EXPANDED_SCOPE_INCOMPLETE: 17
 - REVERSED_BASE_ADDON_ORDER: 17
 - BASE_SCOPE_INCLUDES_ADDON: 10
+- EXPANDED_SCOPE_INCOMPLETE: 10
 - INCREMENTAL_ADDON_USED_AS_TOTAL: 10
 - EXPLICIT_QUANTITY_OMITTED_OR_CHANGED: 2
 
@@ -44,21 +44,14 @@
 - obs_0214
 - obs_0354
 - obs_0357
-- obs_0363
 - obs_0507
-- obs_0573
 - obs_0607
 - obs_0620
 - obs_0660
-- obs_0707
 - obs_0780
 - obs_0787
-- obs_0802
-- obs_0808
 - obs_0810
 - obs_0865
-- obs_0884
-- obs_0948
 
 ## Notes
 
