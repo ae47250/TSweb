@@ -1,6 +1,6 @@
 {
   "record_type": "production_gate_summary",
-  "generated_at": "2026-07-10T18:03:37.116Z",
+  "generated_at": "2026-07-11T18:26:16.859Z",
   "all_gates_pass": false,
   "final_recommendation": "REVISE",
   "blocked_status": "BLOCKED - INSUFFICIENT GROUND TRUTH",

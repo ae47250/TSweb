@@ -216,19 +216,21 @@ test("validate route payload recomputes sidecar evidence for structural parity",
   assert.equal(validation.can_generate_pdf, false);
   assert.equal(validation.alphaJson.normalization.route_validation_evidence.trusted, true);
   assert.ok(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"));
-  assert.ok(validation.structural_error_codes.includes("EXPANDED_SCOPE_INCOMPLETE"));
 });
 
-test("no-total dependent add-on remains shadow-blocked under enforcement", () => {
+test("clear no-total dependent add-on computes cumulative price with complete active scope", () => {
   const raw = "Test Customer 812-555-0100 test@example.invalid 1256 Mill St Madison IN tree removal 1000 stump grinding 400";
   const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, raw), buildOptionPriceCandidateView(raw));
   const defaultValidation = validateAlphaJson(reconciled);
   const enforcedValidation = withStructuralEnforcement(() => validateAlphaJson(reconciled));
 
   assert.equal(defaultValidation.can_generate_pdf, true);
-  assert.ok(defaultValidation.structural_error_codes.includes("AMBIGUOUS_OPTION_RELATIONSHIP"));
-  assert.ok(defaultValidation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"));
-  assert.equal(enforcedValidation.can_generate_pdf, false);
+  assert.deepEqual(defaultValidation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,000", "$1,400"]);
+  assert.equal(defaultValidation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"), false);
+  assert.equal(defaultValidation.structural_error_codes.includes("MISSING_EXPANDED_CHOICE"), false);
+  assert.equal(defaultValidation.structural_error_codes.includes("EXPANDED_PRICE_MISMATCH"), false);
+  assert.equal(defaultValidation.structural_error_codes.includes("EXPANDED_SCOPE_INCOMPLETE"), false);
+  assert.equal(enforcedValidation.can_generate_pdf, true);
 });
 
 test("explicit additive wording with cumulative active output has no structural error", () => {
@@ -328,8 +330,8 @@ test("independent alternatives are not merged without total/add-on evidence", ()
   assert.equal(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"), false);
 });
 
-test("safety/access wording in customer option scope is a structural shadow error", () => {
-  const validation = validateAlphaJson({
+test("safety/access wording stays as a TD warning, not a structural PDF blocker", () => {
+  const validation = withStructuralEnforcement(() => validateAlphaJson({
     ...baseAlpha("John 8125551111 123 Main Madison IN trim branches touching service line 1100"),
     job: {
       service_address: { display: "123 Main St Madison IN" },
@@ -346,8 +348,10 @@ test("safety/access wording in customer option scope is a structural shadow erro
         },
       ],
     },
-  });
+  }));
 
   assert.equal(validation.can_generate_pdf, true);
-  assert.ok(validation.structural_error_codes.includes("SAFETY_TEXT_IN_CUSTOMER_SCOPE"));
+  assert.equal(validation.structural_error_codes.includes("SAFETY_TEXT_IN_CUSTOMER_SCOPE"), false);
+  assert.equal(validation.structural_blocking_errors.length, 0);
+  assert.match(validation.warnings.join(" "), /Safety\/access note: Option A includes safety or access wording/i);
 });

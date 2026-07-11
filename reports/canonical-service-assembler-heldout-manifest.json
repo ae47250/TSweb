@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T18:03:37.115Z",
+  "generated_at": "2026-07-11T18:26:16.859Z",
   "source_file": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\liveapi-20case-deep-dive.jsonl",
   "status": "BLOCKED - INSUFFICIENT GROUND TRUTH",
   "reason": "The available held-out file has expected prices and general readiness checks, but lacks authoritative service-kind, relationship, and canonical item labels.",

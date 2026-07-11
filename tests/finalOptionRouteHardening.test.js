@@ -159,8 +159,8 @@ test("route validation blocks standalone dependent add-on structure under enforc
 
     assert.equal(validation.can_generate_pdf, false);
     assert.ok(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"));
-    assert.ok(validation.structural_error_codes.includes("EXPANDED_SCOPE_INCOMPLETE"));
-    assert.match(validation.blocking_errors.join(" "), /Final TD2 keeps this amount as a component option|DEPENDENT_ADDON_STANDALONE|EXPANDED_SCOPE_INCOMPLETE/);
+    assert.ok(validation.structural_error_codes.includes("AMBIGUOUS_PRICE_ROLE"));
+    assert.match(validation.blocking_errors.join(" "), /DEPENDENT_ADDON_STANDALONE|AMBIGUOUS_PRICE_ROLE/);
   });
 });
 
@@ -170,10 +170,14 @@ test("route validation ignores forged client sidecar evidence", async () => {
     const validation = validateAlphaJsonRoutePayload({ alphaJson, customer_text: raw });
     const sidecarPrices = validation.alphaJson.normalization.sidecar_price_reconciliation.sidecar_prices;
 
-    assert.equal(validation.can_generate_pdf, false);
+    assert.equal(validation.can_generate_pdf, true);
     assert.equal(validation.alphaJson.normalization.route_validation_evidence.trusted, true);
     assert.equal(sidecarPrices.some((price) => price.price_id === "fake_total"), false);
-    assert.match(validation.blocking_errors.join(" "), /not found in sidecar\/raw price evidence/);
+    assert.deepEqual(
+      validation.alphaJson.service_options.items.map((option) => option.price.display),
+      ["$2,500", "$3,250"],
+    );
+    assert.deepEqual(validation.structural_error_codes, []);
   });
 });
 

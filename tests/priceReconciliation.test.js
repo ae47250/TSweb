@@ -2,12 +2,24 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { buildOptionPriceCandidateView } from "../lib/optionPriceNormalizer.js";
-import { reconcileSidecarPrices } from "../lib/priceReconciliation.js";
+import {
+  EXPLICIT_OPTION_TOTAL,
+  INCREMENTAL_ADDON_PRICE,
+  PRICE_RELATIONSHIP_RESOLVER_VERSION,
+  PRICE_RELATIONSHIP_ROLES,
+  reconcileSidecarPrices,
+} from "../lib/priceReconciliation.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 
 function prices(validation) {
   return validation.alphaJson.service_options.items.map((option) => option.price.display);
 }
+
+test("price reconciliation exposes the authoritative price-relationship resolver vocabulary", () => {
+  assert.equal(PRICE_RELATIONSHIP_RESOLVER_VERSION, "price-relationship-resolver-v0.1");
+  assert.equal(PRICE_RELATIONSHIP_ROLES.EXPLICIT_OPTION_TOTAL, EXPLICIT_OPTION_TOTAL);
+  assert.equal(PRICE_RELATIONSHIP_ROLES.INCREMENTAL_ADDON_PRICE, INCREMENTAL_ADDON_PRICE);
+});
 
 test("post-AI reconciliation auto-adds computed high-confidence sidecar add-on bundle", () => {
   const raw =
@@ -83,9 +95,13 @@ test("post-AI reconciliation inherits base scope for higher later bundled add-on
   assert.deepEqual(prices(validation), ["$1,000", "$2,000"]);
   assert.match(validation.alphaJson.service_options.items[1].description, /removal.*stump grinding/i);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /High-confidence sidecar price \$2,000 needs TD2 review/i);
+  assert.equal(
+    validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
+    EXPLICIT_OPTION_TOTAL,
+  );
 });
 
-test("post-AI reconciliation downgrades high-confidence scoped second price to warning", () => {
+test("post-AI reconciliation treats clear lower scoped second price as incremental add-on", () => {
   const raw =
     "Karen Wright 463-994-6709 wright491@gmail.com 1256 Mill St Madison IN tree removal 1000 stump grinding 400";
   const sidecar = buildOptionPriceCandidateView(raw);
@@ -93,18 +109,55 @@ test("post-AI reconciliation downgrades high-confidence scoped second price to w
   const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, raw), sidecar);
   const validation = validateAlphaJson(reconciled);
 
-  assert.deepEqual(prices(validation), ["$1,000", "$400"]);
-  assert.equal(validation.alphaJson.service_options.items[1].price.review_warning, true);
+  assert.deepEqual(prices(validation), ["$1,000", "$1,400"]);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /Possible add-on price \$400 needs TD2 review/i);
-  assert.match(validation.warnings.join(" "), /Allowed high-confidence second price \$400/i);
+  assert.match(validation.warnings.join(" "), /Replaced standalone add-on amount \$400/i);
   assert.equal(
     validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].reason_code,
-    "accepted_exact_final_price_with_warning",
+    "accepted_into_bundled_option",
   );
   assert.equal(
-    validation.alphaJson.normalization.sidecar_price_reconciliation.downgraded_add_on_reviews[0].display,
-    "$400",
+    validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
+    INCREMENTAL_ADDON_PRICE,
   );
+});
+
+test("post-AI reconciliation computes stump grinding as expanded option total", () => {
+  const raw =
+    "Megan Taylor contact 317-918-5139 / mtaylor@icloud.com. Address 804 Farm Ln, Bloomington, IN. Work requested: remove cedar leaning toward garage. Estimate tree removal 2100 stump grinding 600.";
+
+  const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, raw), buildOptionPriceCandidateView(raw));
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "remove cedar", "$2,100"],
+      ["Option B", "remove cedar and stump grinding", "$2,700"],
+    ],
+  );
+  assert.equal(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"), false);
+  assert.equal(validation.structural_error_codes.includes("MISSING_EXPANDED_CHOICE"), false);
+});
+
+test("post-AI reconciliation computes haul-away as expanded option total and keeps utility line as warning", () => {
+  const raw =
+    "Customer Kelly Hernandez; phone 317-295-6019; email kelly.hernandez@aol.com; job at 3722 Brookside Dr, Bargersville, IN: trim branches touching service line; prices tree trim 1200 haul away 275.";
+
+  const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, raw), buildOptionPriceCandidateView(raw));
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "trim branches", "$1,200"],
+      ["Option B", "trim branches and haul away", "$1,475"],
+    ],
+  );
+  assert.match(validation.warnings.join(" "), /service line/i);
+  assert.doesNotMatch(validation.alphaJson.service_options.items.map((option) => option.title).join(" "), /service line/i);
+  assert.equal(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"), false);
+  assert.equal(validation.structural_error_codes.includes("MISSING_EXPANDED_CHOICE"), false);
 });
 
 test("computed add-on amount from sidecar is accepted as evidence, not invented", () => {
