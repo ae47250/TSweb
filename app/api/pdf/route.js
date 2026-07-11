@@ -7,6 +7,7 @@ import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { checkRateLimit } from "../../../lib/rateLimiter.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../../lib/reviewOverrides.js";
 import { stampServerVerifiedTdEditProvenance } from "../../../lib/tdEditProvenance.js";
+import { preserveRouteValidationEvidence } from "../../../lib/validateRoutePayload.js";
 import { validateAlphaJson } from "../../../lib/validateJson.js";
 
 export const runtime = "nodejs";
@@ -29,12 +30,24 @@ export async function POST(request) {
     rawInput,
     intake,
   );
+  preserveRouteValidationEvidence(alphaJsonForValidation, body.alphaJson);
   stampServerVerifiedTdEditProvenance(alphaJsonForValidation, {
     sourceAlphaJson: body.alphaJson,
     rawInput,
     intake,
   });
   const validation = validateAlphaJson(alphaJsonForValidation);
+  const structuralBlockingErrors = validation.alphaJson?.validation?.structural_blocking_errors || [];
+  if (structuralBlockingErrors.length) {
+    return json(
+      {
+        error: "Final customer option structure must be fixed before generating customer documents.",
+        blocking_errors: structuralBlockingErrors,
+        follow_ups: validation.follow_ups,
+      },
+      { status: 400 },
+    );
+  }
   const reviewOverrides = normalizeReviewOverrides(body.reviewOverrides || body.overrides);
   const overrideStatus = getBlockingOverrideStatus(validation, reviewOverrides, alphaJsonForValidation);
   const canGenerateWithOverrides = overrideStatus.canProceed;
