@@ -52,7 +52,7 @@ function validCumulativeAddOnCase() {
 }
 
 function invalidStandaloneAddOnCase() {
-  const raw = "TEST DATA ONLY. Test Customer 812-555-0100 test@example.invalid 1256 Mill Street Madison IN. Take down dead ash tree by shed for 2500. Stump grinding 750. Total with stump grinding 3250.";
+  const raw = "TEST DATA ONLY. Test Customer 812-555-0100 test@example.invalid 1256 Mill Street Madison IN. Take down dead ash tree by shed for 2500. Stump grinding 750 per stump.";
   return {
     raw,
     alphaJson: {
