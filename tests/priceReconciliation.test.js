@@ -93,7 +93,7 @@ test("post-AI reconciliation inherits base scope for higher later bundled add-on
   const validation = validateAlphaJson(reconciled);
 
   assert.deepEqual(prices(validation), ["$1,000", "$2,000"]);
-  assert.match(validation.alphaJson.service_options.items[1].description, /removal.*stump grinding/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /remov(?:e|al).*stump grinding/i);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /High-confidence sidecar price \$2,000 needs TD2 review/i);
   assert.equal(
     validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
@@ -160,6 +160,99 @@ test("post-AI reconciliation computes haul-away as expanded option total and kee
   assert.equal(validation.structural_error_codes.includes("MISSING_EXPANDED_CHOICE"), false);
 });
 
+test("post-AI reconciliation treats lower haul-away price as incremental despite context-leading b fragment", () => {
+  const raw =
+    "j taylor or Jennifer 317 470 3366 repeat 3366 jennifer.taylor @ yahoo.com use this one 1826 Pine Ln tree job trim branches touching service line tree trim 1050 haul away 175";
+  const alphaJson = normalizeToAlphaJsonV14({}, raw);
+  alphaJson.service_options.items = [
+    { label: "Option A", title: "trim branches touching service line tree trim", description: "trim branches touching service line tree trim", price: { amount: 1050, display: "$1,050" } },
+    { label: "Option B", title: "haul away", description: "haul away", price: { amount: 175, display: "$175" } },
+  ];
+
+  const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "trim branches", "$1,050"],
+      ["Option B", "trim branches and haul away", "$1,225"],
+    ],
+  );
+  assert.equal(
+    validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
+    INCREMENTAL_ADDON_PRICE,
+  );
+  assert.match(validation.warnings.join(" "), /service line/i);
+  assert.doesNotMatch(validation.alphaJson.service_options.items.map((option) => option.title).join(" "), /service line/i);
+});
+
+test("post-AI reconciliation replaces generic saved TD2 scope with base job scope", () => {
+  const raw =
+    "Megan Taylor contact 317-918-5139 / mtaylor@icloud.com. Address 804 Farm Ln, Bloomington, IN. Work requested: remove cedar leaning toward garage. Estimate tree removal 2100 stump grinding 600.";
+  const alphaJson = normalizeToAlphaJsonV14({}, raw);
+  alphaJson.service_options.items = [
+    { label: "Option A", title: "tree service", description: "tree service", price: { amount: 2100, display: "$2,100" } },
+    { label: "Option B", title: "tree service", description: "tree service", price: { amount: 600, display: "$600" } },
+  ];
+
+  const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "remove cedar", "$2,100"],
+      ["Option B", "remove cedar and stump grinding", "$2,700"],
+    ],
+  );
+  assert.deepEqual(validation.structural_error_codes, []);
+});
+
+test("post-AI reconciliation preserves limb work scope over generic tree removal", () => {
+  const raw =
+    "David Johnson, 812-292-5161, johnson980@att.net. Service address: 1056 Sunset Blvd, Bloomington, IN. Please cut up large limb and haul debris. Quote limb removal 800 haul away 300.";
+  const alphaJson = normalizeToAlphaJsonV14({}, raw);
+  alphaJson.service_options.items = [
+    { label: "Option A", title: "tree removal", description: "tree removal", price: { amount: 800, display: "$800" } },
+    { label: "Option B", title: "haul away", description: "haul away", price: { amount: 300, display: "$300" } },
+  ];
+
+  const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "cut up large limb", "$800"],
+      ["Option B", "cut up large limb and haul away", "$1,100"],
+    ],
+  );
+  assert.deepEqual(validation.structural_error_codes, []);
+});
+
+test("post-AI reconciliation preserves explicit multi-tree scope in expanded stump option", () => {
+  const raw =
+    "Patricia Miller, 812-728-7226, patricia.m1@att.net. Service address: 9689 Farm Ln, Martinsville, IN. Please remove three small ornamental pears. Quote tree removal 1650 stump grinding 1000.";
+  const alphaJson = normalizeToAlphaJsonV14({}, raw);
+  alphaJson.service_options.items = [
+    { label: "Option A", title: "tree removal", description: "tree removal", price: { amount: 1650, display: "$1,650" } },
+    { label: "Option B", title: "stump grinding", description: "stump grinding", price: { amount: 1000, display: "$1,000" } },
+  ];
+
+  const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "remove three small ornamental pears", "$1,650"],
+      ["Option B", "remove three small ornamental pears and grind stumps", "$2,650"],
+    ],
+  );
+  assert.deepEqual(validation.structural_error_codes, []);
+});
+
 test("computed add-on amount from sidecar is accepted as evidence, not invented", () => {
   const raw =
     "Karen Wright 463-994-6709 wright491@gmail.com 1256 Mill St Madison IN tree removal 1000 + stump grinding 400";
@@ -209,7 +302,7 @@ test("post-AI reconciliation replaces local standalone add-on amount with comput
   assert.deepEqual(prices(validation), ["$1,000", "$1,400"]);
   assert.doesNotMatch(prices(validation).join(" "), /\$400/);
   assert.doesNotMatch(validation.alphaJson.service_options.items[1].description, /1256 Mill St|Madison IN/i);
-  assert.match(validation.alphaJson.service_options.items[1].description, /removal.*stump grinding/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /remov(?:e|al).*stump grinding/i);
   assert.match(validation.warnings.join(" "), /Replaced standalone add-on amount \$400/i);
 });
 
