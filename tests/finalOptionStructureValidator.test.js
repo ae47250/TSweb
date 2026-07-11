@@ -189,7 +189,7 @@ test("obs_0724 structural validator is shadow-only by default", () => {
   assert.equal(validation.can_generate_pdf, true);
   assert.equal(validation.alphaJson.validation.structural_enforcement_enabled, false);
   assert.ok(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"));
-  assert.ok(validation.structural_error_codes.includes("EXPANDED_PRICE_MISMATCH"));
+  assert.ok(validation.structural_error_codes.includes("MISSING_EXPANDED_CHOICE"));
 });
 
 test("structural enforcement blocks obs_0724 and cannot be cleared by generic overrides", () => {
@@ -206,7 +206,7 @@ test("structural enforcement blocks obs_0724 and cannot be cleared by generic ov
   assert.ok(overrideStatus.remainingBlockingErrors.some((error) => error.includes("DEPENDENT_ADDON_STANDALONE")));
 });
 
-test("validate route payload preserves sidecar evidence for structural parity", () => {
+test("validate route payload recomputes sidecar evidence for structural parity", () => {
   const alphaJson = obs0724AlphaJson();
   const validation = withStructuralEnforcement(() => validateAlphaJsonRoutePayload({
     alphaJson,
@@ -214,6 +214,7 @@ test("validate route payload preserves sidecar evidence for structural parity", 
   }));
 
   assert.equal(validation.can_generate_pdf, false);
+  assert.equal(validation.alphaJson.normalization.route_validation_evidence.trusted, true);
   assert.ok(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"));
   assert.ok(validation.structural_error_codes.includes("EXPANDED_SCOPE_INCOMPLETE"));
 });

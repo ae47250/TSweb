@@ -18,8 +18,8 @@
       "AMBIGUOUS_OPTION_RELATIONSHIP": 196,
       "DEPENDENT_ADDON_STANDALONE": 188,
       "INVALID_OPTION_LABEL_SEQUENCE": 74,
-      "EXPANDED_PRICE_MISMATCH": 42,
       "MISSING_BASE_CHOICE": 8,
+      "MISSING_EXPANDED_CHOICE": 42,
       "BASE_SCOPE_INCLUDES_ADDON": 3
     }
   },
@@ -35,8 +35,8 @@
     },
     "byCode": {
       "DEPENDENT_ADDON_STANDALONE": 13,
-      "EXPANDED_PRICE_MISMATCH": 32,
       "INVALID_OPTION_LABEL_SEQUENCE": 34,
+      "MISSING_EXPANDED_CHOICE": 32,
       "BASE_SCOPE_INCLUDES_ADDON": 3,
       "AMBIGUOUS_OPTION_RELATIONSHIP": 2
     }
@@ -4138,8 +4138,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "MISSING_BASE_CHOICE"
+        "MISSING_BASE_CHOICE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -4168,8 +4168,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4214,8 +4214,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4259,8 +4259,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4301,8 +4301,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4319,8 +4319,8 @@
       "structural_error_codes": [
         "BASE_SCOPE_INCLUDES_ADDON",
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4351,8 +4351,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "MISSING_BASE_CHOICE"
+        "MISSING_BASE_CHOICE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -4367,7 +4367,7 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
+        "MISSING_EXPANDED_CHOICE",
         "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
       ],
       "category": "dependent_addon_structure",
@@ -4400,8 +4400,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4480,8 +4480,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4527,8 +4527,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "MISSING_BASE_CHOICE"
+        "MISSING_BASE_CHOICE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -4576,8 +4576,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4724,8 +4724,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4740,8 +4740,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4801,8 +4801,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4817,8 +4817,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4893,8 +4893,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4925,8 +4925,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4942,8 +4942,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -4974,8 +4974,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "MISSING_BASE_CHOICE"
+        "MISSING_BASE_CHOICE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -4990,8 +4990,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5064,8 +5064,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5081,8 +5081,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5184,8 +5184,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "MISSING_BASE_CHOICE"
+        "MISSING_BASE_CHOICE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -5218,8 +5218,8 @@
       "structural_error_codes": [
         "BASE_SCOPE_INCLUDES_ADDON",
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5248,8 +5248,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5277,8 +5277,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "MISSING_BASE_CHOICE"
+        "MISSING_BASE_CHOICE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -5352,8 +5352,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5412,8 +5412,8 @@
       "structural_error_codes": [
         "BASE_SCOPE_INCLUDES_ADDON",
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5489,8 +5489,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5551,8 +5551,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "MISSING_BASE_CHOICE"
+        "MISSING_BASE_CHOICE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -5580,7 +5580,7 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH"
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -5609,8 +5609,8 @@
       "canonical_final_option_count": 2,
       "structural_error_codes": [
         "DEPENDENT_ADDON_STANDALONE",
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5641,8 +5641,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "MISSING_BASE_CHOICE"
+        "MISSING_BASE_CHOICE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": false,
@@ -5715,8 +5715,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5786,8 +5786,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5860,8 +5860,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5876,8 +5876,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5908,8 +5908,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5924,8 +5924,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5953,8 +5953,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,
@@ -5969,8 +5969,8 @@
       "canonical_model_status": "constructed",
       "canonical_final_option_count": 2,
       "structural_error_codes": [
-        "EXPANDED_PRICE_MISMATCH",
-        "INVALID_OPTION_LABEL_SEQUENCE"
+        "INVALID_OPTION_LABEL_SEQUENCE",
+        "MISSING_EXPANDED_CHOICE"
       ],
       "category": "dependent_addon_structure",
       "expected_human_not_ready": true,

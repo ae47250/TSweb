@@ -37,6 +37,7 @@ function classifyCodes(codes = []) {
     return "ambiguous_or_unsupported";
   }
   if (codeSet.has("DEPENDENT_ADDON_STANDALONE") ||
+      codeSet.has("MISSING_EXPANDED_CHOICE") ||
       codeSet.has("EXPANDED_PRICE_MISMATCH") ||
       codeSet.has("EXPANDED_SCOPE_INCOMPLETE")) {
     return "dependent_addon_structure";

@@ -1,28 +1,55 @@
-# Final Option Structure Shadow Report
+# Final Option Structure Regression Triage
 
 - Replay source: reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl
 - Manifest source: reports/human-review-34-readiness-reconciliation-manifest.jsonl
 - Total replay records: 382
+- Active PDF-ready records: 261
+- Newly blocked under shadow enforcement: 186
+- Potential regressions requiring held-out semantic review: 152
 
-## Counts
+## Mutually Exclusive Categories
 
-| Cohort | Corrected outputs | Newly blocked outputs | Unchanged outputs | Ambiguous outputs | Potential regressions |
-|---|---:|---:|---:|---:|---:|
-| Full 382 | 32 | 186 | 129 | 196 | 152 |
-| Authoritative 34 | 32 | 34 | 0 | 2 | 0 |
-| Extra regression | 0 | 0 | 1 | 0 | 0 |
+| Category | Count |
+|---|---:|
+| potential_regression_dependent_addon_structure | 149 |
+| unchanged_not_pdf_ready | 110 |
+| unchanged_pdf_ready | 75 |
+| reviewed_authoritative_structural_block | 34 |
+| shadow_correction_available_already_blocked | 10 |
+| potential_regression_scope_quality | 3 |
+| extra_regression_no_new_block | 1 |
 
-## Structural Codes In Full 382
+## Cohorts
 
-- AMBIGUOUS_OPTION_RELATIONSHIP: 196
-- DEPENDENT_ADDON_STANDALONE: 188
-- INVALID_OPTION_LABEL_SEQUENCE: 74
-- MISSING_EXPANDED_CHOICE: 42
-- SAFETY_TEXT_IN_CUSTOMER_SCOPE: 20
-- MISSING_BASE_CHOICE: 8
-- BASE_SCOPE_INCLUDES_ADDON: 3
+| Cohort | Count |
+|---|---:|
+| full_382_only | 347 |
+| authoritative_34 | 34 |
+| extra_regression | 1 |
 
-## Potential Regression IDs
+## Triage Buckets
+
+| Bucket | Count |
+|---|---:|
+| dependent_addon_structure | 218 |
+| none | 129 |
+| ambiguous_or_unsupported_relationship | 21 |
+| scope_quality | 13 |
+| other_structural | 1 |
+
+## Structural Codes
+
+| Code | Count |
+|---|---:|
+| AMBIGUOUS_OPTION_RELATIONSHIP | 196 |
+| DEPENDENT_ADDON_STANDALONE | 188 |
+| INVALID_OPTION_LABEL_SEQUENCE | 74 |
+| MISSING_EXPANDED_CHOICE | 42 |
+| SAFETY_TEXT_IN_CUSTOMER_SCOPE | 20 |
+| MISSING_BASE_CHOICE | 8 |
+| BASE_SCOPE_INCLUDES_ADDON | 3 |
+
+## Potential Regression Review Set
 
 - obs_0004
 - obs_0005
@@ -179,7 +206,7 @@
 
 ## Notes
 
-- This is a local saved-replay shadow analysis only. It does not call live OpenAI or production APIs.
-- Newly blocked means the current active validation was PDF-ready but structural enforcement would block it.
-- Corrected outputs means the shadow canonical model can build two final customer options for a dependent-add-on structure.
-- Potential regressions are non-reviewed records that are currently PDF-ready and would be blocked by the new structural validator.
+- This report is generated from saved local replay JSONL only.
+- The JSONL output intentionally excludes raw customer notes and full AlphaJSON payloads.
+- Potential regression means the current active output is PDF-ready, but shadow structural enforcement would block it and the observation is outside the reviewed manifest.
+- Every potential regression remains marked requires_held_out_semantic_review; this report is triage only, not semantic adjudication.
