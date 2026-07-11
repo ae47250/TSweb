@@ -253,6 +253,82 @@ test("post-AI reconciliation preserves explicit multi-tree scope in expanded stu
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
+test("post-AI reconciliation normalizes saved sidecar labels after computed add-on rebuild", () => {
+  const cases = [
+    {
+      raw: "Richard Jackson, 317-754-5869, richard.jackson@aol.com. Service address: 7060 Jefferson St, Bedford, IN. Please trim branches touching service line. Quote tree trim 1100 haul away 175.",
+      options: [
+        { label: "Option A", raw_label: "Sidecar price_2", sort_order: 1, title: "haul away", description: "haul away", price: { amount: 175, display: "$175" } },
+        { label: "Option B", raw_label: "Sidecar price_1", sort_order: 2, title: "trim", description: "trim", price: { amount: 1100, display: "$1,100" } },
+      ],
+      expected: [
+        ["Option A", "trim branches", "$1,100"],
+        ["Option B", "trim branches and haul away", "$1,275"],
+      ],
+      warning: /service line/i,
+    },
+    {
+      raw: "Paula Miller, 812-594-4300, pmiller@comcast.net. Service address: 1308 Park Ave, Greenwood, IN. Please remove oak tree near driveway. Quote tree removal 2300 stump grinding 400.",
+      options: [
+        { label: "Option A", raw_label: "Sidecar price_2", sort_order: 1, title: "stump grinding", description: "stump grinding", price: { amount: 400, display: "$400" } },
+        { label: "Option B", raw_label: "Sidecar price_1", sort_order: 2, title: "remove one oak tree only", description: "remove one oak tree only", price: { amount: 2300, display: "$2,300" } },
+      ],
+      expected: [
+        ["Option A", "remove oak", "$2,300"],
+        ["Option B", "remove oak and stump grinding", "$2,700"],
+      ],
+      warning: /near driveway/i,
+    },
+  ];
+
+  for (const { raw, options, expected, warning } of cases) {
+    const alphaJson = normalizeToAlphaJsonV14({}, raw);
+    alphaJson.service_options.items = options;
+
+    const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
+    const validation = validateAlphaJson(reconciled);
+
+    assert.deepEqual(
+      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+      expected,
+      raw,
+    );
+    assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.raw_label), ["", ""], raw);
+    assert.match(validation.warnings.join(" "), warning, raw);
+    assert.deepEqual(validation.structural_error_codes, [], raw);
+  }
+});
+
+test("post-AI reconciliation prefers explicit raw multi-tree ornamental pear scope over one-tree draft", () => {
+  const raw =
+    "Michael Jones, 765-362-3619, mjones@sbcglobal.net. Service address: 4308 Washington Ave, Nashville, IN. Please remove three small ornamental pears. Quote tree removal 1650 stump grinding 850.";
+  const alphaJson = normalizeToAlphaJsonV14({}, raw);
+  alphaJson.normalization.field_evidence.work_scope = "Remove one small ornamental pear tree. Options include stump grinding.";
+  alphaJson.job.description = "Remove one small ornamental pear tree. Options include stump grinding.";
+  alphaJson.job.tree_details = {
+    tree_count: "1 tree",
+    tree_type: "ornamental pear",
+    tree_size: "small",
+    tree_count_status: "missing",
+  };
+  alphaJson.service_options.items = [
+    { label: "Option A", title: "remove one ornamental pear tree only", description: "remove one ornamental pear tree only", price: { amount: 1650, display: "$1,650" } },
+    { label: "Option B", title: "stump grinding", description: "stump grinding", price: { amount: 850, display: "$850" } },
+  ];
+
+  const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "remove three small ornamental pears", "$1,650"],
+      ["Option B", "remove three small ornamental pears and grind stumps", "$2,500"],
+    ],
+  );
+  assert.deepEqual(validation.structural_error_codes, []);
+});
+
 test("post-AI reconciliation computes storm cleanup with lower haul-away add-on", () => {
   const rawCases = [
     [
