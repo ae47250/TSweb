@@ -86,6 +86,13 @@ function alphaWithRelationship({
   };
 }
 
+function validateRaw(raw) {
+  return validateAlphaJson(reconcileSidecarPrices(
+    normalizeToAlphaJsonV14({}, raw),
+    buildOptionPriceCandidateView(raw),
+  ));
+}
+
 function standardRelationship(overrides = {}) {
   return {
     relationship_id: "total_price_1_of_price_2_price_3",
@@ -380,4 +387,50 @@ test("safety/access wording stays as a TD warning, not a structural PDF blocker"
   assert.equal(validation.structural_error_codes.includes("SAFETY_TEXT_IN_CUSTOMER_SCOPE"), false);
   assert.equal(validation.structural_blocking_errors.length, 0);
   assert.match(validation.warnings.join(" "), /Safety\/access note: Option A includes safety or access wording/i);
+});
+
+test("hoho30 case 23 stays blocked when explicit tree and stump quantities conflict", () => {
+  const raw = "Ronald Sanchez, 260-610-4393, ronald.sanchezodv@gmail.com, birch at 315 Oak near alley leaning bad wants done soon, option a remove 3 tree leave debris 6000, option b remove tree grind 1 stumps haul brush $8500";
+  const validation = validateRaw(raw);
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /source option quantities conflict/i);
+  assert.ok(validation.structural_error_codes.includes("SCOPE_NUMBER_AGREEMENT_MISMATCH"));
+});
+
+test("hoho30 case 26 is ready only with source-faithful brush disposition and haul wording", () => {
+  const raw = "Jack, 574-595-4643, jack.morrisoaa@hotmail.com, walnut at 410 Walnut by fence tight access but wants it gone, option a: drop tree, leave brsh, 8,000, option b: tree down haul brush, $9750";
+  const validation = validateRaw(raw);
+  const descriptions = validation.alphaJson.service_options.items.map((option) => option.description).join(" ");
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.match(descriptions, /leave the brush on site/i);
+  assert.match(descriptions, /haul away the brush/i);
+  assert.deepEqual(validation.structural_error_codes, []);
+});
+
+test("hoho30 case 27 remains blocked and keeps sycamore plus all source actions in regenerated options", () => {
+  const raw = "Sarah, 574-449-1358, phillips46@gmail.com, sycamore at lot 6418 behind garage close to fence wants fast, A remove tree leave debrs 6700 B tree out plus chip brush plus stump grinding plus cleanup 8250";
+  const validation = validateRaw(raw);
+  const optionText = validation.alphaJson.service_options.items.map((option) => `${option.title} ${option.description}`).join(" ");
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(optionText, /sycamore/i);
+  assert.doesNotMatch(optionText, /maple/i);
+  assert.match(optionText, /leave the debris on site/i);
+  assert.match(optionText, /grind the stump/i);
+  assert.match(optionText, /chip the brush/i);
+  assert.match(optionText, /clean up the work area/i);
+});
+
+test("hoho30 case 28 is ready only with cleanup preserved in the stump option", () => {
+  const raw = "Noah, 219-420-9333, edwards36@outlook.com, spruce near 22 ft drive opening limbs low and trunk split, A drop n leave debris 3050 B drop n stump grinding and cleanup 5800";
+  const validation = validateRaw(raw);
+  const descriptions = validation.alphaJson.service_options.items.map((option) => option.description).join(" ");
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.match(descriptions, /leave the debris on site/i);
+  assert.match(descriptions, /grind the stump/i);
+  assert.match(descriptions, /clean up the work area/i);
+  assert.deepEqual(validation.structural_error_codes, []);
 });
