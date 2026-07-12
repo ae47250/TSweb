@@ -472,6 +472,37 @@ test("hoho30 case 28 is ready only with cleanup preserved in the stump option", 
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
+test("hoho30 case 22 blocks non-canonical final TD2 output that drops source facts", () => {
+  const raw = "Alexander, 463-241-1556, alexander.phillipsir@gmail.com, ash at 410 Walnut by fence lot messy wants tree out, opt a tree down leave debris 5400 opt b tree down stump grinding brush cleanup rake up 6400";
+  const validation = validateRaw(raw);
+  const coverage = sourceCoverage(validation);
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.equal(validation.alphaJson.validation.source_final_fact_coverage_pdf_blocking_enabled, true);
+  assert.equal(validation.alphaJson.service_options.items.some((option) => option.source === "canonical_final_option_model_shadow" || option.canonical_option), false);
+  assert.ok(coverage.blocking_codes.includes("SOURCE_OPTION_ACTION_OMITTED"));
+  assert.ok(coverage.blocking_codes.includes("SOURCE_SPECIES_CHANGED"));
+  assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
+  assert.match(validation.blocking_errors.join(" "), /ash/i);
+  assert.match(validation.blocking_errors.join(" "), /by fence/i);
+});
+
+test("hoho30 case 30 blocks non-canonical final TD2 output that drops species location and stump count", () => {
+  const raw = "Timothy L., 317-262-9640, timothy.workfb@outlook.com, locust at 410 Walnut by fence hard lean by line, option a: 4100 drop tree leave brsh, option b: 5250 remove it grind 2 stumps plus haul brush plus cleanup";
+  const validation = validateRaw(raw);
+  const coverage = sourceCoverage(validation);
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.equal(validation.alphaJson.validation.source_final_fact_coverage_pdf_blocking_enabled, true);
+  assert.equal(validation.alphaJson.service_options.items.some((option) => option.source === "canonical_final_option_model_shadow" || option.canonical_option), false);
+  assert.ok(coverage.blocking_codes.includes("SOURCE_SPECIES_CHANGED"));
+  assert.ok(coverage.blocking_codes.includes("SOURCE_STUMP_QUANTITY_CHANGED"));
+  assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
+  assert.match(validation.blocking_errors.join(" "), /locust/i);
+  assert.match(validation.blocking_errors.join(" "), /two stumps/i);
+  assert.match(validation.blocking_errors.join(" "), /by fence/i);
+});
+
 test("source-final coverage blocks source species and target substitutions", () => {
   const coverage = buildSourceFinalFactCoverage({
     rawText: "Customer has sycamore by shed. Option A remove tree leave debris 1200. Option B remove tree haul debris 1800.",
@@ -495,6 +526,125 @@ test("source-final coverage blocks source species and target substitutions", () 
   assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
   assert.match(coverage.blocking_messages.join(" "), /sycamore/i);
   assert.match(coverage.blocking_messages.join(" "), /by shed/i);
+});
+
+test("source-final coverage accepts shared source facts preserved in TD2 job fields", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText:
+      "Melinda Hughes needs Remove 4 locust trees. Option A cut and leave wood 2,100. Option B cut, haul away debris, and cleanup $2,450.",
+    finalJob: {
+      description: "Remove four locust trees. Options include leaving wood on site, haul away or cleanup.",
+      tree_details: { tree_count: "4 trees", tree_type: "locust" },
+    },
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "cut and leave wood",
+        description: "cut and leave wood",
+        price: { amount: 2100, display: "$2,100" },
+      },
+      {
+        label: "Option B",
+        title: "cut, haul away debris, and cleanup",
+        description: "cut, haul away debris, and cleanup",
+        price: { amount: 2450, display: "$2,450" },
+      },
+    ],
+  });
+
+  assert.deepEqual(coverage.blocking_codes, []);
+});
+
+test("source-final coverage still blocks source targets missing from both options and TD2 job", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText:
+      "Trim limbs over roof and remove brush pile. Option A trim only 850 Option B trim and haul brush 1250.",
+    finalJob: {
+      description: "Trim and haul brush.",
+      tree_details: {},
+    },
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "trim only",
+        description: "trim only",
+        price: { amount: 850, display: "$850" },
+      },
+      {
+        label: "Option B",
+        title: "trim and haul brush",
+        description: "trim and haul brush",
+        price: { amount: 1250, display: "$1,250" },
+      },
+    ],
+  });
+
+  assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
+  assert.match(coverage.blocking_messages.join(" "), /over roof/i);
+});
+
+test("source-final coverage does not treat a stump price as stump quantity", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText:
+      "Henry Watkins large oak removal near barn. Option A remove oak and leave wood $2,400. Option B remove oak, haul debris, grind stump $3,650.",
+    finalJob: {
+      description: "Remove the large oak near the barn.",
+      tree_details: { tree_type: "oak" },
+    },
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "remove oak and leave wood",
+        description: "remove oak and leave wood",
+        price: { amount: 2400, display: "$2,400" },
+      },
+      {
+        label: "Option B",
+        title: "remove oak, haul debris, grind stump",
+        description: "remove oak, haul debris, grind stump",
+        price: { amount: 3650, display: "$3,650" },
+      },
+    ],
+  });
+
+  assert.equal(coverage.source_options[1].stump_quantity, null);
+  assert.equal(coverage.blocking_codes.includes("SOURCE_STUMP_QUANTITY_CHANGED"), false);
+});
+
+test("source-final coverage keeps shorthand D full cleanup as its own option", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText:
+      "A drop only 1,900 B drop stack wood $2,200 C haul brush 3150 D full cleanup 3,900 E cleanup plus stump grind $4,350",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "drop only",
+        description: "drop only",
+        price: { amount: 1900, display: "$1,900" },
+      },
+      {
+        label: "Option B",
+        title: "drop stack wood",
+        description: "drop stack wood",
+        price: { amount: 2200, display: "$2,200" },
+      },
+      {
+        label: "Option C",
+        title: "haul brush",
+        description: "haul brush",
+        price: { amount: 3150, display: "$3,150" },
+      },
+      {
+        label: "Option D",
+        title: "full cleanup",
+        description: "full cleanup",
+        price: { amount: 3900, display: "$3,900" },
+      },
+    ],
+  });
+
+  assert.deepEqual(coverage.source_options.map((option) => option.price), [1900, 2200, 3150, 3900]);
+  assert.equal(coverage.blocking_codes.includes("SOURCE_OPTION_PRICE_CHANGED"), false);
 });
 
 test("source-final coverage separates partial target preservation from true contradiction", () => {

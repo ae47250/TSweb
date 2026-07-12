@@ -23,7 +23,7 @@ test("draft parser preserves raw input and creates AlphaJSON shell", () => {
 });
 
 test("validation passes complete easy input", () => {
-  const result = validateAlphaJson(createDraftAlphaJson(easyInput));
+  const result = validateAlphaJson(normalizeToAlphaJsonV14({}, easyInput));
   assert.equal(result.can_generate_pdf, true);
   assert.deepEqual(result.blocking_errors, []);
   assert.equal(result.alphaJson.service_options.items[0].label, "Option A");

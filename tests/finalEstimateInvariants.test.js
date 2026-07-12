@@ -186,9 +186,14 @@ test("explicit total plus component prices keeps components and does not require
 test("two legitimate different services can share the same price", () => {
   const alphaJson = {
     ...draftBase("John 8125551111 123 Main Madison IN remove oak option A removal 900 option B stump grinding 900"),
+    job: {
+      service_address: { display: "123 Main St Madison IN" },
+      description: "Remove one oak tree.",
+      tree_details: { tree_count: "1 tree", tree_type: "oak" },
+    },
     service_options: {
       items: [
-        { label: "Option A", title: "tree removal", description: "tree removal", price: { amount: 900, display: "$900" } },
+        { label: "Option A", title: "oak tree removal", description: "oak tree removal", price: { amount: 900, display: "$900" } },
         { label: "Option B", title: "stump grinding", description: "stump grinding", price: { amount: 900, display: "$900" } },
       ],
     },

@@ -66,7 +66,8 @@ const customerCases = [
     expectedPhone: "812-555-4410",
     addressIncludes: ["1205 County Road 250 W", "Hanover", "IN"],
     prices: ["$850", "$1,250"],
-    canGenerate: true,
+    canGenerate: false,
+    expectedBlocking: /over roof/i,
   },
   {
     name: "Beth Ann Miller Highway address",
@@ -138,6 +139,7 @@ function assertNormalizedCase(testCase) {
   assert.equal(alphaJson.service_options.items.length, testCase.prices.length);
   assert.deepEqual(alphaJson.service_options.items.map((option) => option.price.display), testCase.prices);
   assert.equal(validation.can_generate_pdf, testCase.canGenerate);
+  if (testCase.expectedBlocking) assert.match(validation.blocking_errors.join(" "), testCase.expectedBlocking);
   if (testCase.overLimit) {
     assert.match(validation.warnings.join(" "), /More than four options/);
   }
@@ -2279,6 +2281,8 @@ test("follow-up answers recover missing customer fields without leaking contact 
         email: "alex@example.com",
         address: "440 Walnut St",
         corrected: /^Trim limbs over roof/i,
+        canGenerate: false,
+        blocking: /over roof/i,
       },
     },
     {
@@ -2332,7 +2336,10 @@ test("follow-up answers recover missing customer fields without leaking contact 
     }
 
     const alphaJson = validation.alphaJson;
-    assert.equal(validation.can_generate_pdf, true, smokeCase.input);
+    assert.equal(validation.can_generate_pdf, smokeCase.expected.canGenerate ?? true, smokeCase.input);
+    if (smokeCase.expected.blocking) {
+      assert.match(validation.blocking_errors.join(" "), smokeCase.expected.blocking, smokeCase.input);
+    }
     assert.equal(alphaJson.customer.name, smokeCase.expected.name);
     if (smokeCase.expected.phone) assert.equal(alphaJson.customer.phone_display, smokeCase.expected.phone);
     if (smokeCase.expected.email) assert.equal(alphaJson.customer.email, smokeCase.expected.email);
