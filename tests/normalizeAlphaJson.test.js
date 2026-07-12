@@ -34,7 +34,7 @@ const customerCases = [
     addressIncludes: ["789 West Main", "Madison", "Indiana"],
     expectedTreeCount: "2 trees",
     prices: ["$1,200", "$2,399"],
-    canGenerate: true,
+    canGenerate: false,
   },
   {
     name: "Darren Fields weird phone format",
@@ -2744,8 +2744,7 @@ test("bare A/B prices are preserved when work scope is vague", () => {
   assert.ok(options.every((option) => option.review_flags?.scope_unclear));
   assert.equal(validation.can_generate_pdf, false);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /Missing priced service option/i);
-  assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
-  assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
   assert.ok(validation.structured_follow_ups.some((issue) => issue.id === "unclear_work_scope" && issue.blocks_pdf));
 });
 
@@ -2761,8 +2760,7 @@ test("price slash notes with only one clear scope preserve both prices but requi
   assert.deepEqual(options.map((option) => option.price.display), ["$1,000", "$1,500"]);
   assert.deepEqual(options.map((option) => option.description), ["work scope unclear", "work scope unclear"]);
   assert.ok(options.every((option) => option.review_flags?.scope_unclear));
-  assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
-  assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
 });
 
 test("high-risk safety and scope notes warn while preserving prices", () => {
@@ -2795,7 +2793,7 @@ test("high-risk safety and scope notes warn while preserving prices", () => {
   }
 });
 
-test("storm and emergency review warnings do not add redundant scope blockers", () => {
+test("storm review warnings keep unclear priced scope blocked", () => {
   const stormRaw =
     "812.555.2786 wes.coleman778@example.com customer Wes Coleman fallen tree on neighbor fence at 2824 Cherry Street, Madison, Indiana; scope/property responsibility unclear; price 2450";
   const assistedDraft = openAiDraftToNormalizerInput({
@@ -2832,11 +2830,11 @@ test("storm and emergency review warnings do not add redundant scope blockers", 
   }, { rawInput: stormRaw });
   const storm = validateAlphaJson(normalizeToAlphaJsonV14(assistedDraft, stormRaw));
 
-  assert.equal(storm.can_generate_pdf, true);
+  assert.equal(storm.can_generate_pdf, false);
   assert.deepEqual(storm.alphaJson.service_options.items.map((option) => option.price.display), ["$2,450"]);
   assert.match(storm.warnings.join(" "), /Storm damage details need review/i);
   assert.doesNotMatch(storm.follow_ups.join(" "), /Clarify storm damage scope/i);
-  assert.doesNotMatch(storm.blocking_errors.join(" "), /confirm what this price covers/i);
+  assert.match(storm.blocking_errors.join(" "), /confirm what this price covers/i);
   assert.doesNotMatch(storm.warnings.join(" "), /\bcom customer\b/i);
 
   const emergency = validateAlphaJson(normalizeToAlphaJsonV14(
@@ -2889,7 +2887,7 @@ test("storm and emergency review warnings do not add redundant scope blockers", 
   assert.deepEqual(wind.alphaJson.service_options.items.map((option) => option.price.display), ["$1,300"]);
   assert.match(wind.blocking_errors.join(" "), /Tree count is unclear/i);
   assert.match(wind.warnings.join(" "), /Storm damage details need review/i);
-  assert.doesNotMatch(wind.blocking_errors.join(" "), /confirm what this price covers/i);
+  assert.match(wind.blocking_errors.join(" "), /confirm what this price covers/i);
 
   const serviceDropRaw =
     "Caleb Peterson 8125551703 7666 2nd Street Madison IN leaning tree touching service drop, quote $1100 cleanup $1600";
@@ -2927,10 +2925,10 @@ test("storm and emergency review warnings do not add redundant scope blockers", 
   }, { rawInput: serviceDropRaw });
   const serviceDrop = validateAlphaJson(normalizeToAlphaJsonV14(serviceDropDraft, serviceDropRaw));
 
-  assert.equal(serviceDrop.can_generate_pdf, true);
+  assert.equal(serviceDrop.can_generate_pdf, false);
   assert.deepEqual(serviceDrop.alphaJson.service_options.items.map((option) => option.price.display), ["$1,100"]);
   assert.match(serviceDrop.warnings.join(" "), /Emergency or hazard requires review/i);
-  assert.doesNotMatch(serviceDrop.blocking_errors.join(" "), /confirm what this price covers/i);
+  assert.match(serviceDrop.blocking_errors.join(" "), /confirm what this price covers/i);
 });
 
 test("price-only labeled options keep both prices and avoid invented scope", () => {
@@ -2946,8 +2944,7 @@ test("price-only labeled options keep both prices and avoid invented scope", () 
   assert.deepEqual(options.map((option) => option.description), ["work scope unclear", "work scope unclear"]);
   assert.ok(options.every((option) => option.preserve_order && option.scope_unclear));
   assert.ok(options.every((option) => option.review_flags?.scope_unclear));
-  assert.doesNotMatch(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
-  assert.match(validation.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(validation.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
 });
 
 test("live draft fallback captures comma-separated name and infers option scopes from job notes", () => {

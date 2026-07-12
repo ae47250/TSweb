@@ -336,6 +336,26 @@ test("independent alternatives are not merged without total/add-on evidence", ()
   assert.equal(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"), false);
 });
 
+test("internal field text in final option scope hard-blocks PDF readiness", () => {
+  const validation = validateAlphaJson({
+    ...baseAlpha("John 8125551111 123 Main Madison IN option A drop 2500 option B haul brush 3950"),
+    service_options: {
+      items: [
+        {
+          label: "Option A",
+          title: "Leave wood and brush",
+          description: "service_options.items[0] Option B $3,950 Remove tree and haul brush",
+          price: { amount: 2500, display: "$2,500" },
+        },
+      ],
+    },
+  });
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.ok(validation.structural_error_codes.includes("CONTAMINATED_OPTION_SCOPE"));
+  assert.match(validation.blocking_errors.join(" "), /internal parser or field text/i);
+});
+
 test("safety/access wording stays as a TD warning, not a structural PDF blocker", () => {
   const validation = withStructuralEnforcement(() => validateAlphaJson({
     ...baseAlpha("John 8125551111 123 Main Madison IN trim branches touching service line 1100"),

@@ -198,7 +198,7 @@ test("validation warns on 3x firm option price spread without blocking", () => {
   assert.match(result.warnings.join(" "), /Large price spread.*Option B \$9,025.*3x\+.*Option A \$1,250.*Confirm price quote.*edit info/i);
 });
 
-test("validation downgrades firm-price option scope uncertainty to warning metadata", () => {
+test("validation blocks firm-price option scope uncertainty", () => {
   const result = validateAlphaJson({
     raw_input: { customer_text: "Sam Price 812-555-0199 123 Oak Lane Madison IN remove one maple tree." },
     customer: { name: "Sam Price", phone_display: "812-555-0199" },
@@ -218,9 +218,9 @@ test("validation downgrades firm-price option scope uncertainty to warning metad
     },
   });
 
-  assert.equal(result.can_generate_pdf, true);
-  assert.deepEqual(result.blocking_errors, []);
-  assert.match(result.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.equal(result.can_generate_pdf, false);
+  assert.match(result.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(result.follow_ups.join(" "), /What does each priced option include/i);
   assert.equal(result.alphaJson.service_options.items[0].review_flags.scope_unclear, true);
 });
 
