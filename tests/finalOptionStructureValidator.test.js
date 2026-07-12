@@ -7,6 +7,7 @@ import { getBlockingOverrideStatus } from "../lib/reviewOverrides.js";
 import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { buildOptionPriceCandidateView } from "../lib/optionPriceNormalizer.js";
 import { reconcileSidecarPrices } from "../lib/priceReconciliation.js";
+import { buildSourceFinalFactCoverage } from "../lib/sourceFinalFactCoverage.js";
 
 function withStructuralEnforcement(callback) {
   const previous = process.env.ENABLE_FINAL_OPTION_STRUCTURE_ENFORCEMENT;
@@ -91,6 +92,10 @@ function validateRaw(raw) {
     normalizeToAlphaJsonV14({}, raw),
     buildOptionPriceCandidateView(raw),
   ));
+}
+
+function sourceCoverage(validation) {
+  return validation.alphaJson.validation.source_final_fact_coverage;
 }
 
 function standardRelationship(overrides = {}) {
@@ -402,10 +407,19 @@ test("hoho30 case 26 is ready only with source-faithful brush disposition and ha
   const raw = "Jack, 574-595-4643, jack.morrisoaa@hotmail.com, walnut at 410 Walnut by fence tight access but wants it gone, option a: drop tree, leave brsh, 8,000, option b: tree down haul brush, $9750";
   const validation = validateRaw(raw);
   const descriptions = validation.alphaJson.service_options.items.map((option) => option.description).join(" ");
+  const coverage = sourceCoverage(validation);
 
   assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(coverage.blocking_codes, []);
+  assert.equal(coverage.source_options[0].species, "walnut");
+  assert.ok(coverage.source_options[0].target_qualifiers.includes("by fence"));
+  assert.ok(coverage.source_options[0].debris_disposition.includes("leave_brush"));
+  assert.ok(coverage.source_options[1].debris_disposition.includes("haul_brush"));
+  assert.ok(coverage.final_options[0].target_qualifiers.includes("by fence"));
+  assert.ok(coverage.final_options[1].target_qualifiers.includes("by fence"));
   assert.match(descriptions, /leave the brush on site/i);
   assert.match(descriptions, /haul away the brush/i);
+  assert.match(validation.warnings.join(" "), /access qualifier/i);
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
@@ -413,24 +427,196 @@ test("hoho30 case 27 remains blocked and keeps sycamore plus all source actions 
   const raw = "Sarah, 574-449-1358, phillips46@gmail.com, sycamore at lot 6418 behind garage close to fence wants fast, A remove tree leave debrs 6700 B tree out plus chip brush plus stump grinding plus cleanup 8250";
   const validation = validateRaw(raw);
   const optionText = validation.alphaJson.service_options.items.map((option) => `${option.title} ${option.description}`).join(" ");
+  const coverage = sourceCoverage(validation);
+  const targetResults = coverage.results.filter((result) => result.fact === "target_qualifiers");
 
   assert.equal(validation.can_generate_pdf, false);
   assert.match(optionText, /sycamore/i);
   assert.doesNotMatch(optionText, /maple/i);
+  assert.match(optionText, /behind the garage/i);
+  assert.match(optionText, /by the fence/i);
   assert.match(optionText, /leave the debris on site/i);
   assert.match(optionText, /grind the stump/i);
   assert.match(optionText, /chip the brush/i);
   assert.match(optionText, /clean up the work area/i);
+  assert.ok(coverage.source_options[0].target_qualifiers.includes("behind garage"));
+  assert.ok(coverage.source_options[0].target_qualifiers.includes("by fence"));
+  assert.equal(coverage.blocking_results.some((result) => result.fact === "target_qualifiers"), false);
+  assert.equal(targetResults.length, 2);
+  for (const result of targetResults) {
+    assert.equal(result.status, "ok");
+    assert.equal(result.target_comparison.preservation, "complete");
+    assert.deepEqual(result.target_comparison.missing_source_values, []);
+    assert.ok(result.target_comparison.preserved_source_values.includes("behind garage"));
+    assert.ok(result.target_comparison.preserved_source_values.includes("by fence"));
+    assert.ok(result.target_comparison.final_values.includes("behind garage"));
+    assert.ok(result.target_comparison.final_values.includes("by fence"));
+  }
 });
 
 test("hoho30 case 28 is ready only with cleanup preserved in the stump option", () => {
   const raw = "Noah, 219-420-9333, edwards36@outlook.com, spruce near 22 ft drive opening limbs low and trunk split, A drop n leave debris 3050 B drop n stump grinding and cleanup 5800";
   const validation = validateRaw(raw);
   const descriptions = validation.alphaJson.service_options.items.map((option) => option.description).join(" ");
+  const coverage = sourceCoverage(validation);
 
   assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(coverage.blocking_codes, []);
+  assert.ok(coverage.source_options[0].target_qualifiers.includes("22 foot drive opening"));
+  assert.ok(coverage.final_options[0].target_qualifiers.includes("22 foot drive opening"));
   assert.match(descriptions, /leave the debris on site/i);
+  assert.match(descriptions, /22-foot drive opening/i);
   assert.match(descriptions, /grind the stump/i);
   assert.match(descriptions, /clean up the work area/i);
+  assert.match(validation.warnings.join(" "), /condition/i);
   assert.deepEqual(validation.structural_error_codes, []);
+});
+
+test("source-final coverage blocks source species and target substitutions", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText: "Customer has sycamore by shed. Option A remove tree leave debris 1200. Option B remove tree haul debris 1800.",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Maple tree removal",
+        description: "Remove the maple tree and leave the debris on site.",
+        price: { amount: 1200, display: "$1,200" },
+      },
+      {
+        label: "Option B",
+        title: "Maple tree removal with haul-away",
+        description: "Remove the maple tree and haul away the debris.",
+        price: { amount: 1800, display: "$1,800" },
+      },
+    ],
+  });
+
+  assert.ok(coverage.blocking_codes.includes("SOURCE_SPECIES_CHANGED"));
+  assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
+  assert.match(coverage.blocking_messages.join(" "), /sycamore/i);
+  assert.match(coverage.blocking_messages.join(" "), /by shed/i);
+});
+
+test("source-final coverage separates partial target preservation from true contradiction", () => {
+  const partialCoverage = buildSourceFinalFactCoverage({
+    rawText: "Customer has sycamore behind garage close to fence. A remove tree leave debris 6700 B remove tree chip brush 8250",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Sycamore tree removal by fence",
+        description: "Remove the sycamore tree by the fence and leave the debris on site.",
+        price: { amount: 6700, display: "$6,700" },
+      },
+      {
+        label: "Option B",
+        title: "Sycamore tree removal with brush chipping by fence",
+        description: "Remove the sycamore tree by the fence and chip the brush.",
+        price: { amount: 8250, display: "$8,250" },
+      },
+    ],
+  });
+  const partialTargetResults = partialCoverage.blocking_results.filter((result) => result.fact === "target_qualifiers");
+
+  assert.equal(partialTargetResults.length, 2);
+  for (const result of partialTargetResults) {
+    assert.equal(result.status, "missing");
+    assert.equal(result.target_comparison.preservation, "partial");
+    assert.deepEqual(result.missing_source_values, ["behind garage"]);
+    assert.deepEqual(result.target_comparison.preserved_source_values, ["by fence"]);
+    assert.match(result.message, /preserves "by fence" but is missing "behind garage"/i);
+  }
+
+  const contradictionCoverage = buildSourceFinalFactCoverage({
+    rawText: "Customer has sycamore by shed. Option A remove tree leave debris 1200. Option B remove tree haul debris 1800.",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Sycamore tree removal by fence",
+        description: "Remove the sycamore tree by the fence and leave the debris on site.",
+        price: { amount: 1200, display: "$1,200" },
+      },
+      {
+        label: "Option B",
+        title: "Sycamore tree removal with haul-away by fence",
+        description: "Remove the sycamore tree by the fence and haul away the debris.",
+        price: { amount: 1800, display: "$1,800" },
+      },
+    ],
+  });
+  const contradictionTargetResults = contradictionCoverage.blocking_results.filter((result) => result.fact === "target_qualifiers");
+
+  assert.equal(contradictionTargetResults.length, 2);
+  for (const result of contradictionTargetResults) {
+    assert.equal(result.status, "changed");
+    assert.equal(result.target_comparison.preservation, "contradiction");
+    assert.deepEqual(result.missing_source_values, ["by shed"]);
+    assert.deepEqual(result.target_comparison.final_values, ["by fence"]);
+    assert.match(result.message, /only says "by fence"/i);
+  }
+});
+
+test("source-final coverage treats flush cut and cut low as stump-cut treatment, not stump grinding", () => {
+  const okCoverage = buildSourceFinalFactCoverage({
+    rawText: "Customer has oak by shed. Option A remove oak 1000. Option B remove oak and flush cut stump 1300.",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Oak tree removal",
+        description: "Remove the oak tree by the shed.",
+        price: { amount: 1000, display: "$1,000" },
+      },
+      {
+        label: "Option B",
+        title: "Oak tree removal with stump cut low",
+        description: "Remove the oak tree by the shed and cut the stump low.",
+        price: { amount: 1300, display: "$1,300" },
+      },
+    ],
+  });
+  const badCoverage = buildSourceFinalFactCoverage({
+    rawText: "Customer has oak by shed. Option A remove oak 1000. Option B remove oak and flush cut stump 1300.",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Oak tree removal",
+        description: "Remove the oak tree by the shed.",
+        price: { amount: 1000, display: "$1,000" },
+      },
+      {
+        label: "Option B",
+        title: "Oak tree removal with stump grinding",
+        description: "Remove the oak tree by the shed and grind the stump.",
+        price: { amount: 1300, display: "$1,300" },
+      },
+    ],
+  });
+
+  assert.deepEqual(okCoverage.blocking_codes, []);
+  assert.ok(badCoverage.blocking_codes.includes("SOURCE_STUMP_TREATMENT_CHANGED"));
+  assert.match(badCoverage.blocking_messages.join(" "), /cut stump low/i);
+});
+
+test("source-final coverage blocks dropped actions in multi-action Option B packages", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText: "Customer has sycamore behind garage. A remove tree leave debris 6700 B tree out plus chip brush plus stump grinding plus cleanup 8250",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Sycamore tree removal",
+        description: "Remove the sycamore tree behind the garage and leave the debris on site.",
+        price: { amount: 6700, display: "$6,700" },
+      },
+      {
+        label: "Option B",
+        title: "Sycamore tree removal with stump grinding",
+        description: "Remove the sycamore tree behind the garage and grind the stump.",
+        price: { amount: 8250, display: "$8,250" },
+      },
+    ],
+  });
+
+  assert.ok(coverage.blocking_codes.includes("SOURCE_OPTION_ACTION_OMITTED"));
+  assert.ok(coverage.blocking_codes.includes("SOURCE_DEBRIS_DISPOSITION_CHANGED"));
+  assert.match(coverage.blocking_messages.join(" "), /chip brush/i);
+  assert.match(coverage.blocking_messages.join(" "), /cleanup/i);
 });
