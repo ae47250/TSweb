@@ -53,12 +53,12 @@ test("punctuation cleanup preserves uncertainty markers instead of making them l
 });
 
 test("allowlist typo cleanup does not act like broad spellcheck", () => {
-  const result = textCleanupNormalizer("adress addrss remvoe remve triming stmp stmping garaje Maddison take down");
+  const result = textCleanupNormalizer("adress addrss remvoe remve triming stmp stmping brsh garaje Maddison take down");
 
-  assert.equal(result.cleanedText, "address address remove remove trimming stump stumping garage Maddison take down");
+  assert.equal(result.cleanedText, "address address remove remove trimming stump stumping brush garage Maddison take down");
   assert.equal(result.cleanedText.includes("Maddison"), true);
   assert.equal(result.cleanedText.includes("take down"), true);
-  assert.ok(result.changes.filter((change) => change.type === "spelling").length >= 7);
+  assert.ok(result.changes.filter((change) => change.type === "spelling").length >= 8);
 });
 
 test("typo cleanup does not correct names, street names, city names, or uncommon words", () => {
