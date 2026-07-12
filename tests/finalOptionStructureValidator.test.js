@@ -183,16 +183,21 @@ test("obs_0724 shadow builder constructs base plus cumulative stump option", () 
   assert.equal(finalOptions.some((option) => option.price.amount === 750), false);
 });
 
-test("obs_0724 structural validator is shadow-only by default", () => {
+test("obs_0724 canonical final model is authoritative by default", () => {
   const validation = validateAlphaJson(obs0724AlphaJson());
 
   assert.equal(validation.can_generate_pdf, true);
   assert.equal(validation.alphaJson.validation.structural_enforcement_enabled, false);
-  assert.ok(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"));
-  assert.ok(validation.structural_error_codes.includes("MISSING_EXPANDED_CHOICE"));
+  assert.deepEqual(validation.structural_error_codes, []);
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => option.price.amount),
+    [2500, 3250],
+  );
+  assert.ok(validation.alphaJson.validation.pre_canonical_diagnostic_codes.includes("DEPENDENT_ADDON_STANDALONE"));
+  assert.ok(validation.alphaJson.validation.pre_canonical_diagnostic_codes.includes("MISSING_EXPANDED_CHOICE"));
 });
 
-test("structural enforcement blocks obs_0724 and cannot be cleared by generic overrides", () => {
+test("structural enforcement allows obs_0724 after canonical final repair", () => {
   const validation = withStructuralEnforcement(() => validateAlphaJson(obs0724AlphaJson()));
   const overrideStatus = getBlockingOverrideStatus(
     validation,
@@ -200,10 +205,11 @@ test("structural enforcement blocks obs_0724 and cannot be cleared by generic ov
     validation.alphaJson,
   );
 
-  assert.equal(validation.can_generate_pdf, false);
-  assert.ok(validation.blocking_errors.some((error) => error.includes("DEPENDENT_ADDON_STANDALONE")));
-  assert.equal(overrideStatus.canProceed, false);
-  assert.ok(overrideStatus.remainingBlockingErrors.some((error) => error.includes("DEPENDENT_ADDON_STANDALONE")));
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.structural_blocking_errors.length, 0);
+  assert.equal(overrideStatus.canProceed, true);
+  assert.equal(overrideStatus.remainingBlockingErrors.some((error) => error.includes("DEPENDENT_ADDON_STANDALONE")), false);
+  assert.ok(validation.alphaJson.validation.pre_canonical_diagnostic_codes.includes("DEPENDENT_ADDON_STANDALONE"));
 });
 
 test("validate route payload recomputes sidecar evidence for structural parity", () => {

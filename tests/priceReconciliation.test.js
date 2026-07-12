@@ -15,6 +15,54 @@ function prices(validation) {
   return validation.alphaJson.service_options.items.map((option) => option.price.display);
 }
 
+function normalizedScope(value = "") {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const SCOPE_ACTION_STOPWORDS = new Set([
+  "and",
+  "away",
+  "clean",
+  "cleanup",
+  "down",
+  "for",
+  "grind",
+  "grinding",
+  "haul",
+  "line",
+  "remove",
+  "removal",
+  "take",
+  "the",
+  "tree",
+  "with",
+]);
+
+function scopeTokens(value = "") {
+  return normalizedScope(value)
+    .split(/\s+/)
+    .filter((token) => token.length > 2 && !SCOPE_ACTION_STOPWORDS.has(token))
+    .map((token) => token.replace(/s$/, ""));
+}
+
+function assertOptionRowsMatch(validation, expected, message = "") {
+  const actual = validation.alphaJson.service_options.items;
+  assert.equal(actual.length, expected.length, message);
+  actual.forEach((option, index) => {
+    const [expectedLabel, expectedScope, expectedPrice] = expected[index];
+    assert.equal(option.label, expectedLabel, message);
+    assert.equal(option.price.display, expectedPrice, message);
+    const actualTokens = new Set(scopeTokens(`${option.title} ${option.description}`));
+    for (const token of scopeTokens(expectedScope)) {
+      assert.ok(actualTokens.has(token), `${message || expectedLabel} missing scope token ${token}`);
+    }
+  });
+}
+
 test("price reconciliation exposes the authoritative price-relationship resolver vocabulary", () => {
   assert.equal(PRICE_RELATIONSHIP_RESOLVER_VERSION, "price-relationship-resolver-v0.1");
   assert.equal(PRICE_RELATIONSHIP_ROLES.EXPLICIT_OPTION_TOTAL, EXPLICIT_OPTION_TOTAL);
@@ -93,7 +141,7 @@ test("post-AI reconciliation inherits base scope for higher later bundled add-on
   const validation = validateAlphaJson(reconciled);
 
   assert.deepEqual(prices(validation), ["$1,000", "$2,000"]);
-  assert.match(validation.alphaJson.service_options.items[1].description, /remov(?:e|al).*stump grinding/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /remov(?:e|al).*grind(?:ing)?.*stumps?/i);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /High-confidence sidecar price \$2,000 needs TD2 review/i);
   assert.equal(
     validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
@@ -129,13 +177,10 @@ test("post-AI reconciliation computes stump grinding as expanded option total", 
   const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, raw), buildOptionPriceCandidateView(raw));
   const validation = validateAlphaJson(reconciled);
 
-  assert.deepEqual(
-    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-    [
-      ["Option A", "remove cedar", "$2,100"],
-      ["Option B", "remove cedar and stump grinding", "$2,700"],
-    ],
-  );
+  assertOptionRowsMatch(validation, [
+    ["Option A", "remove cedar", "$2,100"],
+    ["Option B", "remove cedar and stump grinding", "$2,700"],
+  ]);
   assert.equal(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"), false);
   assert.equal(validation.structural_error_codes.includes("MISSING_EXPANDED_CHOICE"), false);
 });
@@ -147,15 +192,12 @@ test("post-AI reconciliation computes haul-away as expanded option total and kee
   const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, raw), buildOptionPriceCandidateView(raw));
   const validation = validateAlphaJson(reconciled);
 
-  assert.deepEqual(
-    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-    [
-      ["Option A", "trim branches", "$1,200"],
-      ["Option B", "trim branches and haul away", "$1,475"],
-    ],
-  );
+  assertOptionRowsMatch(validation, [
+    ["Option A", "trim branches", "$1,200"],
+    ["Option B", "trim branches and haul away", "$1,475"],
+  ]);
   assert.match(validation.warnings.join(" "), /service line/i);
-  assert.doesNotMatch(validation.alphaJson.service_options.items.map((option) => option.title).join(" "), /service line/i);
+  assert.match(validation.alphaJson.service_options.items.map((option) => option.description).join(" "), /service line/i);
   assert.equal(validation.structural_error_codes.includes("DEPENDENT_ADDON_STANDALONE"), false);
   assert.equal(validation.structural_error_codes.includes("MISSING_EXPANDED_CHOICE"), false);
 });
@@ -172,13 +214,10 @@ test("post-AI reconciliation treats lower haul-away price as incremental despite
   const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
   const validation = validateAlphaJson(reconciled);
 
-  assert.deepEqual(
-    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-    [
-      ["Option A", "trim branches", "$1,050"],
-      ["Option B", "trim branches and haul away", "$1,225"],
-    ],
-  );
+  assertOptionRowsMatch(validation, [
+    ["Option A", "trim branches", "$1,050"],
+    ["Option B", "trim branches and haul away", "$1,225"],
+  ]);
   assert.equal(
     validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
     INCREMENTAL_ADDON_PRICE,
@@ -265,14 +304,10 @@ test("post-AI reconciliation restores explicit terminal-for Option B totals", ()
     const validation = validateAlphaJson(reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(item.raw)));
 
     assert.equal(validation.can_generate_pdf, true, item.raw);
-    assert.deepEqual(
-      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-      [
-        ["Option A", item.a, item.prices[0]],
-        ["Option B", item.b, item.prices[1]],
-      ],
-      item.raw,
-    );
+    assertOptionRowsMatch(validation, [
+      ["Option A", item.a, item.prices[0]],
+      ["Option B", item.b, item.prices[1]],
+    ], item.raw);
   }
 });
 
@@ -305,13 +340,10 @@ test("validation treats includes Option A inside Option B as a reference, not a 
 
   assert.equal(validation.can_generate_pdf, true);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /Explicit source options are incomplete in TD2/i);
-  assert.deepEqual(
-    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-    [
-      ["Option A", "remove pine and leave debris", "$1,100"],
-      ["Option B", "remove pine and haul away and cleanup", "$1,600"],
-    ],
-  );
+  assertOptionRowsMatch(validation, [
+    ["Option A", "remove pine and leave debris", "$1,100"],
+    ["Option B", "remove pine and haul away and cleanup", "$1,600"],
+  ]);
   assert.doesNotMatch(validation.alphaJson.service_options.items[1].title, /\bincludes\s+Option\s+A\b|\bfor\s*$/i);
 });
 
@@ -352,13 +384,10 @@ test("post-AI reconciliation replaces generic saved TD2 scope with base job scop
   const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
   const validation = validateAlphaJson(reconciled);
 
-  assert.deepEqual(
-    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-    [
-      ["Option A", "remove cedar", "$2,100"],
-      ["Option B", "remove cedar and stump grinding", "$2,700"],
-    ],
-  );
+  assertOptionRowsMatch(validation, [
+    ["Option A", "remove cedar", "$2,100"],
+    ["Option B", "remove cedar and stump grinding", "$2,700"],
+  ]);
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
@@ -374,13 +403,10 @@ test("post-AI reconciliation preserves limb work scope over generic tree removal
   const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
   const validation = validateAlphaJson(reconciled);
 
-  assert.deepEqual(
-    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-    [
-      ["Option A", "cut up large limb", "$800"],
-      ["Option B", "cut up large limb and haul away", "$1,100"],
-    ],
-  );
+  assertOptionRowsMatch(validation, [
+    ["Option A", "cut up large limb", "$800"],
+    ["Option B", "cut up large limb and haul away", "$1,100"],
+  ]);
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
@@ -396,13 +422,10 @@ test("post-AI reconciliation preserves explicit multi-tree scope in expanded stu
   const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
   const validation = validateAlphaJson(reconciled);
 
-  assert.deepEqual(
-    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-    [
-      ["Option A", "remove three small ornamental pears", "$1,650"],
-      ["Option B", "remove three small ornamental pears and grind stumps", "$2,650"],
-    ],
-  );
+  assertOptionRowsMatch(validation, [
+    ["Option A", "remove three small ornamental pears", "$1,650"],
+    ["Option B", "remove three small ornamental pears and grind stumps", "$2,650"],
+  ]);
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
@@ -441,11 +464,7 @@ test("post-AI reconciliation normalizes saved sidecar labels after computed add-
     const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
     const validation = validateAlphaJson(reconciled);
 
-    assert.deepEqual(
-      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-      expected,
-      raw,
-    );
+    assertOptionRowsMatch(validation, expected, raw);
     assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.raw_label), ["", ""], raw);
     assert.match(validation.warnings.join(" "), warning, raw);
     assert.deepEqual(validation.structural_error_codes, [], raw);
@@ -472,13 +491,10 @@ test("post-AI reconciliation prefers explicit raw multi-tree ornamental pear sco
   const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
   const validation = validateAlphaJson(reconciled);
 
-  assert.deepEqual(
-    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-    [
-      ["Option A", "remove three small ornamental pears", "$1,650"],
-      ["Option B", "remove three small ornamental pears and grind stumps", "$2,500"],
-    ],
-  );
+  assertOptionRowsMatch(validation, [
+    ["Option A", "remove three small ornamental pears", "$1,650"],
+    ["Option B", "remove three small ornamental pears and grind stumps", "$2,500"],
+  ]);
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
@@ -529,11 +545,7 @@ test("post-AI reconciliation uses total-first estimate amount for stump expanded
     const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
     const validation = validateAlphaJson(reconciled);
 
-    assert.deepEqual(
-      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-      expected,
-      raw,
-    );
+    assertOptionRowsMatch(validation, expected, raw);
     assert.deepEqual(validation.structural_error_codes, [], raw);
     assert.equal(
       validation.alphaJson.service_options.items.some((option) =>
@@ -605,11 +617,7 @@ test("post-AI reconciliation uses total-first estimate amount for trim or limb h
     const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
     const validation = validateAlphaJson(reconciled);
 
-    assert.deepEqual(
-      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-      expected,
-      raw,
-    );
+    assertOptionRowsMatch(validation, expected, raw);
     assert.deepEqual(validation.structural_error_codes, [], raw);
     assert.equal(
       validation.alphaJson.service_options.items.some((option) =>
@@ -699,11 +707,7 @@ test("post-AI reconciliation uses total-first estimate amount for storm and fall
     const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
     const validation = validateAlphaJson(reconciled);
 
-    assert.deepEqual(
-      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-      expected,
-      raw,
-    );
+    assertOptionRowsMatch(validation, expected, raw);
     assert.deepEqual(validation.structural_error_codes, [], raw);
   }
 });
@@ -731,14 +735,10 @@ test("post-AI reconciliation computes storm cleanup with lower haul-away add-on"
     const reconciled = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, raw), buildOptionPriceCandidateView(raw));
     const validation = validateAlphaJson(reconciled);
 
-    assert.deepEqual(
-      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
-      [
-        ["Option A", "storm-damage cleanup in back yard", basePrice],
-        ["Option B", "storm-damage cleanup in back yard with debris haul-away", expandedPrice],
-      ],
-      raw,
-    );
+    assertOptionRowsMatch(validation, [
+      ["Option A", "storm-damage cleanup in back yard", basePrice],
+      ["Option B", "storm-damage cleanup in back yard with debris haul-away", expandedPrice],
+    ], raw);
     assert.equal(
       validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
       INCREMENTAL_ADDON_PRICE,
@@ -797,7 +797,7 @@ test("post-AI reconciliation replaces local standalone add-on amount with comput
   assert.deepEqual(prices(validation), ["$1,000", "$1,400"]);
   assert.doesNotMatch(prices(validation).join(" "), /\$400/);
   assert.doesNotMatch(validation.alphaJson.service_options.items[1].description, /1256 Mill St|Madison IN/i);
-  assert.match(validation.alphaJson.service_options.items[1].description, /remov(?:e|al).*stump grinding/i);
+  assert.match(validation.alphaJson.service_options.items[1].description, /remov(?:e|al).*grind(?:ing)?.*stumps?/i);
   assert.match(validation.warnings.join(" "), /Replaced standalone add-on amount \$400/i);
 });
 

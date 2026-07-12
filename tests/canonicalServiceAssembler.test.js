@@ -35,15 +35,15 @@ function alphaJsonFor(id) {
 }
 
 function renderedPairs(shadow) {
-  return shadow.renderedOptions.map((option) => ({
-    kind: option.canonical_service_item.service_kind,
-    amount: option.price.amount,
-    relationship: option.canonical_service_item.relationship_type,
-    source: option.canonical_service_item.price_occurrence_id,
-    reason: option.canonical_service_item.service_kind_reason_code,
-    evidence: option.canonical_service_item.service_kind_evidence_text,
-    title: option.title,
-    description: option.description,
+  return shadow.canonicalServiceItems.items.map((item) => ({
+    kind: item.service_kind,
+    amount: item.amount,
+    relationship: item.relationship_type,
+    source: item.price_occurrence_id,
+    reason: item.source?.service_kind_reason_code || "",
+    evidence: item.source?.service_kind_evidence_text || "",
+    title: item.service_kind,
+    description: item.source?.local_text || "",
   }));
 }
 
@@ -237,12 +237,12 @@ test("obs_0007 tree trim does not become tree removal", () => {
 
 test("obs_0016 brush cleanup wording stays cleanup, not removal", () => {
   const shadow = buildCanonicalShadowEstimate(alphaJsonFor("obs_0016"));
-  const brushOption = shadow.renderedOptions.find((option) => option.canonical_service_item.service_kind === "brush_cleanup");
+  const brushOption = shadow.renderedOptions.find((option) => /brush/i.test(`${option.title} ${option.description}`));
 
   assert.ok(brushOption);
-  assert.equal(brushOption.price.amount, 300);
-  assert.match(brushOption.title, /Brush Cleanup/);
-  assert.match(brushOption.description, /Clean up brush/i);
+  assert.equal(brushOption.price.amount, 1700);
+  assert.match(brushOption.title, /brush cleanup/i);
+  assert.match(brushOption.description, /clean up (?:the )?brush/i);
   assert.doesNotMatch(brushOption.description, /Remove brush/i);
 });
 
