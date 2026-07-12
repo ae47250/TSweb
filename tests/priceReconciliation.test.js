@@ -187,6 +187,159 @@ test("post-AI reconciliation treats lower haul-away price as incremental despite
   assert.doesNotMatch(validation.alphaJson.service_options.items.map((option) => option.title).join(" "), /service line/i);
 });
 
+test("post-AI reconciliation keeps explicit Option B total scope instead of whole A/B note", () => {
+  const raw =
+    "Jenny Allen, 812-555-2400, jenny.allen2400@hotmail.com, 148 Maple St, Option A remove the large maple tree and leave the wood and brush on site for 1200, Option B remove the large maple tree, haul away the wood and brush, and clean up the work area for 1700.";
+  const alphaJson = normalizeToAlphaJsonV14({}, raw);
+  alphaJson.service_options.items = [
+    {
+      label: "Option A",
+      title: "remove the large maple tree and leave the wood and brush on site",
+      description: "remove the large maple tree and leave the wood and brush on site",
+      price: { amount: 1200, display: "$1,200" },
+    },
+    {
+      label: "Option B",
+      title: "tree service",
+      description: "tree service",
+      price: { amount: 1700, display: "$1,700" },
+    },
+  ];
+
+  const reconciled = reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw));
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "remove the large maple tree and leave the wood and brush on site", "$1,200"],
+      ["Option B", "remove the large maple tree, haul away the wood and brush, and clean up the work area", "$1,700"],
+    ],
+  );
+  assert.equal(
+    validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
+    EXPLICIT_OPTION_TOTAL,
+  );
+  assert.doesNotMatch(validation.alphaJson.service_options.items[1].description, /\ba remove\b|\bb remove\b/i);
+});
+
+test("post-AI reconciliation restores explicit terminal-for Option B totals", () => {
+  const cases = [
+    {
+      raw: "Laura Mills, 812-555-4418, laura.mills4418@yahoo.com, 77 Pine Hollow Ln, Columbus, IN, Option A remove the pine tree and leave debris beside the driveway for 1100, Option B remove the pine tree, haul debris, and clean the driveway area for 1600.",
+      a: "remove the pine tree and leave debris beside the driveway",
+      b: "remove the pine tree, haul debris, and clean the driveway area",
+      prices: ["$1,100", "$1,600"],
+    },
+    {
+      raw: "Travis Green, 812-555-5055, travis.green5055@yahoo.com, 19 Willow Dr, Martinsville, IN, Option A remove the willow tree and leave debris by the fence for 2300, Option B remove the willow tree, haul debris, and clean the fence line for 2950.",
+      a: "remove the willow tree and leave debris by the fence",
+      b: "remove the willow tree, haul debris, and clean the fence line",
+      prices: ["$2,300", "$2,950"],
+    },
+    {
+      raw: "George Turner, 812-555-3888, george.turner3888@hotmail.com, 744 Hickory Rd, Salem, IN, Option A remove the hickory tree and leave wood and brush for 2600, Option B remove the hickory tree, haul brush and wood, and clean the driveway for 3400.",
+      a: "remove the hickory tree and leave wood and brush",
+      b: "remove the hickory tree, haul brush and wood, and clean the driveway",
+      prices: ["$2,600", "$3,400"],
+    },
+    {
+      raw: "Kelly Stone, 812-555-6072, kelly.stone6072@gmail.com, 77 Beech Grove Rd, Paoli, IN, Option A remove the beech tree, leave wood, and no cleanup for 2400, Option B remove the beech tree, haul wood and brush, and clean the lawn for 3150.",
+      a: "remove the beech tree, leave wood, and no cleanup",
+      b: "remove the beech tree, haul wood and brush, and clean the lawn",
+      prices: ["$2,400", "$3,150"],
+    },
+  ];
+
+  for (const item of cases) {
+    const alphaJson = normalizeToAlphaJsonV14({}, item.raw);
+    alphaJson.service_options.items = [
+      {
+        label: "Option A",
+        title: item.a,
+        description: item.a,
+        price: { amount: Number(item.prices[0].replace(/\D/g, "")), display: item.prices[0] },
+      },
+    ];
+
+    const validation = validateAlphaJson(reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(item.raw)));
+
+    assert.equal(validation.can_generate_pdf, true, item.raw);
+    assert.deepEqual(
+      validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+      [
+        ["Option A", item.a, item.prices[0]],
+        ["Option B", item.b, item.prices[1]],
+      ],
+      item.raw,
+    );
+  }
+});
+
+test("validation blocks explicit source option labels when TD2 lost a labeled option", () => {
+  const raw =
+    "Laura Mills, 812-555-4418, laura.mills4418@yahoo.com, 77 Pine Hollow Ln, Columbus, IN, Option A remove the pine tree and leave debris beside the driveway for 1100, Option B remove the pine tree, haul debris, and clean the driveway area for 1600.";
+  const alphaJson = normalizeToAlphaJsonV14({}, raw);
+  alphaJson.service_options.items = [
+    {
+      label: "Option A",
+      title: "remove the pine tree and leave debris beside the driveway",
+      description: "remove the pine tree and leave debris beside the driveway",
+      price: { amount: 1100, display: "$1,100" },
+    },
+  ];
+
+  const validation = validateAlphaJson(alphaJson);
+
+  assert.equal(validation.can_generate_pdf, false);
+  assert.match(validation.blocking_errors.join(" "), /Explicit source options are incomplete in TD2.*Option B \$1,600/i);
+});
+
+test("validation treats includes Option A inside Option B as a reference, not a source label", () => {
+  const raw =
+    "Sam Miller, 812-555-2211, sam.miller2211@gmail.com, 410 Maple St, Madison, IN, Option A: remove pine and leave debris for 1100. Option B: includes Option A plus hauling and cleanup for 1600.";
+  const validation = validateAlphaJson(reconcileSidecarPrices(
+    normalizeToAlphaJsonV14({}, raw),
+    buildOptionPriceCandidateView(raw),
+  ));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Explicit source options are incomplete in TD2/i);
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "remove pine and leave debris", "$1,100"],
+      ["Option B", "remove pine and haul away and cleanup", "$1,600"],
+    ],
+  );
+  assert.doesNotMatch(validation.alphaJson.service_options.items[1].title, /\bincludes\s+Option\s+A\b|\bfor\s*$/i);
+});
+
+test("post-AI reconciliation removes dangling for after stripped option prices", () => {
+  const raw =
+    "Derek Hall, 812-555-7781, derek.hall7781@icloud.com, 432 Cedar Ct, Seymour, IN, Option A remove the cedar tree, leave the wood, and no stump grinding for 950, Option B remove the cedar tree, grind the stump, and haul away the wood and brush for 1500.";
+  const alphaJson = normalizeToAlphaJsonV14({}, raw);
+  alphaJson.service_options.items = [
+    {
+      label: "Option A",
+      title: "remove the cedar tree, leave the wood, and no stump grinding for",
+      description: "remove the cedar tree, leave the wood, and no stump grinding for",
+      price: { amount: 950, display: "$950" },
+    },
+  ];
+
+  const validation = validateAlphaJson(reconcileSidecarPrices(alphaJson, buildOptionPriceCandidateView(raw)));
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(
+    validation.alphaJson.service_options.items.map((option) => [option.label, option.title, option.price.display]),
+    [
+      ["Option A", "remove the cedar tree, leave the wood, and no stump grinding", "$950"],
+      ["Option B", "remove the cedar tree, grind the stump, and haul away the wood and brush", "$1,500"],
+    ],
+  );
+});
+
 test("post-AI reconciliation replaces generic saved TD2 scope with base job scope", () => {
   const raw =
     "Megan Taylor contact 317-918-5139 / mtaylor@icloud.com. Address 804 Farm Ln, Bloomington, IN. Work requested: remove cedar leaning toward garage. Estimate tree removal 2100 stump grinding 600.";
