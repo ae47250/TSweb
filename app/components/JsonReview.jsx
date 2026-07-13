@@ -984,8 +984,6 @@ export default function JsonReview({
   const reviewIssues = reviewIssueSource.filter((issue) => !isReviewOverrideIssue(issue, overrideStatus));
   const treeCountOverride = alphaJson.normalization?.field_evidence?.tree_count_override || "";
   const showTreeCountOverride = treeCountOverride && treeCountOverride !== "Auto";
-  const title = isFinalConfirm ? "Confirm Estimate" : "AI Review";
-  const subtitle = isFinalConfirm ? "This creates the customer estimate link." : "Check details before confirming estimate.";
   const optionNote = isFinalConfirm
     ? `Do not choose an option here. ${customerName === "Name not available" ? "The customer" : customerName} will choose one when opening the estimate.`
     : "Review these options. The customer chooses one later.";
@@ -1030,9 +1028,13 @@ export default function JsonReview({
   };
 
   return (
-    <section className="card">
-      <h2>{title}</h2>
-      <p className="text-muted">{subtitle}</p>
+    <section className={`card${isFinalConfirm ? "" : " review-card"}`}>
+      {isFinalConfirm && (
+        <>
+          <h2>Confirm Estimate</h2>
+          <p className="text-muted">This creates the customer estimate link.</p>
+        </>
+      )}
       {!isFinalConfirm && canConfirmWithOverrides && (
         <span className="review-status review-status-ready">Estimate ready to be Confirmed</span>
       )}
@@ -1104,7 +1106,10 @@ export default function JsonReview({
             key={optionRenderKey(option, index)}
           >
             <div className="quote-option-header">
-              <strong>{option.label || `Option ${index + 1}`}</strong>
+              <div className="quote-option-heading">
+                <strong>{option.label || `Option ${index + 1}`}</strong>
+                <h4>{formatOptionDisplayText(option.title || "Option details") || "Option details"}</h4>
+              </div>
               {!isFinalConfirm && onOptionPriceChange ? (
                 <OptionPriceEditor
                   busy={busy}
@@ -1116,7 +1121,6 @@ export default function JsonReview({
                 <span>{option.price?.display || "Price missing"}</span>
               )}
             </div>
-            <h4>{formatOptionDisplayText(option.title || "Option details") || "Option details"}</h4>
             {!isFinalConfirm && optionNeedsDescriptionReview(option) && onOptionDescriptionChange ? (
               <OptionDescriptionEditor
                 busy={busy}

@@ -88,13 +88,15 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.equal(existsSync("app/e/[estimateId]/EstimateClient.jsx"), true);
 });
 
-test("review and confirm screens separate AI review from final estimate approval", () => {
+test("review starts with status while confirm keeps final approval heading", () => {
   const reviewSource = readFileSync("app/components/JsonReview.jsx", "utf8");
   assert.match(pageSource, /stage === "review"/);
   assert.match(pageSource, /mode="review"/);
   assert.match(pageSource, /mode="confirm"/);
-  assert.match(reviewSource, /AI Review/);
-  assert.match(reviewSource, /Check details before confirming estimate/);
+  assert.doesNotMatch(reviewSource, /AI Review/);
+  assert.doesNotMatch(reviewSource, /Check details before confirming estimate/);
+  assert.match(pageSource, /Shadow Version: deployed \+ more parsers\/normalizers/);
+  assert.match(reviewSource, /review-card/);
   assert.match(reviewSource, /Confirm Estimate/);
   assert.match(reviewSource, /Estimate ready to be Confirmed/);
   assert.doesNotMatch(reviewSource, /review-status-needs-info/);
@@ -310,7 +312,13 @@ test("TD2 can edit highlighted option descriptions in place", () => {
   assert.match(cssSource, /\.quote-option-card-warning/);
   assert.match(cssSource, /border:\s*4px solid #b91c1c/);
   assert.match(cssSource, /\.option-description-editor-warning/);
-  assert.match(cssSource, /\.option-price-label\s*\{[^}]*color:\s*var\(--green\)/s);
+  assert.match(cssSource, /\.option-price-label\s*\{[^}]*color:\s*var\(--ink\)/s);
+  assert.match(cssSource, /\.option-price-label\s*\{[^}]*font-size:\s*16px/s);
+  assert.match(cssSource, /\.option-price-label\s*\{[^}]*font-weight:\s*700/s);
+  assert.match(cssSource, /\.option-price-label\s*\{[^}]*text-transform:\s*uppercase/s);
+  assert.match(cssSource, /\.option-price-input\s*\{[^}]*font-size:\s*16px/s);
+  assert.match(cssSource, /\.option-price-input\s*\{[^}]*text-align:\s*left/s);
+  assert.match(cssSource, /\.option-price-input\s*\{[^}]*width:\s*10ch/s);
   assert.match(cssSource, /\.option-price-change-note\s*\{[^}]*text-transform:\s*none/s);
 });
 

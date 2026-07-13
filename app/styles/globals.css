@@ -498,6 +498,20 @@ main {
   color: #7c2d12;
 }
 
+.review-card {
+  padding-top: 8px;
+}
+
+.review-card > .review-status {
+  display: flex;
+  margin: 0 0 8px;
+}
+
+.review-card > .td2-required-warning {
+  margin: 0 0 8px;
+  text-align: left;
+}
+
 .td2-required-warning {
   color: #b91c1c;
   font-size: 20px;
@@ -707,6 +721,16 @@ main {
   color: var(--green-dark);
 }
 
+.quote-option-heading {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.quote-option-heading h4 {
+  margin: 0;
+}
+
 .quote-option-card p {
   margin: 0;
 }
@@ -740,7 +764,7 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  align-items: center;
+  align-items: start;
 }
 
 .quote-option-header span {
@@ -760,25 +784,27 @@ main {
 }
 
 .option-price-input {
-  max-width: 8ch;
-  width: 8ch;
+  font-size: 16px;
+  max-width: 10ch;
+  text-align: left;
+  width: 10ch;
 }
 
 .option-price-label {
-  color: var(--green);
-  font-size: 12px;
-  font-weight: 900;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
-.option-price-label-changed,
+.option-price-label-changed {
+  color: #b91c1c;
+}
+
 .option-price-change-note {
   color: #b91c1c;
   font-size: 12px;
   font-weight: 900;
-}
-
-.option-price-change-note {
   text-transform: none;
 }
 
