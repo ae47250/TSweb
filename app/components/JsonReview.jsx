@@ -618,7 +618,11 @@ function optionDescriptionAddsDetail(option = {}) {
 }
 
 function optionNeedsDescriptionReview(option = {}) {
-  return Boolean(option.review_flags?.scope_unclear || option.scope_unclear);
+  return Boolean(
+    option.review_flags?.scope_unclear
+    || option.review_flags?.source_fact_clarification
+    || option.scope_unclear
+  );
 }
 
 function optionNeedsPriceReview(option = {}) {

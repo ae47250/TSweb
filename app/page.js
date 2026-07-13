@@ -92,9 +92,14 @@ function FrontPage({ cards, onNewQuote, onNewInvoice, onOpenEstimate, onManualAc
     <section className="front-page">
       <div className="front-actions">
         <button className="front-action front-action-primary" type="button" onClick={onNewQuote}>New Estimate</button>
-        <button className="front-action front-action-secondary" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
-        <button className="front-action front-action-invoice" type="button" onClick={onNewInvoice}>New Invoice</button>
-        <button className="front-action front-action-recent" type="button" onClick={() => setShowRecentEstimates((current) => !current)}>Recent Estimates</button>
+        <section className="card front-future-card">
+          <h2>To be added later</h2>
+          <div className="front-action-row">
+            <button className="front-action front-action-secondary" type="button" onClick={onManualAcceptance}>Record Manual Acceptance</button>
+            <button className="front-action front-action-invoice" type="button" onClick={onNewInvoice}>New Invoice</button>
+            <button className="front-action front-action-recent" type="button" onClick={() => setShowRecentEstimates((current) => !current)}>Recent Estimates</button>
+          </div>
+        </section>
       </div>
 
       {showRecentEstimates && (

@@ -472,35 +472,37 @@ test("hoho30 case 28 is ready only with cleanup preserved in the stump option", 
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
-test("hoho30 case 22 blocks non-canonical final TD2 output that drops source facts", () => {
+test("hoho30 case 22 warns and highlights non-canonical TD2 output that drops source facts", () => {
   const raw = "Alexander, 463-241-1556, alexander.phillipsir@gmail.com, ash at 410 Walnut by fence lot messy wants tree out, opt a tree down leave debris 5400 opt b tree down stump grinding brush cleanup rake up 6400";
   const validation = validateRaw(raw);
   const coverage = sourceCoverage(validation);
 
-  assert.equal(validation.can_generate_pdf, false);
-  assert.equal(validation.alphaJson.validation.source_final_fact_coverage_pdf_blocking_enabled, true);
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.validation.source_final_fact_coverage_pdf_blocking_enabled, false);
   assert.equal(validation.alphaJson.service_options.items.some((option) => option.source === "canonical_final_option_model_shadow" || option.canonical_option), false);
   assert.ok(coverage.blocking_codes.includes("SOURCE_OPTION_ACTION_OMITTED"));
   assert.ok(coverage.blocking_codes.includes("SOURCE_SPECIES_CHANGED"));
   assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
-  assert.match(validation.blocking_errors.join(" "), /ash/i);
-  assert.match(validation.blocking_errors.join(" "), /by fence/i);
+  assert.match(validation.warnings.join(" "), /ash/i);
+  assert.match(validation.warnings.join(" "), /by fence/i);
+  assert.ok(validation.alphaJson.service_options.items.some((option) => option.review_flags?.source_fact_clarification));
 });
 
-test("hoho30 case 30 blocks non-canonical final TD2 output that drops species location and stump count", () => {
+test("hoho30 case 30 warns and highlights non-canonical TD2 output that drops source facts", () => {
   const raw = "Timothy L., 317-262-9640, timothy.workfb@outlook.com, locust at 410 Walnut by fence hard lean by line, option a: 4100 drop tree leave brsh, option b: 5250 remove it grind 2 stumps plus haul brush plus cleanup";
   const validation = validateRaw(raw);
   const coverage = sourceCoverage(validation);
 
-  assert.equal(validation.can_generate_pdf, false);
-  assert.equal(validation.alphaJson.validation.source_final_fact_coverage_pdf_blocking_enabled, true);
+  assert.equal(validation.can_generate_pdf, true);
+  assert.equal(validation.alphaJson.validation.source_final_fact_coverage_pdf_blocking_enabled, false);
   assert.equal(validation.alphaJson.service_options.items.some((option) => option.source === "canonical_final_option_model_shadow" || option.canonical_option), false);
   assert.ok(coverage.blocking_codes.includes("SOURCE_SPECIES_CHANGED"));
   assert.ok(coverage.blocking_codes.includes("SOURCE_STUMP_QUANTITY_CHANGED"));
   assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
-  assert.match(validation.blocking_errors.join(" "), /locust/i);
-  assert.match(validation.blocking_errors.join(" "), /two stumps/i);
-  assert.match(validation.blocking_errors.join(" "), /by fence/i);
+  assert.match(validation.warnings.join(" "), /locust/i);
+  assert.match(validation.warnings.join(" "), /two stumps/i);
+  assert.match(validation.warnings.join(" "), /by fence/i);
+  assert.ok(validation.alphaJson.service_options.items.some((option) => option.review_flags?.source_fact_clarification));
 });
 
 test("source-final coverage blocks source species and target substitutions", () => {

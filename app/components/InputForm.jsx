@@ -39,7 +39,7 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
           </p>
           <p className="job-notes-example">
             <span>Example:</span>
-            <span className="job-notes-example-text">Remove 2 maples for John, 22 Main street, Madison, option a remove only 1000, option b grind stumps and haul away 1900.</span>
+            <span className="job-notes-example-text">Remove 2 maples, John W. 22 Main street, Madison,  1234567890 wj234@gmail.com  option a remove only 1000, option b grind stumps and haul away 1900.</span>
           </p>
           <textarea
             ref={ref}

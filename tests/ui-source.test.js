@@ -46,12 +46,19 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.doesNotMatch(pageSource, /Recent Activity/);
   assert.match(cssSource, /\.front-action-primary/);
   assert.match(cssSource, /min-height:\s*104px/);
+  assert.match(pageSource, /front-future-card/);
+  assert.match(pageSource, /To be added later/);
+  assert.match(cssSource, /\.front-future-card\s*\{[^}]*margin-top:\s*2\.5rem/s);
+  assert.match(pageSource, /front-action-row/);
+  assert.match(cssSource, /\.front-action-row\s*\{[^}]*grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/s);
+  assert.match(cssSource, /\.front-action-row \.front-action\s*\{[^}]*font-size:\s*15px[^}]*min-height:\s*58px/s);
+  assert.match(cssSource, /\.front-action-secondary,[\s\S]*?background:\s*#dbeafe/);
   assert.match(cssSource, /\.front-action-invoice/);
   assert.match(cssSource, /\.front-action-recent/);
   assert.match(cssSource, /background:\s*#dbeafe/);
   assert.match(inputFormSource, /Paste or type everything here \(in ANY order\)/);
   assert.match(inputFormSource, /Add customer info, number of trees, prices and service for each option/);
-  assert.match(inputFormSource, /Remove 2 maples for John, 22 Main street, Madison/);
+  assert.match(inputFormSource, /Remove 2 maples, John W\. 22 Main street, Madison,  1234567890 wj234@gmail\.com/);
   assert.match(inputFormSource, /Review Estimate/);
   assert.match(inputFormSource, /Clear/);
   assert.doesNotMatch(inputFormSource, /Tree count/);
@@ -292,6 +299,7 @@ test("TD2 can edit highlighted option descriptions in place", () => {
   assert.match(reviewSource, /key=\{optionRenderKey\(option, index\)\}/);
   assert.doesNotMatch(reviewSource, /key=\{option\.label \|\| index\}/);
   assert.match(reviewSource, /optionNeedsDescriptionReview/);
+  assert.match(reviewSource, /source_fact_clarification/);
   assert.match(reviewSource, /OptionDescriptionEditor/);
   assert.match(reviewSource, /Write the confirmed work scope for this option/);
   assert.match(reviewSource, /This replaces the customer-facing option description/);

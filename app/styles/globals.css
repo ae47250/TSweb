@@ -61,9 +61,24 @@ main {
 
 .front-actions {
   display: grid;
-  gap: 16px;
   max-width: 680px;
   margin: 0 auto;
+}
+
+.front-future-card {
+  margin-top: 2.5rem;
+  padding: 18px;
+}
+
+.front-future-card h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.front-action-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .front-action {
@@ -84,26 +99,23 @@ main {
   min-height: 104px;
 }
 
-.front-action-secondary {
-  background: var(--yellow);
-  border-color: #d9ad21;
-  color: #2b2111;
-  font-size: 23px;
-  min-height: 104px;
-}
-
+.front-action-secondary,
 .front-action-invoice {
   background: #dbeafe;
   border-color: #93c5fd;
   color: #1e3a8a;
-  min-height: 78px;
 }
 
 .front-action-recent {
   background: #dbeafe;
   border-color: #93c5fd;
   color: #1e3a8a;
-  min-height: 78px;
+}
+
+.front-action-row .front-action {
+  font-size: 15px;
+  min-height: 58px;
+  padding: 10px 8px;
 }
 
 .recent-list {
