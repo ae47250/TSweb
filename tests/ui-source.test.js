@@ -155,7 +155,8 @@ test("review and confirm screens separate AI review from final estimate approval
   assert.match(reviewSource, /Tree Count Is Unclear/);
   assert.match(reviewSource, /Change Tree Count/);
   assert.match(reviewSource, /td2ManualTreeCountOverride/);
-  assert.match(reviewSource, /3\+ trees/);
+  assert.match(reviewSource, /4 trees/);
+  assert.match(reviewSource, /5\+ trees/);
   assert.match(reviewSource, /Still unclear but OK to proceed/);
   assert.doesNotMatch(reviewSource, /Use this tree count/);
   assert.match(reviewSource, /Create Estimate without exact address/);

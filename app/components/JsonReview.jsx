@@ -451,9 +451,11 @@ const TREE_COUNT_BLOCK_RE = /Tree count is marked unknown|Tree count is unclear|
 const REVIEW_OVERRIDE_BLOCK_RE = /^(Missing service address|Service address looks unclear|Missing customer phone or email)\./i;
 const REVIEW_OVERRIDE_FOLLOW_UP_RE = /(exact service address|customer phone|phone number|customer email|email address)/i;
 const TREE_COUNT_CHOICES = [
-  { value: "1 tree", label: "1" },
-  { value: "2 trees", label: "2" },
-  { value: "3+ trees", label: "3+" },
+  { value: "1 tree", label: "1 tree" },
+  { value: "2 trees", label: "2 trees" },
+  { value: "3 trees", label: "3 trees" },
+  { value: "4 trees", label: "4 trees" },
+  { value: "5+ trees", label: "5+ trees" },
   { value: "Still unclear but OK to proceed", label: "Still unclear but OK to proceed" },
 ];
 const SCOPE_OVERRIDE_BLOCK_RE = /^(Unclear work scope: remove, trim, or another service|Property responsibility or work scope is unclear|Work scope unclear; confirm what this price covers)\.?/i;
