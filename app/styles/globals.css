@@ -419,8 +419,8 @@ main {
 .td2-customer-field-with-override {
   align-items: start;
   display: grid;
-  gap: 8px;
-  grid-template-columns: max-content max-content;
+  gap: 6px;
+  grid-template-columns: 1fr;
   justify-content: start;
 }
 
@@ -428,7 +428,7 @@ main {
   background: transparent;
   border: 0;
   border-radius: 0;
-  margin-top: 24px;
+  margin-top: 0;
   padding: 0;
 }
 
@@ -577,10 +577,10 @@ main {
 }
 
 .td2-required-field-with-override {
-  align-items: end;
+  align-items: start;
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
 }
 
 .td2-address-required-row {

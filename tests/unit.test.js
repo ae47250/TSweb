@@ -5,6 +5,7 @@ import { generateDocumentId } from "../lib/metadata.js";
 import { buildPriceInstrumentation, extractRawPriceEvidence } from "../lib/priceInstrumentation.js";
 import { checkRateLimit, resetRateLimiter } from "../lib/rateLimiter.js";
 import { getBlockingOverrideStatus } from "../lib/reviewOverrides.js";
+import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
 import { easyInput } from "./fixtures/sampleInput.js";
 
@@ -29,6 +30,24 @@ test("validation blocks missing phone and priced option", () => {
   assert.equal(result.can_generate_pdf, false);
   assert.ok(result.blocking_errors.includes("Missing customer phone or email."));
   assert.ok(result.blocking_errors.includes("Missing priced service option."));
+});
+
+test("edited customer phone survives validation renormalization", () => {
+  const normalized = normalizeToAlphaJsonV14(
+    {
+      customer: {
+        phone_display: "812-555-0199",
+        phone_primary: "812-555-0199",
+      },
+      job: { service_address: { display: "123 Main Street, Madison, IN" } },
+    },
+    "Remove a tree at 123 Main Street.",
+    {},
+  );
+  const result = validateAlphaJson(normalized);
+
+  assert.equal(normalized.customer.phone_display, "812-555-0199");
+  assert.ok(!result.blocking_errors.includes("Missing customer phone or email."));
 });
 
 test("review overrides allow only accepted address and contact blocking issues", () => {

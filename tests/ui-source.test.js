@@ -151,7 +151,7 @@ test("review and confirm screens separate AI review from final estimate approval
   assert.match(cssSource, /\.override-check-row input\s*\{[^}]*width:\s*22px/s);
   assert.match(cssSource, /\.override-check-row span\s*\{[^}]*white-space:\s*nowrap/s);
   assert.match(cssSource, /\.override-warning-item\s*\{[^}]*width:\s*fit-content/s);
-  assert.match(cssSource, /\.td2-required-field-with-override\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto/s);
+  assert.match(cssSource, /\.td2-required-field-with-override\s*\{[^}]*grid-template-columns:\s*1fr/s);
   assert.match(cssSource, /\.td2-address-required-row\s*\{[^}]*gap:\s*4px/s);
   assert.match(cssSource, /\.td2-address-required-row\s*\{[^}]*grid-template-columns:\s*1fr/s);
   assert.match(reviewSource, /TreeCountResolutionCard/);
@@ -236,9 +236,9 @@ test("review and confirm screens separate AI review from final estimate approval
   assert.match(cssSource, /\.customer-info-grid/);
   assert.match(cssSource, /\.td2-customer-inline-field/);
   assert.match(cssSource, /\.td2-customer-field-with-override/);
-  assert.match(cssSource, /\.td2-customer-field-with-override\s*\{[^}]*grid-template-columns:\s*max-content max-content/s);
+  assert.match(cssSource, /\.td2-customer-field-with-override\s*\{[^}]*grid-template-columns:\s*1fr/s);
   assert.match(cssSource, /\.td2-customer-field-with-override \.override-warning-item\s*\{[^}]*border:\s*0/s);
-  assert.match(cssSource, /\.td2-customer-field-with-override \.override-warning-item\s*\{[^}]*margin-top:\s*24px/s);
+  assert.match(cssSource, /\.td2-customer-field-with-override \.override-warning-item\s*\{[^}]*margin-top:\s*0/s);
   assert.match(cssSource, /\.td2-customer-field-with-override \.td2-inline-editor-warning::placeholder\s*\{[^}]*color:\s*#b91c1c/s);
   assert.match(cssSource, /\.td2-customer-inline-field \.td2-inline-editor-warning\s*\{[^}]*border:\s*3px solid #b91c1c/s);
   assert.match(cssSource, /\.td2-inline-editor-quiet/);
