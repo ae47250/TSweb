@@ -791,6 +791,7 @@ function RequiredInfoEditor({
 
 function OptionDescriptionEditor({ option, index, busy = false, onChange }) {
   const [value, setValue] = useState(option.description || "");
+  const needsScopeClarification = optionNeedsDescriptionReview(option);
 
   useEffect(() => {
     setValue(option.description || "");
@@ -799,20 +800,28 @@ function OptionDescriptionEditor({ option, index, busy = false, onChange }) {
   function applyChange() {
     const nextValue = value.trim();
     if (nextValue && nextValue !== (option.description || "").trim()) {
-      onChange?.(index, nextValue);
+      onChange?.(index, nextValue, { updateGenericTitle: true });
     }
   }
 
   return (
-    <textarea
-      aria-label={`${option.label || `Option ${index + 1}`} description`}
-      className="option-description-editor option-description-editor-warning"
-      disabled={busy}
-      onBlur={applyChange}
-      onChange={(event) => setValue(event.target.value)}
-      spellCheck="true"
-      value={value}
-    />
+    <label className="option-description-clarifier">
+      {needsScopeClarification && (
+        <strong>Write the confirmed work scope for this option.</strong>
+      )}
+      <textarea
+        aria-label={`${option.label || `Option ${index + 1}`} description`}
+        className="option-description-editor option-description-editor-warning"
+        disabled={busy}
+        onBlur={applyChange}
+        onChange={(event) => setValue(event.target.value)}
+        spellCheck="true"
+        value={value}
+      />
+      {needsScopeClarification && (
+        <span className="td2-inline-help">This replaces the customer-facing option description. The title changes only if it is generic.</span>
+      )}
+    </label>
   );
 }
 

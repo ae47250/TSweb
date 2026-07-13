@@ -1459,7 +1459,22 @@ test("state road numbers are not treated as tree counts and vague counts block",
   assert.match(validation.follow_ups.join(" "), /how many trees/i);
 });
 
-test("tree counts auto-fill only up to 15 and require confirmation from 16 to 30", () => {
+test("road and highway numbers above auto tree-count max do not trigger tree-count review", () => {
+  const samples = [
+    "Mara King 812-555-3101 mara@example.com. 8700 State Road 46 Madison Indiana. Remove one maple tree by fence. Option A remove tree $8,500.",
+    "Mara King 812-555-3101 mara@example.com. 8700 Hwy 421 Madison Indiana. Remove one maple tree by fence. Option A remove tree $8,500.",
+    "Mara King 812-555-3101 mara@example.com. 8700 Highway 421 Madison Indiana. Remove one maple tree by fence. Option A remove tree $8,500.",
+    "Mara King 812-555-3101 mara@example.com. 8700 Road 62 Madison Indiana. Remove one maple tree by fence. Option A remove tree $8,500.",
+  ];
+
+  for (const input of samples) {
+    const validation = validateAlphaJson(normalizeToAlphaJsonV14({}, input));
+    assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
+    assert.doesNotMatch(validation.blocking_errors.join(" "), /Tree count is unclear/i);
+  }
+});
+
+test("tree counts auto-fill only up to 15 and require confirmation from 16 to 49", () => {
   const accepted = validateAlphaJson(normalizeToAlphaJsonV14(
     {},
     "Mara King 812-555-3101 mara@example.com. 310 Oak Lane Madison Indiana. Remove 15 maple trees by fence. Option A remove trees $8,500.",
@@ -1477,7 +1492,7 @@ test("tree counts auto-fill only up to 15 and require confirmation from 16 to 30
 
   const topOfReviewRange = validateAlphaJson(normalizeToAlphaJsonV14(
     {},
-    "Mara King 812-555-3101 mara@example.com. 310 Oak Lane Madison Indiana. Remove 30 trees by fence. Option A remove trees $8,500.",
+    "Mara King 812-555-3101 mara@example.com. 310 Oak Lane Madison Indiana. Remove 49 trees by fence. Option A remove trees $8,500.",
   ));
   assert.equal(topOfReviewRange.alphaJson.job.tree_details.tree_count, "");
   assert.match(topOfReviewRange.blocking_errors.join(" "), /Tree count is unclear/i);
@@ -1492,10 +1507,23 @@ test("tree counts auto-fill only up to 15 and require confirmation from 16 to 30
 
   const rejectedThirtyOne = validateAlphaJson(normalizeToAlphaJsonV14(
     {},
-    "Mara King 812-555-3101 mara@example.com. 310 Oak Lane Madison Indiana. Remove 31 maple by fence. Option A remove tree $8,500.",
+    "Mara King 812-555-3101 mara@example.com. 310 Oak Lane Madison Indiana. Remove 50 maple by fence. Option A remove tree $8,500.",
   ));
   assert.equal(rejectedThirtyOne.alphaJson.job.tree_details.tree_count, "");
   assert.match(rejectedThirtyOne.blocking_errors.join(" "), /Tree count is unclear/i);
+});
+
+test("large number before tree species lot is treated as address-like evidence, not tree count", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Arthur Price, 574-446-4387, arthur21@aol.com, ash near 260 Elm lot messy wants tree out, opt a drop n leave debris 7200 opt b tree out plus stump grinding $9050",
+  ));
+
+  assert.equal(validation.alphaJson.job.service_address.display, "260 Elm Lot");
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "");
+  assert.notEqual(validation.alphaJson.job.tree_details.tree_count, "260 trees");
+  assert.doesNotMatch(validation.blocking_errors.join(" "), /Missing service address/i);
+  assert.match(validation.blocking_errors.join(" "), /Tree count is unclear/i);
 });
 
 test("phone-like numbers are stripped before tree count parsing", () => {

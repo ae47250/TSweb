@@ -746,6 +746,53 @@ test("source-final coverage treats flush cut and cut low as stump-cut treatment,
   assert.match(badCoverage.blocking_messages.join(" "), /cut stump low/i);
 });
 
+test("source-final coverage keeps service-line wording as safety review, not target blocker", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText: "Customer has maple by power line. Option A remove tree 3400 Option B remove tree grind stump 4850.",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Maple tree removal",
+        description: "Remove the maple tree.",
+        price: { amount: 3400, display: "$3,400" },
+      },
+      {
+        label: "Option B",
+        title: "Maple tree removal with stump grinding",
+        description: "Remove the maple tree and grind the stump.",
+        price: { amount: 4850, display: "$4,850" },
+      },
+    ],
+  });
+
+  assert.equal(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"), false);
+  assert.equal(coverage.warning_results.some((result) => result.fact === "safety_qualifiers"), true);
+});
+
+test("source-final coverage accepts plural stumps when final preserves multi-tree quantity", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText: "Customer has two elm trees by shed. Option A remove trees 6250 Option B remove trees and grind 2 stumps 7600.",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Elm tree removal",
+        description: "Remove the two elm trees by the shed.",
+        price: { amount: 6250, display: "$6,250" },
+      },
+      {
+        label: "Option B",
+        title: "Elm tree removal with stump grinding",
+        description: "Remove the two elm trees by the shed and grind the stumps.",
+        price: { amount: 7600, display: "$7,600" },
+      },
+    ],
+  });
+
+  assert.equal(coverage.blocking_codes.includes("SOURCE_STUMP_QUANTITY_CHANGED"), false);
+  assert.equal(coverage.source_options[1].stump_quantity, 2);
+  assert.equal(coverage.final_options[1].stump_quantity, 2);
+});
+
 test("source-final coverage blocks dropped actions in multi-action Option B packages", () => {
   const coverage = buildSourceFinalFactCoverage({
     rawText: "Customer has sycamore behind garage. A remove tree leave debris 6700 B tree out plus chip brush plus stump grinding plus cleanup 8250",

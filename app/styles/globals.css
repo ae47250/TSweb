@@ -714,6 +714,15 @@ main {
   width: 100%;
 }
 
+.option-description-clarifier {
+  display: grid;
+  gap: 8px;
+}
+
+.option-description-clarifier strong {
+  color: #7f1d1d;
+}
+
 .option-description-editor-warning {
   border: 3px solid #b91c1c;
 }

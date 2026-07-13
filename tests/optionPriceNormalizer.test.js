@@ -397,6 +397,11 @@ test("location and address numbers do not become price candidates", () => {
       prices: ["$900"],
     },
     {
+      raw: "near Road 62 remove maple 1800",
+      excluded: ["road 62"],
+      prices: ["$1,800"],
+    },
+    {
       raw: "cut only 1050 / cut and haul off 1550",
       excluded: [],
       prices: ["$1,050", "$1,550"],

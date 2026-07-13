@@ -281,12 +281,17 @@ test("TD2 can edit highlighted option descriptions in place", () => {
 
   assert.match(pageSource, /applyOptionDescriptionEdit/);
   assert.match(pageSource, /normalizeTreeServiceText\(description\)/);
+  assert.match(pageSource, /optionTitleIsGeneric/);
+  assert.match(pageSource, /titleFromConfirmedScope/);
+  assert.match(pageSource, /updateGenericTitle/);
   assert.match(pageSource, /onOptionDescriptionChange=\{applyOptionDescriptionEdit\}/);
   assert.match(reviewSource, /function optionRenderKey/);
   assert.match(reviewSource, /key=\{optionRenderKey\(option, index\)\}/);
   assert.doesNotMatch(reviewSource, /key=\{option\.label \|\| index\}/);
   assert.match(reviewSource, /optionNeedsDescriptionReview/);
   assert.match(reviewSource, /OptionDescriptionEditor/);
+  assert.match(reviewSource, /Write the confirmed work scope for this option/);
+  assert.match(reviewSource, /This replaces the customer-facing option description/);
   assert.match(reviewSource, /OptionPriceEditor/);
   assert.match(reviewSource, /RequiredInfoEditor/);
   assert.match(reviewSource, /More info is needed to complete Estimate/);

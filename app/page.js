@@ -358,7 +358,19 @@ export default function HomePage() {
     }
   }
 
-  async function applyOptionDescriptionEdit(optionIndex, description) {
+  function optionTitleIsGeneric(title = "") {
+    return /^(?:option\s+[A-E1-5]?|option details?|tree work|tree service work|service option(?:\s+[A-E1-5])?|work scope unclear|scope unclear)$/i
+      .test(String(title || "").trim());
+  }
+
+  function titleFromConfirmedScope(description = "") {
+    const text = normalizeTreeServiceText(description);
+    if (!text) return "";
+    const firstSentence = text.split(/[.;]/).map((part) => part.trim()).find(Boolean) || text;
+    return firstSentence.length > 80 ? `${firstSentence.slice(0, 77).trim()}...` : firstSentence;
+  }
+
+  async function applyOptionDescriptionEdit(optionIndex, description, { updateGenericTitle = false } = {}) {
     const nextDescription = normalizeTreeServiceText(description);
     if (!nextDescription) return;
 
@@ -371,7 +383,7 @@ export default function HomePage() {
         : [];
       if (!items[optionIndex]) return;
 
-      items[optionIndex] = {
+      const nextOption = {
         ...items[optionIndex],
         description: nextDescription,
         scope_unclear: false,
@@ -383,6 +395,10 @@ export default function HomePage() {
           description_edited_by_td_value: nextDescription,
         },
       };
+      if (updateGenericTitle && optionTitleIsGeneric(nextOption.title)) {
+        nextOption.title = titleFromConfirmedScope(nextDescription);
+      }
+      items[optionIndex] = nextOption;
 
       await validateEditedAlphaJson(nextAlphaJson, quoteContact, "Option description updated.");
     } catch (err) {

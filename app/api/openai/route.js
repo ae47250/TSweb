@@ -151,6 +151,7 @@ export async function POST(request) {
         cleanedText: literalTextCleanupResult?.cleanedText,
       })
     : null;
+  const parserSidecar = body.parser_sidecar || body.parserSidecar || null;
   const textCleanupResult = preNormalizersEnabled
     ? buildEvidenceBackedTextCleanupResult({
         textCleanupResult: literalTextCleanupResult,
@@ -165,6 +166,21 @@ export async function POST(request) {
         optionPriceCandidateView,
       })
     : customerText;
+  const parserMessages = [
+    {
+      role: "user",
+      content: parserCustomerText,
+    },
+  ];
+  if (parserSidecar && typeof parserSidecar === "object") {
+    parserMessages.push({
+      role: "user",
+      content: [
+        "Second-pass structured sidecar from step 1 (treat this as evidence, not raw notes):",
+        JSON.stringify(parserSidecar, null, 2),
+      ].join("\n"),
+    });
+  }
 
   if (!process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true") {
     const rawOpenAiDraftJson = {};
@@ -213,7 +229,7 @@ export async function POST(request) {
           role: "system",
           content: OPENAI_SYSTEM_PROMPT,
         },
-        { role: "user", content: parserCustomerText },
+        ...parserMessages,
       ],
     });
     const rawOpenAiDraftJson = JSON.parse(response.choices[0]?.message?.content || "{}");
