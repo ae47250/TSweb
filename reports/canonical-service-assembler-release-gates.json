@@ -1,0 +1,89 @@
+{
+  "record_type": "production_gate_summary",
+  "generated_at": "2026-07-11T18:26:16.859Z",
+  "all_gates_pass": false,
+  "final_recommendation": "REVISE",
+  "blocked_status": "BLOCKED - INSUFFICIENT GROUND TRUTH",
+  "pdf_ready_violation_counts": {
+    "duplicate_semantic_items": 0,
+    "amount_to_service_kind_mismatches": 0,
+    "title_description_action_conflicts": 0,
+    "fabricated_scope_facts": 0,
+    "structural_errors": 0,
+    "uncertain_relationships": 0
+  },
+  "gates": [
+    {
+      "name": "production assembler remains behind disabled flag",
+      "pass": true
+    },
+    {
+      "name": "zero PDF-ready duplicate semantic items",
+      "pass": true
+    },
+    {
+      "name": "zero PDF-ready amount-to-service-kind mismatches",
+      "pass": true
+    },
+    {
+      "name": "zero PDF-ready title/description action conflicts",
+      "pass": true
+    },
+    {
+      "name": "zero fabricated scope facts in PDF-ready estimates",
+      "pass": true
+    },
+    {
+      "name": "zero unresolved structural errors that remain PDF-ready",
+      "pass": true
+    },
+    {
+      "name": "obs_0907, obs_0839, and obs_0909 remain fixed",
+      "pass": true
+    },
+    {
+      "name": "zero 382 replay semantic-ready-but-wrong cases",
+      "pass": true
+    },
+    {
+      "name": "PDF-ready amount-kind mismatches are zero",
+      "pass": true
+    },
+    {
+      "name": "exact amount-kind rows remain 382/382",
+      "pass": true
+    },
+    {
+      "name": "exact price rows remain 382/382",
+      "pass": true
+    },
+    {
+      "name": "no regression from best baseline in price correctness",
+      "pass": true
+    },
+    {
+      "name": "no valid prices dropped",
+      "pass": true
+    },
+    {
+      "name": "deterministic and idempotent construction",
+      "pass": true
+    },
+    {
+      "name": "validated semantic hash equals renderer-input semantic hash",
+      "pass": true
+    },
+    {
+      "name": "all uncertain relationships remain blocked or require explicit TD resolution",
+      "pass": true
+    },
+    {
+      "name": "known alpha-uber-messy failure does not exceed clean baseline of 48",
+      "pass": true
+    },
+    {
+      "name": "held-out results satisfy the same gates",
+      "pass": false
+    }
+  ]
+}

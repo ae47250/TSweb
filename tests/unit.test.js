@@ -2,12 +2,18 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createDraftAlphaJson } from "../lib/alphaJson.js";
 import { generateDocumentId } from "../lib/metadata.js";
+import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { buildPriceInstrumentation, extractRawPriceEvidence } from "../lib/priceInstrumentation.js";
 import { checkRateLimit, resetRateLimiter } from "../lib/rateLimiter.js";
 import { getBlockingOverrideStatus } from "../lib/reviewOverrides.js";
 import { normalizeToAlphaJsonV14 } from "../lib/normalizeAlphaJson.js";
 import { validateAlphaJson } from "../lib/validateJson.js";
+import { validateAlphaJsonRoutePayload } from "../lib/validateRoutePayload.js";
 import { easyInput } from "./fixtures/sampleInput.js";
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
 
 test("draft parser preserves raw input and creates AlphaJSON shell", () => {
   const alphaJson = createDraftAlphaJson(easyInput);
@@ -18,7 +24,7 @@ test("draft parser preserves raw input and creates AlphaJSON shell", () => {
 });
 
 test("validation passes complete easy input", () => {
-  const result = validateAlphaJson(createDraftAlphaJson(easyInput));
+  const result = validateAlphaJson(normalizeToAlphaJsonV14({}, easyInput));
   assert.equal(result.can_generate_pdf, true);
   assert.deepEqual(result.blocking_errors, []);
   assert.equal(result.alphaJson.service_options.items[0].label, "Option A");
@@ -123,6 +129,61 @@ test("review overrides allow unclear scope only when a firm price is displayed",
   assert.deepEqual(noPrice.remainingBlockingErrors, ["Work scope unclear; confirm what this price covers."]);
 });
 
+test("validate route server-stamps TD service address edit provenance", async () => {
+  const raw =
+    "Laura Perry (812) 555-8596 laura.perry908@example.com 2040 Pine Court no city. remove one bradford pear tree. Option A $2050 Option B $3,000";
+  const edited = cloneJson(normalizeToAlphaJsonV14({}, raw));
+  edited.job.service_address = {
+    ...(edited.job.service_address || {}),
+    display: "2040 Pine Court, Madison, IN",
+    review_flags: {
+      service_address_edited_by_td: true,
+      service_address_edited_by_td_value: "2040 Pine Court, Madison, IN",
+    },
+  };
+
+  const result = validateAlphaJsonRoutePayload({ alphaJson: edited, customer_text: raw, intake: {} });
+
+  assert.equal(result.alphaJson.job.service_address.review_flags.service_address_server_verified_td_edit, true);
+  assert.equal(result.alphaJson.job.service_address.review_flags.service_address_server_verified_td_edit_value, "2040 Pine Court, Madison, IN");
+  assert.doesNotMatch(result.blocking_errors.join(" "), /Service address needs exact location confirmation/i);
+});
+
+test("validate route server-stamps real UI option description edit shape", async () => {
+  const raw =
+    "Autumn Kennedy said text 812-555-9196 3119 Elm Street - Madison Indiana remove one maple tree 2600/2,950 for tree? no note on haul or stump";
+  const edited = cloneJson(normalizeToAlphaJsonV14({}, raw));
+  const descriptions = ["cut down maple and leave wood", "cut down maple and haul debris"];
+  edited.service_options.items = edited.service_options.items.map((option, index) => ({
+    ...option,
+    description: descriptions[index],
+    scope_unclear: false,
+    review_flags: {
+      ...(option.review_flags || {}),
+      scope_unclear: false,
+      scope_warning: "",
+      description_edited_by_td: true,
+      description_edited_by_td_value: descriptions[index],
+    },
+  }));
+
+  const result = validateAlphaJsonRoutePayload({ alphaJson: edited, customer_text: raw, intake: {} });
+
+  assert.deepEqual(
+    result.alphaJson.service_options.items.map((option) => option.review_flags.description_server_verified_td_edit),
+    [true, true],
+  );
+  assert.deepEqual(
+    result.alphaJson.service_options.items.map((option) => option.review_flags.description_server_verified_td_edit_value),
+    descriptions,
+  );
+  assert.deepEqual(
+    result.alphaJson.service_options.items.map((option) => option.title),
+    ["work scope unclear", "work scope unclear"],
+  );
+  assert.doesNotMatch(result.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+});
+
 function pricedOptionsCase(prices) {
   return {
     raw_input: { customer_text: "Sam Price 812-555-0199 123 Oak Lane Madison IN remove one maple tree." },
@@ -156,7 +217,7 @@ test("validation warns on 3x firm option price spread without blocking", () => {
   assert.match(result.warnings.join(" "), /Large price spread.*Option B \$9,025.*3x\+.*Option A \$1,250.*Confirm price quote.*edit info/i);
 });
 
-test("validation downgrades firm-price option scope uncertainty to warning metadata", () => {
+test("validation blocks firm-price option scope uncertainty", () => {
   const result = validateAlphaJson({
     raw_input: { customer_text: "Sam Price 812-555-0199 123 Oak Lane Madison IN remove one maple tree." },
     customer: { name: "Sam Price", phone_display: "812-555-0199" },
@@ -176,9 +237,9 @@ test("validation downgrades firm-price option scope uncertainty to warning metad
     },
   });
 
-  assert.equal(result.can_generate_pdf, true);
-  assert.deepEqual(result.blocking_errors, []);
-  assert.match(result.warnings.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.equal(result.can_generate_pdf, false);
+  assert.match(result.blocking_errors.join(" "), /Work scope unclear; confirm what this price covers/i);
+  assert.match(result.follow_ups.join(" "), /What does each priced option include/i);
   assert.equal(result.alphaJson.service_options.items[0].review_flags.scope_unclear, true);
 });
 

@@ -1,0 +1,3169 @@
+{
+  "fixture_version": "held-out-semantic-human-review-v1",
+  "source_file_name": "held-out-semantic-human-review-VERIFIED.jsonl",
+  "source_sha256": "7fe2a283f9ba03fd19f002ca1f4bd7ab07974cd8426511d7349a6bb783cabdc1",
+  "case_count": 56,
+  "cases": [
+    {
+      "observation_id": "obs_0004",
+      "raw_customer_note": "Customer Kelly Hernandez; phone 317-295-6019; email kelly.hernandez@aol.com; job at 3722 Brookside Dr, Bargersville, IN: trim branches touching service line; prices tree trim 1200 haul away 275.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim branches touching service line",
+          "description": "trim branches touching service line",
+          "price": "$1,200",
+          "price_numeric": 1200
+        },
+        {
+          "label": "Option B",
+          "title": "trim branches touching service line",
+          "description": "trim branches touching service line",
+          "price": "$275",
+          "price_numeric": 275
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: SAFETY_TEXT_IN_CUSTOMER_SCOPE",
+      "structural_error_codes": [
+        "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "job at 3722 Brookside Dr, Bargersville, IN: trim branches touching service line;",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A",
+        "Option B"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,200",
+          "price_numeric": 1200
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,475",
+          "price_numeric": 1475
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "safety_access_text_in_customer_scope",
+      "target_binding_status": "not_applicable",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete trimming scope and use the cumulative price. The confirmed structure now records the title and description as separate customer-facing fields. The service-line fact remains a separate safety warning and must not appear in either option title or description.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 2"
+    },
+    {
+      "observation_id": "obs_0005",
+      "raw_customer_note": "David Johnson, 812-292-5161, johnson980@att.net. Service address: 1056 Sunset Blvd, Bloomington, IN. Please cut up large limb and haul debris. Quote limb removal 800 haul away 300.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "limb removal",
+          "description": "limb removal",
+          "price": "$800",
+          "price_numeric": 800
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$300",
+          "price_numeric": 300
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Limb removal",
+          "description": "Cut up the large limb.",
+          "price": "$800",
+          "price_numeric": 800
+        },
+        {
+          "label": "Option B",
+          "title": "Limb removal with debris haul-away",
+          "description": "Cut up the large limb and haul away the resulting debris.",
+          "price": "$1,100",
+          "price_numeric": 1100
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "limb_removal_with_haul_away",
+      "service_type": "limb_removal+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete limb-removal scope and use the cumulative price of $800 plus $300. The confirmed structure records the title and description as separate customer-facing fields.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 3"
+    },
+    {
+      "observation_id": "obs_0015",
+      "raw_customer_note": "Patricia Lopez, 317-735-6282, patricia.l4@outlook.con. Service address: 3907 Valley Pike, Greenwood, IN. Please take down dead ash by shed. Quote tree removal 2600 stump grinding 650.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one ash tree only",
+          "description": "remove one ash tree only",
+          "price": "$2,600",
+          "price_numeric": 2600
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$650",
+          "price_numeric": 650
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Ash tree removal",
+          "description": "Remove the dead ash tree by the shed.",
+          "price": "$2,600",
+          "price_numeric": 2600
+        },
+        {
+          "label": "Option B",
+          "title": "Ash tree removal with stump grinding",
+          "description": "Remove the dead ash tree by the shed and grind the stump.",
+          "price": "$3,250",
+          "price_numeric": 3250
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_dead_ash_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete tree-removal scope and use the cumulative price of $2,600 plus $650. The confirmed structure records the title and description as separate customer-facing fields. For one removed tree, the customer-facing wording correctly uses the singular “tree” and “stump.” General count-agreement rule: “tree/trees” must match the confirmed or overridden tree count, while “stump/stumps” must match the number of stumps actually included in the grinding scope; do not pluralize “stump” solely because multiple trees are selected if only one stump is to be ground.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 8"
+    },
+    {
+      "observation_id": "obs_0017",
+      "raw_customer_note": "Jason Clark contact 812-520-2742 / jason.clark@hotmail.com. Address 7491 Oak St, Nashville, IN. Work requested: remove oak tree near driveway. Estimate tree removal 2100 stump grinding 500.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "removal —",
+          "description": "removal —",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding —",
+          "description": "stump grinding —",
+          "price": "$500",
+          "price_numeric": 500
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The oak tree is near the driveway.",
+      "source_safety_access_warning": "remove oak tree near driveway",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Oak tree removal",
+          "description": "Remove the oak tree.",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "Oak tree removal with stump grinding",
+          "description": "Remove the oak tree and grind the stump.",
+          "price": "$2,600",
+          "price_numeric": 2600
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_oak_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete tree-removal scope and use the cumulative price of $2,100 plus $500. The confirmed structure records the title and description as separate customer-facing fields.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 10"
+    },
+    {
+      "observation_id": "obs_0020",
+      "raw_customer_note": "Tina Moore, 317-595-5833, tina25@gmail.com. Service address: 5133 Mill St, Greensburg, IN. Please trim branches touching service line. Quote tree trim 1150 haul away 125.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim",
+          "description": "trim",
+          "price": "$1,150",
+          "price_numeric": 1150
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$125",
+          "price_numeric": 125
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "Please trim branches touching service line.",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,150",
+          "price_numeric": 1150
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,275",
+          "price_numeric": 1275
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete trimming scope and use the cumulative price of $1,150 plus $125. The current titles and descriptions are also incomplete: “trim” and “haul away” do not provide adequate customer-facing descriptions. The confirmed structure records both the intended title and the complete customer-facing description. The service-line fact remains a separate safety warning and must not appear in either customer-facing option description.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 11"
+    },
+    {
+      "observation_id": "obs_0022",
+      "raw_customer_note": "Richard Jackson, 317-754-5869, richard.jackson@aol.com. Service address: 7060 Jefferson St, Bedford, IN. Please trim branches touching service line. Quote tree trim 1100 haul away 175.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$175",
+          "price_numeric": 175
+        },
+        {
+          "label": "Option B",
+          "title": "trim",
+          "description": "trim",
+          "price": "$1,100",
+          "price_numeric": 1100
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "Please trim branches touching service line.",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,100",
+          "price_numeric": 1100
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,275",
+          "price_numeric": 1275
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. The current options are reversed and incorrectly present haul-away as a standalone choice. Option B must include the complete trimming scope and use the cumulative price of $1,100 plus $175. The confirmed structure records the title and description as separate customer-facing fields. The service-line fact remains a separate safety warning and must not appear in either customer-facing option title or description.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 12"
+    },
+    {
+      "observation_id": "obs_0025",
+      "raw_customer_note": "Hannah Green, 317-720-7218, hannah65@comcast.net. Service address: 882 Elm St, Columbus, IN. Please trim maple limbs over roof. Quote tree trim 950 haul away 250.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim",
+          "description": "trim",
+          "price": "$950",
+          "price_numeric": 950
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$250",
+          "price_numeric": 250
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The maple limbs are over the roof.",
+      "source_safety_access_warning": "trim maple limbs over roof",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Maple limb trimming",
+          "description": "Trim the maple limbs.",
+          "price": "$950",
+          "price_numeric": 950
+        },
+        {
+          "label": "Option B",
+          "title": "Maple limb trimming with debris haul-away",
+          "description": "Trim the maple limbs and haul away the resulting debris.",
+          "price": "$1,200",
+          "price_numeric": 1200
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_maple_limbs_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete trimming scope and use the cumulative price of $950 plus $250. The confirmed structure records title and description as separate customer-facing fields. The roof fact remains a separate safety/access warning and must not appear in either option title or description. Singular compound wording such as “Maple limb trimming” is acceptable in a title, while the description should preserve the plural count from the raw note: “maple limbs.”",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 13"
+    },
+    {
+      "observation_id": "obs_0027",
+      "raw_customer_note": "Customer Brenda Hall; phone 463-884-1743; email brenda60@att.net; job at 560 Sunset Blvd, Greenwood, IN: take down dead ash by shed; prices tree removal 2650 stump grinding 800.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "removal —",
+          "description": "removal —",
+          "price": "$2,650",
+          "price_numeric": 2650
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding —",
+          "description": "stump grinding —",
+          "price": "$800",
+          "price_numeric": 800
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Ash tree removal",
+          "description": "Remove the dead ash tree by the shed.",
+          "price": "$2,650",
+          "price_numeric": 2650
+        },
+        {
+          "label": "Option B",
+          "title": "Ash tree removal with stump grinding",
+          "description": "Remove the dead ash tree by the shed and grind the stump.",
+          "price": "$3,450",
+          "price_numeric": 3450
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_dead_ash_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete tree-removal scope and use the cumulative price of $2,650 plus $800. The confirmed structure records title and description as separate customer-facing fields.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 14"
+    },
+    {
+      "observation_id": "obs_0028",
+      "raw_customer_note": "Patricia Miller, 812-728-7226, patricia.m1@att.net. Service address: 9689 Farm Ln, Martinsville, IN. Please remove three small ornamental pears. Quote tree removal 1650 stump grinding 1000.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove three ornamental pears trees only",
+          "description": "remove three ornamental pears trees only",
+          "price": "$1,650",
+          "price_numeric": 1650
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$1,000",
+          "price_numeric": 1000
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Removal of three ornamental pear trees",
+          "description": "Remove the three small ornamental pear trees.",
+          "price": "$1,650",
+          "price_numeric": 1650
+        },
+        {
+          "label": "Option B",
+          "title": "Removal of three ornamental pear trees with stump grinding",
+          "description": "Remove the three small ornamental pear trees and grind the stumps.",
+          "price": "$2,650",
+          "price_numeric": 2650
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_ornamental_pears_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "The current wording is grammatically incorrect and stump grinding is standalone. The confirmed structure preserves three trees, plural stumps, and the cumulative price. Because the raw note specifies three trees, the customer-facing title explicitly states the count rather than using a number-neutral service-category title. The raw note explicitly specifies three trees, so the customer-facing titles preserve that count to avoid any implication of a one-tree scope.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 15"
+    },
+    {
+      "observation_id": "obs_0032",
+      "raw_customer_note": "Jessica Robinson, 765-928-6035, jrobinson@gmail.com. Service address: 2093 Valley Pike, Greenwood, IN. Please take down dead ash by shed. Quote tree removal 2650 stump grinding 750.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one ash tree only",
+          "description": "remove one ash tree only",
+          "price": "$2,650",
+          "price_numeric": 2650
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$750",
+          "price_numeric": 750
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Ash tree removal",
+          "description": "Remove the dead ash tree by the shed.",
+          "price": "$2,650",
+          "price_numeric": 2650
+        },
+        {
+          "label": "Option B",
+          "title": "Ash tree removal with stump grinding",
+          "description": "Remove the dead ash tree by the shed and grind the stump.",
+          "price": "$3,400",
+          "price_numeric": 3400
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_dead_ash_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete tree-removal scope and use the cumulative price of $2,650 plus $750. The confirmed structure records title and description as separate customer-facing fields.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 16"
+    },
+    {
+      "observation_id": "obs_0033",
+      "raw_customer_note": "Renee Ramirez, 765-962-5554, renee.ramirez@icloud.com. Service address: 6440 Brookside Dr, Martinsville, IN. Please clear storm damage in back yard. Quote storm cleanup 1900 haul away 350.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "cleanup",
+          "description": "cleanup",
+          "price": "$1,900",
+          "price_numeric": 1900
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$350",
+          "price_numeric": 350
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Storm-damage cleanup",
+          "description": "Clear the storm damage in the back yard.",
+          "price": "$1,900",
+          "price_numeric": 1900
+        },
+        {
+          "label": "Option B",
+          "title": "Storm-damage cleanup with debris haul-away",
+          "description": "Clear the storm damage in the back yard and haul away the resulting debris.",
+          "price": "$2,250",
+          "price_numeric": 2250
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "storm_cleanup_with_haul_away",
+      "service_type": "storm_cleanup+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete storm-cleanup scope and use the cumulative price of $1,900 plus $350. The current titles and descriptions are incomplete.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 17"
+    },
+    {
+      "observation_id": "obs_0035",
+      "raw_customer_note": "Customer Joseph Martinez; phone 765-773-6837; email joseph15@hotmail.com; job at 5310 Pine Ln, Columbus, IN: remove fallen pine and clean brush; prices tree removal 1450 brush cleanup 450.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "brush cleanup",
+          "description": "brush cleanup",
+          "price": "$450",
+          "price_numeric": 450
+        },
+        {
+          "label": "Option B",
+          "title": "remove one pine tree only",
+          "description": "remove one pine tree only",
+          "price": "$1,450",
+          "price_numeric": 1450
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Fallen pine removal",
+          "description": "Remove the fallen pine tree.",
+          "price": "$1,450",
+          "price_numeric": 1450
+        },
+        {
+          "label": "Option B",
+          "title": "Fallen pine removal with brush cleanup",
+          "description": "Remove the fallen pine tree and clean up the brush.",
+          "price": "$1,900",
+          "price_numeric": 1900
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_fallen_pine_with_brush_cleanup",
+      "service_type": "tree_removal+brush_cleanup",
+      "reviewer_note": "Confirmed that brush cleanup is a dependent add-on. The current options are reversed and incorrectly present brush cleanup as a standalone choice. Option B must include the complete pine-removal scope and use the cumulative price of $1,450 plus $450.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 19"
+    },
+    {
+      "observation_id": "obs_0040",
+      "raw_customer_note": "Brenda Ramirez, 317-894-7694, brenda.r9@outlook.com.. Service address: 8983 Ridge Rd, Greenwood, IN. Please remove three small ornamental pears. Quote tree removal 1650 stump grinding 950.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove three ornamental pear trees only",
+          "description": "remove three ornamental pear trees only",
+          "price": "$1,650",
+          "price_numeric": 1650
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$950",
+          "price_numeric": 950
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Removal of three ornamental pear trees",
+          "description": "Remove the three small ornamental pear trees.",
+          "price": "$1,650",
+          "price_numeric": 1650
+        },
+        {
+          "label": "Option B",
+          "title": "Removal of three ornamental pear trees with stump grinding",
+          "description": "Remove the three small ornamental pear trees and grind the stumps.",
+          "price": "$2,600",
+          "price_numeric": 2600
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_ornamental_pears_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete three-tree removal scope and use the cumulative price of $1,650 plus $950. Plural wording is required in the description because three trees and their stumps are included. The raw note explicitly specifies three trees, so the customer-facing titles preserve that count to avoid any implication of a one-tree scope.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 20"
+    },
+    {
+      "observation_id": "obs_0041",
+      "raw_customer_note": "Customer Angela Smith; phone 765-884-1278; email angela81@aol.con; job at 1452 Northview Ct, Martinsville, IN: remove three small ornamental pears; prices tree removal 1800 stump grinding 1000.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one tree only",
+          "description": "remove one tree only",
+          "price": "$1,800",
+          "price_numeric": 1800
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$1,000",
+          "price_numeric": 1000
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Removal of three ornamental pear trees",
+          "description": "Remove the three small ornamental pear trees.",
+          "price": "$1,800",
+          "price_numeric": 1800
+        },
+        {
+          "label": "Option B",
+          "title": "Removal of three ornamental pear trees with stump grinding",
+          "description": "Remove the three small ornamental pear trees and grind the stumps.",
+          "price": "$2,800",
+          "price_numeric": 2800
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_ornamental_pears_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete three-tree removal scope and use the cumulative price of $1,800 plus $1,000. The current Option A incorrectly changes the tree count from three to one. The raw note explicitly specifies three trees, so the customer-facing titles preserve that count to avoid any implication of a one-tree scope.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 21"
+    },
+    {
+      "observation_id": "obs_0044",
+      "raw_customer_note": "Charles Perez contact 812-689-6411 / cperez@sbcglobal.net. Address 894 State Road 46, Martinsville, IN. Work requested: trim branches touching service line. Estimate tree trim 1100 haul away 225.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "branches touching service line",
+          "description": "branches touching service line",
+          "price": "$1,100",
+          "price_numeric": 1100
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$225",
+          "price_numeric": 225
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE, SAFETY_TEXT_IN_CUSTOMER_SCOPE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE",
+        "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "Work requested: trim branches touching service line.",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,100",
+          "price_numeric": 1100
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,325",
+          "price_numeric": 1325
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete trimming scope and use the cumulative price of $1,100 plus $225. Safety text must remain in the internal warning channel rather than the customer-facing title or description.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 24"
+    },
+    {
+      "observation_id": "obs_0050",
+      "raw_customer_note": "Customer Richard Green; phone 812-864-6445; email richard.g2@att.net; job at 6516 Maple Ave, Edinburgh, IN: remove three small ornamental pears; prices tree removal 1750 stump grinding 800.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one tree only",
+          "description": "remove one tree only",
+          "price": "$1,750",
+          "price_numeric": 1750
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$800",
+          "price_numeric": 800
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Removal of three ornamental pear trees",
+          "description": "Remove the three small ornamental pear trees.",
+          "price": "$1,750",
+          "price_numeric": 1750
+        },
+        {
+          "label": "Option B",
+          "title": "Removal of three ornamental pear trees with stump grinding",
+          "description": "Remove the three small ornamental pear trees and grind the stumps.",
+          "price": "$2,550",
+          "price_numeric": 2550
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_ornamental_pears_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete three-tree removal scope and use the cumulative price of $1,750 plus $800. The current Option A incorrectly changes the tree count from three to one. The raw note explicitly specifies three trees, so the customer-facing titles preserve that count to avoid any implication of a one-tree scope.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 27"
+    },
+    {
+      "observation_id": "obs_0051",
+      "raw_customer_note": "Customer John Martinez; phone 765-602-6928; email martinez447@hotmail.com; job at 5713 Depot Rd, Franklin, IN: trim maple limbs over roof; prices tree trim 1000 haul away 150.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$150",
+          "price_numeric": 150
+        },
+        {
+          "label": "Option B",
+          "title": "trim",
+          "description": "trim",
+          "price": "$1,000",
+          "price_numeric": 1000
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The maple limbs are over the roof.",
+      "source_safety_access_warning": "trim maple limbs over roof",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Maple limb trimming",
+          "description": "Trim the maple limbs.",
+          "price": "$1,000",
+          "price_numeric": 1000
+        },
+        {
+          "label": "Option B",
+          "title": "Maple limb trimming with debris haul-away",
+          "description": "Trim the maple limbs and haul away the resulting debris.",
+          "price": "$1,150",
+          "price_numeric": 1150
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_maple_limbs_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. The current options are reversed and incorrectly present haul-away as a standalone choice. Option B must include the complete trimming scope and use the cumulative price of $1,000 plus $150. The singular compound modifier “limb” is acceptable in the title, while the description preserves the plural “limbs” from the raw note.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 28"
+    },
+    {
+      "observation_id": "obs_0053",
+      "raw_customer_note": "Kevin Carter, 317-450-5615, carter242@icloud.com. Service address: 1526 Farm Ln, Greenwood, IN. Please take down dead ash by shed. Quote tree removal 2500 stump grinding 600.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one ash tree only",
+          "description": "remove one ash tree only",
+          "price": "$2,500",
+          "price_numeric": 2500
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$600",
+          "price_numeric": 600
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Ash tree removal",
+          "description": "Remove the dead ash tree by the shed.",
+          "price": "$2,500",
+          "price_numeric": 2500
+        },
+        {
+          "label": "Option B",
+          "title": "Ash tree removal with stump grinding",
+          "description": "Remove the dead ash tree by the shed and grind the stump.",
+          "price": "$3,100",
+          "price_numeric": 3100
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_dead_ash_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete ash-tree removal scope and use the cumulative price of $2,500 plus $600.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 30"
+    },
+    {
+      "observation_id": "obs_0057",
+      "raw_customer_note": "Customer Betty Williams; phone 812-556-3804; email betty.williams@outlook.com; job at 2054 Jefferson St, Edinburgh, IN: remove cedar leaning toward garage; prices tree removal 2100 stump grinding 600.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one cedar tree only",
+          "description": "remove one cedar tree only",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$600",
+          "price_numeric": 600
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The cedar is leaning toward the garage.",
+      "source_safety_access_warning": "job at 2054 Jefferson St, Edinburgh, IN: remove cedar leaning toward garage;",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Cedar tree removal",
+          "description": "Remove the cedar tree.",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "Cedar tree removal with stump grinding",
+          "description": "Remove the cedar tree and grind the stump.",
+          "price": "$2,700",
+          "price_numeric": 2700
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_cedar_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete cedar-tree removal scope and use the cumulative price of $2,100 plus $600. The garage-leaning fact remains an internal warning rather than customer-facing option wording.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 31"
+    },
+    {
+      "observation_id": "obs_0058",
+      "raw_customer_note": "Barbara Baker contact 812-572-3710 / barbara43@comcast.net. Address 2958 River Rd, Greensburg, IN. Work requested: trim maple limbs over roof. Estimate tree trim 950 haul away 150.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim",
+          "description": "trim",
+          "price": "$950",
+          "price_numeric": 950
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$150",
+          "price_numeric": 150
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The maple limbs are over the roof.",
+      "source_safety_access_warning": "trim maple limbs over roof",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Maple limb trimming",
+          "description": "Trim the maple limbs.",
+          "price": "$950",
+          "price_numeric": 950
+        },
+        {
+          "label": "Option B",
+          "title": "Maple limb trimming with debris haul-away",
+          "description": "Trim the maple limbs and haul away the resulting debris.",
+          "price": "$1,100",
+          "price_numeric": 1100
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_maple_limbs_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete trimming scope and use the cumulative price of $950 plus $150. The roof-related fact remains an internal warning rather than customer-facing option wording.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 32"
+    },
+    {
+      "observation_id": "obs_0059",
+      "raw_customer_note": "Emily Torres contact 463-533-3589 / emily.torres@sbcglobal.net. Address 9706 Pine Ln, Martinsville, IN. Work requested: remove fallen pine and clean brush. Estimate tree removal 1300 brush cleanup 400.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one pine tree only",
+          "description": "remove one pine tree only",
+          "price": "$1,300",
+          "price_numeric": 1300
+        },
+        {
+          "label": "Option B",
+          "title": "brush cleanup",
+          "description": "brush cleanup",
+          "price": "$400",
+          "price_numeric": 400
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Fallen pine removal",
+          "description": "Remove the fallen pine tree.",
+          "price": "$1,300",
+          "price_numeric": 1300
+        },
+        {
+          "label": "Option B",
+          "title": "Fallen pine removal with brush cleanup",
+          "description": "Remove the fallen pine tree and clean up the brush.",
+          "price": "$1,700",
+          "price_numeric": 1700
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_fallen_pine_with_brush_cleanup",
+      "service_type": "tree_removal+brush_cleanup",
+      "reviewer_note": "Confirmed that brush cleanup is a dependent add-on. Option B must include the complete fallen-pine removal scope and use the cumulative price of $1,300 plus $400.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 33"
+    },
+    {
+      "observation_id": "obs_0061",
+      "raw_customer_note": "Daniel Nelson, 463-291-2675, daniel.nelson@outlok.com. Service address: 7326 Hillcrest Rd, Bloomington, IN. Please take down dead ash by shed. Quote tree removal 2700 stump grinding 600.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one ash tree only",
+          "description": "remove one ash tree only",
+          "price": "$2,700",
+          "price_numeric": 2700
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$600",
+          "price_numeric": 600
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Ash tree removal",
+          "description": "Remove the dead ash tree by the shed.",
+          "price": "$2,700",
+          "price_numeric": 2700
+        },
+        {
+          "label": "Option B",
+          "title": "Ash tree removal with stump grinding",
+          "description": "Remove the dead ash tree by the shed and grind the stump.",
+          "price": "$3,300",
+          "price_numeric": 3300
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_dead_ash_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete ash-tree removal scope and use the cumulative price of $2,700 plus $600.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 35"
+    },
+    {
+      "observation_id": "obs_0066",
+      "raw_customer_note": "Maria Thompson, 812-459-4285, maria.thompson@icloud.com. Service address: 9803 Washington Ave, Greenwood, IN. Please remove cedar leaning toward garage. Quote tree removal 2000 stump grinding 600.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one cedar tree only",
+          "description": "remove one cedar tree only",
+          "price": "$2,000",
+          "price_numeric": 2000
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$600",
+          "price_numeric": 600
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The cedar is leaning toward the garage.",
+      "source_safety_access_warning": "Please remove cedar leaning toward garage.",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Cedar tree removal",
+          "description": "Remove the cedar tree.",
+          "price": "$2,000",
+          "price_numeric": 2000
+        },
+        {
+          "label": "Option B",
+          "title": "Cedar tree removal with stump grinding",
+          "description": "Remove the cedar tree and grind the stump.",
+          "price": "$2,600",
+          "price_numeric": 2600
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_cedar_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete cedar-tree removal scope and use the cumulative price of $2,000 plus $600. The garage-leaning fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 38"
+    },
+    {
+      "observation_id": "obs_0068",
+      "raw_customer_note": "Matthew Martinez, 463-593-7408, matthew.m5@comcast net. Service address: 1281 Valley Pike, Bargersville, IN. Please remove oak tree near driveway. Quote tree removal 2100 stump grinding 550.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one oak tree only",
+          "description": "remove one oak tree only",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$550",
+          "price_numeric": 550
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The oak tree is near the driveway.",
+      "source_safety_access_warning": "remove oak tree near driveway",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Oak tree removal",
+          "description": "Remove the oak tree.",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "Oak tree removal with stump grinding",
+          "description": "Remove the oak tree and grind the stump.",
+          "price": "$2,650",
+          "price_numeric": 2650
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_oak_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete oak-tree removal scope and use the cumulative price of $2,100 plus $550. The driveway fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 39"
+    },
+    {
+      "observation_id": "obs_0069",
+      "raw_customer_note": "Michael Jones, 765-362-3619, mjones@sbcglobal.net. Service address: 4308 Washington Ave, Nashville, IN. Please remove three small ornamental pears. Quote tree removal 1650 stump grinding 850.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one ornamental pear tree only",
+          "description": "remove one ornamental pear tree only",
+          "price": "$1,650",
+          "price_numeric": 1650
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$850",
+          "price_numeric": 850
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Removal of three ornamental pear trees",
+          "description": "Remove the three small ornamental pear trees.",
+          "price": "$1,650",
+          "price_numeric": 1650
+        },
+        {
+          "label": "Option B",
+          "title": "Removal of three ornamental pear trees with stump grinding",
+          "description": "Remove the three small ornamental pear trees and grind the stumps.",
+          "price": "$2,500",
+          "price_numeric": 2500
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_ornamental_pears_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete three-tree removal scope and use the cumulative price of $1,650 plus $850. Plural tree and stump wording is required because the raw note identifies three trees. The raw note explicitly specifies three trees, so the customer-facing titles preserve that count to avoid any implication of a one-tree scope.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 40"
+    },
+    {
+      "observation_id": "obs_0071",
+      "raw_customer_note": "Customer Jennifer Perez; phone 812-314-9871; email jennifer54@att.net; job at 4376 Valley Pike, Bargersville, IN: trim branches touching service line; prices tree trim 1150 haul away 275.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim —",
+          "description": "trim —",
+          "price": "$1,150",
+          "price_numeric": 1150
+        },
+        {
+          "label": "Option B",
+          "title": "haul away —",
+          "description": "haul away —",
+          "price": "$275",
+          "price_numeric": 275
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "job at 4376 Valley Pike, Bargersville, IN: trim branches touching service line;",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,150",
+          "price_numeric": 1150
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,425",
+          "price_numeric": 1425
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete tree-trimming scope and use the cumulative price of $1,150 plus $275. The service-line fact was correctly kept out of both current option titles and descriptions and belongs only in the internal warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 42"
+    },
+    {
+      "observation_id": "obs_0076",
+      "raw_customer_note": "William Jackson, 765-714-8427, william46@outlook.com. Service address: 505 Northview Ct, Bloomington, IN. Please clear storm damage in back yard. Quote storm cleanup 1700 haul away 200.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "cleanup",
+          "description": "cleanup",
+          "price": "$1,700",
+          "price_numeric": 1700
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$200",
+          "price_numeric": 200
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Storm-damage cleanup",
+          "description": "Clear the storm damage in the back yard.",
+          "price": "$1,700",
+          "price_numeric": 1700
+        },
+        {
+          "label": "Option B",
+          "title": "Storm-damage cleanup with debris haul-away",
+          "description": "Clear the storm damage in the back yard and haul away the resulting debris.",
+          "price": "$1,900",
+          "price_numeric": 1900
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "storm_cleanup_with_haul_away",
+      "service_type": "storm_cleanup+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete storm-damage cleanup scope and use the cumulative price of $1,700 plus $200.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 45"
+    },
+    {
+      "observation_id": "obs_0079",
+      "raw_customer_note": "Michael King contact 765-508-1599 / king309@sbcglobal\\n.net. Address 536 Winding Creek Rd, Edinburgh, IN. Work requested: remove oak tree near driveway. Estimate tree removal 2250 stump grinding 400.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one oak tree only",
+          "description": "remove one oak tree only",
+          "price": "$2,250",
+          "price_numeric": 2250
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$400",
+          "price_numeric": 400
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The oak tree is near the driveway.",
+      "source_safety_access_warning": "remove oak tree near driveway",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Oak tree removal",
+          "description": "Remove the oak tree.",
+          "price": "$2,250",
+          "price_numeric": 2250
+        },
+        {
+          "label": "Option B",
+          "title": "Oak tree removal with stump grinding",
+          "description": "Remove the oak tree and grind the stump.",
+          "price": "$2,650",
+          "price_numeric": 2650
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_oak_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete oak-tree removal scope and use the cumulative price of $2,250 plus $400. The driveway fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 47"
+    },
+    {
+      "observation_id": "obs_0095",
+      "raw_customer_note": "Patricia Sanchez, 765-810-1619, sanchez518@aol.com. Service address: 6873 Main St, Bargersville, IN. Please remove fallen pine and clean brush. Quote tree removal 1400 brush cleanup 450.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one pine tree only",
+          "description": "remove one pine tree only",
+          "price": "$1,400",
+          "price_numeric": 1400
+        },
+        {
+          "label": "Option B",
+          "title": "brush cleanup",
+          "description": "brush cleanup",
+          "price": "$450",
+          "price_numeric": 450
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Fallen pine removal",
+          "description": "Remove the fallen pine tree.",
+          "price": "$1,400",
+          "price_numeric": 1400
+        },
+        {
+          "label": "Option B",
+          "title": "Fallen pine removal with brush cleanup",
+          "description": "Remove the fallen pine tree and clean up the brush.",
+          "price": "$1,850",
+          "price_numeric": 1850
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_fallen_pine_with_brush_cleanup",
+      "service_type": "tree_removal+brush_cleanup",
+      "reviewer_note": "Confirmed that brush cleanup is a dependent add-on. Option B must include the complete fallen-pine removal scope and use the cumulative price of $1,400 plus $450.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 55"
+    },
+    {
+      "observation_id": "obs_0099",
+      "raw_customer_note": "Ashley Ramirez contact 812-585-5047 / aramirez@outlook.com. Address 1804 Depot Rd, Bedford, IN. Work requested: cut up large limb and haul debris. Estimate limb removal 650 haul away 100.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "limb removal —",
+          "description": "limb removal —",
+          "price": "$650",
+          "price_numeric": 650
+        },
+        {
+          "label": "Option B",
+          "title": "haul away —",
+          "description": "haul away —",
+          "price": "$100",
+          "price_numeric": 100
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Limb removal",
+          "description": "Cut up the large limb.",
+          "price": "$650",
+          "price_numeric": 650
+        },
+        {
+          "label": "Option B",
+          "title": "Limb removal with debris haul-away",
+          "description": "Cut up the large limb and haul away the resulting debris.",
+          "price": "$750",
+          "price_numeric": 750
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "limb_removal_with_haul_away",
+      "service_type": "limb_removal+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete limb-removal scope and use the cumulative price of $650 plus $100.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 56"
+    },
+    {
+      "observation_id": "obs_0101",
+      "raw_customer_note": "Amy Hall, 317-513-7191, hall584@outlook.com. Service address: 335 Ridge Rd, Bedford, IN. Please remove oak tree near driveway. Quote tree removal 2100 stump grinding 550.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "removal —",
+          "description": "removal —",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding —",
+          "description": "stump grinding —",
+          "price": "$550",
+          "price_numeric": 550
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The oak tree is near the driveway.",
+      "source_safety_access_warning": "remove oak tree near driveway",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Oak tree removal",
+          "description": "Remove the oak tree.",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "Oak tree removal with stump grinding",
+          "description": "Remove the oak tree and grind the stump.",
+          "price": "$2,650",
+          "price_numeric": 2650
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_oak_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete oak-tree removal scope and use the cumulative price of $2,100 plus $550. The driveway fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 57"
+    },
+    {
+      "observation_id": "obs_0103",
+      "raw_customer_note": "Joseph Campbell contact 812-794-6189 / joseph10@hotmail.com. Address 6720 Sunset Blvd, Greenwood, IN. Work requested: remove cedar leaning toward garage. Estimate tree removal 2150 stump grinding 550.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "removal —",
+          "description": "removal —",
+          "price": "$2,150",
+          "price_numeric": 2150
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding —",
+          "description": "stump grinding —",
+          "price": "$550",
+          "price_numeric": 550
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The cedar is leaning toward the garage.",
+      "source_safety_access_warning": "Work requested: remove cedar leaning toward garage.",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Cedar tree removal",
+          "description": "Remove the cedar tree.",
+          "price": "$2,150",
+          "price_numeric": 2150
+        },
+        {
+          "label": "Option B",
+          "title": "Cedar tree removal with stump grinding",
+          "description": "Remove the cedar tree and grind the stump.",
+          "price": "$2,700",
+          "price_numeric": 2700
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_cedar_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete cedar-tree removal scope and use the cumulative price of $2,150 plus $550. The garage-risk fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 58"
+    },
+    {
+      "observation_id": "obs_0106",
+      "raw_customer_note": "Rachel Anderson contact 317-839-7984 / rachel94@yahoo.com. Address 5864 Main St, Bedford, IN. Work requested: cut up large limb and haul debris. Estimate limb removal 650 haul away 250.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "limb removal",
+          "description": "limb removal",
+          "price": "$650",
+          "price_numeric": 650
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$250",
+          "price_numeric": 250
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Limb removal",
+          "description": "Cut up the large limb.",
+          "price": "$650",
+          "price_numeric": 650
+        },
+        {
+          "label": "Option B",
+          "title": "Limb removal with debris haul-away",
+          "description": "Cut up the large limb and haul away the resulting debris.",
+          "price": "$900",
+          "price_numeric": 900
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "limb_removal_with_haul_away",
+      "service_type": "limb_removal+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete limb-removal scope and use the cumulative price of $650 plus $250.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 60"
+    },
+    {
+      "observation_id": "obs_0112",
+      "raw_customer_note": "John Mitchell, 463-354-5365, john.mitchell@yahoo.com]. Service address: 7306 Valley Pike, Greenwood, IN. Please remove cedar leaning toward garage. Quote tree removal 2100 stump grinding 550.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one cedar tree only",
+          "description": "remove one cedar tree only",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$550",
+          "price_numeric": 550
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The cedar is leaning toward the garage.",
+      "source_safety_access_warning": "Please remove cedar leaning toward garage.",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Cedar tree removal",
+          "description": "Remove the cedar tree.",
+          "price": "$2,100",
+          "price_numeric": 2100
+        },
+        {
+          "label": "Option B",
+          "title": "Cedar tree removal with stump grinding",
+          "description": "Remove the cedar tree and grind the stump.",
+          "price": "$2,650",
+          "price_numeric": 2650
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_cedar_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete cedar-tree removal scope and use the cumulative price of $2,100 plus $550. The garage-risk fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 62"
+    },
+    {
+      "observation_id": "obs_0113",
+      "raw_customer_note": "Customer Richard Moore; phone 812-413-4898; email richard.m4@tahoo.com; job at 806 Lakeview Dr, Franklin, IN: trim maple limbs over roof; prices tree trim 850 haul away 250.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim",
+          "description": "trim",
+          "price": "$850",
+          "price_numeric": 850
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$250",
+          "price_numeric": 250
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The maple limbs are over the roof.",
+      "source_safety_access_warning": "trim maple limbs over roof",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Maple limb trimming",
+          "description": "Trim the maple limbs.",
+          "price": "$850",
+          "price_numeric": 850
+        },
+        {
+          "label": "Option B",
+          "title": "Maple limb trimming with debris haul-away",
+          "description": "Trim the maple limbs and haul away the resulting debris.",
+          "price": "$1,100",
+          "price_numeric": 1100
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_maple_limbs_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete maple-limb trimming scope and use the cumulative price of $850 plus $250. The roof-location fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 63"
+    },
+    {
+      "observation_id": "obs_0114",
+      "raw_customer_note": "Eric Baker contact 812-424-1915 / baker768@att,net. Address 6404 Old Mill Rd, Bloomington, IN. Work requested: trim maple limbs over roof. Estimate tree trim 1000 haul away 100.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim",
+          "description": "trim",
+          "price": "$1,000",
+          "price_numeric": 1000
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$100",
+          "price_numeric": 100
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The maple limbs are over the roof.",
+      "source_safety_access_warning": "trim maple limbs over roof",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Maple limb trimming",
+          "description": "Trim the maple limbs.",
+          "price": "$1,000",
+          "price_numeric": 1000
+        },
+        {
+          "label": "Option B",
+          "title": "Maple limb trimming with debris haul-away",
+          "description": "Trim the maple limbs and haul away the resulting debris.",
+          "price": "$1,100",
+          "price_numeric": 1100
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_maple_limbs_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete maple-limb trimming scope and use the cumulative price of $1,000 plus $100. The roof-location fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 64"
+    },
+    {
+      "observation_id": "obs_0118",
+      "raw_customer_note": "Gary Thomas, 765-869-8166, thomas310@outlook.com. Service address: 3854 Brookside Dr, Seymour, IN. Please cut up large limb and haul debris. Quote limb removal 700 haul away 100.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "limb removal",
+          "description": "limb removal",
+          "price": "$700",
+          "price_numeric": 700
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$100",
+          "price_numeric": 100
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Limb removal",
+          "description": "Cut up the large limb.",
+          "price": "$700",
+          "price_numeric": 700
+        },
+        {
+          "label": "Option B",
+          "title": "Limb removal with debris haul-away",
+          "description": "Cut up the large limb and haul away the resulting debris.",
+          "price": "$800",
+          "price_numeric": 800
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "limb_removal_with_haul_away",
+      "service_type": "limb_removal+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete limb-removal scope and use the cumulative price of $700 plus $100.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 66"
+    },
+    {
+      "observation_id": "obs_0119",
+      "raw_customer_note": "Paula Miller, 812-594-4300, pmiller@comcast.net. Service address: 1308 Park Ave, Greenwood, IN. Please remove oak tree near driveway. Quote tree removal 2300 stump grinding 400.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$400",
+          "price_numeric": 400
+        },
+        {
+          "label": "Option B",
+          "title": "remove one oak tree only",
+          "description": "remove one oak tree only",
+          "price": "$2,300",
+          "price_numeric": 2300
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The oak tree is near the driveway.",
+      "source_safety_access_warning": "remove oak tree near driveway",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Oak tree removal",
+          "description": "Remove the oak tree.",
+          "price": "$2,300",
+          "price_numeric": 2300
+        },
+        {
+          "label": "Option B",
+          "title": "Oak tree removal with stump grinding",
+          "description": "Remove the oak tree and grind the stump.",
+          "price": "$2,700",
+          "price_numeric": 2700
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_oak_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete oak-tree removal scope and use the cumulative price of $2,300 plus $400. The driveway fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 67"
+    },
+    {
+      "observation_id": "obs_0146",
+      "raw_customer_note": "Donald Torres contact 812-720-3241 / donald.torres at comcast period net. Address 7211 Farm Ln, Franklin, IN. Work requested: cut up large limb and haul debris. Estimate limb removal 750 haul away 150.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "limb removal",
+          "description": "limb removal",
+          "price": "$750",
+          "price_numeric": 750
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$150",
+          "price_numeric": 150
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Limb removal",
+          "description": "Cut up the large limb.",
+          "price": "$750",
+          "price_numeric": 750
+        },
+        {
+          "label": "Option B",
+          "title": "Limb removal with debris haul-away",
+          "description": "Cut up the large limb and haul away the resulting debris.",
+          "price": "$900",
+          "price_numeric": 900
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "limb_removal_with_haul_away",
+      "service_type": "limb_removal+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete limb-removal scope and use the cumulative price of $750 plus $150. This semantic review does not verify whether the separate contact normalizer converted the obfuscated email address.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 79"
+    },
+    {
+      "observation_id": "obs_0147",
+      "raw_customer_note": "Customer Sandra Lewis; phone 463-678-3834; email slewis@yahoo.com; job at 1152 Old Mill Rd, Seymour, IN: remove fallen pine and clean brush; prices tree removal 1500 brush cleanup 350.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one pine tree only",
+          "description": "remove one pine tree only",
+          "price": "$1,500",
+          "price_numeric": 1500
+        },
+        {
+          "label": "Option B",
+          "title": "brush cleanup",
+          "description": "brush cleanup",
+          "price": "$350",
+          "price_numeric": 350
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Fallen pine removal",
+          "description": "Remove the fallen pine tree.",
+          "price": "$1,500",
+          "price_numeric": 1500
+        },
+        {
+          "label": "Option B",
+          "title": "Fallen pine removal with brush cleanup",
+          "description": "Remove the fallen pine tree and clean up the brush.",
+          "price": "$1,850",
+          "price_numeric": 1850
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_fallen_pine_with_brush_cleanup",
+      "service_type": "tree_removal+brush_cleanup",
+      "reviewer_note": "Confirmed that brush cleanup is a dependent add-on. Option B must include the complete fallen-pine removal scope and use the cumulative price of $1,500 plus $350.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 80"
+    },
+    {
+      "observation_id": "obs_0161",
+      "raw_customer_note": "Laura Hall, 317-925-7173, laura48@icloud.com. Service address: 2987 River Rd, Bloomington, IN. Please remove cedar leaning toward garage. Quote tree removal 2200 stump grinding 650.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove one cedar tree only",
+          "description": "remove one cedar tree only",
+          "price": "$2,200",
+          "price_numeric": 2200
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$650",
+          "price_numeric": 650
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The cedar is leaning toward the garage.",
+      "source_safety_access_warning": "Please remove cedar leaning toward garage.",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Cedar tree removal",
+          "description": "Remove the cedar tree.",
+          "price": "$2,200",
+          "price_numeric": 2200
+        },
+        {
+          "label": "Option B",
+          "title": "Cedar tree removal with stump grinding",
+          "description": "Remove the cedar tree and grind the stump.",
+          "price": "$2,850",
+          "price_numeric": 2850
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_cedar_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete cedar-tree removal scope and use the cumulative price of $2,200 plus $650. The garage-risk fact belongs only in the internal safety/access warning.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 89"
+    },
+    {
+      "observation_id": "obs_0181",
+      "raw_customer_note": "April Phillips, 463-846-1103, phillips513@att.net. Service address: 5404 Brookside Dr, Seymour, IN. Please remove fallen pine and clean brush. Quote tree removal 1450 brush cleanup 250.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "removal —",
+          "description": "removal —",
+          "price": "$1,450",
+          "price_numeric": 1450
+        },
+        {
+          "label": "Option B",
+          "title": "brush cleanup —",
+          "description": "brush cleanup —",
+          "price": "$250",
+          "price_numeric": 250
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Fallen pine removal",
+          "description": "Remove the fallen pine tree.",
+          "price": "$1,450",
+          "price_numeric": 1450
+        },
+        {
+          "label": "Option B",
+          "title": "Fallen pine removal with brush cleanup",
+          "description": "Remove the fallen pine tree and clean up the brush.",
+          "price": "$1,700",
+          "price_numeric": 1700
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_fallen_pine_with_brush_cleanup",
+      "service_type": "tree_removal+brush_cleanup",
+      "reviewer_note": "Confirmed that brush cleanup is a dependent add-on. Option B must include the complete fallen-pine removal scope and use the cumulative price of $1,450 plus $250.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 103"
+    },
+    {
+      "observation_id": "obs_0190",
+      "raw_customer_note": "Eric Allen, 463-286-4629, eric.allen@icloud.com. Service address: 1049 Sunset Blvd, Bedford, IN. Please clear storm damage in back yard. Quote storm cleanup 1800 haul away 250.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "cleanup",
+          "description": "cleanup",
+          "price": "$1,800",
+          "price_numeric": 1800
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$250",
+          "price_numeric": 250
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Storm-damage cleanup",
+          "description": "Clear the storm damage in the back yard.",
+          "price": "$1,800",
+          "price_numeric": 1800
+        },
+        {
+          "label": "Option B",
+          "title": "Storm-damage cleanup with debris haul-away",
+          "description": "Clear the storm damage in the back yard and haul away the resulting debris.",
+          "price": "$2,050",
+          "price_numeric": 2050
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "storm_cleanup_with_haul_away",
+      "service_type": "storm_cleanup+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete storm-damage cleanup scope and use the cumulative price of $1,800 plus $250.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 109"
+    },
+    {
+      "observation_id": "obs_0199",
+      "raw_customer_note": "Customer Eric Ramirez; phone 463-876-1431; email eramirez@comcast,net; job at 6726 Church St, Greensburg, IN: clear storm damage in back yard; prices storm cleanup 1850 haul away 150.",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "cleanup",
+          "description": "cleanup",
+          "price": "$1,850",
+          "price_numeric": 1850
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$150",
+          "price_numeric": 150
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Storm-damage cleanup",
+          "description": "Clear the storm damage in the back yard.",
+          "price": "$1,850",
+          "price_numeric": 1850
+        },
+        {
+          "label": "Option B",
+          "title": "Storm-damage cleanup with debris haul-away",
+          "description": "Clear the storm damage in the back yard and haul away the resulting debris.",
+          "price": "$2,000",
+          "price_numeric": 2000
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "storm_cleanup_with_haul_away",
+      "service_type": "storm_cleanup+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete storm-cleanup scope and use the cumulative price of $1,850 plus $150. The confirmed structure records title and description as separate customer-facing fields.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 114"
+    },
+    {
+      "observation_id": "obs_0230",
+      "raw_customer_note": "call Hannah 4638854125 or email hcarter@sbcglobal.net 9424 River Rd trim branches touching service line tree trim 1100 haul away 275",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim branches touching service line tree trim",
+          "description": "trim branches touching service line tree trim",
+          "price": "$1,100",
+          "price_numeric": 1100
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$275",
+          "price_numeric": 275
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE, SAFETY_TEXT_IN_CUSTOMER_SCOPE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE",
+        "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "call Hannah or email 9424 River Rd trim branches touching service line tree trim 1100 haul away 275",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,100",
+          "price_numeric": 1100
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,375",
+          "price_numeric": 1375
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $1,100 plus $275. Titles and descriptions are recorded as separate customer-facing fields. The safety/access fact (Branches are touching the service line.) currently leaks into one or more current option titles/descriptions and must remain an internal Tree Dude warning, outside all customer-facing option titles and descriptions.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 121"
+    },
+    {
+      "observation_id": "obs_0247",
+      "raw_customer_note": "call Susan 7652026504 or email susan71@sbcglobal.net 4000 Brookside Dr trim branches touching service line tree trim 1000 haul away 175",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim branches touching service line tree trim",
+          "description": "trim branches touching service line tree trim",
+          "price": "$1,000",
+          "price_numeric": 1000
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$175",
+          "price_numeric": 175
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE, SAFETY_TEXT_IN_CUSTOMER_SCOPE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE",
+        "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "call Susan or email 4000 Brookside Dr trim branches touching service line tree trim 1000 haul away 175",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,000",
+          "price_numeric": 1000
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,175",
+          "price_numeric": 1175
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $1,000 plus $175. Titles and descriptions are recorded as separate customer-facing fields. The safety/access fact (Branches are touching the service line.) currently leaks into one or more current option titles/descriptions and must remain an internal Tree Dude warning, outside all customer-facing option titles and descriptions.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 124"
+    },
+    {
+      "observation_id": "obs_0368",
+      "raw_customer_note": "call Betty 3173553767 or email betty.young@aol.com 6313 Sycamore Way trim branches touching service line tree trim 1000 haul away 275",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim branches touching service line tree trim haul away",
+          "description": "trim branches touching service line tree trim haul away",
+          "price": "$275",
+          "price_numeric": 275
+        },
+        {
+          "label": "Option B",
+          "title": "trim branches touching service line tree trim",
+          "description": "trim branches touching service line tree trim",
+          "price": "$1,000",
+          "price_numeric": 1000
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: SAFETY_TEXT_IN_CUSTOMER_SCOPE",
+      "structural_error_codes": [
+        "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "call Betty or email 6313 Sycamore Way trim branches touching service line tree trim 1000 haul away 275",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A",
+        "Option B"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,000",
+          "price_numeric": 1000
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,275",
+          "price_numeric": 1275
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "safety_access_text_in_customer_scope",
+      "target_binding_status": "not_applicable",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $1,000 plus $275. Titles and descriptions are recorded as separate customer-facing fields. The safety/access fact (Branches are touching the service line.) currently leaks into one or more current option titles/descriptions and must remain an internal Tree Dude warning, outside all customer-facing option titles and descriptions.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 146"
+    },
+    {
+      "observation_id": "obs_0703",
+      "raw_customer_note": "m scott or Mary 765 498 2789 repeat 2789 mary.scott@sbcglobal.net use this one 7525 Sycamore Way tree job remove three small ornamental pears tree removal 1700 stump grinding 1000",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove three small ornamental pears tree removal",
+          "description": "remove three small ornamental pears tree removal",
+          "price": "$1,700",
+          "price_numeric": 1700
+        },
+        {
+          "label": "Option B",
+          "title": "stump grinding",
+          "description": "stump grinding",
+          "price": "$1,000",
+          "price_numeric": 1000
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Removal of three ornamental pear trees",
+          "description": "Remove the three small ornamental pear trees.",
+          "price": "$1,700",
+          "price_numeric": 1700
+        },
+        {
+          "label": "Option B",
+          "title": "Removal of three ornamental pear trees with stump grinding",
+          "description": "Remove the three small ornamental pear trees and grind the stumps.",
+          "price": "$2,700",
+          "price_numeric": 2700
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_ornamental_pears_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete tree-removal scope and use the cumulative price of $1,700 plus $1,000. Titles and descriptions are recorded as separate customer-facing fields. The raw note explicitly specifies three trees, so the customer-facing titles preserve that count to avoid any implication of a one-tree scope.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 253"
+    },
+    {
+      "observation_id": "obs_0720",
+      "raw_customer_note": "tin maybe Tina R 317 996 3770 no thats phone trivera@sbcglobal.net 6634 County Line Rd rmv fallen pine and clean brush tree removal 1300 brush cleanup 250 pls",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "clean brush tree removal",
+          "description": "clean brush tree removal",
+          "price": "$1,300",
+          "price_numeric": 1300
+        },
+        {
+          "label": "Option B",
+          "title": "brush cleanup",
+          "description": "brush cleanup",
+          "price": "$250",
+          "price_numeric": 250
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Fallen pine removal",
+          "description": "Remove the fallen pine tree.",
+          "price": "$1,300",
+          "price_numeric": 1300
+        },
+        {
+          "label": "Option B",
+          "title": "Fallen pine removal with brush cleanup",
+          "description": "Remove the fallen pine tree and clean up the brush.",
+          "price": "$1,550",
+          "price_numeric": 1550
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_fallen_pine_with_brush_cleanup",
+      "service_type": "tree_removal+brush_cleanup",
+      "reviewer_note": "Confirmed that brush cleanup is a dependent add-on. Option B must include the complete tree-removal scope and use the cumulative price of $1,300 plus $250. Titles and descriptions are recorded as separate customer-facing fields.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 259"
+    },
+    {
+      "observation_id": "obs_0731",
+      "raw_customer_note": "j taylor or Jennifer 317 470 3366 repeat 3366 jennifer.taylor @ yahoo.com use this one 1826 Pine Ln tree job trim branches touching service line tree trim 1050 haul away 175",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim branches touching service line tree trim",
+          "description": "trim branches touching service line tree trim",
+          "price": "$1,050",
+          "price_numeric": 1050
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$175",
+          "price_numeric": 175
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE, SAFETY_TEXT_IN_CUSTOMER_SCOPE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE",
+        "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "com use this one 1826 Pine Ln tree job trim branches touching service line tree trim 1050 haul away 175",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,050",
+          "price_numeric": 1050
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,225",
+          "price_numeric": 1225
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $1,050 plus $175. Titles and descriptions are recorded as separate customer-facing fields. The safety/access fact (Branches are touching the service line.) currently leaks into one or more current option titles/descriptions and must remain an internal Tree Dude warning, outside all customer-facing option titles and descriptions.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 265"
+    },
+    {
+      "observation_id": "obs_0739",
+      "raw_customer_note": "s thompson or Sandra 812 673 8908 repeat 8908 sandra28@icloud.com use this one 5313 Hillcrest Rd tree job trim maple limbs over roof tree trim 900 haul away 150",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "maple limbs over roof",
+          "description": "maple limbs over roof",
+          "price": "$900",
+          "price_numeric": 900
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$150",
+          "price_numeric": 150
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The maple limbs are over the roof.",
+      "source_safety_access_warning": "trim maple limbs over roof",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Maple limb trimming",
+          "description": "Trim the maple limbs.",
+          "price": "$900",
+          "price_numeric": 900
+        },
+        {
+          "label": "Option B",
+          "title": "Maple limb trimming with debris haul-away",
+          "description": "Trim the maple limbs and haul away the resulting debris.",
+          "price": "$1,050",
+          "price_numeric": 1050
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_maple_limbs_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $900 plus $150. Titles and descriptions are recorded as separate customer-facing fields. The safety/access fact (The maple limbs are over the roof.) currently leaks into one or more current option titles/descriptions and must remain an internal Tree Dude warning, outside all customer-facing option titles and descriptions.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 268"
+    },
+    {
+      "observation_id": "obs_0771",
+      "raw_customer_note": "tin maybe Tina J 317 444 5052 no thats phone tjackson@hotmail.com 6283 Main St cut up large limb and haul debris limb removal 650 haul away 300 pls",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "limb and haul debris limb removal",
+          "description": "limb and haul debris limb removal",
+          "price": "$650",
+          "price_numeric": 650
+        },
+        {
+          "label": "Option B",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$300",
+          "price_numeric": 300
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Limb removal",
+          "description": "Cut up the large limb.",
+          "price": "$650",
+          "price_numeric": 650
+        },
+        {
+          "label": "Option B",
+          "title": "Limb removal with debris haul-away",
+          "description": "Cut up the large limb and haul away the resulting debris.",
+          "price": "$950",
+          "price_numeric": 950
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "limb_removal_with_haul_away",
+      "service_type": "limb_removal+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $650 plus $300. Titles and descriptions are recorded as separate customer-facing fields.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 281"
+    },
+    {
+      "observation_id": "obs_0780",
+      "raw_customer_note": "rober maybe Robert H 812 227 8614 no thats phone robert.hall@comcast.net 2584 Park Ave clear storm damage in back yard storm cleanup 1700 haul away 300 pls",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "cleanup haul away pls",
+          "description": "cleanup haul away pls",
+          "price": "$1,700",
+          "price_numeric": 1700
+        },
+        {
+          "label": "Option B",
+          "title": "cleanup haul away pls",
+          "description": "cleanup haul away pls",
+          "price": "$300",
+          "price_numeric": 300
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": null,
+      "source_safety_access_warning": "",
+      "safety_access_leaks_into_current_customer_scope": false,
+      "leaking_option_labels": [],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Storm-damage cleanup",
+          "description": "Clear the storm damage in the back yard.",
+          "price": "$1,700",
+          "price_numeric": 1700
+        },
+        {
+          "label": "Option B",
+          "title": "Storm-damage cleanup with debris haul-away",
+          "description": "Clear the storm damage in the back yard and haul away the resulting debris.",
+          "price": "$2,000",
+          "price_numeric": 2000
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "storm_cleanup_with_haul_away",
+      "service_type": "storm_cleanup+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $1,700 plus $300. Titles and descriptions are recorded as separate customer-facing fields.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 284"
+    },
+    {
+      "observation_id": "obs_0787",
+      "raw_customer_note": "t jackson or Tyler 317 549 5386 repeat 5386 jackson279@outlook.com use this one 2782 Valley Pike tree job trim branches touching service line tree trim 1100 haul away 225",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "haul away",
+          "description": "haul away",
+          "price": "$225",
+          "price_numeric": 225
+        },
+        {
+          "label": "Option B",
+          "title": "branches touching service line",
+          "description": "branches touching service line",
+          "price": "$1,100",
+          "price_numeric": 1100
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE, SAFETY_TEXT_IN_CUSTOMER_SCOPE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE",
+        "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "t jackson or Tyler repeat 5386 use this one 2782 Valley Pike tree job trim branches touching service line tree trim 1100 haul away 225",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option B"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,100",
+          "price_numeric": 1100
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,325",
+          "price_numeric": 1325
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $1,100 plus $225. Titles and descriptions are recorded as separate customer-facing fields. The safety/access fact (Branches are touching the service line.) currently leaks into one or more current option titles/descriptions and must remain an internal Tree Dude warning, outside all customer-facing option titles and descriptions.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 288"
+    },
+    {
+      "observation_id": "obs_0807",
+      "raw_customer_note": "a scott or Amy 765 979 7921 repeat 7921 scott429@outlook.com use this one 6211 Valley Pike tree job remove cedar leaning toward garage tree removal 2000 stump grinding 600",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "remove cedar leaning toward garage tree removal stump grinding",
+          "description": "remove cedar leaning toward garage tree removal stump grinding",
+          "price": "$600",
+          "price_numeric": 600
+        },
+        {
+          "label": "Option B",
+          "title": "remove cedar leaning toward garage tree removal",
+          "description": "remove cedar leaning toward garage tree removal",
+          "price": "$2,000",
+          "price_numeric": 2000
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: AMBIGUOUS_OPTION_RELATIONSHIP, DEPENDENT_ADDON_STANDALONE",
+      "structural_error_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE"
+      ],
+      "safety_access_warning": "The cedar is leaning toward the garage.",
+      "source_safety_access_warning": "a scott or Amy repeat 7921 use this one 6211 Valley Pike tree job remove cedar leaning toward garage tree removal 2000 stump grinding 600",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A",
+        "Option B"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Cedar tree removal",
+          "description": "Remove the cedar tree.",
+          "price": "$2,000",
+          "price_numeric": 2000
+        },
+        {
+          "label": "Option B",
+          "title": "Cedar tree removal with stump grinding",
+          "description": "Remove the cedar tree and grind the stump.",
+          "price": "$2,600",
+          "price_numeric": 2600
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "base_plus_dependent_addon_without_supported_customer_option",
+      "target_binding_status": "same_target_likely",
+      "semantic_pattern": "tree_removal_cedar_with_stump_grinding",
+      "service_type": "tree_removal+stump_grinding",
+      "reviewer_note": "Confirmed that stump grinding is a dependent add-on. Option B must include the complete tree-removal scope and use the cumulative price of $2,000 plus $600. Titles and descriptions are recorded as separate customer-facing fields. The safety/access fact (The cedar is leaning toward the garage.) currently leaks into one or more current option titles/descriptions and must remain an internal Tree Dude warning, outside all customer-facing option titles and descriptions.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 295"
+    },
+    {
+      "observation_id": "obs_0926",
+      "raw_customer_note": "m lewis or Matthew 812 867 3418 repeat 3418 lewis703@sncglobal.net use this one 4862 Oak St tree job trim branches touching service line tree trim 1050 haul away 125",
+      "current_final_options": [
+        {
+          "label": "Option A",
+          "title": "trim branches touching service line tree trim haul away",
+          "description": "trim branches touching service line tree trim haul away",
+          "price": "$1,050",
+          "price_numeric": 1050
+        },
+        {
+          "label": "Option B",
+          "title": "trim haul away",
+          "description": "trim haul away",
+          "price": "$125",
+          "price_numeric": 125
+        }
+      ],
+      "current_pdf_readiness": true,
+      "current_readiness_status": "PDF-ready",
+      "shadow_result": "shadow_blocks_pdf: SAFETY_TEXT_IN_CUSTOMER_SCOPE",
+      "structural_error_codes": [
+        "SAFETY_TEXT_IN_CUSTOMER_SCOPE"
+      ],
+      "safety_access_warning": "Branches are touching the service line.",
+      "source_safety_access_warning": "m lewis or Matthew repeat 3418 use this one 4862 Oak St tree job trim branches touching service line tree trim 1050 haul away 125",
+      "safety_access_leaks_into_current_customer_scope": true,
+      "leaking_option_labels": [
+        "Option A"
+      ],
+      "confirmed_customer_facing_options": [
+        {
+          "label": "Option A",
+          "title": "Tree trimming",
+          "description": "Trim the tree branches.",
+          "price": "$1,050",
+          "price_numeric": 1050
+        },
+        {
+          "label": "Option B",
+          "title": "Tree trimming with debris haul-away",
+          "description": "Trim the tree branches and haul away the resulting debris.",
+          "price": "$1,175",
+          "price_numeric": 1175
+        }
+      ],
+      "assessment_of_current_final_options": "incorrect",
+      "assessment_of_shadow_block": "correct_true_positive",
+      "human_verdict_on_proposed_customer_facing_structure": "correct",
+      "relationship_type": "safety_access_text_in_customer_scope",
+      "target_binding_status": "not_applicable",
+      "semantic_pattern": "tree_trim_service_line_with_haul_away",
+      "service_type": "tree_trim+haul_away",
+      "reviewer_note": "Confirmed that haul-away is a dependent add-on. Option B must include the complete base service scope and use the cumulative price of $1,050 plus $125. Titles and descriptions are recorded as separate customer-facing fields. The safety/access fact (Branches are touching the service line.) currently leaks into one or more current option titles/descriptions and must remain an internal Tree Dude warning, outside all customer-facing option titles and descriptions.",
+      "source_record_path": "reports/live-382-production-replay-current-direct-ab-followup-provenance.jsonl:line 352"
+    }
+  ]
+}

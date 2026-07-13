@@ -327,6 +327,8 @@ test("review overrides are narrow and recorded separately from normal validation
   assert.match(reviewOverridesSource, /Phone is the preferred contact method/);
   assert.match(pdfRouteSource, /getBlockingOverrideStatus/);
   assert.match(pdfRouteSource, /canGenerateWithOverrides/);
+  assert.match(pdfRouteSource, /structuralBlockingErrors/);
+  assert.match(pdfRouteSource, /Final customer option structure must be fixed/);
   assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /const canConfirmWithOverrides = overrideStatus\.canProceed/);
   assert.match(pdfRouteSource, /remainingBlockingErrors/);
 });

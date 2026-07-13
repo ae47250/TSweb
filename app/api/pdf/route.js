@@ -3,10 +3,9 @@ import { hasBlobConfig } from "../../../lib/blobStore.js";
 import { renderCustomerDocument, renderTreeDudeDocument } from "../../../lib/customerDocument.js";
 import { createDownloadFile } from "../../../lib/documentFiles.js";
 import { saveEstimate } from "../../../lib/estimateStore.js";
-import { normalizeToAlphaJsonV14 } from "../../../lib/normalizeAlphaJson.js";
 import { checkRateLimit } from "../../../lib/rateLimiter.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../../lib/reviewOverrides.js";
-import { validateAlphaJson } from "../../../lib/validateJson.js";
+import { validateAlphaJsonRoutePayload } from "../../../lib/validateRoutePayload.js";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -21,14 +20,23 @@ export async function POST(request) {
   }
 
   const body = await readJson(request);
-  const alphaJsonForValidation = normalizeToAlphaJsonV14(
-    body.alphaJson,
-    body.customer_text || body.customerText || body.alphaJson?.raw_input?.customer_text || "",
-    body.intake || {},
-  );
-  const validation = validateAlphaJson(alphaJsonForValidation);
+  const validation = validateAlphaJsonRoutePayload(body);
+  if (!validation) {
+    return json({ error: "No AlphaJSON payload was provided." }, { status: 400 });
+  }
+  const structuralBlockingErrors = validation.alphaJson?.validation?.structural_blocking_errors || [];
+  if (structuralBlockingErrors.length) {
+    return json(
+      {
+        error: "Final customer option structure must be fixed before generating customer documents.",
+        blocking_errors: structuralBlockingErrors,
+        follow_ups: validation.follow_ups,
+      },
+      { status: 400 },
+    );
+  }
   const reviewOverrides = normalizeReviewOverrides(body.reviewOverrides || body.overrides);
-  const overrideStatus = getBlockingOverrideStatus(validation, reviewOverrides, alphaJsonForValidation);
+  const overrideStatus = getBlockingOverrideStatus(validation, reviewOverrides, validation.alphaJson);
   const canGenerateWithOverrides = overrideStatus.canProceed;
   if (!canGenerateWithOverrides) {
     return json(
@@ -48,6 +56,8 @@ export async function POST(request) {
   alphaJson.review.approved_for_pdf = true;
   alphaJson.review.review_completed = true;
   alphaJson.review.approved_semantic_hash = alphaJson.validation?.estimate_semantic_hash || "";
+  alphaJson.review.approved_final_option_structural_hash = alphaJson.validation?.final_option_structural_hash || "";
+  alphaJson.review.approved_final_option_render_binding = alphaJson.validation?.final_option_render_binding || null;
   alphaJson.review.overrides = reviewOverrides;
   alphaJson.review.override_warnings = overrideStatus.acceptedOverrideWarnings;
   alphaJson.review.contractor_warnings = [

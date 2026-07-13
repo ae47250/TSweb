@@ -1,0 +1,522 @@
+{
+  "generated_at": "2026-07-11T18:26:16.859Z",
+  "source_file": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\liveapi-20case-deep-dive.jsonl",
+  "status": "BLOCKED - INSUFFICIENT GROUND TRUTH",
+  "reason": "The available held-out file has expected prices and general readiness checks, but lacks authoritative service-kind, relationship, and canonical item labels.",
+  "semantic_truth_available": false,
+  "required_label_schema": {
+    "case_id": "string",
+    "canonical_service_item_count": "number",
+    "canonical_service_items": [
+      {
+        "expected_id": "string",
+        "service_kind": [
+          "tree_removal",
+          "tree_trim",
+          "limb_removal",
+          "stump_grinding",
+          "haul_away",
+          "brush_cleanup",
+          "storm_cleanup",
+          "other_supported_service"
+        ],
+        "amount": "number",
+        "amount_to_service_kind_pairing": "string",
+        "relationship_type": [
+          "primary_service",
+          "required_component",
+          "optional_add_on",
+          "total",
+          "component_of",
+          "restates",
+          "alternative_to",
+          "alternative_customer_choice",
+          "unresolved_relationship"
+        ],
+        "required_source_span": "string",
+        "supported_action": "explicit | inferred | ambiguous | unsupported",
+        "supported_count": "explicit | inferred | ambiguous | unsupported",
+        "supported_species": "explicit | inferred | ambiguous | unsupported",
+        "supported_location": "explicit | inferred | ambiguous | unsupported",
+        "supported_inclusions": "explicit | inferred | ambiguous | unsupported",
+        "supported_exclusions": "explicit | inferred | ambiguous | unsupported",
+        "should_remain_blocked": "boolean",
+        "reviewer_notes": "string"
+      }
+    ],
+    "review_process": [
+      "Reviewer A labels independently.",
+      "Reviewer B labels independently.",
+      "Disagreements are adjudicated.",
+      "Labels are frozen before assembler evaluation.",
+      "Frozen labels receive a version and checksum."
+    ],
+    "forbidden_labels": [
+      "Do not label from assembler output.",
+      "Do not infer service kind only from final title wording.",
+      "Do not mark price-only correctness as semantic correctness."
+    ]
+  },
+  "labeling_packet": [
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-01",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Gina Price 812-555-0107 gina.price@example.com. Service address 2438 Cedar Dr Seymour Indiana. Remove two maples and one oak by garage; include cleanup. Option A cut and leave wood $1,500. Option B remove, haul away, and cleanup $2,300.",
+      "existing_price_expectations": [
+        "$1,500",
+        "$2,300"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-02",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Hank Bell 812-555-0108 hank.bell@example.com. Service address 2445 Elm Street Austin IN. Remove 2 spruce trees over roof; include cleanup. Option A cut and leave wood $1,512. Option B remove, haul away, and cleanup $2,314.",
+      "existing_price_expectations": [
+        "$1,512",
+        "$2,314"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-03",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Ivy Stone 812-555-0109 ivy.stone@example.com. Service address 2452 Main St Scottsburg Indiana. Remove one bradford pear near driveway; include cleanup. Option A cut and leave wood $1,524. Option B remove, haul away, and cleanup $2,328.",
+      "existing_price_expectations": [
+        "$1,524",
+        "$2,328"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-04",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Jake Fox 812-555-0110 jake.fox@example.com. Service address 2459 River Road Paoli IN. Remove three pine trees beside shed; include cleanup. Option A cut and leave wood $1,536. Option B remove, haul away, and cleanup $2,342.",
+      "existing_price_expectations": [
+        "$1,536",
+        "$2,342"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-05",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Ava Reed 812-555-0101 ava.reed@example.com. Service address 2466 Cherry Lane Bedford Indiana. Remove 1 large oak in back yard; include cleanup. Option A cut and leave wood $1,548. Option B remove, haul away, and cleanup $2,356.",
+      "existing_price_expectations": [
+        "$1,548",
+        "$2,356"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-06",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Ben Clay 812-555-0102 ben.clay@example.com. Service address 2473 Spruce Ct Charlestown IN. Remove two sweet gum trees near fence; include cleanup. Option A cut and leave wood $1,560. Option B remove, haul away, and cleanup $2,370.",
+      "existing_price_expectations": [
+        "$1,560",
+        "$2,370"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-07",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Cara Mills 812-555-0103 cara.mills@example.com. Service address 2480 Walnut St Madison Indiana. Remove one maple and one ash by power line; include cleanup. Option A cut and leave wood $1,572. Option B remove, haul away, and cleanup $2,384.",
+      "existing_price_expectations": [
+        "$1,572",
+        "$2,384"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-08",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Drew Moss 812-555-0104 drew.moss@example.com. Service address 2487 Oak Lane Hanover IN. Remove 4 cedars front yard; include cleanup. Option A cut and leave wood $1,584. Option B remove, haul away, and cleanup $2,398.",
+      "existing_price_expectations": [
+        "$1,584",
+        "$2,398"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-09",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Ella Knox 812-555-0105 ella.knox@example.com. Service address 2494 Maple Ave North Vernon Indiana. Remove two walnut trees leaning toward house; include cleanup. Option A cut and leave wood $1,596. Option B remove, haul away, and cleanup $2,412.",
+      "existing_price_expectations": [
+        "$1,596",
+        "$2,412"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-10",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Finn Hale 812-555-0106 finn.hale@example.com. Service address 2501 Pine Road Salem IN. Remove one river birch over deck; include cleanup. Option A cut and leave wood $1,608. Option B remove, haul away, and cleanup $2,426.",
+      "existing_price_expectations": [
+        "$1,608",
+        "$2,426"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-11",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Gina Price 812-555-0107 gina.price@example.com. Service address 2508 Cedar Dr Seymour Indiana. Remove two maples and one oak by garage; include cleanup. Option A cut and leave wood $1,620. Option B remove, haul away, and cleanup $2,440.",
+      "existing_price_expectations": [
+        "$1,620",
+        "$2,440"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-12",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Hank Bell 812-555-0108 hank.bell@example.com. Service address 2515 Elm Street Austin IN. Remove 2 spruce trees over roof; include cleanup. Option A cut and leave wood $1,632. Option B remove, haul away, and cleanup $2,454.",
+      "existing_price_expectations": [
+        "$1,632",
+        "$2,454"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-13",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Ivy Stone 812-555-0109 ivy.stone@example.com. Service address 2522 Main St Scottsburg Indiana. Remove one bradford pear near driveway; include cleanup. Option A cut and leave wood $1,644. Option B remove, haul away, and cleanup $2,468.",
+      "existing_price_expectations": [
+        "$1,644",
+        "$2,468"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-14",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Jake Fox 812-555-0110 jake.fox@example.com. Service address 2529 River Road Paoli IN. Remove three pine trees beside shed; include cleanup. Option A cut and leave wood $1,656. Option B remove, haul away, and cleanup $2,482.",
+      "existing_price_expectations": [
+        "$1,656",
+        "$2,482"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-15",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Ava Reed 812-555-0101 ava.reed@example.com. Service address 2536 Cherry Lane Bedford Indiana. Remove 1 large oak in back yard; include cleanup. Option A cut and leave wood $1,668. Option B remove, haul away, and cleanup $2,496.",
+      "existing_price_expectations": [
+        "$1,668",
+        "$2,496"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-16",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Ben Clay 812-555-0102 ben.clay@example.com. Service address 2543 Spruce Ct Charlestown IN. Remove two sweet gum trees near fence; include cleanup. Option A cut and leave wood $1,680. Option B remove, haul away, and cleanup $2,510.",
+      "existing_price_expectations": [
+        "$1,680",
+        "$2,510"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-17",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Cara Mills 812-555-0103 cara.mills@example.com. Service address 2550 Walnut St Madison Indiana. Remove one maple and one ash by power line; include cleanup. Option A cut and leave wood $1,692. Option B remove, haul away, and cleanup $2,524.",
+      "existing_price_expectations": [
+        "$1,692",
+        "$2,524"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-18",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Drew Moss 812-555-0104 drew.moss@example.com. Service address 2557 Oak Lane Hanover IN. Remove 4 cedars front yard; include cleanup. Option A cut and leave wood $1,704. Option B remove, haul away, and cleanup $2,538.",
+      "existing_price_expectations": [
+        "$1,704",
+        "$2,538"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-19",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Ella Knox 812-555-0105 ella.knox@example.com. Service address 2564 Maple Ave North Vernon Indiana. Remove two walnut trees leaning toward house; include cleanup. Option A cut and leave wood $1,716. Option B remove, haul away, and cleanup $2,552.",
+      "existing_price_expectations": [
+        "$1,716",
+        "$2,552"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    },
+    {
+      "case_id": "LIVEapi-tree_count_tree_detail-20",
+      "category": "tree_count_tree_detail",
+      "raw_input": "Finn Hale 812-555-0106 finn.hale@example.com. Service address 2571 Pine Road Salem IN. Remove one river birch over deck; include cleanup. Option A cut and leave wood $1,728. Option B remove, haul away, and cleanup $2,566.",
+      "existing_price_expectations": [
+        "$1,728",
+        "$2,566"
+      ],
+      "missing_required_fields": [
+        "canonical_service_item_count",
+        "canonical_service_items[].service_kind",
+        "canonical_service_items[].amount_to_service_kind_pairing",
+        "canonical_service_items[].relationship_type",
+        "canonical_service_items[].required_source_span",
+        "canonical_service_items[].supported_action",
+        "canonical_service_items[].supported_count",
+        "canonical_service_items[].supported_species",
+        "canonical_service_items[].supported_location",
+        "canonical_service_items[].supported_inclusions",
+        "canonical_service_items[].supported_exclusions",
+        "canonical_service_items[].should_remain_blocked"
+      ]
+    }
+  ]
+}

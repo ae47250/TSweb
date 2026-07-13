@@ -28,6 +28,7 @@ const cases = [
   {
     type: "messy spelling unusual phone",
     input: "J\u00f3n baleu 322-4567899 789 West main, Madison Indiana, two trees, option a haul tree and remove 1200 Option b same as above and sweep 2399.",
+    correctedInput: "J\u00f3n baleu 322-4567899 789 West main, Madison Indiana, two trees, option a haul tree and remove 1200 Option b haul and remove the two trees, sweep cleanup 2399.",
   },
   {
     type: "multiple options customer selects one",

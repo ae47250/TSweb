@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-07-11T18:26:16.080Z",
+  "module_version": "canonical-service-assembler-v0.1-shadow",
+  "input_contract": {
+    "version": "canonical-service-assembler-input-v1",
+    "allowed_top_level_fields": [
+      "normalizedJobFacts",
+      "typedPriceEvidence",
+      "extractedRelationships"
+    ],
+    "forbidden_field_names": [
+      "expected",
+      "expected_pairs",
+      "expected_amounts",
+      "expected_service_kinds",
+      "expected_kind",
+      "expected_kinds",
+      "benchmark",
+      "benchmark_classification",
+      "classification",
+      "correct",
+      "incorrect",
+      "pass",
+      "fail",
+      "ready_and_correct",
+      "ready_but_wrong",
+      "correct_but_blocked",
+      "current_vs_expected",
+      "reviewer_conclusion"
+    ],
+    "normalizedJobFacts": [
+      "description",
+      "work_action",
+      "tree_count",
+      "tree_count_status",
+      "tree_species",
+      "work_location",
+      "inclusions",
+      "exclusions",
+      "source_evidence"
+    ],
+    "typedPriceEvidence": [
+      "price_id",
+      "amount",
+      "display",
+      "local_text",
+      "service_kind",
+      "amount_confidence",
+      "pairing_confidence",
+      "candidate_status",
+      "reason_code",
+      "source",
+      "source_span"
+    ],
+    "extractedRelationships": [
+      "monetary_relationships",
+      "add_on_interpretations",
+      "duplicate_price_collapses",
+      "restatements",
+      "alternatives"
+    ]
+  },
+  "input_contract_sha256": "8d82db8b2223543ef17562c7cdc837fb6b789f7e4dbfe8f07b09a56c54a3605b",
+  "isolation_rules": {
+    "allowed_top_level_fields": [
+      "normalizedJobFacts",
+      "typedPriceEvidence",
+      "extractedRelationships"
+    ],
+    "forbidden_field_names": [
+      "expected",
+      "expected_pairs",
+      "expected_amounts",
+      "expected_service_kinds",
+      "expected_kind",
+      "expected_kinds",
+      "benchmark",
+      "benchmark_classification",
+      "classification",
+      "correct",
+      "incorrect",
+      "pass",
+      "fail",
+      "ready_and_correct",
+      "ready_but_wrong",
+      "correct_but_blocked",
+      "current_vs_expected",
+      "reviewer_conclusion"
+    ],
+    "expected_labels_loaded_after_build": true,
+    "leakage_failures_in_382_replay": 0
+  }
+}
