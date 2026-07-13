@@ -770,3 +770,89 @@ test("source-final coverage blocks dropped actions in multi-action Option B pack
   assert.match(coverage.blocking_messages.join(" "), /chip brush/i);
   assert.match(coverage.blocking_messages.join(" "), /cleanup/i);
 });
+
+test("source-final coverage accepts only a proven incremental price transformation", () => {
+  const rawText = "John, option a remove tree 1000, option b grind stump and haul debris extra 500";
+  const finalOptions = [
+    {
+      label: "Option A",
+      title: "Tree removal",
+      description: "Remove the tree.",
+      price: { amount: 1000, display: "$1,000" },
+    },
+    {
+      label: "Option B",
+      title: "Tree removal with stump grinding and haul-away",
+      description: "Remove the tree, grind the stump, and haul away the debris.",
+      price: { amount: 1500, display: "$1,500" },
+    },
+  ];
+  const accepted = {
+    add_on_interpretations: [{
+      interpretation_id: "add_on_price_1_price_2",
+      add_on_amount: 500,
+      combined_amount: 1500,
+      price_role: "INCREMENTAL_ADDON_PRICE",
+      price_role_confidence: "high",
+      amount_confidence: "high",
+      pairing_confidence: "high",
+      candidate_status: "accepted",
+      reason_code: "accepted_into_bundled_option",
+    }],
+  };
+
+  const acceptedCoverage = buildSourceFinalFactCoverage({
+    rawText,
+    finalOptions,
+    priceReconciliation: accepted,
+  });
+  const untrustedCoverage = buildSourceFinalFactCoverage({
+    rawText,
+    finalOptions,
+    priceReconciliation: {
+      add_on_interpretations: [{ ...accepted.add_on_interpretations[0], pairing_confidence: "low" }],
+    },
+  });
+
+  const acceptedPrice = acceptedCoverage.results.find((result) => result.option_label === "B" && result.fact === "price");
+  assert.equal(acceptedPrice.status, "transformed");
+  assert.equal(acceptedCoverage.blocking_codes.includes("SOURCE_OPTION_PRICE_CHANGED"), false);
+  assert.ok(untrustedCoverage.blocking_codes.includes("SOURCE_OPTION_PRICE_CHANGED"));
+});
+
+test("accepted bundle pricing does not hide a dropped add-on service", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText: "John, option a remove tree 1000, option b grind stump and haul debris extra 500",
+    finalOptions: [
+      {
+        label: "Option A",
+        title: "Tree removal",
+        description: "Remove the tree.",
+        price: { amount: 1000, display: "$1,000" },
+      },
+      {
+        label: "Option B",
+        title: "Tree removal with stump grinding",
+        description: "Remove the tree and grind the stump.",
+        price: { amount: 1500, display: "$1,500" },
+      },
+    ],
+    priceReconciliation: {
+      add_on_interpretations: [{
+        interpretation_id: "add_on_price_1_price_2",
+        add_on_amount: 500,
+        combined_amount: 1500,
+        price_role: "INCREMENTAL_ADDON_PRICE",
+        price_role_confidence: "high",
+        amount_confidence: "high",
+        pairing_confidence: "high",
+        candidate_status: "accepted",
+        reason_code: "accepted_into_bundled_option",
+      }],
+    },
+  });
+
+  assert.equal(coverage.blocking_codes.includes("SOURCE_OPTION_PRICE_CHANGED"), false);
+  assert.ok(coverage.blocking_codes.includes("SOURCE_OPTION_ACTION_OMITTED"));
+  assert.ok(coverage.blocking_codes.includes("SOURCE_DEBRIS_DISPOSITION_CHANGED"));
+});
