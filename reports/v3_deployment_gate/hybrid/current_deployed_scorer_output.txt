@@ -1,0 +1,112 @@
+
+=== CURRENT DEPLOYED ===
+Rows scored: 30 | Missing predictions: 0
+customer_name                 100.0%
+phone                         100.0%
+email                         100.0%
+option_a_price                100.0%
+option_b_price                100.0%
+option price pair exact       100.0%
+critical row exact            100.0%
+option A description F1       0.871
+option B description F1       0.790
+Option B services F1          0.443
+
+EASY:
+  price-pair exact: 100.0%
+  critical exact:   100.0%
+  desc mean F1:     0.958
+
+MEDIUM:
+  price-pair exact: 100.0%
+  critical exact:   100.0%
+  desc mean F1:     0.839
+
+HARD:
+  price-pair exact: 100.0%
+  critical exact:   100.0%
+  desc mean F1:     0.694
+
+Material option failures:
+{"case_id": "test_000014", "bucket": "easy", "boundary": "semicolon_labeled", "price_pair_exact": true, "option_a_desc_f1": 0.727, "option_b_desc_f1": 1.0}
+{"case_id": "test_000002", "bucket": "medium", "boundary": "comma_labeled", "price_pair_exact": true, "option_a_desc_f1": 0.571, "option_b_desc_f1": 1.0}
+{"case_id": "test_000033", "bucket": "medium", "boundary": "compact_A_B", "price_pair_exact": true, "option_a_desc_f1": 0.0, "option_b_desc_f1": 0.0}
+{"case_id": "test_000074", "bucket": "medium", "boundary": "comma_inside_description", "price_pair_exact": true, "option_a_desc_f1": 1.0, "option_b_desc_f1": 0.429}
+{"case_id": "test_000019", "bucket": "hard", "boundary": "comma_inside_description", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 1.0}
+{"case_id": "test_000045", "bucket": "hard", "boundary": "compact_A_B", "price_pair_exact": true, "option_a_desc_f1": 0.667, "option_b_desc_f1": 0.375}
+{"case_id": "test_000058", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 1.0, "option_b_desc_f1": 0.2}
+{"case_id": "test_000001", "bucket": "hard", "boundary": "run_on_labeled", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 0.375}
+{"case_id": "test_000067", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 0.8, "option_b_desc_f1": 0.75}
+{"case_id": "test_000079", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 0.4}
+{"case_id": "test_000108", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 0.4}
+{"case_id": "test_000158", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 0.545}
+
+=== STAGED / VERSION 3.0 ===
+Rows scored: 30 | Missing predictions: 0
+customer_name                 100.0%
+phone                         100.0%
+email                         100.0%
+option_a_price                100.0%
+option_b_price                100.0%
+option price pair exact       100.0%
+critical row exact            100.0%
+option A description F1       0.871
+option B description F1       0.790
+Option B services F1          0.443
+
+EASY:
+  price-pair exact: 100.0%
+  critical exact:   100.0%
+  desc mean F1:     0.958
+
+MEDIUM:
+  price-pair exact: 100.0%
+  critical exact:   100.0%
+  desc mean F1:     0.839
+
+HARD:
+  price-pair exact: 100.0%
+  critical exact:   100.0%
+  desc mean F1:     0.694
+
+Material option failures:
+{"case_id": "test_000014", "bucket": "easy", "boundary": "semicolon_labeled", "price_pair_exact": true, "option_a_desc_f1": 0.727, "option_b_desc_f1": 1.0}
+{"case_id": "test_000002", "bucket": "medium", "boundary": "comma_labeled", "price_pair_exact": true, "option_a_desc_f1": 0.571, "option_b_desc_f1": 1.0}
+{"case_id": "test_000033", "bucket": "medium", "boundary": "compact_A_B", "price_pair_exact": true, "option_a_desc_f1": 0.0, "option_b_desc_f1": 0.0}
+{"case_id": "test_000074", "bucket": "medium", "boundary": "comma_inside_description", "price_pair_exact": true, "option_a_desc_f1": 1.0, "option_b_desc_f1": 0.429}
+{"case_id": "test_000019", "bucket": "hard", "boundary": "comma_inside_description", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 1.0}
+{"case_id": "test_000045", "bucket": "hard", "boundary": "compact_A_B", "price_pair_exact": true, "option_a_desc_f1": 0.667, "option_b_desc_f1": 0.375}
+{"case_id": "test_000058", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 1.0, "option_b_desc_f1": 0.2}
+{"case_id": "test_000001", "bucket": "hard", "boundary": "run_on_labeled", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 0.375}
+{"case_id": "test_000067", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 0.8, "option_b_desc_f1": 0.75}
+{"case_id": "test_000079", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 0.4}
+{"case_id": "test_000108", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 0.4}
+{"case_id": "test_000158", "bucket": "hard", "boundary": "price_first", "price_pair_exact": true, "option_a_desc_f1": 0.75, "option_b_desc_f1": 0.545}
+
+=== VERSION 3.0 DEPLOYMENT DECISION ===
+HOLD � do not deploy Version 3.0 yet
+{
+  "deployed": {
+    "pair": 1.0,
+    "hard_pair": 1.0,
+    "desc": 0.8302656657068421,
+    "field": {
+      "phone": 1.0,
+      "email": 1.0,
+      "option_a_price": 1.0,
+      "option_b_price": 1.0
+    }
+  },
+  "staged": {
+    "pair": 1.0,
+    "hard_pair": 1.0,
+    "desc": 0.8302656657068421,
+    "field": {
+      "phone": 1.0,
+      "email": 1.0,
+      "option_a_price": 1.0,
+      "option_b_price": 1.0
+    }
+  },
+  "no_critical_regression": true
+}

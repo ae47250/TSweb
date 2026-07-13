@@ -1,0 +1,167 @@
+{
+  "generated_at": "2026-07-13T01:45:15.866Z",
+  "baseline": {
+    "name": "no_staged_head",
+    "predictions": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\ablation\\no_staged_head_predictions.jsonl",
+    "exceptions": 0,
+    "metrics": {
+      "phone": 100,
+      "email": 100,
+      "option_a_price": 100,
+      "option_b_price": 100,
+      "pair": 100,
+      "a_f1": 0.621,
+      "b_f1": 0.557,
+      "svc_f1": 0.428,
+      "hard_pair": 100,
+      "hard_desc": 0.582,
+      "mean_desc": 0.589
+    }
+  },
+  "individual_ranked": [
+    {
+      "name": "single_lib_normalizeAlphaJson_js",
+      "overlays": [
+        "lib/normalizeAlphaJson.js"
+      ],
+      "predictions": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\ablation\\single_lib_normalizeAlphaJson_js_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 100,
+        "option_b_price": 100,
+        "pair": 100,
+        "a_f1": 0.656,
+        "b_f1": 0.586,
+        "svc_f1": 0.454,
+        "hard_pair": 100,
+        "hard_desc": 0.688,
+        "mean_desc": 0.621
+      },
+      "delta_pair": 0,
+      "delta_mean_desc": 0.03200000000000003,
+      "regression_score": 0
+    },
+    {
+      "name": "single_lib_validateJson_js",
+      "overlays": [
+        "lib/validateJson.js"
+      ],
+      "predictions": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\ablation\\single_lib_validateJson_js_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 100,
+        "option_b_price": 100,
+        "pair": 100,
+        "a_f1": 0.663,
+        "b_f1": 0.575,
+        "svc_f1": 0.454,
+        "hard_pair": 100,
+        "hard_desc": 0.666,
+        "mean_desc": 0.619
+      },
+      "delta_pair": 0,
+      "delta_mean_desc": 0.030000000000000027,
+      "regression_score": 0
+    },
+    {
+      "name": "single_app_api_openai_route_js",
+      "overlays": [
+        "app/api/openai/route.js"
+      ],
+      "predictions": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\ablation\\single_app_api_openai_route_js_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 100,
+        "option_b_price": 100,
+        "pair": 100,
+        "a_f1": 0.643,
+        "b_f1": 0.562,
+        "svc_f1": 0.428,
+        "hard_pair": 100,
+        "hard_desc": 0.624,
+        "mean_desc": 0.6025
+      },
+      "delta_pair": 0,
+      "delta_mean_desc": 0.013500000000000068,
+      "regression_score": 0
+    },
+    {
+      "name": "single_lib_optionPriceNormalizer_js",
+      "overlays": [
+        "lib/optionPriceNormalizer.js"
+      ],
+      "predictions": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\ablation\\single_lib_optionPriceNormalizer_js_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 100,
+        "option_b_price": 100,
+        "pair": 100,
+        "a_f1": 0.636,
+        "b_f1": 0.567,
+        "svc_f1": 0.428,
+        "hard_pair": 100,
+        "hard_desc": 0.634,
+        "mean_desc": 0.6014999999999999
+      },
+      "delta_pair": 0,
+      "delta_mean_desc": 0.012499999999999956,
+      "regression_score": 0
+    },
+    {
+      "name": "single_lib_sourceFinalFactCoverage_js",
+      "overlays": [
+        "lib/sourceFinalFactCoverage.js"
+      ],
+      "predictions": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\ablation\\single_lib_sourceFinalFactCoverage_js_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 100,
+        "option_b_price": 100,
+        "pair": 100,
+        "a_f1": 0.637,
+        "b_f1": 0.545,
+        "svc_f1": 0.428,
+        "hard_pair": 100,
+        "hard_desc": 0.597,
+        "mean_desc": 0.591
+      },
+      "delta_pair": 0,
+      "delta_mean_desc": 0.0020000000000000018,
+      "regression_score": 0
+    }
+  ],
+  "top5": {
+    "overlays": [
+      "lib/normalizeAlphaJson.js",
+      "lib/validateJson.js",
+      "app/api/openai/route.js",
+      "lib/optionPriceNormalizer.js",
+      "lib/sourceFinalFactCoverage.js"
+    ],
+    "predictions": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\ablation\\top5_promising_least_regressive_predictions.jsonl",
+    "exceptions": 0,
+    "metrics": {
+      "phone": 100,
+      "email": 100,
+      "option_a_price": 100,
+      "option_b_price": 100,
+      "pair": 100,
+      "a_f1": 0.626,
+      "b_f1": 0.55,
+      "svc_f1": 0.43,
+      "hard_pair": 100,
+      "hard_desc": 0.604,
+      "mean_desc": 0.5880000000000001
+    }
+  }
+}

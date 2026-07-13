@@ -1,0 +1,2660 @@
+{
+  "report_version": "hoho30-source-final-audit-v1",
+  "source": "tests\\fixtures\\easy-two-option-input-notes-2026-07-11.md",
+  "generated_at": "2026-07-12T21:32:36.438Z",
+  "metrics": {
+    "total": 100,
+    "ready": 78,
+    "blocked": 22,
+    "unsafe_ready_cases": [],
+    "unsafe_ready_count": 0,
+    "correct_but_blocked_cases": [],
+    "correct_but_blocked_count": 0,
+    "source_coverage_applicable_count": 50,
+    "source_coverage_applicability_rate": 0.5,
+    "actionable_blocker_count": 22,
+    "actionable_blocker_rate": 0.22
+  },
+  "rows": [
+    {
+      "case": 1,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs large maple removed at 148 Maple St. Option A: remove tree only and leave debris on site for 1200. Option B: includes Option A plus haul away brush and wood for 1700.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $1,200 | Remove the maple tree and leave the debris on site.",
+        "Option B | Maple tree removal with brush haul-away | $1,700 | Remove the maple tree and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 2,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed beside garage at 22 Pine Lane. Option A: cut down tree and leave logs for 1500. Option B: includes Option A plus full cleanup for 2100.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,500 | Remove the oak tree beside the garage and leave the logs on site.",
+        "Option B | Oak tree removal with brush cleanup | $2,100 | Remove the oak tree beside the garage and leave the logs on site and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 3,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs dead ash removed from backyard. Option A: remove tree only for 900. Option B: includes Option A plus stump grinding for 1350.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Ash tree removal | $900 | Remove the dead ash tree.",
+        "Option B | Ash tree removal with stump grinding | $1,350 | Remove the dead ash tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 4,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs pine removed near driveway. Option A: remove tree and leave brush for 1100. Option B: includes Option A plus hauling and cleanup for 1600.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | remove tree and leave brush | $1,100 | remove tree and leave brush",
+        "Option B | remove tree and haul away and cleanup | $1,600 | remove tree and haul away and cleanup"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "pine",
+          "final_value": "",
+          "missing_source_values": [
+            "pine"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "pine",
+          "final_value": "",
+          "missing_source_values": [
+            "pine"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Safety/access note: Customer needs pine removed near driveway."
+      ],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 5,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs walnut removed by fence. Option A: remove tree only for 1800. Option B: includes Option A plus stump grinding and debris haul for 2600.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Walnut tree removal | $1,800 | Remove the walnut tree by the fence.",
+        "Option B | Walnut tree removal with stump grinding | $2,600 | Remove the walnut tree by the fence and grind the stump and haul away the debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 6,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cedar removed near shed. Option A: cut tree down and stack wood for 800. Option B: includes Option A plus haul away debris for 1200.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Cedar tree removal | $800 | Remove the cedar tree near the shed and leave the wood on site.",
+        "Option B | Cedar tree removal with debris haul-away | $1,200 | Remove the cedar tree near the shed and haul away the resulting debris."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "stack wood",
+          "final_value": "leave wood",
+          "missing_source_values": [
+            "stack wood"
+          ],
+          "status": "changed",
+          "message": "Option A source says debris disposition is \"stack wood\", but final TD2 says \"leave wood\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "stack wood, haul debris",
+          "final_value": "haul debris",
+          "missing_source_values": [
+            "stack wood"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"stack wood\", but final TD2 says \"haul debris\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option A source says debris disposition is \"stack wood\", but final TD2 says \"leave wood\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"stack wood\", but final TD2 says \"haul debris\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 7,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs elm removed from front yard. Option A: remove tree only for 1000. Option B: includes Option A plus cleanup and rake area for 1450.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Elm tree removal | $1,000 | Remove the elm tree.",
+        "Option B | Elm tree removal with brush cleanup | $1,450 | Remove the elm tree and rake up the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 8,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs two small pines removed. Option A: remove both trees and leave debris for 1400. Option B: includes Option A plus haul away brush and logs for 2000.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Pine tree removal | $1,400 | Remove the two pine trees and leave the debris on site.",
+        "Option B | Pine tree removal with brush haul-away | $2,000 | Remove the two pine trees and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 9,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs large sycamore removed by alley. Option A: remove tree only for 2400. Option B: includes Option A plus stump grinding for 3100.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Sycamore tree removal | $2,400 | Remove the sycamore tree near the alley.",
+        "Option B | Sycamore tree removal with stump grinding | $3,100 | Remove the sycamore tree near the alley and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 10,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple limb and tree removed. Option A: remove tree and leave wood for 1300. Option B: includes Option A plus haul away and cleanup for 1850.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | remove tree and leave wood | $1,300 | remove tree and leave wood",
+        "Option B | remove tree and haul away and cleanup | $1,850 | remove tree and haul away and cleanup"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "maple",
+          "final_value": "",
+          "missing_source_values": [
+            "maple"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "maple",
+          "final_value": "",
+          "missing_source_values": [
+            "maple"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 11,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs dead oak removed by barn. Option A: cut down tree only for 1600. Option B: includes Option A plus haul away wood and brush for 2300.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,600 | Remove the oak tree next to the barn.",
+        "Option B | Oak tree removal with brush haul-away | $2,300 | Remove the oak tree next to the barn and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Option A source says condition is \"dead\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"dead\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 12,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cherry tree removed near patio. Option A: remove tree and leave debris for 700. Option B: includes Option A plus cleanup for 1000.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Cherry tree removal | $700 | Remove the cherry tree near the patio and leave the debris on site.",
+        "Option B | Cherry tree removal with brush cleanup | $1,000 | Remove the cherry tree near the patio and clean up the debris."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "leave debris, cleanup",
+          "final_value": "cleanup",
+          "missing_source_values": [
+            "leave debris"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"leave debris\", but final TD2 says \"cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"leave debris\", but final TD2 says \"cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 13,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs birch removed near side gate. Option A: remove tree only for 850. Option B: includes Option A plus stump grinding for 1250.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Birch tree removal | $850 | Remove the birch tree near the side gate.",
+        "Option B | Birch tree removal with stump grinding | $1,250 | Remove the birch tree near the side gate and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 14,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs large locust removed. Option A: fell tree and section trunk for 1750. Option B: includes Option A plus chip brush and haul debris for 2750.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | fell tree and section trunk | $1,750 | fell tree and section trunk",
+        "Option B | fell tree and section trunk and chip brush and haul debris | $2,750 | fell tree and section trunk and chip brush and haul debris"
+      ],
+      "blocker_codes": [
+        "MISSING_BASE_CHOICE",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "locust",
+          "final_value": "",
+          "missing_source_values": [
+            "locust"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "locust",
+          "final_value": "",
+          "missing_source_values": [
+            "locust"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 15,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs spruce removed by driveway. Option A: remove tree and leave logs for 1200. Option B: includes Option A plus hauling for 1650.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Spruce tree removal | $1,200 | Remove the spruce tree near the driveway and leave the logs on site.",
+        "Option B | Spruce tree removal with debris haul-away | $1,650 | Remove the spruce tree near the driveway and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Safety/access note: Remove one tree near the driveway.",
+        "Safety/access note: Option A includes safety or access wording for Tree Dude review: Spruce tree removal Remove the spruce tree near the driveway and leave the logs on site.",
+        "Safety/access note: Option B includes safety or access wording for Tree Dude review: Spruce tree removal with debris haul-away Remove the spruce tree near the driveway and haul away the resulting debris."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 16,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs poplar removed behind house. Option A: remove tree only for 1900. Option B: includes Option A plus full cleanup for 2500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Poplar tree removal | $1,900 | Remove the poplar tree behind the house.",
+        "Option B | Poplar tree removal with brush cleanup | $2,500 | Remove the poplar tree behind the house and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 17,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs sweet gum removed by sidewalk. Option A: remove tree and leave stump for 1450. Option B: includes Option A plus stump grinding for 2000.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | remove tree and leave stump | $1,450 | remove tree and leave stump",
+        "Option B | remove tree and leave stump and stump grinding | $2,000 | remove tree and leave stump and stump grinding"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 18,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs hickory removed by garage. Option A: cut and leave wood on site for 2100. Option B: includes Option A plus haul away and rake area for 2850.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | cut and leave wood on site | $2,100 | cut and leave wood on site",
+        "Option B | leave wood on site and haul away and rake area | $2,850 | leave wood on site and haul away and rake area"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "hickory",
+          "final_value": "",
+          "missing_source_values": [
+            "hickory"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "hickory",
+          "final_value": "",
+          "missing_source_values": [
+            "hickory"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 19,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs small ornamental tree removed. Option A: remove tree only for 450. Option B: includes Option A plus haul away debris for 650.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Tree removal | $450 | Remove the tree.",
+        "Option B | Tree removal with debris haul-away | $650 | Remove the tree and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 20,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs two cedars removed by pool. Option A: remove trees and leave debris for 1000. Option B: includes Option A plus cleanup and hauling for 1500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Cedar tree removal | $1,000 | Remove the two cedar trees near the pool and leave the debris on site.",
+        "Option B | Cedar tree removal with debris haul-away | $1,500 | Remove the two cedar trees near the pool and haul away the resulting debris and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 21,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed from backyard. Option A: remove tree only for 1250. Option B: includes Option A plus stump grinding for 1750.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $1,250 | Remove the maple tree.",
+        "Option B | Maple tree removal with stump grinding | $1,750 | Remove the maple tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 22,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed near fence line. Option A: cut tree down and leave brush for 1550. Option B: includes Option A plus haul away brush for 2050.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,550 | Remove the oak tree near the fence line and leave the brush on site.",
+        "Option B | Oak tree removal with brush haul-away | $2,050 | Remove the oak tree near the fence line and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 23,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs dead pine removed. Option A: remove tree and stack logs for 950. Option B: includes Option A plus cleanup for 1300.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Pine tree removal | $950 | Remove the pine tree and leave the logs on site.",
+        "Option B | Pine tree removal with brush cleanup | $1,300 | Remove the pine tree and leave the logs on site and clean up the work area."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "stack logs",
+          "final_value": "leave logs",
+          "missing_source_values": [
+            "stack logs"
+          ],
+          "status": "changed",
+          "message": "Option A source says debris disposition is \"stack logs\", but final TD2 says \"leave logs\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "stack logs, cleanup",
+          "final_value": "leave logs, cleanup",
+          "missing_source_values": [
+            "stack logs"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"stack logs\", but final TD2 says \"leave logs, cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option A source says debris disposition is \"stack logs\", but final TD2 says \"leave logs\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"stack logs\", but final TD2 says \"leave logs, cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Option A source says condition is \"dead\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"dead\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 24,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs large ash removed by driveway. Option A: remove tree only for 1700. Option B: includes Option A plus hauling and stump grinding for 2600.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Ash tree removal | $1,700 | Remove the ash tree near the driveway.",
+        "Option B | Ash tree removal with stump grinding | $2,600 | Remove the ash tree near the driveway and grind the stump."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+        "SOURCE_OPTION_ACTION_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option B",
+          "code": "SOURCE_OPTION_ACTION_OMITTED",
+          "fact": "work_actions",
+          "source_value": "remove tree, grind stump, haul debris",
+          "final_value": "remove tree, grind stump",
+          "missing_source_values": [
+            "haul debris"
+          ],
+          "status": "changed",
+          "message": "Option B source says work actions is \"haul debris\", but final TD2 says \"remove tree, grind stump\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "haul debris",
+          "final_value": "",
+          "missing_source_values": [
+            "haul debris"
+          ],
+          "status": "missing",
+          "message": "Option B source says debris disposition is \"haul debris\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_OPTION_ACTION_OMITTED: Option B source says work actions is \"haul debris\", but final TD2 says \"remove tree, grind stump\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"haul debris\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Safety/access note: Remove one tree near the driveway.",
+        "Safety/access note: Option A includes safety or access wording for Tree Dude review: Ash tree removal Remove the ash tree near the driveway.",
+        "Safety/access note: Option B includes safety or access wording for Tree Dude review: Ash tree removal with stump grinding Remove the ash tree near the driveway and grind the stump."
+      ],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 25,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cedar tree removed by porch. Option A: remove tree and leave debris for 750. Option B: includes Option A plus haul away and clean area for 1150.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Cedar tree removal | $750 | Remove the cedar tree near the porch and leave the debris on site.",
+        "Option B | Cedar tree removal with debris haul-away | $1,150 | Remove the cedar tree near the porch and haul away the resulting debris and clean the work area."
+      ],
+      "blocker_codes": [
+        "SOURCE_TARGET_QUALIFIER_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by porch",
+          "final_value": "",
+          "missing_source_values": [
+            "by porch"
+          ],
+          "status": "missing",
+          "message": "Option A source says target/location qualifier is \"by porch\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by porch",
+          "final_value": "",
+          "missing_source_values": [
+            "by porch"
+          ],
+          "status": "missing",
+          "message": "Option B source says target/location qualifier is \"by porch\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option A source says target/location qualifier is \"by porch\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option B source says target/location qualifier is \"by porch\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 26,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed beside shed. Option A: cut tree down only for 1100. Option B: includes Option A plus stump grinding for 1550.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $1,100 | Remove the maple tree beside the shed.",
+        "Option B | Maple tree removal with stump grinding | $1,550 | Remove the maple tree beside the shed and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 27,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed near house. Option A: remove tree and leave wood for 2200. Option B: includes Option A plus haul away debris and cleanup for 3000.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | remove tree and leave wood | $2,200 | remove tree and leave wood",
+        "Option B | remove tree and haul away debris and cleanup | $3,000 | remove tree and haul away debris and cleanup"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "oak",
+          "final_value": "",
+          "missing_source_values": [
+            "oak"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "oak",
+          "final_value": "",
+          "missing_source_values": [
+            "oak"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 28,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs pine removed in backyard. Option A: remove tree only for 1000. Option B: includes Option A plus hauling for 1400.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Pine tree removal | $1,000 | Remove the pine tree.",
+        "Option B | Pine tree removal with debris haul-away | $1,400 | Remove the pine tree and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 29,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs elm removed near alley. Option A: cut down tree and leave debris for 900. Option B: includes Option A plus full cleanup for 1350.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Elm tree removal | $900 | Remove the elm tree near the alley and leave the debris on site.",
+        "Option B | Elm tree removal with brush cleanup | $1,350 | Remove the elm tree near the alley and clean up the debris."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "leave debris, cleanup",
+          "final_value": "cleanup",
+          "missing_source_values": [
+            "leave debris"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"leave debris\", but final TD2 says \"cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"leave debris\", but final TD2 says \"cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 30,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs walnut tree removed. Option A: remove tree and leave logs for 2000. Option B: includes Option A plus stump grinding and haul away for 2900.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Walnut tree removal | $2,000 | Remove the walnut tree and leave the logs on site.",
+        "Option B | Walnut tree removal with stump grinding | $2,900 | Remove the walnut tree and grind the stump."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+        "SOURCE_OPTION_ACTION_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option B",
+          "code": "SOURCE_OPTION_ACTION_OMITTED",
+          "fact": "work_actions",
+          "source_value": "remove tree, grind stump, haul debris",
+          "final_value": "remove tree, grind stump",
+          "missing_source_values": [
+            "haul debris"
+          ],
+          "status": "changed",
+          "message": "Option B source says work actions is \"haul debris\", but final TD2 says \"remove tree, grind stump\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "haul debris",
+          "final_value": "",
+          "missing_source_values": [
+            "haul debris"
+          ],
+          "status": "missing",
+          "message": "Option B source says debris disposition is \"haul debris\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_OPTION_ACTION_OMITTED: Option B source says work actions is \"haul debris\", but final TD2 says \"remove tree, grind stump\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"haul debris\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 31,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs two dead ash trees removed. Option A: remove both trees only for 1800. Option B: includes Option A plus brush haul for 2400.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Ash tree removal | $1,800 | Remove the two dead ash trees.",
+        "Option B | Ash tree removal with brush haul-away | $2,400 | Remove the two dead ash trees and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 32,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed near garage. Option A: remove tree and leave stump for 1300. Option B: includes Option A plus stump grinding for 1800.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | remove tree and leave stump | $1,300 | remove tree and leave stump",
+        "Option B | remove tree and leave stump and stump grinding | $1,800 | remove tree and leave stump and stump grinding"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "maple",
+          "final_value": "",
+          "missing_source_values": [
+            "maple"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "maple",
+          "final_value": "",
+          "missing_source_values": [
+            "maple"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 33,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs pine removed near fence. Option A: remove tree and leave brush for 850. Option B: includes Option A plus haul away and rake for 1250.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | remove tree and leave brush | $850 | remove tree and leave brush",
+        "Option B | remove tree and haul away and rake | $1,250 | remove tree and haul away and rake"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "pine",
+          "final_value": "",
+          "missing_source_values": [
+            "pine"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "pine",
+          "final_value": "",
+          "missing_source_values": [
+            "pine"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 34,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed from side yard. Option A: remove tree only for 1600. Option B: includes Option A plus full cleanup for 2250.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,600 | Remove the oak tree.",
+        "Option B | Oak tree removal with brush cleanup | $2,250 | Remove the oak tree and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 35,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cherry removed near driveway. Option A: cut tree down and stack wood for 600. Option B: includes Option A plus haul away debris for 950.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Cherry tree removal | $600 | Remove the cherry tree near the driveway and leave the wood on site.",
+        "Option B | Cherry tree removal with debris haul-away | $950 | Remove the cherry tree near the driveway and haul away the resulting debris."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "stack wood",
+          "final_value": "leave wood",
+          "missing_source_values": [
+            "stack wood"
+          ],
+          "status": "changed",
+          "message": "Option A source says debris disposition is \"stack wood\", but final TD2 says \"leave wood\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "stack wood, haul debris",
+          "final_value": "haul debris",
+          "missing_source_values": [
+            "stack wood"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"stack wood\", but final TD2 says \"haul debris\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option A source says debris disposition is \"stack wood\", but final TD2 says \"leave wood\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"stack wood\", but final TD2 says \"haul debris\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Safety/access note: Customer needs cherry removed near driveway.",
+        "Safety/access note: Option A includes safety or access wording for Tree Dude review: Cherry tree removal Remove the cherry tree near the driveway and leave the wood on site.",
+        "Safety/access note: Option B includes safety or access wording for Tree Dude review: Cherry tree removal with debris haul-away Remove the cherry tree near the driveway and haul away the resulting debris."
+      ],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 36,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs big maple removed. Option A: remove tree only for 2100. Option B: includes Option A plus hauling and cleanup for 2800.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $2,100 | Remove the maple tree.",
+        "Option B | Maple tree removal with debris haul-away | $2,800 | Remove the maple tree and haul away the resulting debris and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 37,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs locust removed by fence. Option A: fell tree and leave debris for 1500. Option B: includes Option A plus chip brush and haul away for 2200.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | leave debris | $1,500 | leave debris",
+        "Option B | fell tree and chip brush and haul away | $2,200 | fell tree and chip brush and haul away"
+      ],
+      "blocker_codes": [
+        "MISSING_BASE_CHOICE",
+        "SOURCE_SPECIES_CHANGED",
+        "SOURCE_TARGET_QUALIFIER_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "locust",
+          "final_value": "",
+          "missing_source_values": [
+            "locust"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option A",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by fence",
+          "final_value": "",
+          "missing_source_values": [
+            "by fence"
+          ],
+          "status": "missing",
+          "message": "Option A source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "locust",
+          "final_value": "",
+          "missing_source_values": [
+            "locust"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by fence",
+          "final_value": "",
+          "missing_source_values": [
+            "by fence"
+          ],
+          "status": "missing",
+          "message": "Option B source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option A source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option B source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 38,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cedar removed near garage. Option A: remove tree only for 700. Option B: includes Option A plus stump grinding for 1050.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Cedar tree removal | $700 | Remove the cedar tree near the garage.",
+        "Option B | Cedar tree removal with stump grinding | $1,050 | Remove the cedar tree near the garage and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 39,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed behind barn. Option A: remove tree and leave logs for 1900. Option B: includes Option A plus haul away logs and brush for 2600.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,900 | Remove the oak tree behind the barn and leave the logs on site.",
+        "Option B | Oak tree removal with brush haul-away | $2,600 | Remove the oak tree behind the barn and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 40,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs pine removed by shed. Option A: cut tree down only for 950. Option B: includes Option A plus cleanup for 1300.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Pine tree removal | $950 | Remove the pine tree by the shed.",
+        "Option B | Pine tree removal with brush cleanup | $1,300 | Remove the pine tree by the shed and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 41,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed near patio. Option A: remove tree and leave wood for 1150. Option B: includes Option A plus haul away and rake area for 1650.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | remove tree and leave wood | $1,150 | remove tree and leave wood",
+        "Option B | remove tree and haul away and rake area | $1,650 | remove tree and haul away and rake area"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "maple",
+          "final_value": "",
+          "missing_source_values": [
+            "maple"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "maple",
+          "final_value": "",
+          "missing_source_values": [
+            "maple"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 42,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs elm removed from backyard. Option A: remove tree only for 900. Option B: includes Option A plus stump grinding for 1350.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Elm tree removal | $900 | Remove the elm tree.",
+        "Option B | Elm tree removal with stump grinding | $1,350 | Remove the elm tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 43,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs ash removed near driveway. Option A: cut down tree and leave debris for 1250. Option B: includes Option A plus hauling for 1750.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Ash tree removal | $1,250 | Remove the ash tree near the driveway and leave the debris on site.",
+        "Option B | Ash tree removal with debris haul-away | $1,750 | Remove the ash tree near the driveway and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Safety/access note: Customer needs ash removed near driveway.",
+        "Safety/access note: Option A includes safety or access wording for Tree Dude review: Ash tree removal Remove the ash tree near the driveway and leave the debris on site.",
+        "Safety/access note: Option B includes safety or access wording for Tree Dude review: Ash tree removal with debris haul-away Remove the ash tree near the driveway and haul away the resulting debris."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 44,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs sycamore removed by creek. Option A: remove tree only for 2600. Option B: includes Option A plus cleanup and debris haul for 3400.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Sycamore tree removal | $2,600 | Remove the sycamore tree near the creek.",
+        "Option B | Sycamore tree removal with debris haul-away | $3,400 | Remove the sycamore tree near the creek and haul away the resulting debris and clean up the work area."
+      ],
+      "blocker_codes": [
+        "SOURCE_TARGET_QUALIFIER_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by creek",
+          "final_value": "",
+          "missing_source_values": [
+            "by creek"
+          ],
+          "status": "missing",
+          "message": "Option A source says target/location qualifier is \"by creek\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by creek",
+          "final_value": "",
+          "missing_source_values": [
+            "by creek"
+          ],
+          "status": "missing",
+          "message": "Option B source says target/location qualifier is \"by creek\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option A source says target/location qualifier is \"by creek\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option B source says target/location qualifier is \"by creek\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 45,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs spruce removed near front walk. Option A: remove tree and leave brush for 800. Option B: includes Option A plus chip brush and haul away for 1200.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | remove tree and leave brush | $800 | remove tree and leave brush",
+        "Option B | remove tree and chip brush and haul away | $1,200 | remove tree and chip brush and haul away"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "spruce",
+          "final_value": "",
+          "missing_source_values": [
+            "spruce"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"spruce\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "spruce",
+          "final_value": "",
+          "missing_source_values": [
+            "spruce"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"spruce\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"spruce\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"spruce\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 46,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs sweet gum removed. Option A: remove tree only for 1400. Option B: includes Option A plus stump grinding for 1950.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Tree removal | $1,400 | Remove the tree.",
+        "Option B | Tree removal with stump grinding | $1,950 | Remove the tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 47,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs two small maples removed. Option A: remove both trees and leave debris for 1600. Option B: includes Option A plus full cleanup for 2250.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Maple tree removal | $1,600 | Remove the two maple trees and leave the debris on site.",
+        "Option B | Maple tree removal with brush cleanup | $2,250 | Remove the two maple trees and clean up the debris."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "leave debris, cleanup",
+          "final_value": "cleanup",
+          "missing_source_values": [
+            "leave debris"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"leave debris\", but final TD2 says \"cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"leave debris\", but final TD2 says \"cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 48,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs dead oak removed near road. Option A: remove tree only for 1500. Option B: includes Option A plus hauling and cleanup for 2100.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,500 | Remove the oak tree near the road.",
+        "Option B | Oak tree removal with debris haul-away | $2,100 | Remove the oak tree near the road and haul away the resulting debris and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Option A source says condition is \"dead\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"dead\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 49,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs birch removed by deck. Option A: remove tree and stack wood for 1000. Option B: includes Option A plus haul away debris for 1450.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | Birch tree removal | $1,000 | Remove the birch tree near the deck and leave the wood on site.",
+        "Option B | Birch tree removal with debris haul-away | $1,450 | Remove the birch tree near the deck and haul away the resulting debris."
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "stack wood",
+          "final_value": "leave wood",
+          "missing_source_values": [
+            "stack wood"
+          ],
+          "status": "changed",
+          "message": "Option A source says debris disposition is \"stack wood\", but final TD2 says \"leave wood\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "stack wood, haul debris",
+          "final_value": "haul debris",
+          "missing_source_values": [
+            "stack wood"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"stack wood\", but final TD2 says \"haul debris\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option A source says debris disposition is \"stack wood\", but final TD2 says \"leave wood\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"stack wood\", but final TD2 says \"haul debris\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 50,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs hickory removed beside garage. Option A: cut down tree and leave wood for 1800. Option B: includes Option A plus stump grinding and cleanup for 2600.",
+      "ready": false,
+      "status": "blocked",
+      "final_options": [
+        "Option A | cut down tree and leave wood | $1,800 | cut down tree and leave wood",
+        "Option B | cut down tree and stump grinding and cleanup | $2,600 | cut down tree and stump grinding and cleanup"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "hickory",
+          "final_value": "",
+          "missing_source_values": [
+            "hickory"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "hickory",
+          "final_value": "",
+          "missing_source_values": [
+            "hickory"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "leave wood, cleanup",
+          "final_value": "cleanup",
+          "missing_source_values": [
+            "leave wood"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"leave wood\", but final TD2 says \"cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"leave wood\", but final TD2 says \"cleanup\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [],
+      "human_verdict": "blocked_with_actionable_source_or_structure_issue"
+    },
+    {
+      "case": 51,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed at 148 Maple St. Option A remove only 1200. Hauling 500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $1,200 | Remove the maple tree.",
+        "Option B | Maple tree removal with debris haul-away | $1,700 | Remove the maple tree and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,200 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $1,700 to TD2 as removed. a remove only hauling and haul away.",
+        "Replaced standalone add-on amount $500 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 52,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed beside garage. Option A cut tree and leave wood 1500. Add haul away brush and logs 600.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | cut tree and leave wood | $1,500 | cut tree and leave wood",
+        "Option B | remove one tree beside the garage and haul away brush and logs | $2,100 | remove one tree beside the garage and haul away brush and logs"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,500 to TD2 as cut tree and leave wood.",
+        "Added computed high-confidence add-on option $2,100 to TD2 as remove one tree beside the garage and haul away brush and logs.",
+        "Replaced standalone add-on amount $600 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 53,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs dead ash removed. Option A remove tree only 900. Plus stump grinding 450.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Ash tree removal | $900 | Remove the dead ash tree.",
+        "Option B | Ash tree removal with stump grinding | $1,350 | Remove the dead ash tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $900 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $1,350 to TD2 as removed. a remove tree only plus and stump grinding.",
+        "Replaced standalone add-on amount $450 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 54,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs pine removed near driveway. Option A cut down and leave debris 1100. Add cleanup 350.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Pine tree removal | $1,100 | Remove the pine tree near the driveway and leave the debris on site.",
+        "Option B | Pine tree removal with brush cleanup | $1,450 | Remove the pine tree near the driveway and clean up the debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,100 to TD2 as cut down and leave debris.",
+        "Added computed high-confidence add-on option $1,450 to TD2 as removed a cut down and leave debris add cleanup.",
+        "Replaced standalone add-on amount $350 with a computed bundled option.",
+        "Safety/access note: Customer needs pine removed near driveway.",
+        "Safety/access note: Option A includes safety or access wording for Tree Dude review: Pine tree removal Remove the pine tree near the driveway and leave the debris on site.",
+        "Safety/access note: Option B includes safety or access wording for Tree Dude review: Pine tree removal with brush cleanup Remove the pine tree near the driveway and clean up the debris."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 55,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs walnut removed by fence. Option A remove only 1800. Stump grinding 700.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Walnut tree removal | $1,800 | Remove the walnut tree by the fence.",
+        "Option B | Walnut tree removal with stump grinding | $2,500 | Remove the walnut tree by the fence and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,800 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $2,500 to TD2 as removed by fence. a remove only and Stump grinding.",
+        "Replaced standalone add-on amount $700 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 56,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cedar removed near shed. Option A cut and stack wood 800. Haul away 400.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Cedar tree removal | $800 | Remove the cedar tree near shed and leave the wood on site.",
+        "Option B | Cedar tree removal with debris haul-away | $1,200 | Remove the cedar tree near shed and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $800 to TD2 as cut and stack wood.",
+        "Added computed high-confidence add-on option $1,200 to TD2 as wood and Haul away.",
+        "Replaced standalone add-on amount $400 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 57,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs elm removed from front yard. Option A remove tree only 1000. And also cleanup and rake 450.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Elm tree removal | $1,000 | Remove the elm tree.",
+        "Option B | Elm tree removal with brush cleanup | $1,450 | Remove the elm tree and rake up the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,000 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $1,450 to TD2 as removed from front yard. a remove tree only and also cleanup and rake and And cleanup and rake.",
+        "Replaced standalone add-on amount $450 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 58,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs two small pines removed. Option A remove both and leave debris 1400. Add brush and log hauling 600.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Pine tree removal | $1,400 | Remove the two pine trees and leave the debris on site.",
+        "Option B | Pine tree removal with brush cleanup | $2,000 | Remove the two pine trees and clean up the debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,400 to TD2 as remove both and leave debris.",
+        "Added computed high-confidence add-on option $2,000 to TD2 as two small pines removed. a remove both and leave debris add brush and log hauling and brush and log haul away.",
+        "Replaced standalone add-on amount $600 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 59,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs large sycamore removed. Option A remove only 2400. Plus stump grind 700.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Sycamore tree removal | $2,400 | Remove the sycamore tree.",
+        "Option B | Sycamore tree removal with stump grinding | $3,100 | Remove the sycamore tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $2,400 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $3,100 to TD2 as removed. a remove only plus and stump grind.",
+        "Replaced standalone add-on amount $700 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 60,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed by alley. Option A cut tree and leave wood 1300. Haul and cleanup 550.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | cut tree and leave wood | $1,300 | cut tree and leave wood",
+        "Option B | remove one tree near the alley and Haul and cleanup | $1,850 | remove one tree near the alley and Haul and cleanup"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,300 to TD2 as cut tree and leave wood.",
+        "Added computed high-confidence add-on option $1,850 to TD2 as remove one tree near the alley and Haul and cleanup.",
+        "Replaced standalone add-on amount $550 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 61,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs dead oak removed by barn. Option A cut down only 1600. Add haul away wood and brush 700.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,600 | Remove the oak tree next to the barn.",
+        "Option B | Oak tree removal with brush haul-away | $2,300 | Remove the oak tree next to the barn and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,600 to TD2 as cut down only.",
+        "Added computed high-confidence add-on option $2,300 to TD2 as removed by barn. a cut down only add and haul away wood and brush.",
+        "Replaced standalone add-on amount $700 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 62,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cherry tree removed near patio. Option A remove tree only 700. Cleanup 300.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Cherry tree removal | $700 | Remove the cherry tree near the patio.",
+        "Option B | Cherry tree removal with brush cleanup | $1,000 | Remove the cherry tree near the patio and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $700 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $1,000 to TD2 as remove cherry near the patio and Cleanup.",
+        "Replaced standalone add-on amount $300 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 63,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs birch removed by gate. Option A remove only 850. Stump grinding 400.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Birch tree removal | $850 | Remove the birch tree by gate.",
+        "Option B | Birch tree removal with stump grinding | $1,250 | Remove the birch tree by gate and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $850 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $1,250 to TD2 as removed by gate. a remove only and Stump grinding.",
+        "Replaced standalone add-on amount $400 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 64,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs locust removed. Option A fell tree and section trunk 1750. Add chip brush and haul debris 1000.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | fell tree and section trunk | $1,750 | fell tree and section trunk",
+        "Option B | removed. a fell tree and section trunk add chip brush and chip brush and haul debris | $2,750 | removed. a fell tree and section trunk add chip brush and chip brush and haul debris"
+      ],
+      "blocker_codes": [
+        "MISSING_BASE_CHOICE"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,750 to TD2 as fell tree and section trunk.",
+        "Added computed high-confidence add-on option $2,750 to TD2 as removed. a fell tree and section trunk add chip brush and chip brush and haul debris.",
+        "Replaced standalone add-on amount $1,000 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 65,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs spruce removed near driveway. Option A remove and leave logs 1200. Hauling 450.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Spruce tree removal | $1,200 | Remove the spruce tree near the driveway and leave the logs on site.",
+        "Option B | Spruce tree removal with debris haul-away | $1,650 | Remove the spruce tree near the driveway and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,200 to TD2 as remove and leave logs.",
+        "Added computed high-confidence add-on option $1,650 to TD2 as removed a remove and leave logs hauling and haul away.",
+        "Replaced standalone add-on amount $450 with a computed bundled option.",
+        "Safety/access note: Customer needs spruce removed near driveway.",
+        "Safety/access note: Option A includes safety or access wording for Tree Dude review: Spruce tree removal Remove the spruce tree near the driveway and leave the logs on site.",
+        "Safety/access note: Option B includes safety or access wording for Tree Dude review: Spruce tree removal with debris haul-away Remove the spruce tree near the driveway and haul away the resulting debris."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 66,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs poplar removed behind house. Option A remove tree only 1900. Full cleanup 600.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Poplar tree removal | $1,900 | Remove the poplar tree behind the house.",
+        "Option B | Poplar tree removal with brush cleanup | $2,500 | Remove the poplar tree behind the house and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,900 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $2,500 to TD2 as removed behind house. a remove tree only full cleanup.",
+        "Replaced standalone add-on amount $600 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 67,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs sweet gum removed by sidewalk. Option A remove tree and leave stump 1450. Add stump grinding 550.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | remove tree and leave stump | $1,450 | remove tree and leave stump",
+        "Option B | removed by sidewalk. a remove tree and leave stump add and stump grinding | $2,000 | removed by sidewalk. a remove tree and leave stump add and stump grinding"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,450 to TD2 as remove tree and leave stump.",
+        "Added computed high-confidence add-on option $2,000 to TD2 as removed by sidewalk. a remove tree and leave stump add and stump grinding.",
+        "Replaced standalone add-on amount $550 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 68,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs hickory removed by garage. Option A cut and leave wood 2100. Haul away and rake area 750.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | cut and leave wood | $2,100 | cut and leave wood",
+        "Option B | leave wood and Haul away and rake area | $2,850 | leave wood and Haul away and rake area"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $2,100 to TD2 as cut and leave wood.",
+        "Added computed high-confidence add-on option $2,850 to TD2 as leave wood and Haul away and rake area.",
+        "Replaced standalone add-on amount $750 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 69,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs small ornamental tree removed. Option A remove tree only 450. Haul away debris 200.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Tree removal | $450 | Remove the tree.",
+        "Option B | Tree removal with debris haul-away | $650 | Remove the tree and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $450 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $650 to TD2 as removed. a remove tree only and Haul away debris.",
+        "Replaced standalone add-on amount $200 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 70,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs two cedars removed by pool. Option A remove trees and leave debris 1000. Add cleanup and hauling 500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Cedar tree removal | $1,000 | Remove the two cedar trees near the pool and leave the debris on site.",
+        "Option B | Cedar tree removal with debris haul-away | $1,500 | Remove the two cedar trees near the pool and haul away the resulting debris and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,000 to TD2 as remove trees and leave debris.",
+        "Added computed high-confidence add-on option $1,500 to TD2 as two cedars removed by pool. a remove trees and leave debris add cleanup and hauling and cleanup and haul away.",
+        "Replaced standalone add-on amount $500 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 71,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed from backyard. Option A remove tree only 1250. Stump grind 500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $1,250 | Remove the maple tree.",
+        "Option B | Maple tree removal with stump grinding | $1,750 | Remove the maple tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,250 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $1,750 to TD2 as removed from backyard. a remove tree only and Stump grind.",
+        "Replaced standalone add-on amount $500 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 72,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed near fence. Option A cut down and leave brush 1550. Add brush hauling 500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,550 | Remove the oak tree near fence and leave the brush on site.",
+        "Option B | Oak tree removal with brush cleanup | $2,050 | Remove the oak tree near fence and clean up the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,550 to TD2 as cut down and leave brush.",
+        "Added computed high-confidence add-on option $2,050 to TD2 as removed near fence. a cut down and leave brush add brush hauling and brush haul away.",
+        "Replaced standalone add-on amount $500 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 73,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs dead pine removed. Option A remove tree and stack logs 950. Cleanup 350.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Pine tree removal | $950 | Remove the pine tree and leave the logs on site.",
+        "Option B | Pine tree removal with brush cleanup | $1,300 | Remove the pine tree and leave the logs on site and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $950 to TD2 as remove tree and stack logs.",
+        "Added computed high-confidence add-on option $1,300 to TD2 as removed. a remove tree and stack logs cleanup.",
+        "Replaced standalone add-on amount $350 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 74,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs large ash removed by driveway. Option A remove only 1700. Hauling plus stump grinding 900.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Ash tree removal | $1,700 | Remove the ash tree by driveway.",
+        "Option B | Ash tree removal with stump grinding | $2,600 | Remove the ash tree by driveway and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,700 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $2,600 to TD2 as removed by driveway. a remove only hauling plus and haul away stump grinding.",
+        "Replaced standalone add-on amount $900 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 75,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cedar removed by porch. Option A remove tree and leave debris 750. Add haul away and clean area 400.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Cedar tree removal | $750 | Remove the cedar tree near the porch and leave the debris on site.",
+        "Option B | Cedar tree removal with debris haul-away | $1,150 | Remove the cedar tree near the porch and haul away the resulting debris and clean the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $750 to TD2 as remove tree and leave debris.",
+        "Added computed high-confidence add-on option $1,150 to TD2 as removed by porch. a remove tree and leave debris add and haul away and clean area.",
+        "Replaced standalone add-on amount $400 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 76,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed beside shed. Option A cut down only 1100. Stump grinding 450.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $1,100 | Remove the maple tree beside shed.",
+        "Option B | Maple tree removal with stump grinding | $1,550 | Remove the maple tree beside shed and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,100 to TD2 as cut down only.",
+        "Added computed high-confidence add-on option $1,550 to TD2 as removed beside shed. a cut down only and Stump grinding.",
+        "Replaced standalone add-on amount $450 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 77,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed near house. Option A remove tree and leave wood 2200. Add haul away debris and cleanup 800.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | remove tree and leave wood | $2,200 | remove tree and leave wood",
+        "Option B | removed near house. a remove tree and leave wood add and haul away debris and cleanup | $3,000 | removed near house. a remove tree and leave wood add and haul away debris and cleanup"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $2,200 to TD2 as remove tree and leave wood.",
+        "Added computed high-confidence add-on option $3,000 to TD2 as removed near house. a remove tree and leave wood add and haul away debris and cleanup.",
+        "Replaced standalone add-on amount $800 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 78,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs pine removed in backyard. Option A remove only 1000. Haul away 400.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Pine tree removal | $1,000 | Remove the pine tree.",
+        "Option B | Pine tree removal with debris haul-away | $1,400 | Remove the pine tree and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,000 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $1,400 to TD2 as removed in backyard. a remove only and Haul away.",
+        "Replaced standalone add-on amount $400 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 79,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs elm removed near alley. Option A cut down and leave debris 900. Full cleanup 450.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Elm tree removal | $900 | Remove the elm tree near the alley and leave the debris on site.",
+        "Option B | Elm tree removal with brush cleanup | $1,350 | Remove the elm tree near the alley and clean up the debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $900 to TD2 as cut down and leave debris.",
+        "Added computed high-confidence add-on option $1,350 to TD2 as removed near alley. a cut down and leave debris full cleanup.",
+        "Replaced standalone add-on amount $450 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 80,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs walnut removed. Option A remove tree and leave logs 2000. Add stump grinding and haul away 900.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Walnut tree removal | $2,000 | Remove the walnut tree and leave the logs on site.",
+        "Option B | Walnut tree removal with stump grinding | $2,900 | Remove the walnut tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $2,000 to TD2 as remove tree and leave logs.",
+        "Added computed high-confidence add-on option $2,900 to TD2 as removed. a remove tree and leave logs add and stump grinding and haul away.",
+        "Replaced standalone add-on amount $900 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 81,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs two dead ash trees removed. Option A remove both only 1800. Brush haul 600.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Ash tree removal | $1,800 | Remove the two dead ash trees.",
+        "Option B | Ash tree removal with brush haul-away | $2,400 | Remove the two dead ash trees and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,800 to TD2 as remove both only.",
+        "Added computed high-confidence add-on option $2,400 to TD2 as remove two dead ash trees and Brush haul.",
+        "Replaced standalone add-on amount $600 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 82,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed near garage. Option A remove tree and leave stump 1300. Stump grind 500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | remove tree and leave stump | $1,300 | remove tree and leave stump",
+        "Option B | remove one tree near the garage and Stump grind | $1,800 | remove one tree near the garage and Stump grind"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,300 to TD2 as remove tree and leave stump.",
+        "Added computed high-confidence add-on option $1,800 to TD2 as remove one tree near the garage and Stump grind.",
+        "Replaced standalone add-on amount $500 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 83,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs pine removed near fence. Option A remove and leave brush 850. Haul away and rake 400.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | remove and leave brush | $850 | remove and leave brush",
+        "Option B | removed near fence. a remove and leave brush and Haul away and rake | $1,250 | removed near fence. a remove and leave brush and Haul away and rake"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $850 to TD2 as remove and leave brush.",
+        "Added computed high-confidence add-on option $1,250 to TD2 as removed near fence. a remove and leave brush and Haul away and rake.",
+        "Replaced standalone add-on amount $400 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 84,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed from side yard. Option A remove only 1600. Add full cleanup 650.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,600 | Remove the oak tree.",
+        "Option B | Oak tree removal with brush cleanup | $2,250 | Remove the oak tree and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,600 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $2,250 to TD2 as removed from side yard. a remove only add full cleanup.",
+        "Replaced standalone add-on amount $650 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 85,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cherry removed near driveway. Option A cut down and stack wood 600. Haul away debris 350.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Cherry tree removal | $600 | Remove the cherry tree near the driveway and leave the wood on site.",
+        "Option B | Cherry tree removal with debris haul-away | $950 | Remove the cherry tree near the driveway and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $600 to TD2 as cut down and stack wood.",
+        "Added computed high-confidence add-on option $950 to TD2 as removed a cut down and stack wood and Haul away debris.",
+        "Replaced standalone add-on amount $350 with a computed bundled option.",
+        "Safety/access note: Customer needs cherry removed near driveway.",
+        "Safety/access note: Option A includes safety or access wording for Tree Dude review: Cherry tree removal Remove the cherry tree near the driveway and leave the wood on site.",
+        "Safety/access note: Option B includes safety or access wording for Tree Dude review: Cherry tree removal with debris haul-away Remove the cherry tree near the driveway and haul away the resulting debris."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 86,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs big maple removed. Option A remove only 2100. Hauling and cleanup 700.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $2,100 | Remove the maple tree.",
+        "Option B | Maple tree removal with debris haul-away | $2,800 | Remove the maple tree and haul away the resulting debris and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $2,100 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $2,800 to TD2 as removed. a remove only hauling and cleanup and haul away and cleanup.",
+        "Replaced standalone add-on amount $700 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 87,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs locust removed by fence. Option A fell tree and leave debris 1500. Chip brush and haul away 700.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | fell tree and leave debris | $1,500 | fell tree and leave debris",
+        "Option B | remove one tree near the fence and Chip brush and haul away | $2,200 | remove one tree near the fence and Chip brush and haul away"
+      ],
+      "blocker_codes": [
+        "MISSING_BASE_CHOICE"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,500 to TD2 as fell tree and leave debris.",
+        "Added computed high-confidence add-on option $2,200 to TD2 as remove one tree near the fence and Chip brush and haul away.",
+        "Replaced standalone add-on amount $700 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 88,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs cedar removed near garage. Option A remove tree only 700. Stump grinding 350.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Cedar tree removal | $700 | Remove the cedar tree near the garage.",
+        "Option B | Cedar tree removal with stump grinding | $1,050 | Remove the cedar tree near the garage and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $700 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $1,050 to TD2 as remove one tree near the garage and Stump grinding.",
+        "Replaced standalone add-on amount $350 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 89,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs oak removed behind barn. Option A remove tree and leave logs 1900. Haul logs and brush 700.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,900 | Remove the oak tree behind the barn and leave the logs on site.",
+        "Option B | Oak tree removal with brush haul-away | $2,600 | Remove the oak tree behind the barn and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,900 to TD2 as remove tree and leave logs.",
+        "Added computed high-confidence add-on option $2,600 to TD2 as remove one tree behind the barn and Haul logs and brush.",
+        "Replaced standalone add-on amount $700 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 90,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs pine removed by shed. Option A cut tree down only 950. Cleanup 350.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Pine tree removal | $950 | Remove the pine tree by the shed.",
+        "Option B | Pine tree removal with brush cleanup | $1,300 | Remove the pine tree by the shed and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $950 to TD2 as cut tree down only.",
+        "Added computed high-confidence add-on option $1,300 to TD2 as remove one tree near the shed and Cleanup.",
+        "Replaced standalone add-on amount $350 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 91,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs maple removed near patio. Option A remove and leave wood 1150. Haul away and rake 500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | remove and leave wood | $1,150 | remove and leave wood",
+        "Option B | removed near patio. a remove and leave wood and Haul away and rake | $1,650 | removed near patio. a remove and leave wood and Haul away and rake"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,150 to TD2 as remove and leave wood.",
+        "Added computed high-confidence add-on option $1,650 to TD2 as removed near patio. a remove and leave wood and Haul away and rake.",
+        "Replaced standalone add-on amount $500 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 92,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs elm removed from backyard. Option A remove tree only 900. Stump grinding 450.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Elm tree removal | $900 | Remove the elm tree.",
+        "Option B | Elm tree removal with stump grinding | $1,350 | Remove the elm tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $900 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $1,350 to TD2 as removed from backyard. a remove tree only and Stump grinding.",
+        "Replaced standalone add-on amount $450 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 93,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs ash removed near driveway. Option A cut down and leave debris 1250. Hauling 500.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Ash tree removal | $1,250 | Remove the ash tree near the driveway and leave the debris on site.",
+        "Option B | Ash tree removal with debris haul-away | $1,750 | Remove the ash tree near the driveway and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,250 to TD2 as cut down and leave debris.",
+        "Added computed high-confidence add-on option $1,750 to TD2 as removed a cut down and leave debris hauling and haul away.",
+        "Replaced standalone add-on amount $500 with a computed bundled option.",
+        "Safety/access note: Customer needs ash removed near driveway.",
+        "Safety/access note: Option A includes safety or access wording for Tree Dude review: Ash tree removal Remove the ash tree near the driveway and leave the debris on site.",
+        "Safety/access note: Option B includes safety or access wording for Tree Dude review: Ash tree removal with debris haul-away Remove the ash tree near the driveway and haul away the resulting debris."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 94,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs sycamore removed by creek. Option A remove only 2600. Cleanup and debris haul 800.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Sycamore tree removal | $2,600 | Remove the sycamore tree by creek.",
+        "Option B | Sycamore tree removal with debris haul-away | $3,400 | Remove the sycamore tree by creek and haul away the resulting debris and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $2,600 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $3,400 to TD2 as removed by creek. a remove only cleanup and debris and Cleanup and debris haul.",
+        "Replaced standalone add-on amount $800 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 95,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs spruce removed near front walk. Option A remove tree and leave brush 800. Chip brush and haul away 400.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | remove tree and leave brush | $800 | remove tree and leave brush",
+        "Option B | removed near front walk. a remove tree and leave brush chip brush and Chip brush and haul away | $1,200 | removed near front walk. a remove tree and leave brush chip brush and Chip brush and haul away"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $800 to TD2 as remove tree and leave brush.",
+        "Added computed high-confidence add-on option $1,200 to TD2 as removed near front walk. a remove tree and leave brush chip brush and Chip brush and haul away.",
+        "Replaced standalone add-on amount $400 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 96,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs sweet gum removed. Option A remove only 1400. Add stump grinding 550.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Tree removal | $1,400 | Remove the tree.",
+        "Option B | Tree removal with stump grinding | $1,950 | Remove the tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,400 to TD2 as remove only.",
+        "Added computed high-confidence add-on option $1,950 to TD2 as removed. a remove only add and stump grinding.",
+        "Replaced standalone add-on amount $550 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 97,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs two small maples removed. Option A remove both and leave debris 1600. Full cleanup 650.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Maple tree removal | $1,600 | Remove the two maple trees and leave the debris on site.",
+        "Option B | Maple tree removal with brush cleanup | $2,250 | Remove the two maple trees and clean up the debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,600 to TD2 as remove both and leave debris.",
+        "Added computed high-confidence add-on option $2,250 to TD2 as two small maples removed. a remove both and leave debris full cleanup.",
+        "Replaced standalone add-on amount $650 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 98,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs dead oak removed near road. Option A remove tree only 1500. Hauling and cleanup 600.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Oak tree removal | $1,500 | Remove the oak tree near the road.",
+        "Option B | Oak tree removal with debris haul-away | $2,100 | Remove the oak tree near the road and haul away the resulting debris and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,500 to TD2 as remove tree only.",
+        "Added computed high-confidence add-on option $2,100 to TD2 as removed near road. a remove tree only hauling and cleanup and haul away and cleanup.",
+        "Replaced standalone add-on amount $600 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 99,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs birch removed by deck. Option A remove and stack wood 1000. Haul away debris 450.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | Birch tree removal | $1,000 | Remove the birch tree by deck and leave the wood on site.",
+        "Option B | Birch tree removal with debris haul-away | $1,450 | Remove the birch tree by deck and haul away the resulting debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,000 to TD2 as remove and stack wood.",
+        "Added computed high-confidence add-on option $1,450 to TD2 as removed by deck. a remove and stack wood and Haul away debris.",
+        "Replaced standalone add-on amount $450 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    },
+    {
+      "case": 100,
+      "cohort": "fresh-applicable",
+      "raw": "Test Customer 812-555-0100 test@example.com 123 Main St Madison IN. Customer needs hickory removed beside garage. Option A cut down and leave wood 1800. Stump grinding and cleanup 800.",
+      "ready": true,
+      "status": "pdf-ready",
+      "final_options": [
+        "Option A | cut down and leave wood | $1,800 | cut down and leave wood",
+        "Option B | removed beside garage. a cut down and leave wood and Stump grinding and cleanup | $2,600 | removed beside garage. a cut down and leave wood and Stump grinding and cleanup"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Added missing high-confidence sidecar price $1,800 to TD2 as cut down and leave wood.",
+        "Added computed high-confidence add-on option $2,600 to TD2 as removed beside garage. a cut down and leave wood and Stump grinding and cleanup.",
+        "Replaced standalone add-on amount $800 with a computed bundled option."
+      ],
+      "human_verdict": "ready_needs_human_spot_check"
+    }
+  ]
+}

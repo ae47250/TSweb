@@ -20,6 +20,7 @@ reports/~$*
 reports/compare-version-study/
 reports/td-*-visual.html
 reports/td-style-updated-css-preview.html
+reports/v3_deployment_gate/snapshots/
 
 # Keep durable progress artifacts visible for commits.
 !reports/alpha-metrics-history.jsonl

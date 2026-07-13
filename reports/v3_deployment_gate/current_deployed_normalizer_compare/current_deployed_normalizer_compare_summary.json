@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-07-13T02:40:32.105Z",
+  "rows": 30,
+  "deployed_openai_exceptions": 0,
+  "deployed_openai_exception_rows": [],
+  "results": [
+    {
+      "setup": "Current deployed",
+      "predictionsPath": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\current_deployed_normalizer_compare\\current_deployed_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 96.7,
+        "option_b_price": 96.7,
+        "pair": 96.7,
+        "a_f1": 0.871,
+        "b_f1": 0.766,
+        "svc_f1": 0.417,
+        "mean_desc": 0.8185
+      }
+    },
+    {
+      "setup": "Current deployed + HEAD normalize",
+      "predictionsPath": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\current_deployed_normalizer_compare\\current_deployed_head_normalize_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 96.7,
+        "option_b_price": 96.7,
+        "pair": 96.7,
+        "a_f1": 0.871,
+        "b_f1": 0.766,
+        "svc_f1": 0.417,
+        "mean_desc": 0.8185
+      }
+    },
+    {
+      "setup": "Current deployed + HEAD validate",
+      "predictionsPath": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\current_deployed_normalizer_compare\\current_deployed_head_validate_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 96.7,
+        "option_b_price": 96.7,
+        "pair": 96.7,
+        "a_f1": 0.871,
+        "b_f1": 0.77,
+        "svc_f1": 0.417,
+        "mean_desc": 0.8205
+      }
+    },
+    {
+      "setup": "Current deployed + HEAD normalize + HEAD validate",
+      "predictionsPath": "C:\\Users\\eiriksson\\Documents\\TSweb\\reports\\v3_deployment_gate\\current_deployed_normalizer_compare\\current_deployed_head_normalize_validate_predictions.jsonl",
+      "exceptions": 0,
+      "metrics": {
+        "phone": 100,
+        "email": 100,
+        "option_a_price": 96.7,
+        "option_b_price": 96.7,
+        "pair": 96.7,
+        "a_f1": 0.871,
+        "b_f1": 0.766,
+        "svc_f1": 0.417,
+        "mean_desc": 0.8185
+      }
+    }
+  ]
+}

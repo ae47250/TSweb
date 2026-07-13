@@ -1,0 +1,107 @@
+{
+  "name": "source-final-road-hwy-stress-notes",
+  "version": "2026-07-12",
+  "description": "Ten complete-info stress notes focused on road/highway/address-number confusion and safety warnings that should not become blockers.",
+  "cases": [
+    {
+      "case": 1,
+      "group": "road-number-stress",
+      "raw_input": "Tina Moore 812-555-7001 tina@example.com 400 Road 62 Madison IN remove one oak tree by barn. Option A remove only 1450. Option B haul and cleanup 2150.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "1 tree",
+        "service_option_prices": ["$1,450", "$2,150"]
+      }
+    },
+    {
+      "case": 2,
+      "group": "highway-number-stress",
+      "raw_input": "Mason Clark 812-555-7002 mason@example.com 88 Hwy 31 Seymour IN remove two pine trees by driveway. Option A drop only 1800. Option B haul and stump grind 2600. Big dog in backyard call owner before entering.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "2 trees",
+        "service_option_prices": ["$1,800", "$2,600"]
+      }
+    },
+    {
+      "case": 3,
+      "group": "address-number-stress",
+      "raw_input": "Olivia Reed 812-555-7003 olivia@example.com 220 Highway 421 Madison IN remove one maple tree near power lines. Option A remove only 1600. Option B haul and cleanup 2400.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "1 tree",
+        "service_option_prices": ["$1,600", "$2,400"]
+      }
+    },
+    {
+      "case": 4,
+      "group": "road-number-stress",
+      "raw_input": "Noah King 812-555-7004 noah@example.com 410 Elm Road Hanover IN remove three sweet gum trees. Option A remove only 2400. Option B haul and cleanup 3200.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "3 trees",
+        "service_option_prices": ["$2,400", "$3,200"]
+      }
+    },
+    {
+      "case": 5,
+      "group": "county-road-stress",
+      "raw_input": "Hannah Price 812-555-7005 hannah@example.com 17 County Road 50 Madison IN remove one ash tree near fence. Option A drop only 1300. Option B haul and grind 1800.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "1 tree",
+        "service_option_prices": ["$1,300", "$1,800"]
+      }
+    },
+    {
+      "case": 6,
+      "group": "highway-number-stress",
+      "raw_input": "Evan Miller 812-555-7006 evan@example.com 711 Hwy 67 Corydon IN remove one cedar tree by shed. Option A remove only 1500. Option B remove and haul 2250.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "1 tree",
+        "service_option_prices": ["$1,500", "$2,250"]
+      }
+    },
+    {
+      "case": 7,
+      "group": "road-number-stress",
+      "raw_input": "Grace Young 812-555-7007 grace@example.com 49 Road 11 Salem IN remove two locust trees behind garage. Option A drop only 2100. Option B haul and cleanup 2900. Aggressive dog in backyard secure before work.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "2 trees",
+        "service_option_prices": ["$2,100", "$2,900"]
+      }
+    },
+    {
+      "case": 8,
+      "group": "highway-number-stress",
+      "raw_input": "Liam Scott 812-555-7008 liam@example.com 104 Highway 46 Madison IN remove one elm tree. Option A cut and leave 1400. Option B haul and cleanup 1900.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "1 tree",
+        "service_option_prices": ["$1,400", "$1,900"]
+      }
+    },
+    {
+      "case": 9,
+      "group": "address-number-stress",
+      "raw_input": "Ava Davis 812-555-7009 ava@example.com 602 Elm St Jeffersonville IN remove four trees by driveway. Option A remove only 3000. Option B haul and stump 4100.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "4 trees",
+        "service_option_prices": ["$3,000", "$4,100"]
+      }
+    },
+    {
+      "case": 10,
+      "group": "state-road-stress",
+      "raw_input": "Owen Hall 812-555-7010 owen@example.com 909 State Road 46 Madison IN remove one walnut tree near powerline. Option A remove only 1700. Option B haul and cleanup 2500.",
+      "expected": {
+        "shouldBlock": false,
+        "treeCount": "1 tree",
+        "service_option_prices": ["$1,700", "$2,500"]
+      }
+    }
+  ]
+}

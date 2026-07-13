@@ -969,6 +969,7 @@ export default function JsonReview({
   const rawJobAddress = alphaJson.job?.service_address?.display || normalizeServiceAddress(intake.address) || "";
   const jobAddress = rawJobAddress ? normalizeEditedServiceAddress(rawJobAddress) || rawJobAddress : "Address missing";
   const customerAddressLines = splitServiceAddressDisplay(jobAddress);
+  const inputText = String(sourceNotes || alphaJson.raw_input?.customer_text || "").trim();
   const overrideStatus = getBlockingOverrideStatus(validation, normalizedOverrides, alphaJson);
   const canConfirmWithOverrides = overrideStatus.canProceed;
   const needsOverrideAck = overrideStatus.needsAddressOverride
@@ -1047,6 +1048,12 @@ export default function JsonReview({
         </div>
       ) : (
         <div className="review-grid">
+          <div className="summary-card input-text-card">
+            <h3>Input Text</h3>
+            <p className="input-text-body" style={{ whiteSpace: "pre-wrap" }}>
+              {inputText || "No input text available"}
+            </p>
+          </div>
           <div className="summary-card customer-summary-card">
             <h3>Customer</h3>
             <div className="customer-info-grid">

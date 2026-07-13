@@ -1,0 +1,1285 @@
+{
+  "report_version": "source-final-audit-v2",
+  "generated_at": "2026-07-12T22:37:01.243Z",
+  "fixture": {
+    "path": "tests/fixtures/source-final-regression-hoho30.json",
+    "name": "hoho30-source-final-regression",
+    "version": "2026-07-12",
+    "description": "Stable local source-final fact coverage fixture. Expected verdicts are human audit labels and are intentionally stored outside the validator."
+  },
+  "metric_definitions": {
+    "unsafe_ready": "A case was PDF-ready even though the independent expected verdict says it should block.",
+    "correct_but_blocked": "A case was blocked even though the independent expected verdict says it should be ready.",
+    "applicable": "The validator enabled source-final fact coverage for the case.",
+    "actionable": "A blocked case emitted at least one structural or source-final blocker code."
+  },
+  "metrics": {
+    "total": 30,
+    "ready": 2,
+    "blocked": 28,
+    "unsafe_ready_count": 0,
+    "unsafe_ready_cases": [],
+    "correct_but_blocked_count": 0,
+    "correct_but_blocked_cases": [],
+    "source_coverage_applicable_count": 29,
+    "source_coverage_applicability_rate": 0.9666666666666667,
+    "actionable_blocker_count": 13,
+    "actionable_blocker_rate": 0.43333333333333335
+  },
+  "rows": [
+    {
+      "case": 1,
+      "cohort": "",
+      "raw": "Judith, 219-388-4164, judith.gomezoch@outlook.com, spruce next to barn needs removed, option a: drop it and leave debris 4200, option b: remove tree plus haul logs, grind stump, and clean up $5,350",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Spruce tree removal | $4,200 | Remove the spruce tree next to the barn and leave the debris on site.",
+        "Option B | Spruce tree removal with stump grinding and cleanup | $5,350 | Remove the spruce tree next to the barn and grind the stump, haul away the debris, and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 2,
+      "cohort": "",
+      "raw": "Peter S, 317-545-1517, 97smith@hotmail.com, locust near pool should come down, option a drop tree and leave debris 1,250, option b remove tree and chip brush, stump grinding, and cleanup 2650",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Locust tree removal | $1,250 | Remove the locust tree near the pool should come down and leave the debris on site.",
+        "Option B | Locust tree removal with stump grinding and brush cleanup | $2,650 | Remove the locust tree near the pool should come down and grind the stump, chip the brush, and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 3,
+      "cohort": "",
+      "raw": "Joan, 765-309-7019, joan33@aol.com, cedar behind fence wants removed, option a: take tree down leave wood and brush 2500, option b: remove tree and stump grinding $3950",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | leave wood and brush | $2,500 | leave wood and brush",
+        "Option B | remove tree and stump grinding | $3,950 | remove tree and stump grinding"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_OPTION_ACTION_OMITTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_OPTION_ACTION_OMITTED",
+          "fact": "work_actions",
+          "source_value": "remove tree",
+          "final_value": "",
+          "missing_source_values": [
+            "remove tree"
+          ],
+          "status": "missing",
+          "message": "Option A source says work actions is \"remove tree\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "cedar",
+          "final_value": "",
+          "missing_source_values": [
+            "cedar"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"cedar\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "cedar",
+          "final_value": "",
+          "missing_source_values": [
+            "cedar"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"cedar\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "SOURCE_OPTION_ACTION_OMITTED: Option A source says work actions is \"remove tree\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"cedar\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"cedar\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 4,
+      "cohort": "",
+      "raw": "Dorothy, 317-556-4563, dorothy.morganhf@icloud.com, elm behind fence should come down, option a remove tree leave debris 2600, option b remove tree haul away and grind 2 stumps, haul brush, and cleanup 3850",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | remove tree leave debris | $2,600 | remove tree leave debris",
+        "Option B | remove tree haul away and grind stumps, haul brush, and cleanup | $3,850 | remove tree haul away and grind stumps, haul brush, and cleanup"
+      ],
+      "blocker_codes": [
+        "SCOPE_NUMBER_AGREEMENT_MISMATCH",
+        "SOURCE_SPECIES_CHANGED",
+        "SOURCE_STUMP_QUANTITY_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "elm",
+          "final_value": "",
+          "missing_source_values": [
+            "elm"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"elm\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "elm",
+          "final_value": "",
+          "missing_source_values": [
+            "elm"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"elm\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_STUMP_QUANTITY_CHANGED",
+          "fact": "stump_quantity",
+          "source_value": "two stumps",
+          "final_value": "",
+          "missing_source_values": [
+            "two stumps"
+          ],
+          "status": "missing",
+          "message": "Option B source says stump quantity is \"two stumps\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"elm\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"elm\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_STUMP_QUANTITY_CHANGED: Option B source says stump quantity is \"two stumps\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 5,
+      "cohort": "",
+      "raw": "Olivia Richardson, 574-437-7407, olivia76@gmail.com, ash near garage should come down, option a drop tree and leave debris 2150. option b remove tree with haul brush $3600",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Ash tree removal | $2,150 | Remove the ash tree near the garage should come down and leave the debris on site.",
+        "Option B | Ash tree removal with brush haul-away | $3,600 | Remove the ash tree near the garage should come down and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 6,
+      "cohort": "",
+      "raw": "Pamela, 219-803-2886, pamela53@yahoo.com, cedar by power line dead and needs dropped, option a drop it and leave debris 3,950. option b remove tree and brush cleanup and log haul 5300",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Cedar tree removal | $3,950 | Remove the cedar tree and leave the debris on site.",
+        "Option B | Cedar tree removal with brush haul-away | $5,300 | Remove the cedar tree and clean up the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": [
+        "Safety/access note: Pamela, , , cedar by power line dead and needs dropped, option a drop it and leave debris 3,950.",
+        "Option A source says condition is \"dead\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option A source says safety qualifier is \"utility line\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"dead\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says safety qualifier is \"utility line\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 7,
+      "cohort": "",
+      "raw": "Denise M., 765-557-5595, denise.quoteef@icloud.com, pine in back yard leaning and needs removed, option a drop it and leave debris $2300. option b remove tree plus cut stump low and haul brush 4000",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Pine tree removal | $2,300 | Remove the pine tree in the back yard and leave the debris on site.",
+        "Option B | Pine tree removal with stump grinding and brush cleanup | $4,000 | Remove the pine tree in the back yard and cut the stump low and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": [
+        "Option A source says condition is \"leaning\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"leaning\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 8,
+      "cohort": "",
+      "raw": "Jerry, 812-426-9839, jerry.southds@hotmail.com, hickory by front walk wants removed, opt a drop it and leave debris $4300; opt b remove tree and grind 2 stumps, haul brush, and cleanup 4950",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | drop tree and leave debris | $4,300 | drop tree and leave debris",
+        "Option B | remove tree and grind stumps, haul brush, and cleanup | $4,950 | remove tree and grind stumps, haul brush, and cleanup"
+      ],
+      "blocker_codes": [
+        "SCOPE_NUMBER_AGREEMENT_MISMATCH",
+        "SOURCE_SPECIES_CHANGED",
+        "SOURCE_STUMP_QUANTITY_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "hickory",
+          "final_value": "",
+          "missing_source_values": [
+            "hickory"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "hickory",
+          "final_value": "",
+          "missing_source_values": [
+            "hickory"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_STUMP_QUANTITY_CHANGED",
+          "fact": "stump_quantity",
+          "source_value": "two stumps",
+          "final_value": "",
+          "missing_source_values": [
+            "two stumps"
+          ],
+          "status": "missing",
+          "message": "Option B source says stump quantity is \"two stumps\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_STUMP_QUANTITY_CHANGED: Option B source says stump quantity is \"two stumps\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 9,
+      "cohort": "",
+      "raw": "Albert Price, 219-412-7527, 84price@outlook.com, ash next to barn split trunk needs removed, opt a remove tree and leave debris 1200; opt b remove tree with haul away debris and clean yard $2650",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Ash tree removal | $1,200 | Remove the ash tree next to the barn and leave the debris on site.",
+        "Option B | Ash tree removal with debris haul-away | $2,650 | Remove the ash tree next to the barn and haul away the resulting debris and clean up the yard."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": [
+        "Option A source says condition is \"split trunk\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"split trunk\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 10,
+      "cohort": "",
+      "raw": "Sean, 260-464-8569, sean.greence@aol.com, cedar at side yard needs removed, option a drop it and leave debris $2800; option b remove tree haul away and stump grinding 3600",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Cedar tree removal | $2,800 | Remove the cedar tree and leave the debris on site.",
+        "Option B | Cedar tree removal with stump grinding | $3,600 | Remove the cedar tree and grind the stump and haul away the debris."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 11,
+      "cohort": "",
+      "raw": "Lisa P., 260-649-3458, lisa.pateloed@outlook.com, hickory behind shed wants it dropped, option a drop it leave brush onsite 2,200, option b remove tree grind 2 stumps haul brush cleanup $3900",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | drop tree leave brush onsite | $2,200 | drop tree leave brush onsite",
+        "Option B | remove tree grind stumps haul brush cleanup | $3,900 | remove tree grind stumps haul brush cleanup"
+      ],
+      "blocker_codes": [
+        "SCOPE_NUMBER_AGREEMENT_MISMATCH",
+        "SOURCE_SPECIES_CHANGED",
+        "SOURCE_STUMP_QUANTITY_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "hickory",
+          "final_value": "",
+          "missing_source_values": [
+            "hickory"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "hickory",
+          "final_value": "",
+          "missing_source_values": [
+            "hickory"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_STUMP_QUANTITY_CHANGED",
+          "fact": "stump_quantity",
+          "source_value": "two stumps",
+          "final_value": "",
+          "missing_source_values": [
+            "two stumps"
+          ],
+          "status": "missing",
+          "message": "Option B source says stump quantity is \"two stumps\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"hickory\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_STUMP_QUANTITY_CHANGED: Option B source says stump quantity is \"two stumps\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 12,
+      "cohort": "",
+      "raw": "Marie, 812-681-4371, 68cook@icloud.com, oak along alley dead top needs removed, option a: take tree down leave wood $4400, option b: take tree down haul wood plus chip limbs plus cleanup 6150",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | leave wood | $4,400 | leave wood",
+        "Option B | remove one tree along the alley dead top and take tree down haul wood chip limbs cleanup | $6,150 | remove one tree along the alley dead top and take tree down haul wood chip limbs cleanup"
+      ],
+      "blocker_codes": [
+        "EXPANDED_PRICE_MISMATCH",
+        "SOURCE_OPTION_ACTION_OMITTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_OPTION_ACTION_OMITTED",
+          "fact": "work_actions",
+          "source_value": "remove tree",
+          "final_value": "",
+          "missing_source_values": [
+            "remove tree"
+          ],
+          "status": "missing",
+          "message": "Option A source says work actions is \"remove tree\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "oak",
+          "final_value": "",
+          "missing_source_values": [
+            "oak"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "oak",
+          "final_value": "",
+          "missing_source_values": [
+            "oak"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "SOURCE_OPTION_ACTION_OMITTED: Option A source says work actions is \"remove tree\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 13,
+      "cohort": "",
+      "raw": "Jacob, 219-932-2383, jacob.mailboxad@gmail.com, maple by power line needs down soon, opt a take tree down leave wood 3400 opt b remove tree grind stump and remove chips $4,850",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | leave wood | $3,400 | leave wood",
+        "Option B | remove tree grind stump and remove chips | $4,850 | remove tree grind stump and remove chips"
+      ],
+      "blocker_codes": [
+        "MULTI_ADDON_COMBINATION_UNSUPPORTED",
+        "SOURCE_OPTION_ACTION_OMITTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_OPTION_ACTION_OMITTED",
+          "fact": "work_actions",
+          "source_value": "remove tree",
+          "final_value": "",
+          "missing_source_values": [
+            "remove tree"
+          ],
+          "status": "missing",
+          "message": "Option A source says work actions is \"remove tree\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "maple",
+          "final_value": "",
+          "missing_source_values": [
+            "maple"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "maple",
+          "final_value": "",
+          "missing_source_values": [
+            "maple"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "SOURCE_OPTION_ACTION_OMITTED: Option A source says work actions is \"remove tree\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"maple\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Safety/access note: Jacob, , , maple by power line needs down soon, opt a take tree down leave wood 3400 opt b remove tree grind stump and remove chips $4,850",
+        "Option A source says safety qualifier is \"utility line\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says safety qualifier is \"utility line\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 14,
+      "cohort": "",
+      "raw": "Katherine Walker, 765-343-2610, 20walker@icloud.com, oak near garage dead top needs removed, opt a remove tree leave wood n brush $2,750 opt b remove tree haul wood chip limbs cleanup $4800",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | remove tree leave wood n brush | $2,750 | remove tree leave wood n brush",
+        "Option B | remove tree haul wood chip limbs cleanup | $4,800 | remove tree haul wood chip limbs cleanup"
+      ],
+      "blocker_codes": [
+        "EXPANDED_PRICE_MISMATCH",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "oak",
+          "final_value": "",
+          "missing_source_values": [
+            "oak"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "oak",
+          "final_value": "",
+          "missing_source_values": [
+            "oak"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"oak\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 15,
+      "cohort": "",
+      "raw": "Sharon Bailey, 317-878-5697, sharon.riverch@outlook.com, hickory by front walk leaning bad needs out, opt a remove tree leave debris $4050; opt b drop tree and cut stump low plus haul brush $4,850",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Hickory tree removal | $4,050 | Remove the hickory tree and leave the debris on site.",
+        "Option B | Hickory tree removal with stump grinding and brush cleanup | $4,850 | Remove the hickory tree and cut the stump low and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": [
+        "Option A source says condition is \"leaning\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"leaning\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 16,
+      "cohort": "",
+      "raw": "Dominic Long, 463-826-8024, dominic.longea@aol.com, sycamore by front walk wants it dropped, option a drop it leave brush onsite $6200; option b drop tree and flush cut stump haul brush 7450",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Sycamore tree removal | $6,200 | Remove the sycamore tree and leave the brush on site.",
+        "Option B | Sycamore tree removal with stump grinding and brush cleanup | $7,450 | Remove the sycamore tree and cut the stump low and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 17,
+      "cohort": "",
+      "raw": "Carolyn R, 317-669-2140, carolyn.rogersie@aol.com, locust near pool dead top needs removed, Option A: drop tree, leave brush onsite, $2700, Option B: remove tree haul off plus cut stump low, haul brush, 4350",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Locust tree removal | $2,700 | Remove the locust tree near the pool dead top and leave the brush on site.",
+        "Option B | Locust tree removal with stump grinding and brush cleanup | $4,350 | Remove the locust tree near the pool dead top and cut the stump low and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 18,
+      "cohort": "",
+      "raw": "Michelle, 812-447-1297, michelle.northobs@aol.com, birch along alley brush tight but workable, Option A: remove tree, leave debris, 4300, Option B: take tree down stump grinding, haul brush, final cleanup, $5400",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Birch tree removal | $4,300 | Remove the birch tree along the alley brush tight but workable and leave the debris on site.",
+        "Option B | Birch tree removal with stump grinding and brush cleanup | $5,400 | Remove the birch tree along the alley brush tight but workable and grind the stump, haul away the brush, and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 19,
+      "cohort": "",
+      "raw": "Carol, 574-358-1946, carol.mailboxoet@gmail.com, locust near garage needs down soon, A remve tree leave debris 5050 B remove tree w chip brush stump grinding cleanup $6,500",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | leave debris | $5,050 | leave debris",
+        "Option B | remove tree w chip brush stump grinding cleanup | $6,500 | remove tree w chip brush stump grinding cleanup"
+      ],
+      "blocker_codes": [
+        "MISSING_BASE_CHOICE"
+      ],
+      "source_coverage_applicable": false,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address.",
+        "Tree count is unclear."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 20,
+      "cohort": "",
+      "raw": "Debra, 812-895-6017, debra44@icloud.com, sycamore over back fence needs down soon, A cut tree down leave brsh 6500 B drop tree and haul brush 7950",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Sycamore tree removal | $6,500 | Remove the sycamore tree and leave the brush on site.",
+        "Option B | Sycamore tree removal with brush haul-away | $7,950 | Remove the sycamore tree and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address.",
+        "Tree count is unclear."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 21,
+      "cohort": "",
+      "raw": "Arthur Price, 574-446-4387, arthur21@aol.com, ash near 260 Elm lot messy wants tree out, opt a drop n leave debris 7200 opt b tree out plus stump grinding $9050",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Ash tree removal | $7,200 | Remove the ash tree and leave the debris on site.",
+        "Option B | Ash tree removal with stump grinding | $9,050 | Remove the ash tree and grind the stump."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Tree count is unclear."
+      ],
+      "warnings": [
+        "Service address may be missing town/city or state."
+      ]
+    },
+    {
+      "case": 22,
+      "cohort": "",
+      "raw": "Alexander, 463-241-1556, alexander.phillipsir@gmail.com, ash at 410 Walnut by fence lot messy wants tree out, opt a tree down leave debris 5400 opt b tree down stump grinding brush cleanup rake up 6400",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "intended_block_noncanonical_output_drops_source_facts",
+      "final_options": [
+        "Option A | leave debris | $5,400 | leave debris",
+        "Option B | b tree down and tree down stump grinding brush cleanup rake up | $6,400 | b tree down and tree down stump grinding brush cleanup rake up"
+      ],
+      "blocker_codes": [
+        "MISSING_BASE_CHOICE",
+        "SOURCE_OPTION_ACTION_OMITTED",
+        "SOURCE_SPECIES_CHANGED",
+        "SOURCE_TARGET_QUALIFIER_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_OPTION_ACTION_OMITTED",
+          "fact": "work_actions",
+          "source_value": "remove tree",
+          "final_value": "",
+          "missing_source_values": [
+            "remove tree"
+          ],
+          "status": "missing",
+          "message": "Option A source says work actions is \"remove tree\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "ash",
+          "final_value": "",
+          "missing_source_values": [
+            "ash"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"ash\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option A",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by fence",
+          "final_value": "",
+          "missing_source_values": [
+            "by fence"
+          ],
+          "status": "missing",
+          "message": "Option A source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "ash",
+          "final_value": "",
+          "missing_source_values": [
+            "ash"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"ash\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by fence",
+          "final_value": "",
+          "missing_source_values": [
+            "by fence"
+          ],
+          "status": "missing",
+          "message": "Option B source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_OPTION_ACTION_OMITTED: Option A source says work actions is \"remove tree\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"ash\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option A source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"ash\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option B source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Service address may be missing town/city or state."
+      ]
+    },
+    {
+      "case": 23,
+      "cohort": "",
+      "raw": "Ronald Sanchez, 260-610-4393, ronald.sanchezodv@gmail.com, birch at 315 Oak near alley leaning bad wants done soon, option a remove 3 tree leave debris 6000, option b remove tree grind 1 stumps haul brush $8500",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "intended_block_explicit_tree_stump_quantity_conflict",
+      "final_options": [
+        "Option A | remove 3 tree leave debris | $6,000 | remove 3 tree leave debris",
+        "Option B | remove tree grind stumps haul brush | $8,500 | remove tree grind stumps haul brush"
+      ],
+      "blocker_codes": [
+        "SCOPE_NUMBER_AGREEMENT_MISMATCH",
+        "SOURCE_SPECIES_CHANGED",
+        "SOURCE_STUMP_QUANTITY_CHANGED",
+        "SOURCE_TARGET_QUALIFIER_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "birch",
+          "final_value": "",
+          "missing_source_values": [
+            "birch"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"birch\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option A",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "near alley",
+          "final_value": "",
+          "missing_source_values": [
+            "near alley"
+          ],
+          "status": "missing",
+          "message": "Option A source says target/location qualifier is \"near alley\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "birch",
+          "final_value": "",
+          "missing_source_values": [
+            "birch"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"birch\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_STUMP_QUANTITY_CHANGED",
+          "fact": "stump_quantity",
+          "source_value": "one stump",
+          "final_value": "three stumps",
+          "missing_source_values": [
+            "one stump"
+          ],
+          "status": "changed",
+          "message": "Option B source says stump quantity is \"one stump\", but final TD2 says \"three stumps\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "near alley",
+          "final_value": "",
+          "missing_source_values": [
+            "near alley"
+          ],
+          "status": "missing",
+          "message": "Option B source says target/location qualifier is \"near alley\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Explicit source option quantities conflict; Option A references 3 trees, but Option B references a different stump count. Confirm the intended scope before PDF.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"birch\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option A source says target/location qualifier is \"near alley\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"birch\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_STUMP_QUANTITY_CHANGED: Option B source says stump quantity is \"one stump\", but final TD2 says \"three stumps\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option B source says target/location qualifier is \"near alley\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Service address may be missing town/city or state.",
+        "Option A source says condition is \"leaning\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"leaning\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 24,
+      "cohort": "",
+      "raw": "Marcus Price, 260-881-3892, marcus.priceoav@gmail.com, elm gate is 9 ft by shed needs down before driveway work, option a remove 2 tree leave debris 6,250, option b remove tree grind 2 stumps haul brush 7600",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_without_actionable_code_review_needed",
+      "final_options": [
+        "Option A | Elm tree removal | $6,250 | Remove the two elm trees by the shed and leave the debris on site.",
+        "Option B | Elm tree removal with stump grinding and brush cleanup | $7,600 | Remove the two elm trees by the shed and grind the stumps and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 25,
+      "cohort": "",
+      "raw": "Richard W, 765-755-7842, 21ward@aol.com, sycamore by fence row 2 maples limbs low and trunk split, option a: drop tree, leave brsh, $2100, option b: drop n haul away debris, clean yard, 3950",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | drop tree, leave brsh | $2,100 | drop tree, leave brsh"
+      ],
+      "blocker_codes": [
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+        "SOURCE_OPTION_ACTION_OMITTED",
+        "SOURCE_OPTION_PRICE_CHANGED",
+        "SOURCE_TARGET_QUALIFIER_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by fence",
+          "final_value": "",
+          "missing_source_values": [
+            "by fence"
+          ],
+          "status": "missing",
+          "message": "Option A source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_OPTION_PRICE_CHANGED",
+          "fact": "price",
+          "source_value": "$3,950",
+          "final_value": "",
+          "missing_source_values": [
+            "$3,950"
+          ],
+          "status": "missing",
+          "message": "Option B source says price is \"$3,950\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_OPTION_ACTION_OMITTED",
+          "fact": "work_actions",
+          "source_value": "remove tree, haul debris, cleanup",
+          "final_value": "",
+          "missing_source_values": [
+            "remove tree",
+            "haul debris",
+            "cleanup"
+          ],
+          "status": "missing",
+          "message": "Option B source says work actions is \"remove tree, haul debris, cleanup\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "haul debris, cleanup",
+          "final_value": "",
+          "missing_source_values": [
+            "haul debris",
+            "cleanup"
+          ],
+          "status": "missing",
+          "message": "Option B source says debris disposition is \"haul debris, cleanup\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by fence",
+          "final_value": "",
+          "missing_source_values": [
+            "by fence"
+          ],
+          "status": "missing",
+          "message": "Option B source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "Explicit source options are incomplete in TD2; missing or mismatched Option B $3,950.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option A source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_OPTION_PRICE_CHANGED: Option B source says price is \"$3,950\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_OPTION_ACTION_OMITTED: Option B source says work actions is \"remove tree, haul debris, cleanup\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"haul debris, cleanup\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option B source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Option A source says condition is \"split trunk, low limbs\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"split trunk, low limbs\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 26,
+      "cohort": "",
+      "raw": "Jack, 574-595-4643, jack.morrisoaa@hotmail.com, walnut at 410 Walnut by fence tight access but wants it gone, option a: drop tree, leave brsh, 8,000, option b: tree down haul brush, $9750",
+      "ready": true,
+      "status": "pdf-ready",
+      "expected_verdict": "intended_ready_source_faithful_brush_disposition",
+      "final_options": [
+        "Option A | Walnut tree removal | $8,000 | Remove the walnut tree by the fence and leave the brush on site.",
+        "Option B | Walnut tree removal with brush haul-away | $9,750 | Remove the walnut tree by the fence and haul away the brush."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Service address may be missing town/city or state.",
+        "Option A source says access qualifier is \"tight access\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says access qualifier is \"tight access\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 27,
+      "cohort": "",
+      "raw": "Sarah, 574-449-1358, phillips46@gmail.com, sycamore at lot 6418 behind garage close to fence wants fast, A remove tree leave debrs 6700 B tree out plus chip brush plus stump grinding plus cleanup 8250",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "intended_block_multi_action_package_needs_repair",
+      "final_options": [
+        "Option A | Sycamore tree removal | $6,700 | Remove the sycamore tree behind the garage by the fence and leave the debris on site.",
+        "Option B | Sycamore tree removal with stump grinding and brush cleanup | $8,250 | Remove the sycamore tree behind the garage by the fence and grind the stump, chip the brush, and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [
+        "Missing service address.",
+        "Tree count is unclear."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 28,
+      "cohort": "",
+      "raw": "Noah, 219-420-9333, edwards36@outlook.com, spruce near 22 ft drive opening limbs low and trunk split, A drop n leave debris 3050 B drop n stump grinding and cleanup 5800",
+      "ready": true,
+      "status": "pdf-ready",
+      "expected_verdict": "intended_ready_cleanup_preserved_in_stump_option",
+      "final_options": [
+        "Option A | Spruce tree removal | $3,050 | Remove the spruce tree near the 22-foot drive opening and leave the debris on site.",
+        "Option B | Spruce tree removal with stump grinding and cleanup | $5,800 | Remove the spruce tree near the 22-foot drive opening and grind the stump and clean up the work area."
+      ],
+      "blocker_codes": [],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [],
+      "blocking_errors": [],
+      "warnings": [
+        "Service address may be missing town/city or state.",
+        "Option A source says condition is \"split trunk, low limbs\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope.",
+        "Option B source says condition is \"split trunk, low limbs\", but final TD2 says \"not found\". Review whether this should stay as an internal TD note or be added to the customer-facing scope."
+      ]
+    },
+    {
+      "case": 29,
+      "cohort": "",
+      "raw": "Kathryn R., 463-793-1277, kathryn.riverabf@icloud.com, pine gate is 9 ft by shed hard lean by line, option a: $6700 cut it down leave brush, option b: $7950 remove tree haul logs plus rake up brush",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "blocked_with_actionable_source_or_structure_issue",
+      "final_options": [
+        "Option A | cut tree down leave brush | $6,700 | cut tree down leave brush",
+        "Option B | remove one tree near the shed hard lean by line and cut it down leave brush, b | $7,950 | remove one tree near the shed hard lean by line and cut it down leave brush, b"
+      ],
+      "blocker_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE",
+        "MISSING_BASE_CHOICE",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+        "SOURCE_OPTION_ACTION_OMITTED",
+        "SOURCE_SPECIES_CHANGED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "pine",
+          "final_value": "",
+          "missing_source_values": [
+            "pine"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_OPTION_ACTION_OMITTED",
+          "fact": "work_actions",
+          "source_value": "remove tree, haul brush, cleanup",
+          "final_value": "remove tree",
+          "missing_source_values": [
+            "haul brush",
+            "cleanup"
+          ],
+          "status": "changed",
+          "message": "Option B source says work actions is \"haul brush, cleanup\", but final TD2 says \"remove tree\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "pine",
+          "final_value": "",
+          "missing_source_values": [
+            "pine"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_DEBRIS_DISPOSITION_CHANGED",
+          "fact": "debris_disposition",
+          "source_value": "haul brush, cleanup",
+          "final_value": "leave brush",
+          "missing_source_values": [
+            "haul brush",
+            "cleanup"
+          ],
+          "status": "changed",
+          "message": "Option B source says debris disposition is \"haul brush, cleanup\", but final TD2 says \"leave brush\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "Missing service address.",
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_OPTION_ACTION_OMITTED: Option B source says work actions is \"haul brush, cleanup\", but final TD2 says \"remove tree\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"pine\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED: Option B source says debris disposition is \"haul brush, cleanup\", but final TD2 says \"leave brush\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": []
+    },
+    {
+      "case": 30,
+      "cohort": "",
+      "raw": "Timothy L., 317-262-9640, timothy.workfb@outlook.com, locust at 410 Walnut by fence hard lean by line, option a: 4100 drop tree leave brsh, option b: 5250 remove it grind 2 stumps plus haul brush plus cleanup",
+      "ready": false,
+      "status": "blocked",
+      "expected_verdict": "intended_block_noncanonical_output_drops_species_location_stump_count",
+      "final_options": [
+        "Option A | drop tree leave brsh | $4,100 | drop tree leave brsh",
+        "Option B | drop tree leave brsh, b: remove it grind stumps plus haul brush plus cleanup | $5,250 | drop tree leave brsh, b: remove it grind stumps plus haul brush plus cleanup"
+      ],
+      "blocker_codes": [
+        "AMBIGUOUS_OPTION_RELATIONSHIP",
+        "DEPENDENT_ADDON_STANDALONE",
+        "MISSING_BASE_CHOICE",
+        "SOURCE_SPECIES_CHANGED",
+        "SOURCE_STUMP_QUANTITY_CHANGED",
+        "SOURCE_TARGET_QUALIFIER_OMITTED"
+      ],
+      "source_coverage_applicable": true,
+      "missing_or_changed_facts": [
+        {
+          "option": "Option A",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "locust",
+          "final_value": "",
+          "missing_source_values": [
+            "locust"
+          ],
+          "status": "missing",
+          "message": "Option A source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option A",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by fence",
+          "final_value": "",
+          "missing_source_values": [
+            "by fence"
+          ],
+          "status": "missing",
+          "message": "Option A source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_SPECIES_CHANGED",
+          "fact": "species",
+          "source_value": "locust",
+          "final_value": "",
+          "missing_source_values": [
+            "locust"
+          ],
+          "status": "missing",
+          "message": "Option B source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_STUMP_QUANTITY_CHANGED",
+          "fact": "stump_quantity",
+          "source_value": "two stumps",
+          "final_value": "",
+          "missing_source_values": [
+            "two stumps"
+          ],
+          "status": "missing",
+          "message": "Option B source says stump quantity is \"two stumps\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        },
+        {
+          "option": "Option B",
+          "code": "SOURCE_TARGET_QUALIFIER_OMITTED",
+          "fact": "target_qualifiers",
+          "source_value": "by fence",
+          "final_value": "",
+          "missing_source_values": [
+            "by fence"
+          ],
+          "status": "missing",
+          "message": "Option B source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+        }
+      ],
+      "blocking_errors": [
+        "SOURCE_SPECIES_CHANGED: Option A source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option A source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_SPECIES_CHANGED: Option B source says tree species/object is \"locust\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_STUMP_QUANTITY_CHANGED: Option B source says stump quantity is \"two stumps\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override.",
+        "SOURCE_TARGET_QUALIFIER_OMITTED: Option B source says target/location qualifier is \"by fence\", but final TD2 says \"not found\". Confirm or edit the final estimate so it preserves the source fact, or record an intentional verified override."
+      ],
+      "warnings": [
+        "Service address may be missing town/city or state."
+      ]
+    }
+  ]
+}
