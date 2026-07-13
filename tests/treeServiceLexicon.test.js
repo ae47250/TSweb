@@ -1,7 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {
   annotateTreeServiceText,
+  classifyTreeServiceScope,
   TREE_SERVICE_LEXICON,
   TREE_SERVICE_LEXICON_ID,
   TREE_SERVICE_LEXICON_INDEXES,
@@ -33,6 +35,8 @@ function hasExpectedScopeItem(result, expected) {
     return true;
   });
 }
+
+const CLASSIFICATION_FIXTURE_PATH = "tests/fixtures/tree-dude-service-classification-60.json";
 
 test("tree service lexicon validates at startup and exposes versioned source data", () => {
   assert.deepEqual(validateTreeServiceLexicon(), []);
@@ -161,4 +165,57 @@ test("expanded lexicon captures option and price-role cue words as annotations",
   assert.ok(conceptIds.includes("price_cue.incremental_addon"));
   assert.ok(conceptIds.includes("service.stump_grinding"));
   assert.ok(TREE_SERVICE_PATTERNS.priceCue.test("plus stump grind extra"));
+});
+
+test("shared classifier keeps the frozen 60-note service categories conservative", () => {
+  const fixtures = JSON.parse(fs.readFileSync(CLASSIFICATION_FIXTURE_PATH, "utf8"));
+  assert.equal(fixtures.length, 60);
+  assert.deepEqual(
+    Object.fromEntries([...new Set(fixtures.map((fixture) => fixture.category))]
+      .map((category) => [category, fixtures.filter((fixture) => fixture.category === category).length])),
+    {
+      straightforward_base: 15,
+      clear_dependent_addon: 15,
+      explicit_option_totals: 10,
+      independent_alternatives: 10,
+      ambiguous_review: 10,
+    },
+  );
+
+  for (const fixture of fixtures) {
+    const actual = classifyTreeServiceScope(fixture.raw_service_phrase);
+    for (const expectedKind of fixture.expected.service_kinds) {
+      assert.ok(
+        actual.candidate_kinds.includes(expectedKind),
+        `${fixture.id}: missing ${expectedKind}; got ${actual.candidate_kinds.join(", ")}`,
+      );
+    }
+
+    if (fixture.category === "straightforward_base") {
+      assert.equal(actual.relationship_role, "base_service", fixture.id);
+      assert.equal(actual.review_required, false, fixture.id);
+    }
+    if (fixture.category === "clear_dependent_addon" || fixture.category === "explicit_option_totals") {
+      assert.equal(actual.relationship_role, "base_with_dependent_addon", fixture.id);
+      assert.equal(actual.review_required, false, fixture.id);
+      assert.equal(actual.price_role_hint, fixture.expected.option_b_price_role, fixture.id);
+    }
+    if (fixture.category === "independent_alternatives") {
+      assert.equal(actual.relationship_role, "independent_alternative", fixture.id);
+      assert.equal(actual.review_required, true, fixture.id);
+    }
+    if (fixture.category === "ambiguous_review") {
+      assert.equal(actual.review_required, true, fixture.id);
+    }
+  }
+});
+
+test("shared classifier exposes nested service concepts inside price cue phrases", () => {
+  const actual = classifyTreeServiceScope("Option B tree removal with stump grinding extra 500");
+
+  assert.deepEqual(actual.base_service_kinds, ["tree_removal"]);
+  assert.deepEqual(actual.addon_service_kinds, ["stump_grinding"]);
+  assert.equal(actual.relationship_role, "base_with_dependent_addon");
+  assert.equal(actual.price_role_hint, "incremental_addon");
+  assert.equal(actual.review_required, false);
 });

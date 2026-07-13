@@ -10,6 +10,7 @@ import {
   canonicalSemanticHash,
   canonicalServiceAssemblerEnabled,
   findForbiddenBuilderInputPaths,
+  inferLegacyServiceKindDetails,
   inferServiceKindDetails,
   validateCanonicalServiceEstimate,
 } from "../lib/canonicalServiceAssembler.js";
@@ -159,6 +160,29 @@ test("blank service-kind evidence returns structured unsupported details", () =>
     normalized_evidence_text: "",
     ignored_boilerplate: false,
   });
+});
+
+test("assembler consumes the shared lexicon for clear service phrases", () => {
+  const result = inferServiceKindDetails("branch removal from walnut");
+
+  assert.equal(result.service_kind, "limb_removal");
+  assert.match(result.reason_code, /^shared_lexicon_/);
+  assert.equal(result.evidence_text, "branch removal");
+});
+
+test("assembler keeps legacy fallback for ambiguous shared classifications", () => {
+  const result = inferServiceKindDetails("stump grinding maybe included");
+
+  assert.equal(result.service_kind, "stump_grinding");
+  assert.equal(result.reason_code, "explicit_stump_grinding_words");
+});
+
+test("frozen V3 classifier remains independently callable for comparisons", () => {
+  const legacy = inferLegacyServiceKindDetails("branch removal from walnut");
+  const shared = inferServiceKindDetails("branch removal from walnut");
+
+  assert.equal(legacy.service_kind, "tree_removal");
+  assert.equal(shared.service_kind, "limb_removal");
 });
 
 test("assembler input contract rejects benchmark leakage fields", () => {
