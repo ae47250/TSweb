@@ -642,6 +642,49 @@ test("debug pipeline can expose conservative TD1 text cleanup without customer o
   assert.equal(payload.debugPipeline.stages[3].status, "1 money-like numbers, 0 option boundaries, 0 warnings");
 });
 
+test("debug pipeline exposes source-final coverage after TD2 validation when available", () => {
+  const sourceFinalFactCoverage = {
+    version: "source-final-fact-coverage-v0.1",
+    applicable: true,
+    source_options: [{ label: "Option A" }, { label: "Option B" }],
+    final_options: [{ label: "Option A" }, { label: "Option B" }],
+    results: [],
+    blocking_results: [{ code: "SOURCE_SPECIES_CHANGED" }],
+    warning_results: [{ message: "source-final warning" }],
+    blocking_messages: ["SOURCE_SPECIES_CHANGED: source-final warning"],
+    warning_messages: ["source-final warning"],
+    blocking_codes: ["SOURCE_SPECIES_CHANGED"],
+  };
+  const payload = buildDebugPipelinePayload({
+    enabled: true,
+    rawTd1Text: "  oak removal  ",
+    rawOpenAiDraftJson: {},
+    alphaJson: {
+      normalization: {},
+      service_options: { items: [] },
+      validation: { source_final_fact_coverage: sourceFinalFactCoverage },
+    },
+    validation: {
+      can_generate_pdf: true,
+      blocking_errors: [],
+      follow_ups: [],
+      warnings: [],
+      source_final_fact_coverage: sourceFinalFactCoverage,
+    },
+    mocked: false,
+  });
+
+  assert.deepEqual(payload.debugPipeline.sourceFinalFactCoverage, sourceFinalFactCoverage);
+  assert.deepEqual(payload.debugPipeline.stages.map((stage) => stage.label), [
+    "Raw TD1 input",
+    "OpenAI draft",
+    "TD2 normalization",
+    "TD2 validation",
+    "Source-final coverage",
+  ]);
+  assert.equal(payload.debugPipeline.stages[4].status, "1 blockers, 1 warnings");
+});
+
 test("60 structured follow-up samples keep stable IDs and PDF-blocking flags", () => {
   const definitions = [
     { message: "Missing service address.", expectedId: "missing_service_address", warning: false },
