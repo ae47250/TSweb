@@ -181,6 +181,40 @@ function DebugStageSummary({ stages = [] }) {
   );
 }
 
+function finalValidationStage(validation = {}) {
+  const blockingErrors = validation.blocking_errors || [];
+  const followUps = validation.follow_ups || [];
+  const warnings = validation.warnings || [];
+  return {
+    label: "Final /api/validate",
+    meaning: "This is the final readiness decision used by the review screen.",
+    status: validation.can_generate_pdf
+      ? `ready with ${warnings.length} warnings`
+      : `${blockingErrors.length} blockers, ${followUps.length} follow-ups`,
+  };
+}
+
+function DebugPriceReconciliation({ trace }) {
+  if (!trace) return null;
+
+  return (
+    <>
+      <h3>Price Reconciliation / Option Bundling</h3>
+      <p className="debug-field-note">This read-only trace shows exactly what changed; it does not perform or alter the calculation.</p>
+      <h4>Options before reconciliation</h4>
+      <DebugJsonBlock value={trace.before_options} />
+      <h4>Bundle calculations</h4>
+      <DebugJsonBlock value={trace.bundle_calculations} />
+      <h4>Options after reconciliation</h4>
+      <DebugJsonBlock value={trace.after_options} />
+      <h4>Warnings, blockers, and follow-ups added by reconciliation</h4>
+      <DebugJsonBlock value={trace.validation_effects} />
+      <h4>Price evidence and decisions</h4>
+      <DebugJsonBlock value={trace.evidence} />
+    </>
+  );
+}
+
 function DebugRenderedRows({ renderedFields }) {
   const rows = [
     ["Customer name", renderedFields.customerCard.name.value, renderedFields.customerCard.name.source],
@@ -261,6 +295,7 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
   const explanation = buildDebugExplanation(validation, renderedFields);
   const rawText = debugPipeline.rawTd1Input?.customer_text || "";
   const corrections = (debugPipeline.cleanedCanonicalAlphaJson || alphaJson)?.normalization?.corrections_made || [];
+  const stages = [...(debugPipeline.stages || []), finalValidationStage(validation)];
 
   return (
     <section className="debug-pipeline-panel" aria-label="Debug Pipeline">
@@ -274,23 +309,63 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
             <p><strong>Suggested fix:</strong> {explanation.suggestion}</p>
             <p><strong>Why:</strong> {explanation.why}</p>
           </div>
-          <DebugStageSummary stages={debugPipeline.stages || []} />
+          <DebugStageSummary stages={stages} />
+
+          {debugPipeline.runtimeConfig && (
+            <>
+              <h3>Active Runtime Configuration</h3>
+              <p className="debug-field-note">The configured model and feature flags used for this request.</p>
+              <DebugJsonBlock value={debugPipeline.runtimeConfig} />
+            </>
+          )}
 
           <h3>Raw TD1 Input</h3>
           <p className="debug-field-note">This is exactly what TD1 sent as <code>customer_text</code>.</p>
           <DebugTextBlock text={rawText} corrections={corrections} />
 
+          {debugPipeline.td1TextCleanup && (
+            <>
+              <h3>TD1 Text Cleanup</h3>
+              <DebugJsonBlock value={debugPipeline.td1TextCleanup} />
+            </>
+          )}
+
+          {debugPipeline.td1ContactNormalization && (
+            <>
+              <h3>TD1 Contact Normalization</h3>
+              <DebugJsonBlock value={debugPipeline.td1ContactNormalization} />
+            </>
+          )}
+
+          {debugPipeline.td1OptionPriceCandidateView && (
+            <>
+              <h3>TD1 Option / Price Candidates</h3>
+              <p className="debug-field-note">These are candidate prices and option boundaries found before OpenAI.</p>
+              <DebugJsonBlock value={debugPipeline.td1OptionPriceCandidateView} />
+            </>
+          )}
+
           <h3>Raw OpenAI Draft JSON</h3>
           <p className="debug-field-note">This is the parsed OpenAI response before <code>normalizeToAlphaJsonV14()</code> cleaned it.</p>
           <DebugOpenAiDraft debugPipeline={debugPipeline} />
 
-          <h3>TD2 Normalization Output</h3>
-          <p className="debug-field-note">This is the cleaned AlphaJSON after <code>normalizeToAlphaJsonV14()</code>. TD2 reads from this, not directly from the raw note.</p>
+          <h3>TD2 Normalization Output (Before Price Reconciliation)</h3>
+          <p className="debug-field-note">This is the cleaned AlphaJSON immediately before price reconciliation or option bundling.</p>
+          <DebugJsonBlock value={debugPipeline.prePriceReconciliationAlphaJson || debugPipeline.cleanedCanonicalAlphaJson || alphaJson} />
+
+          <DebugPriceReconciliation trace={debugPipeline.priceReconciliation} />
+
+          <h3>Post-Reconciliation AlphaJSON</h3>
+          <p className="debug-field-note">This is the AlphaJSON returned by the OpenAI route after price reconciliation.</p>
           <DebugJsonBlock value={debugPipeline.cleanedCanonicalAlphaJson || alphaJson} />
 
-          <h3>TD2 Validation Result</h3>
-          <p className="debug-field-note">This decides whether TD2 can confirm the estimate or needs more information.</p>
+          <h3>OpenAI Route Validation Result</h3>
+          <p className="debug-field-note">This validation ran inside the OpenAI route after price reconciliation.</p>
           <DebugJsonBlock value={debugPipeline.validationResult || validation} />
+
+          <h3>Final /api/validate Result</h3>
+          <p className="debug-field-note">This is the final readiness result used by the review screen.</p>
+          <DebugJsonBlock value={validation} />
 
           <h3>TD2 Rendered Fields</h3>
           <p className="debug-field-note">This is what TD2 actually displays, with each field path shown beside its value.</p>

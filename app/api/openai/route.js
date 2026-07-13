@@ -59,6 +59,7 @@ function debugResponsePayload({
   rawTd1Text,
   rawOpenAiDraftJson,
   draftSchemaWarnings = [],
+  preReconciliationAlphaJson,
   alphaJson,
   validation,
   mocked,
@@ -67,12 +68,14 @@ function debugResponsePayload({
   textCleanupResult,
   contactNormalizationResult,
   optionPriceCandidateView,
+  runtimeConfig,
 }) {
   return buildDebugPipelinePayload({
     enabled: debugPipelineEnabled(),
     rawTd1Text,
     rawOpenAiDraftJson,
     draftSchemaWarnings,
+    preReconciliationAlphaJson,
     alphaJson,
     validation,
     mocked,
@@ -81,6 +84,7 @@ function debugResponsePayload({
     textCleanupResult,
     contactNormalizationResult,
     optionPriceCandidateView,
+    runtimeConfig,
   });
 }
 
@@ -165,16 +169,20 @@ export async function POST(request) {
         optionPriceCandidateView,
       })
     : customerText;
+  const runtimeConfig = {
+    configured_model: model,
+    debug_pipeline_enabled: debugPipelineEnabled(),
+    td1_pre_normalizers_enabled: preNormalizersEnabled,
+    td1_price_normalizer_enabled: priceNormalizerEnabled,
+  };
 
   if (!process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true") {
     const rawOpenAiDraftJson = {};
-    const alphaJson = reconcileSidecarPrices(
-      applyContactNormalizationOverlay(
-        normalizeToAlphaJsonV14({}, customerText, intake),
-        contactNormalizationResult,
-      ),
-      optionPriceCandidateView,
+    const preReconciliationAlphaJson = applyContactNormalizationOverlay(
+      normalizeToAlphaJsonV14({}, customerText, intake),
+      contactNormalizationResult,
     );
+    const alphaJson = reconcileSidecarPrices(preReconciliationAlphaJson, optionPriceCandidateView);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       caseId,
@@ -190,6 +198,7 @@ export async function POST(request) {
       ...debugResponsePayload({
         rawTd1Text: customerText || "",
         rawOpenAiDraftJson,
+        preReconciliationAlphaJson,
         alphaJson,
         validation,
         mocked: true,
@@ -197,6 +206,7 @@ export async function POST(request) {
         textCleanupResult,
         contactNormalizationResult,
         optionPriceCandidateView,
+        runtimeConfig: { ...runtimeConfig, execution_source: "local-draft-parser" },
       }),
     });
   }
@@ -219,13 +229,11 @@ export async function POST(request) {
     const rawOpenAiDraftJson = JSON.parse(response.choices[0]?.message?.content || "{}");
     const parsedDraft = parseOpenAiDraft(rawOpenAiDraftJson);
     const normalizerInput = openAiDraftToNormalizerInput(parsedDraft.draft, { rawInput: customerText, intake });
-    const alphaJson = reconcileSidecarPrices(
-      applyContactNormalizationOverlay(
-        normalizeToAlphaJsonV14(normalizerInput, customerText, intake),
-        contactNormalizationResult,
-      ),
-      optionPriceCandidateView,
+    const preReconciliationAlphaJson = applyContactNormalizationOverlay(
+      normalizeToAlphaJsonV14(normalizerInput, customerText, intake),
+      contactNormalizationResult,
     );
+    const alphaJson = reconcileSidecarPrices(preReconciliationAlphaJson, optionPriceCandidateView);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       caseId,
@@ -241,23 +249,23 @@ export async function POST(request) {
         rawTd1Text: customerText || "",
         rawOpenAiDraftJson,
         draftSchemaWarnings: parsedDraft.warnings,
+        preReconciliationAlphaJson,
         alphaJson,
         validation,
         mocked: false,
         textCleanupResult,
         contactNormalizationResult,
         optionPriceCandidateView,
+        runtimeConfig: { ...runtimeConfig, execution_source: "openai" },
       }),
     });
   } catch (error) {
     const rawOpenAiDraftJson = {};
-    const alphaJson = reconcileSidecarPrices(
-      applyContactNormalizationOverlay(
-        normalizeToAlphaJsonV14({}, customerText, intake),
-        contactNormalizationResult,
-      ),
-      optionPriceCandidateView,
+    const preReconciliationAlphaJson = applyContactNormalizationOverlay(
+      normalizeToAlphaJsonV14({}, customerText, intake),
+      contactNormalizationResult,
     );
+    const alphaJson = reconcileSidecarPrices(preReconciliationAlphaJson, optionPriceCandidateView);
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
       level: "error",
@@ -276,6 +284,7 @@ export async function POST(request) {
         ...debugResponsePayload({
           rawTd1Text: customerText || "",
           rawOpenAiDraftJson,
+          preReconciliationAlphaJson,
           alphaJson,
           validation,
           mocked: true,
@@ -283,6 +292,7 @@ export async function POST(request) {
           textCleanupResult,
           contactNormalizationResult,
           optionPriceCandidateView,
+          runtimeConfig: { ...runtimeConfig, execution_source: "local-draft-parser-after-openai-error" },
         }),
       },
       { status: 200 },

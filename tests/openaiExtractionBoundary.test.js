@@ -577,7 +577,7 @@ test("60 debug pipeline samples expose raw input, raw draft, schema warnings, Al
       "Raw TD1 input",
       sample.index % 4 === 0 ? "Local draft parser" : "OpenAI draft",
       "TD2 normalization",
-      "TD2 validation",
+      "OpenAI route validation",
     ]);
     assert.equal(
       payload.debugPipeline.stages[2].status,
@@ -635,11 +635,67 @@ test("debug pipeline can expose conservative TD1 text cleanup without customer o
     "TD1 option/price clues",
     "Local draft parser",
     "TD2 normalization",
-    "TD2 validation",
+    "OpenAI route validation",
   ]);
   assert.equal(payload.debugPipeline.stages[1].status, "2 safe changes, 1 warnings");
   assert.equal(payload.debugPipeline.stages[2].status, "1 email candidates, 1 phone candidates");
   assert.equal(payload.debugPipeline.stages[3].status, "1 money-like numbers, 0 option boundaries, 0 warnings");
+});
+
+test("debug pipeline exposes price reconciliation before and after without mutating either snapshot", () => {
+  const preReconciliationAlphaJson = {
+    service_options: {
+      items: [
+        { label: "Option A", description: "Remove tree", price: { amount: 1000, display: "$1,000" } },
+        { label: "Option B", description: "Grind stump extra", price: { amount: 500, display: "$500" } },
+      ],
+    },
+  };
+  const alphaJson = {
+    service_options: {
+      items: [
+        { label: "Option A", description: "Remove tree", price: { amount: 1000, display: "$1,000" } },
+        { label: "Option B", description: "Remove tree and grind stump", price: { amount: 1500, display: "$1,500" } },
+      ],
+    },
+    normalization: {
+      sidecar_price_reconciliation: {
+        add_on_interpretations: [{
+          interpretation: "additive_amount",
+          base_amount: 1000,
+          add_on_amount: 500,
+          combined_amount: 1500,
+          addon_interpretation_confidence: "high",
+          decision: "accepted_computed_bundle",
+        }],
+      },
+    },
+    validation: {
+      price_reconciliation_warnings: ["Replaced standalone add-on amount $500 with a computed bundled option."],
+    },
+  };
+  const beforeCopy = structuredClone(preReconciliationAlphaJson);
+  const afterCopy = structuredClone(alphaJson);
+
+  const payload = buildDebugPipelinePayload({
+    enabled: true,
+    rawTd1Text: "Option A remove tree 1000. Option B grind stump extra 500.",
+    preReconciliationAlphaJson,
+    alphaJson,
+    validation: { can_generate_pdf: true, blocking_errors: [], follow_ups: [], warnings: [] },
+    runtimeConfig: { configured_model: "gpt-4.1-nano", td1_price_normalizer_enabled: true },
+  });
+
+  assert.deepEqual(preReconciliationAlphaJson, beforeCopy);
+  assert.deepEqual(alphaJson, afterCopy);
+  assert.equal(payload.debugPipeline.priceReconciliation.bundle_calculations[0].formula, "$1,000 + $500 = $1,500");
+  assert.equal(payload.debugPipeline.priceReconciliation.before_options[1].price.amount, 500);
+  assert.equal(payload.debugPipeline.priceReconciliation.after_options[1].price.amount, 1500);
+  assert.deepEqual(payload.debugPipeline.priceReconciliation.validation_effects.warnings, [
+    "Replaced standalone add-on amount $500 with a computed bundled option.",
+  ]);
+  assert.equal(payload.debugPipeline.runtimeConfig.configured_model, "gpt-4.1-nano");
+  assert.ok(payload.debugPipeline.stages.some((stage) => stage.label === "Price reconciliation / option bundling"));
 });
 
 test("60 structured follow-up samples keep stable IDs and PDF-blocking flags", () => {
