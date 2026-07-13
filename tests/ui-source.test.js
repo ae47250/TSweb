@@ -13,6 +13,7 @@ const customerRouteSource = readFileSync("app/e/[estimateId]/EstimateClient.jsx"
 const openaiRouteSource = readFileSync("app/api/openai/route.js", "utf8");
 const openaiPromptSource = readFileSync("lib/openaiPrompt.js", "utf8");
 const debugPipelineSource = readFileSync("lib/debugPipeline.js", "utf8");
+const jsonReviewSource = readFileSync("app/components/JsonReview.jsx", "utf8");
 const reviewOverridesSource = readFileSync("lib/reviewOverrides.js", "utf8");
 
 test("normal UI does not render raw AlphaJSON debug panel", () => {
@@ -376,4 +377,6 @@ test("OpenAI prompt and route keep model output at extraction-draft boundary", (
   assert.match(debugPipelineSource, /td1TextCleanup/);
   assert.match(debugPipelineSource, /td1ContactNormalization/);
   assert.match(debugPipelineSource, /td1OptionPriceCandidateView/);
+  assert.match(debugPipelineSource, /sourceFinalFactCoverage/);
+  assert.match(jsonReviewSource, /Source-Final Coverage/);
 });

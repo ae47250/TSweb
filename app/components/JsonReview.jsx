@@ -161,6 +161,20 @@ function DebugOpenAiDraft({ debugPipeline }) {
   return <DebugJsonBlock value={debugPipeline.rawOpenAiDraftJson} />;
 }
 
+function DebugSourceFinalCoverage({ coverage }) {
+  if (!coverage) return null;
+
+  return (
+    <>
+      <h3>Source-Final Coverage</h3>
+      <p className="debug-field-note">
+        This lexicon-backed layer compares source facts against final TD2 output.
+      </p>
+      <DebugJsonBlock value={coverage} />
+    </>
+  );
+}
+
 function DebugStageSummary({ stages = [] }) {
   if (!stages.length) return null;
 
@@ -257,6 +271,11 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
   const explanation = buildDebugExplanation(validation, renderedFields);
   const rawText = debugPipeline.rawTd1Input?.customer_text || "";
   const corrections = (debugPipeline.cleanedCanonicalAlphaJson || alphaJson)?.normalization?.corrections_made || [];
+  const sourceFinalFactCoverage = debugPipeline.sourceFinalFactCoverage
+    || validation?.alphaJson?.validation?.source_final_fact_coverage
+    || validation?.source_final_fact_coverage
+    || alphaJson?.validation?.source_final_fact_coverage
+    || null;
 
   return (
     <section className="debug-pipeline-panel" aria-label="Debug Pipeline">
@@ -287,6 +306,8 @@ function DebugPipelinePanel({ debugPipeline, alphaJson, validation, renderedFiel
           <h3>TD2 Validation Result</h3>
           <p className="debug-field-note">This decides whether TD2 can confirm the estimate or needs more information.</p>
           <DebugJsonBlock value={debugPipeline.validationResult || validation} />
+
+          <DebugSourceFinalCoverage coverage={sourceFinalFactCoverage} />
 
           <h3>TD2 Rendered Fields</h3>
           <p className="debug-field-note">This is what TD2 actually displays, with each field path shown beside its value.</p>
