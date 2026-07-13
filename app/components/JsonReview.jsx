@@ -43,6 +43,10 @@ function phoneDigitCount(value) {
   return String(value || "").replace(/\D/g, "").length;
 }
 
+function phoneDigits(value) {
+  return String(value || "").replace(/\D/g, "");
+}
+
 function optionRenderKey(option, index) {
   return `${option?.id || option?.option_id || option?.label || "option"}-${index}`;
 }
@@ -620,8 +624,72 @@ function formatOptionDisplayText(value) {
   return text.replace(/^([a-z])/, (letter) => letter.toUpperCase());
 }
 
-function optionDescriptionAddsDetail(option = {}) {
-  const title = normalizeDisplayText(option.title || "");
+function optionTextHasBaseWork(value) {
+  return /\b(remove|removal|take\s+down|cut\s+down|drop|trim)\b/i.test(value || "");
+}
+
+function optionTextHasTreeDetail(value) {
+  return /\b(one|two|three|four|five|six|seven|eight|nine|ten|\d+\+?)\s+(?:[a-z]+\s+){0,3}(?:trees?|oaks?|pines?|maples?|elms?|ashes?|cedars?|sycamores?|hickories?|locusts?|birches?|spruces?|walnuts?|cherries?)\b|\b(oaks?|pines?|maples?|elms?|ashes?|cedars?|sycamores?|hickories?|locusts?|birches?|spruces?|walnuts?|cherries?)\s+trees?\b/i.test(value || "");
+}
+
+function optionTextHasAddOn(value) {
+  return /\b(haul(?:\s+away|\s+off)?|cleanup|clean\s+up|stump\s+(?:grind|grinding)|grind\s+(?:stumps?|the\s+stump)|leave\s+wood|stack\s+wood)\b/i.test(value || "");
+}
+
+function optionTitleDetailScore(value) {
+  const text = normalizeDisplayText(value || "");
+  if (!text) return 0;
+  let score = 0;
+  if (optionTextHasBaseWork(text)) score += 2;
+  if (optionTextHasTreeDetail(text)) score += 3;
+  if (optionTextHasAddOn(text)) score += 2;
+  if (/\bonly\b/i.test(text)) score += 1;
+  return score;
+}
+
+function optionAdvisoryBaseTitle(value) {
+  return normalizeTreeServiceText(value || "")
+    .split(/(?<=[.!?])\s+|;\s+|\n+/)
+    .map((part) => part.trim())
+    .find((part) => optionTextHasBaseWork(part) && optionTextHasTreeDetail(part)) || "";
+}
+
+function optionDisplayTitle(option = {}, advisoryText = "") {
+  const title = normalizeTreeServiceText(option.title || "").trim();
+  const description = normalizeTreeServiceText(option.description || "").trim();
+  const advisoryBase = optionAdvisoryBaseTitle(advisoryText);
+  if (!title) return description || "Option details";
+  if (!description || normalizeDisplayText(description) === normalizeDisplayText(title)) {
+    if (advisoryBase && optionTitleDetailScore(advisoryBase) > optionTitleDetailScore(title)) {
+      return /\bonly\b/i.test(title) && !/\bonly\b/i.test(advisoryBase)
+        ? normalizeTreeServiceText(`${advisoryBase} only`)
+        : advisoryBase;
+    }
+    return title;
+  }
+
+  const titleLower = normalizeDisplayText(title);
+  const descriptionLower = normalizeDisplayText(description);
+  if (descriptionLower.includes(titleLower)) return description;
+  if (titleLower.includes(descriptionLower)) return title;
+  if (optionTextHasBaseWork(title) && optionTextHasTreeDetail(title) && optionTextHasAddOn(description) && !optionTextHasAddOn(title)) {
+    return normalizeTreeServiceText(`${title} and ${description}`);
+  }
+  const bestParsedTitle = optionTitleDetailScore(description) > optionTitleDetailScore(title) ? description : title;
+  if (advisoryBase && optionTitleDetailScore(advisoryBase) > optionTitleDetailScore(bestParsedTitle)) {
+    if (/\bonly\b/i.test(`${title} ${description}`) && !/\bonly\b/i.test(advisoryBase)) {
+      return normalizeTreeServiceText(`${advisoryBase} only`);
+    }
+    if (optionTextHasAddOn(`${title} ${description}`) && !optionTextHasAddOn(advisoryBase)) {
+      return normalizeTreeServiceText(`${advisoryBase} and ${optionTextHasAddOn(description) ? description : title}`);
+    }
+    return advisoryBase;
+  }
+  return bestParsedTitle;
+}
+
+function optionDescriptionAddsDetail(option = {}, advisoryText = "") {
+  const title = normalizeDisplayText(optionDisplayTitle(option, advisoryText));
   const description = normalizeDisplayText(option.description || "");
   return Boolean(description && description !== title);
 }
@@ -812,13 +880,30 @@ function CustomerPhoneSummaryField({
 
   function handlePhoneDraftChange(nextValue) {
     setDraftPhoneText(nextValue);
-    const isValid = phoneDigitCount(nextValue) === REQUIRED_PHONE_DIGITS;
+    const nextDigits = phoneDigits(nextValue);
+    const currentDigits = phoneDigits(value);
+    const hasPhoneText = Boolean(String(nextValue || "").trim());
+    const isValid = nextDigits.length === REQUIRED_PHONE_DIGITS;
     setDraftPhoneIsValid(isValid);
-    if (phoneOverrideAccepted || !String(nextValue || "").trim()) {
+    if (phoneOverrideAccepted) {
       setPhoneWarning("");
       return;
     }
+    if (!hasPhoneText) {
+      setPhoneWarning("");
+      if (currentDigits.length === REQUIRED_PHONE_DIGITS) {
+        onChange?.("phone", "");
+      }
+      return;
+    }
     setPhoneWarning(isValid ? "" : PHONE_DIGIT_WARNING);
+    if (!isValid && currentDigits.length === REQUIRED_PHONE_DIGITS) {
+      onChange?.("phone", "");
+      return;
+    }
+    if (isValid && nextDigits !== currentDigits) {
+      onChange?.("phone", nextValue);
+    }
   }
 
   const phoneNeedsAttention = !String(draftPhoneText || "").trim() || !draftPhoneIsValid;
@@ -1121,7 +1206,9 @@ export default function JsonReview({
   const customerAddressValue = rawJobAddress ? normalizeEditedServiceAddress(rawJobAddress) || rawJobAddress : "";
   const customerAddressLines = splitServiceAddressDisplay(jobAddress);
   const overrideStatus = getBlockingOverrideStatus(validation, normalizedOverrides, alphaJson);
-  const canConfirmWithOverrides = overrideStatus.canProceed;
+  const phoneOverrideAccepted = Boolean(normalizedOverrides.missingPhone || normalizedOverrides.missingContact);
+  const customerPhoneRequired = !customerPhoneAvailable && !phoneOverrideAccepted;
+  const canConfirmWithOverrides = overrideStatus.canProceed && !customerPhoneRequired;
   const needsOverrideAck = overrideStatus.needsAddressOverride
     || overrideStatus.needsContactOverride
     || overrideStatus.needsPhoneOverride
@@ -1179,8 +1266,8 @@ export default function JsonReview({
     quoteOptions: options.map((option, index) => ({
       label: option.label || `Option ${index + 1}`,
       price: option.price?.display || "Price missing",
-      title: formatOptionDisplayText(option.title || "Option details"),
-      description: optionDescriptionAddsDetail(option) ? formatOptionDisplayText(option.description) : "",
+      title: formatOptionDisplayText(optionDisplayTitle(option, jobNotes)),
+      description: optionDescriptionAddsDetail(option, jobNotes) ? formatOptionDisplayText(option.description) : "",
       source: `service_options.items[${index}]`,
     })),
     needsMoreInfo: {
@@ -1193,8 +1280,8 @@ export default function JsonReview({
     <section className="card">
       <h2>{title}</h2>
       {!isFinalConfirm && (
-        <span className={`review-status ${canConfirmWithOverrides ? "review-status-ready" : "review-status-needs-info"}`}>
-          {canConfirmWithOverrides ? "Estimate ready to be confirmed below" : "More info is needed to complete Estimate"}
+        <span className={`review-status review-status-action-font ${canConfirmWithOverrides ? "review-status-ready" : "review-status-needs-info"}`}>
+          {canConfirmWithOverrides ? "Estimate Can Be Confirmed Below" : "More info is needed to complete Estimate"}
         </span>
       )}
       {isFinalConfirm ? (
@@ -1309,7 +1396,7 @@ export default function JsonReview({
                 <span>{option.price?.display || "Price missing"}</span>
               )}
             </div>
-            <h4>{formatOptionDisplayText(option.title || "Option details") || "Option details"}</h4>
+            <h4>{formatOptionDisplayText(optionDisplayTitle(option, jobNotes)) || "Option details"}</h4>
             {!isFinalConfirm && optionNeedsDescriptionReview(option) && onOptionDescriptionChange ? (
               <OptionDescriptionEditor
                 busy={busy}

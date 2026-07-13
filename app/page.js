@@ -296,11 +296,7 @@ export default function HomePage() {
 
   async function applyCustomerFieldEdit(field, value) {
     const nextValue = String(value || "").replace(/\s+/g, " ").trim();
-    if (!nextValue) return;
-    if (field === "phone" && phoneDigitCount(nextValue) !== REQUIRED_PHONE_DIGITS) {
-      setError(PHONE_DIGIT_WARNING);
-      return;
-    }
+    if (!nextValue && field !== "phone") return;
 
     setBusy(true);
     setError("");
@@ -315,9 +311,10 @@ export default function HomePage() {
         nextAlphaJson.customer.name = nextValue;
         nextContact.name = nextValue;
       } else if (field === "phone") {
-        nextAlphaJson.customer.phone_display = nextValue;
-        nextAlphaJson.customer.phone_primary = nextValue;
-        nextContact.phone = nextValue;
+        const nextPhone = phoneDigitCount(nextValue) === REQUIRED_PHONE_DIGITS ? nextValue : "";
+        nextAlphaJson.customer.phone_display = nextPhone;
+        nextAlphaJson.customer.phone_primary = nextPhone;
+        nextContact.phone = nextPhone;
       } else if (field === "email") {
         nextAlphaJson.customer.email = nextValue.toLowerCase();
         nextContact.email = nextValue.toLowerCase();

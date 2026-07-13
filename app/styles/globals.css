@@ -542,6 +542,11 @@ main {
   width: fit-content;
 }
 
+.review-status-action-font {
+  font-size: 18px;
+  font-weight: 800;
+}
+
 .review-status-ready {
   background: #eef6ed;
   color: var(--green-dark);
