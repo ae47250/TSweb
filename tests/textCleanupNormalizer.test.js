@@ -333,7 +333,7 @@ test("evidence-backed coherent note uses contact and option-price sidecars", () 
   assert.match(result.coherentNote, /Other notes: gate by alley, dog in yard, text is best/);
   assert.doesNotMatch(result.coherentNote, /Work requested: .*Option B/i);
   assert.equal(result.evidence.sidecar_summary.option_price_pairing_count, 3);
-  assert.ok(result.rewriteTrace.some((entry) => entry.type === "sidecar_excluded_number_evidence"));
+  assert.ok(result.rewriteTrace.some((entry) => entry.type === "sidecar_contact_evidence"));
   assert.ok(result.rewriteTrace.some((entry) => entry.type === "sidecar_option_price_pairing"));
 });
 
@@ -390,4 +390,36 @@ test("parser input can be metadata-only when cleaned text matches raw input", ()
   assert.match(parserInput, /Pre-AI contact normalizer metadata/);
   assert.match(parserInput, /\"accepted_email\": \"tree@example\.com\"/);
   assert.match(parserInput, /\"accepted_phone\": \"812-555-1212\"/);
+});
+
+test("parser input exposes complete local-town address evidence without exposing the town lexicon", () => {
+  const raw = "John, 456 Main Madison, 812-555-0101, john@example.com, option A remove tree 1000";
+  const literalCleanup = textCleanupNormalizer(raw);
+  const contact = normalizeContactFields({ rawText: raw });
+  const optionPrice = buildOptionPriceCandidateView(raw);
+  const parserInput = buildPreNormalizerParserInput({
+    textCleanupResult: literalCleanup,
+    contactNormalizationResult: contact,
+    optionPriceCandidateView: optionPrice,
+  });
+
+  assert.match(parserInput, /Service address: 456 Main, Madison, Indiana/);
+  assert.match(parserInput, /\"accepted_address\": \"456 Main, Madison, Indiana\"/);
+  assert.match(parserInput, /\"address_completeness\": \"complete\"/);
+  assert.match(parserInput, /\"address_state_source\": \"local_town_default\"/);
+  assert.doesNotMatch(parserInput, /Seymour.*Madison.*Sellersburg/);
+});
+
+test("parser input labels a street-only address as town missing without guessing", () => {
+  const raw = "John, 456 Main Street, 812-555-0101, john@example.com, option A remove tree 1000";
+  const literalCleanup = textCleanupNormalizer(raw);
+  const contact = normalizeContactFields({ rawText: raw });
+  const parserInput = buildPreNormalizerParserInput({
+    textCleanupResult: literalCleanup,
+    contactNormalizationResult: contact,
+  });
+
+  assert.match(parserInput, /\"accepted_address\": \"456 Main Street\"/);
+  assert.match(parserInput, /\"address_completeness\": \"town_missing\"/);
+  assert.doesNotMatch(parserInput, /456 Main Street, Madison/);
 });

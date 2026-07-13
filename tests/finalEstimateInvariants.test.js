@@ -49,7 +49,7 @@ test("obs_0907 repeated same-price mention must not create two customer options"
       email: "carlos.j8@hotmail.com",
     },
     job: {
-      service_address: { display: "6613 Sycamore Way" },
+      service_address: { display: "6613 Sycamore Way, Madison, IN" },
       description: "Prune two locust trees along alley.",
       tree_details: { tree_count: "2 trees", tree_type: "locust" },
     },
@@ -91,7 +91,7 @@ test("obs_0839 stale rejected price evidence must not remain as readiness state"
       email: "patricia.a8@icloud.com",
     },
     job: {
-      service_address: { display: "4773 County Line Rd" },
+      service_address: { display: "4773 County Line Rd, Madison, IN" },
       description: "Remove cedar leaning toward garage.",
       tree_details: { tree_count: "1 tree", tree_type: "cedar" },
     },
@@ -126,7 +126,7 @@ test("obs_0909 unpriced third item is removed during canonical construction", ()
       email: "cody.d2@yahoo.com",
     },
     job: {
-      service_address: { display: "3793 Elm St" },
+      service_address: { display: "3793 Elm St, Madison, IN" },
       description: "Remove three small ornamental pears.",
       tree_details: { tree_count: "3 trees", tree_type: "ornamental pear" },
     },
