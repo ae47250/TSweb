@@ -58,6 +58,7 @@ const emptyQuoteContact = {
 };
 
 const emptyReviewOverrides = {
+  missingName: false,
   missingAddress: false,
   missingPhone: false,
   missingEmail: false,
@@ -310,7 +311,10 @@ export default function HomePage() {
       nextAlphaJson.job.service_address = nextAlphaJson.job.service_address || {};
       const nextContact = { ...quoteContact };
 
-      if (field === "phone") {
+      if (field === "name") {
+        nextAlphaJson.customer.name = nextValue;
+        nextContact.name = nextValue;
+      } else if (field === "phone") {
         nextAlphaJson.customer.phone_display = nextValue;
         nextAlphaJson.customer.phone_primary = nextValue;
         nextContact.phone = nextValue;

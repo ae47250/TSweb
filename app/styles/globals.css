@@ -356,7 +356,10 @@ main {
 }
 
 .customer-summary-card {
+  max-width: 100%;
+  overflow-x: auto;
   padding: 8px 10px;
+  width: 100%;
 }
 
 .customer-summary-card h3 {
@@ -365,9 +368,9 @@ main {
 
 .customer-info-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  row-gap: 2px;
-  min-width: min(100%, 320px);
+  grid-template-columns: max-content;
+  row-gap: 6px;
+  min-width: 44ch;
 }
 
 .customer-info-grid p {
@@ -391,6 +394,57 @@ main {
 
 .customer-phone-available {
   font-weight: 900;
+}
+
+.td2-customer-inline-field {
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.td2-customer-inline-field span {
+  color: #4b5563;
+}
+
+.td2-customer-inline-field .td2-inline-editor {
+  min-height: 34px;
+  min-width: 44ch;
+  padding: 6px 8px;
+}
+
+.td2-customer-inline-field .td2-inline-editor-warning {
+  border: 3px solid #b91c1c;
+}
+
+.td2-customer-field-with-override {
+  align-items: start;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: max-content max-content;
+  justify-content: start;
+}
+
+.td2-customer-field-with-override .override-warning-item {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  margin-top: 24px;
+  padding: 0;
+}
+
+.td2-customer-field-with-override .override-check-row {
+  grid-template-columns: 18px max-content;
+  margin-left: 0;
+}
+
+.td2-customer-field-with-override .td2-inline-editor-warning::placeholder {
+  color: #b91c1c;
+  opacity: 1;
+}
+
+.td2-inline-editor-quiet {
+  background: #fff;
+  border: 1px solid var(--line);
 }
 
 .final-summary-card {
@@ -602,7 +656,8 @@ main {
 .warning-card {
   background: #fff8e6;
   border-color: #facc15;
-  padding: 8px 10px 10px;
+  margin-top: 4px;
+  padding: 6px 10px 8px;
 }
 
 .warning-card h3 {
@@ -632,7 +687,7 @@ main {
 .override-warning-actions {
   display: grid;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .override-warning-item {
@@ -1024,7 +1079,7 @@ main {
 
 .review-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 

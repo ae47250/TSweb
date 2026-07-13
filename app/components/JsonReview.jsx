@@ -361,7 +361,6 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
       )}
       {warningItems.length > 0 && (
         <div className="warning-card">
-          <h4>Notes</h4>
           <ul>
             {warningItems.map((warning) => <li key={warning}>{warning}</li>)}
           </ul>
@@ -415,11 +414,40 @@ function AddressOverrideCheckbox({ status, overrides, onChange }) {
   );
 }
 
+function CustomerOverrideCheckbox({ overrideKey, label, overrides = {}, onChange }) {
+  if (!overrideKey || !label) return null;
+
+  return (
+    <div className="override-warning-item">
+      <label className="override-check-row">
+        <input
+          type="checkbox"
+          checked={Boolean(overrides[overrideKey])}
+          onChange={() => onChange?.({ ...overrides, [overrideKey]: !overrides[overrideKey] })}
+        />
+        <span>{label}</span>
+      </label>
+    </div>
+  );
+}
+
 function inlineContactOverrideStatus(status) {
   if (!status.needsContactOverride && !status.needsPhoneOverride && !status.needsEmailOverride) return null;
   return {
     ...status,
     needsAddressOverride: false,
+    needsScopeOverride: false,
+  };
+}
+
+function inlineMissingPhoneOverrideStatus(status) {
+  if (status.contactWarning?.key !== "missingPhone") return null;
+  return {
+    ...status,
+    needsAddressOverride: false,
+    needsContactOverride: false,
+    needsPhoneOverride: true,
+    needsEmailOverride: false,
     needsScopeOverride: false,
   };
 }
@@ -619,8 +647,10 @@ function InlineFieldEditor({
   error = "",
   busy = false,
   fieldClassName = "",
+  editorClassName = "td2-inline-editor-warning",
   multiline = false,
   type = "text",
+  minWidthCh = null,
   onChange,
   onDraftChange,
 }) {
@@ -637,8 +667,13 @@ function InlineFieldEditor({
     }
   }
 
+  const widthText = String(draft || placeholder || "");
+  const dynamicWidthStyle = minWidthCh
+    ? { width: `${Math.max(minWidthCh, widthText.length + 2)}ch` }
+    : undefined;
+
   const commonProps = {
-    className: "td2-inline-editor td2-inline-editor-warning",
+    className: `td2-inline-editor ${editorClassName}`.trim(),
     disabled: busy,
     onBlur: (event) => applyChange(event.currentTarget.value),
     onChange: (event) => {
@@ -653,6 +688,7 @@ function InlineFieldEditor({
     },
     placeholder,
     spellCheck: "true",
+    style: dynamicWidthStyle,
     value: draft,
   };
 
@@ -678,11 +714,151 @@ function InlineFieldEditor({
   );
 }
 
+function CustomerSummaryField({
+  label,
+  field,
+  value = "",
+  placeholder = "",
+  type = "text",
+  busy = false,
+  className = "",
+  missing = false,
+  overrideAccepted = false,
+  overrideKey = "",
+  overrideLabel = "",
+  warnWhenMissing = true,
+  reviewOverrides = {},
+  onChange,
+  onReviewOverridesChange,
+}) {
+  const [draftText, setDraftText] = useState(value || "");
+
+  useEffect(() => {
+    setDraftText(value || "");
+  }, [value]);
+
+  const draftMissing = !String(draftText || "").trim();
+  const fieldMissing = missing || draftMissing;
+  const fieldEditor = (
+    <InlineFieldEditor
+      label={label}
+      value={value}
+      placeholder={overrideAccepted ? "" : placeholder}
+      type={type}
+      minWidthCh={44}
+      busy={busy}
+      fieldClassName={`td2-customer-inline-field ${className}`.trim()}
+      editorClassName={warnWhenMissing && fieldMissing && !overrideAccepted ? "td2-inline-editor-warning" : "td2-inline-editor-quiet"}
+      onDraftChange={setDraftText}
+      onChange={(nextValue) => onChange?.(field, nextValue)}
+    />
+  );
+
+  if (!fieldMissing || !overrideKey) return fieldEditor;
+
+  return (
+    <div className="td2-customer-field-with-override">
+      {fieldEditor}
+      <CustomerOverrideCheckbox
+        overrideKey={overrideKey}
+        label={overrideLabel}
+        overrides={reviewOverrides}
+        onChange={onReviewOverridesChange}
+      />
+    </div>
+  );
+}
+
+function CustomerPhoneSummaryField({
+  value = "",
+  needsPhone = false,
+  phoneOverrideAccepted = false,
+  contactOverrideStatus = null,
+  reviewOverrides = {},
+  busy = false,
+  onChange,
+  onReviewOverridesChange,
+}) {
+  const [phoneWarning, setPhoneWarning] = useState("");
+  const [draftPhoneText, setDraftPhoneText] = useState(value || "");
+  const [draftPhoneIsValid, setDraftPhoneIsValid] = useState(phoneDigitCount(value) === REQUIRED_PHONE_DIGITS);
+
+  useEffect(() => {
+    const hasPhoneText = Boolean(String(value || "").trim());
+    const isValidPhone = phoneDigitCount(value) === REQUIRED_PHONE_DIGITS;
+    setDraftPhoneText(value || "");
+    setDraftPhoneIsValid(isValidPhone);
+    setPhoneWarning(!phoneOverrideAccepted && hasPhoneText && !isValidPhone ? PHONE_DIGIT_WARNING : "");
+  }, [needsPhone, phoneOverrideAccepted, value]);
+
+  function handlePhoneChange(nextValue) {
+    const hasPhoneText = Boolean(String(nextValue || "").trim());
+    if (!hasPhoneText) {
+      setPhoneWarning("");
+      return;
+    }
+    if (phoneDigitCount(nextValue) !== REQUIRED_PHONE_DIGITS) {
+      if (phoneOverrideAccepted) {
+        setPhoneWarning("");
+        return;
+      }
+      setPhoneWarning(PHONE_DIGIT_WARNING);
+      return;
+    }
+    setPhoneWarning("");
+    setDraftPhoneIsValid(true);
+    onChange?.("phone", nextValue);
+  }
+
+  function handlePhoneDraftChange(nextValue) {
+    setDraftPhoneText(nextValue);
+    const isValid = phoneDigitCount(nextValue) === REQUIRED_PHONE_DIGITS;
+    setDraftPhoneIsValid(isValid);
+    if (phoneOverrideAccepted || !String(nextValue || "").trim()) {
+      setPhoneWarning("");
+      return;
+    }
+    setPhoneWarning(isValid ? "" : PHONE_DIGIT_WARNING);
+  }
+
+  const phoneNeedsAttention = !String(draftPhoneText || "").trim() || !draftPhoneIsValid;
+  const showPhoneOverride = phoneNeedsAttention && contactOverrideStatus;
+  const phoneField = (
+    <InlineFieldEditor
+      label="Phone"
+      value={value}
+      placeholder={phoneOverrideAccepted ? "" : phoneNeedsAttention ? "Phone number needed to SMS Estimate to Customer" : "Phone not available"}
+      type="tel"
+      minWidthCh={44}
+      error={phoneOverrideAccepted ? "" : phoneWarning}
+      fieldClassName={`td2-customer-inline-field ${value ? "customer-phone-line customer-phone-available" : "customer-phone-line"}`}
+      editorClassName={!phoneOverrideAccepted && phoneNeedsAttention ? "td2-inline-editor-warning" : "td2-inline-editor-quiet"}
+      busy={busy}
+      onDraftChange={handlePhoneDraftChange}
+      onChange={handlePhoneChange}
+    />
+  );
+
+  if (!showPhoneOverride) return phoneField;
+
+  return (
+    <div className="td2-customer-field-with-override">
+      {phoneField}
+      <ContactOverrideCheckbox
+        status={contactOverrideStatus}
+        overrides={reviewOverrides}
+        onChange={onReviewOverridesChange}
+      />
+    </div>
+  );
+}
+
 function RequiredInfoEditor({
   alphaJson,
   validation,
   addressOverrideStatus = null,
   contactOverrideStatus = null,
+  showPhoneEditor = true,
   reviewOverrides,
   busy = false,
   onCustomerFieldChange,
@@ -696,7 +872,7 @@ function RequiredInfoEditor({
   const serviceAddress = job.service_address?.display || "";
   const jobDescription = job.description || "";
   const needsAddress = hasBlockingError(validation, /Missing service address|Service address looks unclear/i);
-  const needsPhone = hasBlockingError(validation, /Missing customer phone or email/i) && !phone;
+  const needsPhone = showPhoneEditor && hasBlockingError(validation, /Missing customer phone or email/i) && !phone;
   const phoneOverrideAccepted = Boolean(reviewOverrides?.missingPhone || reviewOverrides?.missingContact);
   const needsJobDescription = hasBlockingError(validation, /Missing job description/i);
 
@@ -933,13 +1109,16 @@ export default function JsonReview({
   const options = alphaJson.service_options?.items || [];
   const structuredJobSummary = buildCustomerJobSummary(alphaJson);
   const jobNotes = structuredJobSummary || cleanJobNotesForReview(sourceNotes, alphaJson);
-  const customerName = alphaJson.customer?.name || "Name not available";
+  const customerNameValue = alphaJson.customer?.name || "";
+  const customerName = customerNameValue || "Name not available";
   const customerPhoneValue = alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "";
   const customerPhone = customerPhoneValue || "Phone not available";
   const customerPhoneAvailable = Boolean(String(customerPhoneValue).trim());
-  const customerEmail = alphaJson.customer?.email || "Email not available";
+  const customerEmailValue = alphaJson.customer?.email || "";
+  const customerEmail = customerEmailValue || "Email not available";
   const rawJobAddress = alphaJson.job?.service_address?.display || normalizeServiceAddress(intake.address) || "";
   const jobAddress = rawJobAddress ? normalizeEditedServiceAddress(rawJobAddress) || rawJobAddress : "Address missing";
+  const customerAddressValue = rawJobAddress ? normalizeEditedServiceAddress(rawJobAddress) || rawJobAddress : "";
   const customerAddressLines = splitServiceAddressDisplay(jobAddress);
   const overrideStatus = getBlockingOverrideStatus(validation, normalizedOverrides, alphaJson);
   const canConfirmWithOverrides = overrideStatus.canProceed;
@@ -955,18 +1134,28 @@ export default function JsonReview({
   const reviewIssues = reviewIssueSource.filter((issue) => !isReviewOverrideIssue(issue, overrideStatus));
   const treeCountOverride = alphaJson.normalization?.field_evidence?.tree_count_override || "";
   const showTreeCountOverride = treeCountOverride && treeCountOverride !== "Auto";
-  const title = isFinalConfirm ? "Confirm Estimate" : "AI Review";
-  const subtitle = isFinalConfirm ? "This creates the customer estimate link." : "Check details before confirming estimate.";
+  const title = isFinalConfirm ? "Confirm Estimate" : "NEW ESTIMATE";
   const optionNote = isFinalConfirm
     ? `Do not choose an option here. ${customerName === "Name not available" ? "The customer" : customerName} will choose one when opening the estimate.`
     : "Review these options. The customer chooses one later.";
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Estimate") : "Confirm Estimate";
   const editLabel = isFinalConfirm ? "Back" : "Edit Info";
   const warningItems = (validation?.warnings || []).filter((warning) => !isOverrideRelatedWarning(warning, overrideStatus));
-  const needsInlinePhoneEditor = hasBlockingError(validation, /Missing customer phone or email/i)
-    && !String(alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "").trim();
+  const needsInlinePhoneEditor = !customerPhoneAvailable;
   const needsInlineAddressEditor = hasBlockingError(validation, /Missing service address|Service address looks unclear/i);
-  const contactOverrideStatus = needsInlinePhoneEditor ? inlineContactOverrideStatus(overrideStatus) : null;
+  const fallbackPhoneOverrideStatus = {
+    ...overrideStatus,
+    needsAddressOverride: false,
+    needsContactOverride: false,
+    needsPhoneOverride: true,
+    needsEmailOverride: false,
+    needsScopeOverride: false,
+    contactWarning: { key: "missingPhone" },
+  };
+  const customerPhoneOverrideStatus = inlineContactOverrideStatus(overrideStatus)
+    || inlineMissingPhoneOverrideStatus(overrideStatus)
+    || fallbackPhoneOverrideStatus;
+  const contactOverrideStatus = needsInlinePhoneEditor ? customerPhoneOverrideStatus : null;
   const addressOverrideStatus = needsInlineAddressEditor ? inlineAddressOverrideStatus(overrideStatus) : null;
   const lowerOverrideStatus = (contactOverrideStatus || addressOverrideStatus)
     ? withoutInlineOverrideStatus(overrideStatus, {
@@ -1003,12 +1192,10 @@ export default function JsonReview({
   return (
     <section className="card">
       <h2>{title}</h2>
-      <p className="text-muted">{subtitle}</p>
-      {!isFinalConfirm && canConfirmWithOverrides && (
-        <span className="review-status review-status-ready">Estimate ready to be Confirmed</span>
-      )}
-      {!isFinalConfirm && !canConfirmWithOverrides && (
-        <p className="td2-required-warning">More info is needed to complete Estimate</p>
+      {!isFinalConfirm && (
+        <span className={`review-status ${canConfirmWithOverrides ? "review-status-ready" : "review-status-needs-info"}`}>
+          {canConfirmWithOverrides ? "Estimate ready to be confirmed below" : "More info is needed to complete Estimate"}
+        </span>
       )}
       {isFinalConfirm ? (
         <div className="summary-card final-summary-card">
@@ -1022,17 +1209,57 @@ export default function JsonReview({
           <div className="summary-card customer-summary-card">
             <h3>Customer</h3>
             <div className="customer-info-grid">
-              <p className="customer-name-line">{customerName}</p>
-              <p className="customer-address-line">
-                <span className="customer-street-line">{customerAddressLines.street}</span>
-                {customerAddressLines.cityState && (
-                  <span className="customer-city-state-line">, {customerAddressLines.cityState}</span>
-                )}
-              </p>
-              <p>{customerEmail}</p>
-              <p className={customerPhoneAvailable ? "customer-phone-line customer-phone-available" : "customer-phone-line"}>
-                {customerPhone}
-              </p>
+              <CustomerSummaryField
+                label="Name"
+                field="name"
+                value={customerNameValue}
+                placeholder="Name not available"
+                className="customer-name-line"
+                missing={!customerNameValue}
+                overrideAccepted={Boolean(normalizedOverrides?.missingName)}
+                overrideKey="missingName"
+                overrideLabel="Create Estimate without customer name"
+                reviewOverrides={normalizedOverrides}
+                busy={busy}
+                onChange={onCustomerFieldChange}
+                onReviewOverridesChange={onReviewOverridesChange}
+              />
+              <CustomerSummaryField
+                label="Address"
+                field="address"
+                value={customerAddressValue}
+                placeholder="Address missing"
+                className="customer-address-line"
+                missing={!customerAddressValue}
+                overrideAccepted={Boolean(normalizedOverrides?.missingAddress)}
+                overrideKey="missingAddress"
+                overrideLabel="Create Estimate without exact address"
+                reviewOverrides={normalizedOverrides}
+                busy={busy}
+                onChange={onCustomerFieldChange}
+                onReviewOverridesChange={onReviewOverridesChange}
+              />
+              <CustomerSummaryField
+                label="Email"
+                field="email"
+                value={customerEmailValue}
+                placeholder="E-mail needed to email Estimate to customer"
+                type="email"
+                className="customer-email-line"
+                warnWhenMissing={false}
+                busy={busy}
+                onChange={onCustomerFieldChange}
+              />
+              <CustomerPhoneSummaryField
+                value={customerPhoneValue}
+                needsPhone={needsInlinePhoneEditor}
+                phoneOverrideAccepted={Boolean(normalizedOverrides?.missingPhone || normalizedOverrides?.missingContact)}
+                contactOverrideStatus={customerPhoneOverrideStatus}
+                reviewOverrides={normalizedOverrides}
+                busy={busy}
+                onChange={onCustomerFieldChange}
+                onReviewOverridesChange={onReviewOverridesChange}
+              />
             </div>
           </div>
           <div className="summary-card review-job-notes-card">
@@ -1053,7 +1280,8 @@ export default function JsonReview({
           alphaJson={alphaJson}
           validation={validation}
           addressOverrideStatus={addressOverrideStatus}
-          contactOverrideStatus={contactOverrideStatus}
+          contactOverrideStatus={null}
+          showPhoneEditor={false}
           reviewOverrides={normalizedOverrides}
           busy={busy}
           onCustomerFieldChange={onCustomerFieldChange}
