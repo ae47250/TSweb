@@ -52,6 +52,14 @@ function protectedContactSpans(contactNormalizationResult = {}) {
         kind: "email",
         raw: candidate.raw,
       }))),
+    ...((contactNormalizationResult?.address?.candidates || [])
+      .filter((candidate) => candidate.accepted && candidate.span)
+      .map((candidate) => ({
+        start: candidate.span.start,
+        end: candidate.span.end,
+        kind: "address",
+        raw: candidate.raw,
+      }))),
   ];
 }
 

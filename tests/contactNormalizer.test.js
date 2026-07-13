@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { normalizeContactFields, normalizeEmail, normalizePhoneCandidate } from "../lib/contactNormalizer.js";
+import { LOCAL_INDIANA_TOWNS } from "../lib/localTowns.js";
 import { contactNormalizerFixtures } from "./contactNormalizerFixtures.js";
 
 function findCandidate(candidates, predicate) {
@@ -255,6 +256,86 @@ test("prices and percentages are not matched as phones", () => {
 
   assert.equal(result.phone.display, "");
   assert.equal(result.phone.candidates.filter((candidate) => candidate.accepted).length, 0);
+});
+
+test("adjacent local town makes a complete address high confidence and supplies Indiana", () => {
+  const result = normalizeContactFields({
+    rawText: "John, 456 Main Madison, option A remove tree 1000",
+  });
+  const accepted = result.address.candidates.find((candidate) => candidate.accepted);
+
+  assert.equal(result.address.value, "456 Main, Madison, Indiana");
+  assert.equal(result.address.completeness, "complete");
+  assert.equal(result.address.town, "Madison");
+  assert.equal(result.address.state_source, "local_town_default");
+  assert.equal(accepted.confidence, "high");
+  assert.deepEqual(accepted.span, { start: 6, end: 22 });
+});
+
+test("explicit Indiana and inferred Indiana share high confidence but retain provenance", () => {
+  const inferred = normalizeContactFields({ rawText: "117 Main Street Madison, remove oak" }).address;
+  const explicit = normalizeContactFields({ rawText: "117 Main Street Madison IN, remove oak" }).address;
+
+  assert.equal(inferred.candidates.find((candidate) => candidate.accepted).confidence, "high");
+  assert.equal(explicit.candidates.find((candidate) => candidate.accepted).confidence, "high");
+  assert.equal(inferred.state_source, "local_town_default");
+  assert.equal(explicit.state_source, "explicit");
+});
+
+test("street-only address stays incomplete and does not receive a guessed town", () => {
+  const result = normalizeContactFields({
+    rawText: "John, 456 Main Street, option A remove tree 1000",
+  });
+  const accepted = result.address.candidates.find((candidate) => candidate.accepted);
+
+  assert.equal(result.address.value, "456 Main Street");
+  assert.equal(result.address.completeness, "town_missing");
+  assert.equal(result.address.town, "");
+  assert.equal(result.address.state_source, "missing");
+  assert.equal(accepted.confidence, "medium");
+});
+
+test("town name elsewhere in the note does not complete a street-only address", () => {
+  const result = normalizeContactFields({
+    rawText: "John in Madison, service address 456 Main Street, remove oak",
+  });
+
+  assert.equal(result.address.value, "456 Main Street");
+  assert.equal(result.address.completeness, "town_missing");
+  assert.equal(result.address.candidates.find((candidate) => candidate.accepted).confidence, "medium");
+});
+
+test("numbered road is included only when followed by complete town evidence", () => {
+  const complete = normalizeContactFields({
+    rawText: "Customer, 456 County Road 250 Hanover, remove oak",
+  }).address;
+  const priceAfterRoad = normalizeContactFields({
+    rawText: "Customer, 456 County Road 2500 option A remove oak",
+  }).address;
+
+  assert.equal(complete.value, "456 County Road 250, Hanover, Indiana");
+  assert.equal(complete.candidates.find((candidate) => candidate.accepted).confidence, "high");
+  assert.equal(priceAfterRoad.value, "456 County Road");
+  assert.equal(priceAfterRoad.completeness, "town_missing");
+});
+
+test("numbered highway keeps its route number before every listed local town", () => {
+  for (const town of LOCAL_INDIANA_TOWNS) {
+    const address = normalizeContactFields({
+      rawText: `Customer, 456 Highway 421 ${town}, remove oak`,
+    }).address;
+
+    assert.equal(address.value, `456 Highway 421, ${town}, Indiana`, town);
+    assert.equal(address.completeness, "complete", town);
+    assert.equal(address.candidates.find((candidate) => candidate.accepted).confidence, "high", town);
+  }
+
+  const noTown = normalizeContactFields({
+    rawText: "Customer, 456 Highway 421 option A remove oak 1000",
+  }).address;
+
+  assert.equal(noTown.value, "456 Highway");
+  assert.equal(noTown.completeness, "town_missing");
 });
 
 test("contact-only fixture suite tracks current direct detection behavior", () => {

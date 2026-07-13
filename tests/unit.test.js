@@ -37,6 +37,22 @@ test("validation blocks missing phone and priced option", () => {
   assert.ok(result.blocking_errors.includes("Missing priced service option."));
 });
 
+test("validation requires a town for street-only addresses but accepts listed towns without state", () => {
+  const streetOnly = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Sam Price 812-555-0199 123 Oak Lane remove one maple tree option A removal 1000",
+  ));
+  const listedTown = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Sam Price 812-555-0199 123 Oak Lane Madison remove one maple tree option A removal 1000",
+  ));
+
+  assert.ok(streetOnly.blocking_errors.includes("Service address looks unclear."));
+  assert.match(streetOnly.follow_ups.join(" "), /What town or city belongs/i);
+  assert.doesNotMatch(listedTown.blocking_errors.join(" "), /service address/i);
+  assert.equal(listedTown.alphaJson.job.service_address.display, "123 Oak Lane, Madison, Indiana");
+});
+
 test("review overrides allow only accepted address and contact blocking issues", () => {
   const alphaJsonMissingContact = { customer: { phone_display: "", phone_primary: "", email: "" } };
   const addressAndContactValidation = {

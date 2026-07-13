@@ -189,7 +189,7 @@ test("cue-backed short street names can be accepted without a street suffix", ()
     "remove two maple trees only",
     "remove two maple trees and haul away",
   ]);
-  assert.match(validation.warnings.join(" "), /Service address may be missing town\/city or state/i);
+  assert.match(validation.blocking_errors.join(" "), /Service address looks unclear/i);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /Missing service address/i);
   assert.doesNotMatch(validation.blocking_errors.join(" "), /Tree count is unclear/i);
 });
@@ -350,7 +350,7 @@ test("captures explicit city and any US state without appending Indiana", () => 
   }
 });
 
-test("keeps short typed local address in TD2 with non-blocking town warning", () => {
+test("keeps short typed address in TD2 and requires town confirmation", () => {
   const validation = validateAlphaJson(
     normalizeToAlphaJsonV14(
       {},
@@ -359,11 +359,9 @@ test("keeps short typed local address in TD2 with non-blocking town warning", ()
   );
 
   assert.equal(validation.alphaJson.job.service_address.display, "803 W 2nd");
-  assert.equal(validation.can_generate_pdf, true);
-  assert.deepEqual(validation.blocking_errors, []);
-  assert.deepEqual(validation.follow_ups, []);
-  assert.match(validation.warnings.join(" "), /town\/city/i);
-  assert.doesNotMatch(validation.warnings.join(" "), /Service address may need city or state/);
+  assert.equal(validation.can_generate_pdf, false);
+  assert.deepEqual(validation.blocking_errors, ["Service address looks unclear."]);
+  assert.match(validation.follow_ups.join(" "), /What town or city belongs/i);
 });
 
 test("maps client and services shape into canonical AlphaJSON", () => {
@@ -1698,8 +1696,8 @@ test("messy raw note parses implied one-tree removal while keeping safety notes 
   ].join(" ");
 
   assert.equal(validation.can_generate_pdf, false);
-  assert.deepEqual(validation.blocking_errors, ["Missing customer phone or email."]);
-  assert.match(validation.warnings.join(" "), /town\/city/i);
+  assert.deepEqual(validation.blocking_errors, ["Service address looks unclear.", "Missing customer phone or email."]);
+  assert.match(validation.follow_ups.join(" "), /town or city/i);
   assert.match(validation.follow_ups.join(" "), /phone number or email/i);
   assert.equal(alphaJson.job.service_address.display, "148 maple st");
   assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");

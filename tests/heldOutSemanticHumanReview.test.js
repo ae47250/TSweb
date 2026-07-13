@@ -143,10 +143,17 @@ function assertFixtureStructure(caseRecord, actual, expected) {
 
 function rawValidation(row) {
   const alphaJson = reconcileSidecarPrices(
-    normalizeToAlphaJsonV14({}, row.input),
+    normalizeToAlphaJsonV14({}, row.input, { address: "123 Test St, Madison, IN" }),
     buildOptionPriceCandidateView(row.input),
   );
   return validateAlphaJson(alphaJson);
+}
+
+function withCompleteTestAddress(alphaJson) {
+  const next = structuredClone(alphaJson);
+  next.job = next.job || {};
+  next.job.service_address = { ...(next.job.service_address || {}), display: "123 Test St, Madison, IN" };
+  return next;
 }
 
 function assertBaseScopePreserved(caseId, optionA, optionB) {
@@ -208,7 +215,7 @@ test("structural validator separates pre-canonical diagnostics from final 56 opt
   let dependentAddOnDiagnostics = 0;
 
   for (const caseRecord of data.cases) {
-    const validation = validateAlphaJson(alphaJsonFor(replayById.get(caseRecord.observation_id)));
+    const validation = validateAlphaJson(withCompleteTestAddress(alphaJsonFor(replayById.get(caseRecord.observation_id))));
     const codes = new Set(validation.structural_error_codes);
     const preCodes = new Set(validation.alphaJson.validation.pre_canonical_diagnostic_codes || []);
 

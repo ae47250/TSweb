@@ -89,7 +89,7 @@ function alphaWithRelationship({
 
 function validateRaw(raw) {
   return validateAlphaJson(reconcileSidecarPrices(
-    normalizeToAlphaJsonV14({}, raw),
+    normalizeToAlphaJsonV14({}, raw, { address: "123 Test St, Madison, IN" }),
     buildOptionPriceCandidateView(raw),
   ));
 }
