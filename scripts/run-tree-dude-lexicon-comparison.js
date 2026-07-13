@@ -242,6 +242,10 @@ function previewFailures(record, baselineView, previewView) {
   if (record.category === "independent_alternatives" && !same(baselineView.options, previewView.options)) {
     failures.push("independent_options_changed");
   }
+  if (["clear_dependent_addon", "explicit_option_totals"].includes(record.category)) {
+    if (previewView.options[0]?.amount !== record.expected.option_a_amount) failures.push("option_a_price_mismatch");
+    if (previewView.options[1]?.amount !== record.expected.option_b_amount) failures.push("option_b_price_mismatch");
+  }
   if (record.category === "ambiguous_review" && !previewView.validation.review_required && previewView.validation.can_generate_pdf) {
     failures.push("ambiguous_case_became_ready_without_review");
   }
@@ -254,6 +258,7 @@ function renderPreviewMarkdown(payload) {
     "",
     `Current deployed V3: ${payload.v3_base_url}`,
     `Preview candidate: ${payload.preview_base_url}`,
+    `Candidate execution: ${payload.candidate_execution}`,
     "",
     "The Preview `/api/validate` route received the frozen deployed `/api/openai` AlphaJSON. No second AI call was made.",
     "",
@@ -309,7 +314,10 @@ async function comparePreview() {
     generated_at: new Date().toISOString(),
     v3_base_url: baseline.base_url,
     preview_base_url: PREVIEW_BASE_URL,
-    method: "Frozen deployed /api/openai AlphaJSON sent to Preview /api/validate; no second AI call.",
+    candidate_execution: /^https:\/\//i.test(PREVIEW_BASE_URL)
+      ? "deployed Vercel Preview"
+      : "local production build of the Preview commit",
+    method: "Frozen deployed /api/openai AlphaJSON sent to candidate /api/validate; no second AI call.",
     summary: {
       total: rows.length,
       exact_td2_matches: rows.filter((row) => row.exact_td2_match).length,
