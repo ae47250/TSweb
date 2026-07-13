@@ -171,7 +171,7 @@ test("review starts with status while confirm keeps final approval heading", () 
   assert.match(reviewSource, /override-check-row/);
   assert.match(reviewSource, /type="checkbox"/);
   assert.match(reviewSource, /Fix missing info before confirming estimate/);
-  assert.match(reviewSource, /Edit Info/);
+  assert.match(reviewSource, /Edit TD1 Info\?\?/);
   assert.match(reviewSource, /customer-summary-card/);
   assert.match(reviewSource, /customer-info-grid/);
   assert.match(reviewSource, /normalizeEditedServiceAddress/);
@@ -319,6 +319,7 @@ test("TD2 can edit highlighted option descriptions in place", () => {
   assert.match(cssSource, /\.option-price-input\s*\{[^}]*font-size:\s*16px/s);
   assert.match(cssSource, /\.option-price-input\s*\{[^}]*text-align:\s*left/s);
   assert.match(cssSource, /\.option-price-input\s*\{[^}]*width:\s*10ch/s);
+  assert.match(cssSource, /\.quote-option-heading > strong\s*\{[^}]*text-transform:\s*uppercase/s);
   assert.match(cssSource, /\.option-price-change-note\s*\{[^}]*text-transform:\s*none/s);
 });
 

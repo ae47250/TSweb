@@ -988,7 +988,7 @@ export default function JsonReview({
     ? `Do not choose an option here. ${customerName === "Name not available" ? "The customer" : customerName} will choose one when opening the estimate.`
     : "Review these options. The customer chooses one later.";
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Estimate") : "Confirm Estimate";
-  const editLabel = isFinalConfirm ? "Back" : "Edit Info";
+  const editLabel = isFinalConfirm ? "Back" : "Edit TD1 Info??";
   const warningItems = (validation?.warnings || []).filter((warning) => !isOverrideRelatedWarning(warning, overrideStatus));
   const needsInlinePhoneEditor = hasBlockingError(validation, /Missing customer phone or email/i)
     && !String(alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "").trim();

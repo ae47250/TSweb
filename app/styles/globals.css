@@ -731,6 +731,11 @@ main {
   margin: 0;
 }
 
+.quote-option-header > strong,
+.quote-option-heading > strong {
+  text-transform: uppercase;
+}
+
 .quote-option-card p {
   margin: 0;
 }
