@@ -10,6 +10,10 @@ const emptyContact = {
   treeCountOverride: "Auto",
 };
 
+const JOB_NOTES_FONT_SIZE_PX = 17;
+const JOB_NOTES_TEXT_STYLE = { fontSize: `${JOB_NOTES_FONT_SIZE_PX}px` };
+const JOB_NOTES_BUTTON_STYLE = { fontSize: `${JOB_NOTES_FONT_SIZE_PX * 1.2}px` };
+
 const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onClear, busy, editMessage = "", contactValue = emptyContact, onContactChange }, ref) {
   function updateContact(field, nextValue) {
     onContactChange?.({ ...contactValue, [field]: nextValue });
@@ -33,13 +37,13 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
       {editMessage && <div className="alert" data-testid="edit-notes-message">{editMessage}</div>}
       <form onSubmit={submit}>
         <div className="job-notes-standalone">
-          <p className="text-inbox-title">
+          <p className="text-inbox-title" style={JOB_NOTES_TEXT_STYLE}>
             Paste or type everything here (in ANY order):<br />
             customer info, phone/email, address, work requested, options, prices, notes
           </p>
-          <p className="job-notes-example">
-            <span>Example:</span>
-            <span className="job-notes-example-text">Remove 2 maples, John W. 22 Main street, Madison,  1234567890 wj234@gmail.com  option a remove only 1000, option b grind stumps and haul away 1900.</span>
+          <p className="job-notes-example" style={JOB_NOTES_TEXT_STYLE}>
+            <strong>Example:</strong>
+            <span className="job-notes-example-text">Remove 2 maples, John Hudson, 22 Main street, Madison, 1234567890 wj234@gmail.com option a remove only 1000, option b and grind stumps 1900</span>
           </p>
           <textarea
             ref={ref}
@@ -52,10 +56,10 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
           />
         </div>
         <div className="toolbar job-notes-actions">
-          <button className="btn-primary btn-create-review" type="submit" disabled={busy || value.trim().length < 10}>
+          <button className="btn-primary btn-create-review" style={JOB_NOTES_BUTTON_STYLE} type="submit" disabled={busy || value.trim().length < 10}>
             {busy ? "Structuring..." : "Review Estimate"}
           </button>
-          <button className="btn-secondary" type="button" onClick={onClear} disabled={busy}>
+          <button className="btn-secondary" style={JOB_NOTES_BUTTON_STYLE} type="button" onClick={onClear} disabled={busy}>
             Clear
           </button>
         </div>

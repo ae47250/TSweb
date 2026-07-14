@@ -591,7 +591,7 @@ main {
 
 .option-description-clarifier {
   display: grid;
-  gap: 8px;
+  gap: 2px;
 }
 
 .option-description-clarifier strong {
@@ -657,7 +657,13 @@ main {
 
 .override-warning-card h3 {
   color: #7c2d12;
-  margin: 0 0 6px;
+  font-weight: 900;
+  margin: 0 0 2px;
+}
+
+.internal-warning-list {
+  margin: 0;
+  padding-left: 20px;
 }
 
 .override-warning-card p {
@@ -766,11 +772,17 @@ main {
 
 .option-description-clarifier {
   display: grid;
-  gap: 8px;
+  gap: 2px;
 }
 
 .option-description-clarifier strong {
   color: #7f1d1d;
+}
+
+.option-description-clarifier .td2-inline-help {
+  font-size: inherit;
+  font-weight: 400;
+  line-height: inherit;
 }
 
 .option-description-editor-warning {

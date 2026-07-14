@@ -337,6 +337,11 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
   return (
     <section className="summary-card override-warning-card">
       <h3>Internal Warning</h3>
+      {warningItems.length > 0 && (
+        <ul className="internal-warning-list">
+          {warningItems.map((warning) => <li key={warning}>{warning}</li>)}
+        </ul>
+      )}
       {hasOverrideControls && (
         <div className="override-warning-actions">
           {status.needsAddressOverride && (
@@ -378,14 +383,6 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
               </p>
             </div>
           )}
-        </div>
-      )}
-      {warningItems.length > 0 && (
-        <div className="warning-card">
-          <h4>Notes</h4>
-          <ul>
-            {warningItems.map((warning) => <li key={warning}>{warning}</li>)}
-          </ul>
         </div>
       )}
     </section>
@@ -834,6 +831,9 @@ function OptionDescriptionEditor({ option, index, busy = false, onChange }) {
       {needsScopeClarification && (
         <strong>Write the confirmed work scope for this option.</strong>
       )}
+      {needsScopeClarification && (
+        <span className="td2-inline-help">This replaces the customer-facing option description. The title changes only if it is generic.</span>
+      )}
       <textarea
         aria-label={`${option.label || `Option ${index + 1}`} description`}
         className="option-description-editor option-description-editor-warning"
@@ -843,9 +843,6 @@ function OptionDescriptionEditor({ option, index, busy = false, onChange }) {
         spellCheck="true"
         value={value}
       />
-      {needsScopeClarification && (
-        <span className="td2-inline-help">This replaces the customer-facing option description. The title changes only if it is generic.</span>
-      )}
     </label>
   );
 }
@@ -1106,7 +1103,7 @@ export default function JsonReview({
       <div className="quote-options-grid">
         {options.length > 0 ? options.map((option, index) => (
           <article
-            className={`quote-option-card${optionNeedsDescriptionReview(option) ? " quote-option-card-warning" : ""}`}
+            className={`quote-option-card${!isFinalConfirm && optionNeedsDescriptionReview(option) ? " quote-option-card-warning" : ""}`}
             key={optionRenderKey(option, index)}
           >
             <div className="quote-option-header">

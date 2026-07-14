@@ -58,9 +58,12 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(cssSource, /background:\s*#dbeafe/);
   assert.match(inputFormSource, /Paste or type everything here \(in ANY order\)/);
   assert.match(inputFormSource, /Add customer info, number of trees, prices and service for each option/);
-  assert.match(inputFormSource, /Remove 2 maples, John W\. 22 Main street, Madison,  1234567890 wj234@gmail\.com/);
+  assert.match(inputFormSource, /Remove 2 maples, John Hudson, 22 Main street, Madison, 1234567890 wj234@gmail\.com option a remove only 1000, option b and grind stumps 1900/);
   assert.match(inputFormSource, /Review Estimate/);
   assert.match(inputFormSource, /Clear/);
+  assert.match(inputFormSource, /JOB_NOTES_TEXT_STYLE/);
+  assert.match(inputFormSource, /JOB_NOTES_BUTTON_STYLE/);
+  assert.match(inputFormSource, /strong>Example:<\/strong>/);
   assert.doesNotMatch(inputFormSource, /Tree count/);
   assert.doesNotMatch(inputFormSource, /<option value="Auto">Auto<\/option>/);
   assert.doesNotMatch(inputFormSource, /<option value="Unknown">Unknown<\/option>/);
@@ -130,7 +133,8 @@ test("review starts with status while confirm keeps final approval heading", () 
   assert.match(reviewSource, /Do not choose an option here/);
   assert.match(reviewSource, /Needs More Info/);
   assert.match(reviewSource, /warningItems/);
-  assert.match(reviewSource, /Notes/);
+  assert.match(reviewSource, /internal-warning-list/);
+  assert.doesNotMatch(reviewSource, /<h4>Notes<\/h4>/);
   assert.doesNotMatch(reviewSource, /Internal Warnings/);
   assert.match(reviewSource, /warning-card/);
   assert.match(reviewSource, /OverrideWarningCard/);
@@ -203,6 +207,8 @@ test("review starts with status while confirm keeps final approval heading", () 
   assert.match(cssSource, /\.td2-action-toolbar/);
   assert.match(cssSource, /\.warning-card/);
   assert.match(cssSource, /\.override-warning-card/);
+  assert.match(cssSource, /\.override-warning-card h3\s*\{[^}]*font-weight:\s*900/s);
+  assert.match(cssSource, /\.internal-warning-list\s*\{[^}]*margin:\s*0/s);
   assert.match(cssSource, /\.override-check-row/);
   assert.match(cssSource, /border:\s*2px solid #f97316/);
   assert.match(cssSource, /grid-template-columns:\s*max-content minmax\(0, 1fr\)/);
@@ -299,10 +305,12 @@ test("TD2 can edit highlighted option descriptions in place", () => {
   assert.match(reviewSource, /key=\{optionRenderKey\(option, index\)\}/);
   assert.doesNotMatch(reviewSource, /key=\{option\.label \|\| index\}/);
   assert.match(reviewSource, /optionNeedsDescriptionReview/);
+  assert.match(reviewSource, /!isFinalConfirm && optionNeedsDescriptionReview\(option\).*quote-option-card-warning/);
   assert.match(reviewSource, /source_fact_clarification/);
   assert.match(reviewSource, /OptionDescriptionEditor/);
   assert.match(reviewSource, /Write the confirmed work scope for this option/);
   assert.match(reviewSource, /This replaces the customer-facing option description/);
+  assert.match(reviewSource, /This replaces the customer-facing option description[\s\S]*?<textarea/);
   assert.match(reviewSource, /OptionPriceEditor/);
   assert.match(reviewSource, /RequiredInfoEditor/);
   assert.match(reviewSource, /More info is needed to complete Estimate/);
@@ -320,6 +328,8 @@ test("TD2 can edit highlighted option descriptions in place", () => {
   assert.match(cssSource, /\.quote-option-card-warning/);
   assert.match(cssSource, /border:\s*4px solid #b91c1c/);
   assert.match(cssSource, /\.option-description-editor-warning/);
+  assert.match(cssSource, /\.option-description-clarifier\s*\{[^}]*gap:\s*2px/s);
+  assert.match(cssSource, /\.option-description-clarifier \.td2-inline-help\s*\{[^}]*font-size:\s*inherit[^}]*font-weight:\s*400/s);
   assert.match(cssSource, /\.option-price-label\s*\{[^}]*color:\s*var\(--ink\)/s);
   assert.match(cssSource, /\.option-price-label\s*\{[^}]*font-size:\s*16px/s);
   assert.match(cssSource, /\.option-price-label\s*\{[^}]*font-weight:\s*700/s);
