@@ -991,6 +991,8 @@ export default function JsonReview({
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Estimate") : "Confirm Estimate";
   const editLabel = isFinalConfirm ? "Back" : "Edit TD1 Info??";
   const warningItems = (validation?.warnings || []).filter((warning) => !isOverrideRelatedWarning(warning, overrideStatus));
+  const needsSourceFactReview = warningItems.some((warning) => /^SOURCE_[A-Z_]+:/.test(String(warning || "").trim()));
+  const showReadyStatus = canConfirmWithOverrides && !needsSourceFactReview;
   const needsInlinePhoneEditor = hasBlockingError(validation, /Missing customer phone or email/i)
     && !String(alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "").trim();
   const needsInlineAddressEditor = hasBlockingError(validation, /Missing service address|Service address looks unclear/i);
@@ -1036,11 +1038,13 @@ export default function JsonReview({
           <p className="text-muted">This creates the customer estimate link.</p>
         </>
       )}
-      {!isFinalConfirm && canConfirmWithOverrides && (
+      {!isFinalConfirm && showReadyStatus && (
         <span className="review-status review-status-ready">Estimate ready to be Confirmed</span>
       )}
-      {!isFinalConfirm && !canConfirmWithOverrides && (
-        <p className="td2-required-warning">More info is needed to complete Estimate</p>
+      {!isFinalConfirm && !showReadyStatus && (
+        <p className="td2-required-warning">
+          {needsSourceFactReview ? "Review required before confirming Estimate" : "More info is needed to complete Estimate"}
+        </p>
       )}
       {isFinalConfirm ? (
         <div className="summary-card final-summary-card">

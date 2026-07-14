@@ -207,6 +207,37 @@ test("field-language explicit A/B totals keep leave-on-site scope on A and do no
   }
 });
 
+test("customer option text preserves every source-attached add-on action", () => {
+  const cases = [
+    {
+      raw: "Remove 2 maples, John W. 22 Main street, Madison, 1234567890 wj234@gmail.com option a remove only 1000, option b grind stumps and haul away 1900.",
+      prices: [1000, 1900],
+      title: /stump grinding and debris haul-away/i,
+      description: "Remove the two maple trees, grind the stumps and haul away the debris.",
+    },
+    {
+      raw: "Customer needs one oak removed. Option A remove only 1000. Option B stump grinding plus haul away plus cleanup 1900.",
+      prices: [1000, 1900],
+      title: /stump grinding, debris haul-away, and cleanup/i,
+      description: "Remove the oak tree, grind the stump, haul away the debris, and clean up the work area.",
+    },
+  ];
+
+  for (const item of cases) {
+    const alphaJson = forceCanonical(item.raw);
+    assert.equal(alphaJson.service_options?.canonical_service_assembler_applied, true, item.raw);
+    assert.deepEqual(optionPrices(alphaJson), item.prices, item.raw);
+
+    const optionB = alphaJson.service_options.items[1];
+    assert.match(optionB.title, item.title, item.raw);
+    assert.equal(optionB.description, item.description, item.raw);
+
+    const sourceWarnings = (validateAlphaJson(alphaJson).warnings || [])
+      .filter((warning) => String(warning).startsWith("SOURCE_"));
+    assert.deepEqual(sourceWarnings, [], item.raw);
+  }
+});
+
 test("ambiguous add-on price roles stay blocked instead of guessing arithmetic", () => {
   const alphaJson = forceCanonical(
     "Customer needs one maple removed. Option A remove tree only 1000. Plus stump grinding 450 per stump.",

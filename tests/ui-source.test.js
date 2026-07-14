@@ -109,6 +109,9 @@ test("review starts with status while confirm keeps final approval heading", () 
   assert.match(reviewSource, /review-card/);
   assert.match(reviewSource, /Confirm Estimate/);
   assert.match(reviewSource, /Estimate ready to be Confirmed/);
+  assert.match(reviewSource, /needsSourceFactReview/);
+  assert.match(reviewSource, /Review required before confirming Estimate/);
+  assert.match(reviewSource, /showReadyStatus\s*=\s*canConfirmWithOverrides\s*&&\s*!needsSourceFactReview/);
   assert.doesNotMatch(reviewSource, /review-status-needs-info/);
   assert.match(cssSource, /\.review-status\s*\{[^}]*border-radius:\s*8px/s);
   assert.match(cssSource, /\.review-status\s*\{[^}]*margin:\s*10px auto 14px/s);
