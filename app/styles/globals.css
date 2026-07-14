@@ -278,6 +278,10 @@ main {
   margin-top: 6px;
 }
 
+.text-inbox-title {
+  font-weight: 400;
+}
+
 .required-marker {
   color: #b91c1c;
   font-size: 0.7em;
@@ -307,7 +311,7 @@ main {
 }
 
 .job-notes-guidance span,
-.job-notes-example span:first-child {
+.job-notes-emphasis {
   color: #b91c1c;
   font-weight: 700;
 }
@@ -325,15 +329,15 @@ main {
 
 .job-notes-example-text {
   color: #111;
-  font-weight: 700;
+  font-weight: 400;
   min-width: 0;
 }
 
 .job-notes-textarea {
   min-height: 280px;
   max-height: 460px;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 400;
   line-height: 1.35;
   resize: vertical;
   margin-bottom: 0;

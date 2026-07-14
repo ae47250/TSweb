@@ -38,12 +38,12 @@ const InputForm = forwardRef(function InputForm({ value, onChange, onSubmit, onC
       <form onSubmit={submit}>
         <div className="job-notes-standalone">
           <p className="text-inbox-title" style={JOB_NOTES_TEXT_STYLE}>
-            Paste or type everything here (in ANY order):<br />
-            customer info, phone/email, address, work requested, options, prices, notes
+            <strong className="job-notes-emphasis">Paste or type everything here (in ANY order):</strong><br />
+            Customer name, phone/email, address, work requested, options, prices, notes
           </p>
           <p className="job-notes-example" style={JOB_NOTES_TEXT_STYLE}>
-            <strong>Example:</strong>
-            <span className="job-notes-example-text">Remove 2 maples, John Hudson, 22 Main street, Madison, 1234567890 wj234@gmail.com option a remove only 1000, option b and grind stumps 1900</span>
+            <strong className="job-notes-emphasis">Example:</strong>
+            <span className="job-notes-example-text">Remove 2 maples, John Hudson  22 Main street, Madison, 1234567890 wj234@gmail.com option a remove only 1000, option b grind stumps and haul away 1900</span>
           </p>
           <textarea
             ref={ref}
