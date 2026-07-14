@@ -58,7 +58,7 @@ test("workflow actions use customer-safe labels and clean estimate route", () =>
   assert.match(cssSource, /background:\s*#dbeafe/);
   assert.match(inputFormSource, /job-notes-emphasis">Paste or type everything here \(in ANY order\)/);
   assert.match(inputFormSource, /Customer name, phone\/email, address, work requested, options, prices, notes/);
-  assert.match(inputFormSource, /Remove 2 maples, John Hudson  22 Main street, Madison, 1234567890 wj234@gmail\.com option a remove only 1000, option b grind stumps and haul away 1900/);
+  assert.match(inputFormSource, /Remove 2 maples, John Hudson, 22 Main street, Madison, 1234567890 wj234@gmail\.com option a remove only 1000, option b grind stumps and haul away 1900/);
   assert.match(inputFormSource, /Review Estimate/);
   assert.match(inputFormSource, /Clear/);
   assert.match(inputFormSource, /JOB_NOTES_TEXT_STYLE/);
