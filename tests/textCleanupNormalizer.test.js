@@ -61,6 +61,14 @@ test("allowlist typo cleanup does not act like broad spellcheck", () => {
   assert.ok(result.changes.filter((change) => change.type === "spelling").length >= 8);
 });
 
+test("haul-away and cleanup typo cleanup handles hawlin brsh clnup", () => {
+  const result = textCleanupNormalizer("hawlin brsh clnup");
+
+  assert.equal(result.cleanedText, "hauling brush cleanup");
+  assert.ok(result.changes.some((change) => change.before === "hawlin"));
+  assert.ok(result.changes.some((change) => change.before === "clnup"));
+});
+
 test("typo cleanup does not correct names, street names, city names, or uncommon words", () => {
   const raw = "Maddison Garaje lives on Remve Street near Addrss Court in Trimingham. remove oak by garage.";
   const result = textCleanupNormalizer(raw);

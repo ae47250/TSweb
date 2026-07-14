@@ -162,3 +162,14 @@ test("expanded lexicon captures option and price-role cue words as annotations",
   assert.ok(conceptIds.includes("service.stump_grinding"));
   assert.ok(TREE_SERVICE_PATTERNS.priceCue.test("plus stump grind extra"));
 });
+
+test("expanded lexicon covers haul-away debris, root grinding, chip brush, leave wood, and cleanup variants", () => {
+  const annotation = annotateTreeServiceText("Root grinding plus debris haul, chip brush and leave, stack firewood, and site cleanup.");
+  const conceptIds = annotation.matches.map((match) => match.concept_id);
+
+  assert.ok(conceptIds.includes("service.stump_grinding"));
+  assert.ok(conceptIds.includes("service.debris_removal"));
+  assert.ok(conceptIds.includes("service.chipping"));
+  assert.ok(conceptIds.includes("disposition.wood_left"));
+  assert.ok(conceptIds.includes("service.fine_cleanup"));
+});
