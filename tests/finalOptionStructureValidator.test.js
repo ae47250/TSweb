@@ -905,3 +905,75 @@ test("accepted bundle pricing does not hide a dropped add-on service", () => {
   assert.ok(coverage.blocking_codes.includes("SOURCE_OPTION_ACTION_OMITTED"));
   assert.ok(coverage.blocking_codes.includes("SOURCE_DEBRIS_DISPOSITION_CHANGED"));
 });
+
+test("source-final contact coverage accepts equivalent phone email and address formatting", () => {
+  const coverage = buildSourceFinalFactCoverage({
+    rawText: "John W. 22 Main Street, Madison, 1234567890 WJ234@GMAIL.COM remove two maples.",
+    finalCustomer: {
+      phone_primary: "123-456-7890",
+      email: "wj234@gmail.com",
+    },
+    finalJob: {
+      service_address: { display: "22 Main St, Madison, IN" },
+    },
+  });
+
+  assert.equal(coverage.applicable, true);
+  assert.deepEqual(coverage.blocking_codes, []);
+  assert.deepEqual(
+    coverage.results.map((result) => [result.fact, result.status]),
+    [
+      ["customer_phone", "ok"],
+      ["customer_email", "ok"],
+      ["service_address", "ok"],
+    ],
+  );
+});
+
+test("source-final contact coverage flags changed or missing contact and address facts", () => {
+  const rawText = "John W. 22 Main Street, Madison, 1234567890 wj234@gmail.com remove two maples.";
+  const changed = buildSourceFinalFactCoverage({
+    rawText,
+    finalCustomer: {
+      phone_primary: "999-456-7890",
+      email: "other@gmail.com",
+    },
+    finalJob: {
+      service_address: { display: "23 Main St, Madison, IN" },
+    },
+  });
+  const missing = buildSourceFinalFactCoverage({
+    rawText,
+    finalCustomer: {},
+    finalJob: { service_address: { display: "" } },
+  });
+  const expectedCodes = [
+    "SOURCE_EMAIL_CHANGED",
+    "SOURCE_PHONE_CHANGED",
+    "SOURCE_SERVICE_ADDRESS_CHANGED",
+  ];
+
+  assert.deepEqual(changed.blocking_codes, expectedCodes);
+  assert.deepEqual(missing.blocking_codes, expectedCodes);
+  assert.ok(changed.results.every((result) => result.status === "changed"));
+  assert.ok(missing.results.every((result) => result.status === "missing"));
+});
+
+test("validation exposes contact equality mismatches as source review warnings", () => {
+  const alphaJson = baseAlpha(
+    "John W. 22 Main Street, Madison, 1234567890 wj234@gmail.com option A remove oak 1000 option B remove oak and haul debris 1400",
+  );
+  alphaJson.customer.phone_primary = "9994567890";
+  alphaJson.customer.phone_display = "999-456-7890";
+  alphaJson.customer.email = "other@gmail.com";
+  alphaJson.job.service_address.display = "23 Main St Madison IN";
+  alphaJson.service_options.items = [
+    { label: "Option A", title: "Oak removal", description: "Remove the oak tree.", price: { amount: 1000, display: "$1,000" } },
+    { label: "Option B", title: "Oak removal with haul-away", description: "Remove the oak tree and haul away the debris.", price: { amount: 1400, display: "$1,400" } },
+  ];
+
+  const validation = validateAlphaJson(alphaJson);
+  assert.ok(validation.warnings.some((warning) => warning.startsWith("SOURCE_PHONE_CHANGED:")));
+  assert.ok(validation.warnings.some((warning) => warning.startsWith("SOURCE_EMAIL_CHANGED:")));
+  assert.ok(validation.warnings.some((warning) => warning.startsWith("SOURCE_SERVICE_ADDRESS_CHANGED:")));
+});
