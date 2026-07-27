@@ -2615,6 +2615,95 @@ test("OpenAI extraction draft uncertain customer name is not accepted", () => {
   assert.equal(validation.alphaJson.customer.name, "");
 });
 
+test("explicitly uncertain fields stay unguessed and produce field clarification warnings", () => {
+  const raw =
+    "Possible Fields 812-555-3004 possible@example.com. 10 Main Lane Madison Indiana. Remove one tree near garage. Option A remove and leave wood 1200.";
+  const draft = {
+    draft_version: "alpha_extraction_v1",
+    raw_input: { customer_text: raw },
+    contact: {
+      customer_name: "Possible Fields",
+      phone: "812-555-3004",
+      email: "possible@example.com",
+      service_address: "10 Main Lane Madison Indiana",
+    },
+    job: {
+      tree_count: "1 tree",
+      tree_count_status: "found",
+      tree_type: "oak",
+      tree_size: "large",
+      work_action: "remove",
+      work_scope: "Remove one tree near garage.",
+      location_on_property: "near garage",
+    },
+    options: [
+      {
+        raw_label: "Option A",
+        raw_text: "Option A remove and leave wood 1200",
+        scope: "remove and leave wood",
+        price_raw: "1200",
+        price_amount: 1200,
+        price_status: "firm",
+        haul_away: "excluded",
+        cleanup: "not_stated",
+        stump_grinding: "not_stated",
+        wood_handling: "leave",
+        evidence: "Option A remove and leave wood 1200",
+      },
+    ],
+    safety_access_notes: [],
+    normalization: {
+      corrections_made: [],
+      uncertainties: [
+        { field: "customer_name", issue: "Name is not confirmed.", evidence: "Possible Fields" },
+        { field: "tree_type", issue: "Species is not stated.", evidence: "No species in source note." },
+        { field: "tree_size", issue: "Size is not stated.", evidence: "No size in source note." },
+        { field: "work_action", issue: "Action is not confirmed.", evidence: "Remove may be a draft interpretation." },
+      ],
+      field_evidence: {},
+    },
+    low_confidence_spans: [
+      {
+        field: "add_on_price_interpretation",
+        text: "leave wood",
+        reason: "Could describe either the option scope or a separate add-on.",
+        confidence: "low",
+      },
+    ],
+  };
+
+  const parsed = parseOpenAiDraft(draft);
+  const validation = validateAlphaJson(
+    normalizeToAlphaJsonV14(
+      openAiDraftToNormalizerInput(parsed.draft, { rawInput: raw }),
+      raw,
+    ),
+  );
+
+  assert.equal(parsed.ok, true);
+  assert.equal(validation.alphaJson.customer.name, "");
+  assert.equal(validation.alphaJson.job.tree_details.tree_type, "");
+  assert.equal(validation.alphaJson.job.tree_details.tree_size, "");
+  assert.equal(validation.alphaJson.job.work_action, "");
+  assert.equal(validation.can_generate_pdf, true);
+
+  const clarificationLabels = validation.clarification_warnings.map((item) => item.label);
+  assert.ok(clarificationLabels.includes("Customer name"));
+  assert.ok(clarificationLabels.includes("Tree type"));
+  assert.ok(clarificationLabels.includes("Tree size"));
+  assert.ok(clarificationLabels.includes("Work action"));
+  assert.ok(clarificationLabels.includes("Interpretation"));
+  assert.ok(validation.clarification_warnings.every((item) => item.blocks_pdf === false));
+  assert.match(validation.warnings.join(" "), /Clarification needed for Tree type/i);
+  assert.ok(validation.structured_follow_ups.some(
+    (issue) => issue.id === "clarification_tree_type" && issue.blocks_pdf === false,
+  ));
+  assert.ok(validation.structured_follow_ups.some(
+    (issue) => issue.id === "clarification_field_add_on_price_interpretation" &&
+      /confirmed value for Interpretation/i.test(issue.question),
+  ));
+});
+
 test("OpenAI extraction draft non-firm price stays non-customer-facing", () => {
   const raw =
     "Price Draft 812-555-3003 price@example.com. 12 Maple Ave Madison Indiana. Around 2k to remove one maple.";

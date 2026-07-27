@@ -141,6 +141,10 @@ test("review starts with status while confirm keeps final approval heading", () 
   assert.match(reviewSource, /Needs More Info/);
   assert.match(reviewSource, /warningItems/);
   assert.match(reviewSource, /internal-warning-list/);
+  assert.match(reviewSource, /clarification_warnings/);
+  assert.match(reviewSource, /Clarification Needed/);
+  assert.match(reviewSource, /No value was assumed/);
+  assert.match(reviewSource, /Source evidence/);
   assert.doesNotMatch(reviewSource, /<h4>Notes<\/h4>/);
   assert.doesNotMatch(reviewSource, /Internal Warnings/);
   assert.match(reviewSource, /warning-card/);

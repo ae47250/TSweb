@@ -990,9 +990,15 @@ export default function JsonReview({
     : "Review these options. The customer chooses one later.";
   const approveLabel = isFinalConfirm ? (busy ? "Confirming..." : "Confirm Estimate") : "Confirm Estimate";
   const editLabel = isFinalConfirm ? "Back" : "Edit TD1 Info??";
-  const warningItems = (validation?.warnings || []).filter((warning) => !isOverrideRelatedWarning(warning, overrideStatus));
+  const clarificationWarnings = validation?.clarification_warnings || [];
+  const clarificationMessages = new Set(clarificationWarnings.map((item) => item.message));
+  const warningItems = (validation?.warnings || []).filter((warning) =>
+    !clarificationMessages.has(warning) &&
+    !isOverrideRelatedWarning(warning, overrideStatus),
+  );
   const needsSourceFactReview = warningItems.some((warning) => /^SOURCE_[A-Z_]+:/.test(String(warning || "").trim()));
-  const showReadyStatus = canConfirmWithOverrides && !needsSourceFactReview;
+  const needsClarificationReview = clarificationWarnings.length > 0;
+  const showReadyStatus = canConfirmWithOverrides && !needsSourceFactReview && !needsClarificationReview;
   const needsInlinePhoneEditor = hasBlockingError(validation, /Missing customer phone or email/i)
     && !String(alphaJson.customer?.phone_display || alphaJson.customer?.phone_primary || "").trim();
   const needsInlineAddressEditor = hasBlockingError(validation, /Missing service address|Service address looks unclear/i);
@@ -1025,8 +1031,12 @@ export default function JsonReview({
       source: `service_options.items[${index}]`,
     })),
     needsMoreInfo: {
-      value: [...(validation?.follow_ups || []), ...(validation?.blocking_errors || [])].join("; "),
-      source: "validation.follow_ups + validation.blocking_errors",
+      value: [
+        ...(validation?.follow_ups || []),
+        ...(validation?.blocking_errors || []),
+        ...clarificationWarnings.map((item) => item.question),
+      ].join("; "),
+      source: "validation.follow_ups + validation.blocking_errors + validation.clarification_warnings",
     },
   };
 
@@ -1043,7 +1053,9 @@ export default function JsonReview({
       )}
       {!isFinalConfirm && !showReadyStatus && (
         <p className="td2-required-warning">
-          {needsSourceFactReview ? "Review required before confirming Estimate" : "More info is needed to complete Estimate"}
+          {needsSourceFactReview || needsClarificationReview
+            ? "Review required before confirming Estimate"
+            : "More info is needed to complete Estimate"}
         </p>
       )}
       {isFinalConfirm ? (
@@ -1102,6 +1114,21 @@ export default function JsonReview({
           onJobDescriptionChange={onJobDescriptionChange}
           onReviewOverridesChange={onReviewOverridesChange}
         />
+      )}
+      {!isFinalConfirm && clarificationWarnings.length > 0 && (
+        <section className="summary-card override-warning-card clarification-card" aria-label="Clarification Needed">
+          <h3>Clarification Needed</h3>
+          <p className="override-warning-note">No value was assumed for the fields below.</p>
+          <ul className="internal-warning-list">
+            {clarificationWarnings.map((item) => (
+              <li key={`${item.id}-${item.message}`}>
+                <strong>{item.label || item.field}</strong>
+                <span>{item.question}</span>
+                {item.evidence && <small>Source evidence: {item.evidence}</small>}
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
       <h3>Customer Options</h3>
       <div className="quote-options-grid">
