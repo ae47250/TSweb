@@ -16,13 +16,13 @@ main {
 }
 
 body:has(main.app-stage-purple) {
-  background-color: #CCB0FF;
+  background-color: #529AFF;
 }
 
 main.app-stage-purple .front-page > .card,
 main.app-stage-purple .front-future-card,
 main.app-stage-purple .new-quote-card {
-  background-color: #CCB0FF;
+  background-color: #529AFF;
 }
 
 .app-grid {

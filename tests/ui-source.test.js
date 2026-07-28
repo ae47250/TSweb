@@ -41,7 +41,7 @@ test("initial desktop layout centers the Customer Notes card", () => {
 test("front page and TD1 use the purple background without changing TD2", () => {
   assert.match(pageSource, /const usesPurpleBackground = stage === "front" \|\| stage === "new"/);
   assert.match(pageSource, /className=\{usesPurpleBackground \? "app-stage-purple" : ""\}/);
-  assert.match(cssSource, /body:has\(main\.app-stage-purple\)\s*\{[\s\S]*background-color:\s*#CCB0FF/);
+  assert.match(cssSource, /body:has\(main\.app-stage-purple\)\s*\{[\s\S]*background-color:\s*#529AFF/);
   assert.match(cssSource, /main\.app-stage-purple \.front-page > \.card/);
   assert.match(cssSource, /main\.app-stage-purple \.new-quote-card/);
 });
