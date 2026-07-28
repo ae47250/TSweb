@@ -1,0 +1,5008 @@
+{
+  "schema_version": "service-assembler-live-ab-comparison-v1",
+  "run_id": "service-assembler-live-ab-2026-07-27-240",
+  "fixture": {
+    "path": "C:\\Users\\eiriksson\\Documents\\TSweb-service-assembler-accuracy\\tests\\fixtures\\tree-dude-service-classification-60.json",
+    "count": 60,
+    "sha256": "52c7e9fb9d60b35fdd9ba7e78752175c40dabb3edfe156753acc9f45c6455bbb"
+  },
+  "models": [
+    "gpt-4.1-nano",
+    "gpt-5.4-mini"
+  ],
+  "architectures": {
+    "base": {
+      "root": "C:\\Users\\eiriksson\\Documents\\TSweb",
+      "commit": "d5d5071e477ec04f886db11a73a17bb7d584a2f5",
+      "prompt_sha256": "a5fb95e771fcde24a62315bb97389cf1f4722fd38d39569d315ad07520b6158d",
+      "response_format_sha256": "ef98ea0f1feb395fcd86a41efecb2d3185a4017d6708f34f77c4862c43321088"
+    },
+    "candidate": {
+      "root": "C:\\Users\\eiriksson\\Documents\\TSweb-service-assembler-accuracy",
+      "commit": "b5295ced929dc2fffe4c82df4e308c84ea93b821",
+      "prompt_sha256": "a5fb95e771fcde24a62315bb97389cf1f4722fd38d39569d315ad07520b6158d",
+      "response_format_sha256": "ef98ea0f1feb395fcd86a41efecb2d3185a4017d6708f34f77c4862c43321088"
+    }
+  },
+  "request_settings": {
+    "endpoint": "chat.completions.create",
+    "reasoning_effort": null,
+    "temperature": "provider_default",
+    "sdk_retries": 0,
+    "system_prompt_sha256": "a5fb95e771fcde24a62315bb97389cf1f4722fd38d39569d315ad07520b6158d",
+    "response_format_sha256": "ef98ea0f1feb395fcd86a41efecb2d3185a4017d6708f34f77c4862c43321088"
+  },
+  "cells": {
+    "gpt-4.1-nano:base": {
+      "completed_calls": 60,
+      "api_errors": [],
+      "token_usage": {
+        "input_tokens": 126663,
+        "output_tokens": 24129,
+        "total_tokens": 150792
+      },
+      "pdf_ready": 34,
+      "blocked": 26,
+      "exact_option_prices": {
+        "matched": 42,
+        "total": 58,
+        "rate": 0.7241
+      },
+      "exact_option_count": {
+        "matched": 44,
+        "total": 58,
+        "rate": 0.7586
+      },
+      "primary_service_kind": {
+        "matched": 53,
+        "total": 60,
+        "rate": 0.8833
+      },
+      "service_kind_recall_complete": {
+        "matched": 30,
+        "total": 60,
+        "rate": 0.5
+      },
+      "action_fact_recall_complete": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "option_relationship": {
+        "matched": 41,
+        "total": 60,
+        "rate": 0.6833
+      },
+      "option_b_price_role": {
+        "matched": 43,
+        "total": 60,
+        "rate": 0.7167
+      },
+      "contact_equivalence": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "address_equivalence": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "source_final_counts": {
+        "SOURCE_CONDITION_QUALIFIER_REVIEW": 1,
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED": 3,
+        "SOURCE_OPTION_ACTION_OMITTED": 9,
+        "SOURCE_OPTION_PRICE_CHANGED": 5,
+        "SOURCE_SPECIES_CHANGED": 1,
+        "SOURCE_TARGET_QUALIFIER_OMITTED": 1
+      },
+      "unsafe_ready": [
+        "tdsvc-010",
+        "tdsvc-025",
+        "tdsvc-029",
+        "tdsvc-030",
+        "tdsvc-033",
+        "tdsvc-034",
+        "tdsvc-036",
+        "tdsvc-037",
+        "tdsvc-039",
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-046",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-056",
+        "tdsvc-057",
+        "tdsvc-060"
+      ],
+      "correct_but_blocked": [
+        "tdsvc-058"
+      ]
+    },
+    "gpt-4.1-nano:candidate": {
+      "completed_calls": 60,
+      "api_errors": [],
+      "token_usage": {
+        "input_tokens": 126663,
+        "output_tokens": 24692,
+        "total_tokens": 151355
+      },
+      "pdf_ready": 37,
+      "blocked": 23,
+      "exact_option_prices": {
+        "matched": 40,
+        "total": 58,
+        "rate": 0.6897
+      },
+      "exact_option_count": {
+        "matched": 43,
+        "total": 58,
+        "rate": 0.7414
+      },
+      "primary_service_kind": {
+        "matched": 55,
+        "total": 60,
+        "rate": 0.9167
+      },
+      "service_kind_recall_complete": {
+        "matched": 30,
+        "total": 60,
+        "rate": 0.5
+      },
+      "action_fact_recall_complete": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "option_relationship": {
+        "matched": 44,
+        "total": 60,
+        "rate": 0.7333
+      },
+      "option_b_price_role": {
+        "matched": 43,
+        "total": 60,
+        "rate": 0.7167
+      },
+      "contact_equivalence": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "address_equivalence": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "source_final_counts": {
+        "SOURCE_CONDITION_QUALIFIER_REVIEW": 1,
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED": 2,
+        "SOURCE_OPTION_ACTION_OMITTED": 8,
+        "SOURCE_OPTION_PRICE_CHANGED": 5,
+        "SOURCE_SPECIES_CHANGED": 1,
+        "SOURCE_TARGET_QUALIFIER_OMITTED": 1
+      },
+      "unsafe_ready": [
+        "tdsvc-010",
+        "tdsvc-011",
+        "tdsvc-012",
+        "tdsvc-025",
+        "tdsvc-029",
+        "tdsvc-030",
+        "tdsvc-033",
+        "tdsvc-034",
+        "tdsvc-036",
+        "tdsvc-037",
+        "tdsvc-039",
+        "tdsvc-041",
+        "tdsvc-042",
+        "tdsvc-046",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-056",
+        "tdsvc-057",
+        "tdsvc-060"
+      ],
+      "correct_but_blocked": [
+        "tdsvc-058"
+      ]
+    },
+    "gpt-5.4-mini:base": {
+      "completed_calls": 60,
+      "api_errors": [],
+      "token_usage": {
+        "input_tokens": 126243,
+        "output_tokens": 39544,
+        "total_tokens": 165787
+      },
+      "pdf_ready": 48,
+      "blocked": 12,
+      "exact_option_prices": {
+        "matched": 41,
+        "total": 58,
+        "rate": 0.7069
+      },
+      "exact_option_count": {
+        "matched": 45,
+        "total": 58,
+        "rate": 0.7759
+      },
+      "primary_service_kind": {
+        "matched": 53,
+        "total": 60,
+        "rate": 0.8833
+      },
+      "service_kind_recall_complete": {
+        "matched": 36,
+        "total": 60,
+        "rate": 0.6
+      },
+      "action_fact_recall_complete": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "option_relationship": {
+        "matched": 42,
+        "total": 60,
+        "rate": 0.7
+      },
+      "option_b_price_role": {
+        "matched": 43,
+        "total": 60,
+        "rate": 0.7167
+      },
+      "contact_equivalence": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "address_equivalence": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "source_final_counts": {
+        "SOURCE_CONDITION_QUALIFIER_REVIEW": 1,
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED": 3,
+        "SOURCE_OPTION_ACTION_OMITTED": 8,
+        "SOURCE_OPTION_PRICE_CHANGED": 5,
+        "SOURCE_SPECIES_CHANGED": 1,
+        "SOURCE_TARGET_QUALIFIER_OMITTED": 1
+      },
+      "unsafe_ready": [
+        "tdsvc-001",
+        "tdsvc-004",
+        "tdsvc-009",
+        "tdsvc-010",
+        "tdsvc-012",
+        "tdsvc-013",
+        "tdsvc-014",
+        "tdsvc-015",
+        "tdsvc-025",
+        "tdsvc-029",
+        "tdsvc-030",
+        "tdsvc-033",
+        "tdsvc-034",
+        "tdsvc-036",
+        "tdsvc-037",
+        "tdsvc-039",
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-046",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-056",
+        "tdsvc-057",
+        "tdsvc-059",
+        "tdsvc-060"
+      ],
+      "correct_but_blocked": [
+        "tdsvc-058"
+      ]
+    },
+    "gpt-5.4-mini:candidate": {
+      "completed_calls": 60,
+      "api_errors": [],
+      "token_usage": {
+        "input_tokens": 126243,
+        "output_tokens": 39787,
+        "total_tokens": 166030
+      },
+      "pdf_ready": 46,
+      "blocked": 14,
+      "exact_option_prices": {
+        "matched": 43,
+        "total": 58,
+        "rate": 0.7414
+      },
+      "exact_option_count": {
+        "matched": 43,
+        "total": 58,
+        "rate": 0.7414
+      },
+      "primary_service_kind": {
+        "matched": 55,
+        "total": 60,
+        "rate": 0.9167
+      },
+      "service_kind_recall_complete": {
+        "matched": 38,
+        "total": 60,
+        "rate": 0.6333
+      },
+      "action_fact_recall_complete": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "option_relationship": {
+        "matched": 42,
+        "total": 60,
+        "rate": 0.7
+      },
+      "option_b_price_role": {
+        "matched": 43,
+        "total": 60,
+        "rate": 0.7167
+      },
+      "contact_equivalence": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "address_equivalence": {
+        "matched": 0,
+        "total": 0,
+        "rate": null
+      },
+      "source_final_counts": {
+        "SOURCE_CONDITION_QUALIFIER_REVIEW": 1,
+        "SOURCE_DEBRIS_DISPOSITION_CHANGED": 3,
+        "SOURCE_OPTION_ACTION_OMITTED": 7,
+        "SOURCE_OPTION_PRICE_CHANGED": 5,
+        "SOURCE_TARGET_QUALIFIER_OMITTED": 1
+      },
+      "unsafe_ready": [
+        "tdsvc-004",
+        "tdsvc-010",
+        "tdsvc-011",
+        "tdsvc-012",
+        "tdsvc-013",
+        "tdsvc-014",
+        "tdsvc-025",
+        "tdsvc-029",
+        "tdsvc-030",
+        "tdsvc-033",
+        "tdsvc-034",
+        "tdsvc-036",
+        "tdsvc-037",
+        "tdsvc-039",
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-046",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-056",
+        "tdsvc-057",
+        "tdsvc-059",
+        "tdsvc-060"
+      ],
+      "correct_but_blocked": [
+        "tdsvc-058"
+      ]
+    }
+  },
+  "architecture_comparisons": {
+    "gpt-4.1-nano": {
+      "complete": true,
+      "behavioral_difference_count": 29,
+      "behavioral_differences": [
+        {
+          "case_id": "tdsvc-003",
+          "base": {
+            "option_prices": [
+              1400
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Cara Doyle",
+              "phone": "812-555-0103",
+              "email": "cara.doyle@example.com"
+            },
+            "service_address": "103 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1400
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Cara Doyle",
+              "phone": "812-555-0103",
+              "email": "cara.doyle@example.com"
+            },
+            "service_address": "103 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-009",
+          "base": {
+            "option_prices": [
+              500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$500",
+                "price_amount": 500,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ivy Keller",
+              "phone": "812-555-0109",
+              "email": "ivy.keller@example.com"
+            },
+            "service_address": "109 Main St, Madison, IN.",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Remove hanging limb over garage",
+                "description": "Remove hanging limb over garage",
+                "price_display": "$500",
+                "price_amount": 500,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ivy Keller",
+              "phone": "812-555-0109",
+              "email": "ivy.keller@example.com"
+            },
+            "service_address": "109 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [
+              "limb_removal",
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-010",
+          "base": {
+            "option_prices": [
+              450
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal from walnut",
+                "description": "removal from walnut",
+                "price_display": "$450",
+                "price_amount": 450,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Jack Lane",
+              "phone": "812-555-0110",
+              "email": "jack.lane@example.com"
+            },
+            "service_address": "110 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "walnut",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              450
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal from walnut",
+                "description": "removal from walnut",
+                "price_display": "$450",
+                "price_amount": 450,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Jack Lane",
+              "phone": "812-555-0110",
+              "email": "jack.lane@example.com"
+            },
+            "service_address": "110 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "walnut",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-011",
+          "base": {
+            "option_prices": [
+              1200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Kara Mills",
+              "phone": "812-555-0111",
+              "email": "kara.mills@example.com"
+            },
+            "service_address": "111 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "storm_cleanup",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "tree service",
+                "description": "tree service",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Kara Mills",
+              "phone": "812-555-0111",
+              "email": "kara.mills@example.com"
+            },
+            "service_address": "111 Main St, Madison, IN.",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "storm_cleanup",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-012",
+          "base": {
+            "option_prices": [
+              950
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$950",
+                "price_amount": 950,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Liam Neal",
+              "phone": "812-555-0112",
+              "email": "liam.neal@example.com"
+            },
+            "service_address": "112 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "storm_cleanup",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              950
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "debris cleanup",
+                "description": "debris cleanup",
+                "price_display": "$950",
+                "price_amount": 950,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Liam Neal",
+              "phone": "812-555-0112",
+              "email": "liam.neal@example.com"
+            },
+            "service_address": "112 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "storm_cleanup",
+            "service_kinds": [
+              "brush_cleanup"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-013",
+          "base": {
+            "option_prices": [],
+            "options": [],
+            "customer": {
+              "name": "Mara Owens",
+              "phone": "812-555-0113",
+              "email": "mara.owens@example.com"
+            },
+            "service_address": "113 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "elm",
+            "primary_service_kind": "",
+            "service_kinds": [],
+            "relationship": "unresolved",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$1,700",
+                "price_amount": 1700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Mara Owens",
+              "phone": "812-555-0113",
+              "email": "mara.owens@example.com"
+            },
+            "service_address": "113 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "elm",
+            "primary_service_kind": "",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-014",
+          "base": {
+            "option_prices": [
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Noah Price",
+              "phone": "812-555-0114",
+              "email": "noah.price@example.com"
+            },
+            "service_address": "114 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "maples",
+            "primary_service_kind": "",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Noah Price",
+              "phone": "812-555-0114",
+              "email": "noah.price@example.com"
+            },
+            "service_address": "114 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "maple",
+            "primary_service_kind": "",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-015",
+          "base": {
+            "option_prices": [
+              375
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$375",
+                "price_amount": 375,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Opal Quinn",
+              "phone": "812-555-0115",
+              "email": "opal.quinn@example.com"
+            },
+            "service_address": "115 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              375
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$375",
+                "price_amount": 375,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Opal Quinn",
+              "phone": "812-555-0115",
+              "email": "opal.quinn@example.com"
+            },
+            "service_address": "115 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-018",
+          "base": {
+            "option_prices": [
+              900
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove pine leave debris",
+                "description": "remove pine leave debris",
+                "price_display": "$900",
+                "price_amount": 900,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Sam Tate",
+              "phone": "812-555-0118",
+              "email": "sam.tate@example.com"
+            },
+            "service_address": "118 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "pine",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [
+              "SOURCE_OPTION_PRICE_CHANGED",
+              "SOURCE_OPTION_ACTION_OMITTED"
+            ],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              900
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove pine leave debris",
+                "description": "remove pine leave debris",
+                "price_display": "$900",
+                "price_amount": 900,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Sam Tate",
+              "phone": "812-555-0118",
+              "email": "sam.tate@example.com"
+            },
+            "service_address": "118 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "pine",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [
+              "SOURCE_OPTION_PRICE_CHANGED",
+              "SOURCE_OPTION_ACTION_OMITTED"
+            ],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-021",
+          "base": {
+            "option_prices": [
+              800,
+              1000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Cedar tree removal",
+                "description": "Remove the cedar tree.",
+                "price_display": "$800",
+                "price_amount": 800,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Cedar tree removal with brush cleanup",
+                "description": "Remove the cedar tree and site cleanup.",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Vera Wells",
+              "phone": "812-555-0121",
+              "email": "vera.wells@example.com"
+            },
+            "service_address": "121 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "cedar",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              800,
+              1000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Cedar tree removal",
+                "description": "Remove the cedar tree.",
+                "price_display": "$800",
+                "price_amount": 800,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Cedar tree removal with brush cleanup",
+                "description": "Remove the cedar tree and site cleanup.",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Vera Wells",
+              "phone": "812-555-0121",
+              "email": "vera.wells@example.com"
+            },
+            "service_address": "121 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "cedar",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-023",
+          "base": {
+            "option_prices": [
+              1100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal only, stumping extra",
+                "description": "removal only, stumping extra",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Xena Zane",
+              "phone": "812-555-0123",
+              "email": "xena.zane@example.com"
+            },
+            "service_address": "123 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal",
+                "description": "removal",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Xena Zane",
+              "phone": "812-555-0123",
+              "email": "xena.zane@example.com"
+            },
+            "service_address": "123 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-024",
+          "base": {
+            "option_prices": [
+              1300,
+              1800
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Oak tree removal",
+                "description": "Remove the oak tree.",
+                "price_display": "$1,300",
+                "price_amount": 1300,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Oak tree removal with debris haul-away",
+                "description": "Remove the oak tree and haul away the resulting debris.",
+                "price_display": "$1,800",
+                "price_amount": 1800,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Yara Allen",
+              "phone": "812-555-0124",
+              "email": "yara.allen@example.com"
+            },
+            "service_address": "124 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "oak",
+            "primary_service_kind": "haul_away",
+            "service_kinds": [
+              "tree_removal",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1300,
+              1800
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Oak tree removal",
+                "description": "Remove the oak tree.",
+                "price_display": "$1,300",
+                "price_amount": 1300,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Oak tree removal with debris haul-away",
+                "description": "Remove the oak tree and haul away the resulting debris.",
+                "price_display": "$1,800",
+                "price_amount": 1800,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Yara Allen",
+              "phone": "812-555-0124",
+              "email": "yara.allen@example.com"
+            },
+            "service_address": "124 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "oak",
+            "primary_service_kind": "haul_away",
+            "service_kinds": [
+              "tree_removal",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-027",
+          "base": {
+            "option_prices": [
+              1000,
+              1600
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Elm tree removal",
+                "description": "Remove the elm tree.",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Elm tree removal with stump grinding and debris haul-away",
+                "description": "Remove the elm tree, grind the stump and haul away the debris.",
+                "price_display": "$1,600",
+                "price_amount": 1600,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Bill Dean",
+              "phone": "812-555-0127",
+              "email": "bill.dean@example.com"
+            },
+            "service_address": "127 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "elm",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1000,
+              1600
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Elm tree removal",
+                "description": "Remove the elm tree.",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Elm tree removal with stump grinding and debris haul-away",
+                "description": "Remove the elm tree, grind the stump and haul away the debris.",
+                "price_display": "$1,600",
+                "price_amount": 1600,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Bill Dean",
+              "phone": "812-555-0127",
+              "email": "bill.dean@example.com"
+            },
+            "service_address": "127 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "elm",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-029",
+          "base": {
+            "option_prices": [
+              1450,
+              2000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Maple tree removal",
+                "description": "Remove the maple tree.",
+                "price_display": "$1,450",
+                "price_amount": 1450,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Maple tree removal with brush haul-away",
+                "description": "Remove the maple tree, chip the brush and haul away the brush.",
+                "price_display": "$2,000",
+                "price_amount": 2000,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Doug Frost",
+              "phone": "812-555-0129",
+              "email": "doug.frost@example.com"
+            },
+            "service_address": "129 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+            ],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1450,
+              2000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Maple tree removal",
+                "description": "Remove the maple tree.",
+                "price_display": "$1,450",
+                "price_amount": 1450,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Maple tree removal with brush haul-away",
+                "description": "Remove the maple tree, chip the brush and haul away the brush.",
+                "price_display": "$2,000",
+                "price_amount": 2000,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Doug Frost",
+              "phone": "812-555-0129",
+              "email": "doug.frost@example.com"
+            },
+            "service_address": "129 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+            ],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-030",
+          "base": {
+            "option_prices": [
+              700,
+              925
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Birch tree removal",
+                "description": "Remove the birch tree.",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Birch tree removal with stump grinding",
+                "description": "Remove the birch tree and grind the stump.",
+                "price_display": "$925",
+                "price_amount": 925,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Erin Gray",
+              "phone": "812-555-0130",
+              "email": "erin.gray@example.com"
+            },
+            "service_address": "130 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "birch",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              700,
+              925
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Birch tree removal",
+                "description": "Remove the birch tree.",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Birch tree removal with stump grinding",
+                "description": "Remove the birch tree and grind the stump.",
+                "price_display": "$925",
+                "price_amount": 925,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Erin Gray",
+              "phone": "812-555-0130",
+              "email": "erin.gray@example.com"
+            },
+            "service_address": "130 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "birch",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-036",
+          "base": {
+            "option_prices": [
+              1400,
+              1900
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Ash tree removal",
+                "description": "Remove the ash tree.",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Ash tree removal with brush haul-away",
+                "description": "Remove the ash tree and haul away the brush.",
+                "price_display": "$1,900",
+                "price_amount": 1900,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Kyle Lowe",
+              "phone": "812-555-0136",
+              "email": "kyle.lowe@example.com"
+            },
+            "service_address": "136 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1400,
+              1900
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Ash tree removal",
+                "description": "Remove the ash tree.",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Ash tree removal with brush haul-away",
+                "description": "Remove the ash tree and haul away the brush.",
+                "price_display": "$1,900",
+                "price_amount": 1900,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Kyle Lowe",
+              "phone": "812-555-0136",
+              "email": "kyle.lowe@example.com"
+            },
+            "service_address": "136 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-041",
+          "base": {
+            "option_prices": [
+              700,
+              1600
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "trim maple",
+                "description": "trim maple",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "take tree down",
+                "description": "take tree down",
+                "price_display": "$1,600",
+                "price_amount": 1600,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Pia Ross",
+              "phone": "812-555-0141",
+              "email": "pia.ross@example.com"
+            },
+            "service_address": "141 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              700,
+              1600
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "trim maple",
+                "description": "trim maple",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "remove maple",
+                "description": "remove maple",
+                "price_display": "$1,600",
+                "price_amount": 1600,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Pia Ross",
+              "phone": "812-555-0141",
+              "email": "pia.ross@example.com"
+            },
+            "service_address": "141 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim",
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-042",
+          "base": {
+            "option_prices": [
+              600,
+              2000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove oak",
+                "description": "remove oak",
+                "price_display": "$600",
+                "price_amount": 600,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "remove oak",
+                "description": "remove oak",
+                "price_display": "$2,000",
+                "price_amount": 2000,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Quinn Stone",
+              "phone": "812-555-0142",
+              "email": "quinn.stone@example.com"
+            },
+            "service_address": "142 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "oak",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              600,
+              2000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove oak",
+                "description": "remove oak",
+                "price_display": "$600",
+                "price_amount": 600,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "remove oak",
+                "description": "remove oak",
+                "price_display": "$2,000",
+                "price_amount": 2000,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Quinn Stone",
+              "phone": "812-555-0142",
+              "email": "quinn.stone@example.com"
+            },
+            "service_address": "142 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "oak",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-043",
+          "base": {
+            "option_prices": [
+              850,
+              1750
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "trim walnut",
+                "description": "trim walnut",
+                "price_display": "$850",
+                "price_amount": 850,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "remove walnut",
+                "description": "remove walnut",
+                "price_display": "$1,750",
+                "price_amount": 1750,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Rose Todd",
+              "phone": "812-555-0143",
+              "email": "rose.todd@example.com"
+            },
+            "service_address": "143 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "walnut",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim",
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              850
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "trim walnut",
+                "description": "trim walnut",
+                "price_display": "$850",
+                "price_amount": 850,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Rose Todd",
+              "phone": "812-555-0143",
+              "email": "rose.todd@example.com"
+            },
+            "service_address": "143 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "walnut",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-044",
+          "base": {
+            "option_prices": [
+              1200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove maple by garage",
+                "description": "remove maple by garage",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Seth Urban",
+              "phone": "812-555-0144",
+              "email": "seth.urban@example.com"
+            },
+            "service_address": "144 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [
+              "SOURCE_OPTION_PRICE_CHANGED",
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_SPECIES_CHANGED",
+              "SOURCE_TARGET_QUALIFIER_OMITTED"
+            ],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "maple",
+                "description": "maple",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Seth Urban",
+              "phone": "812-555-0144",
+              "email": "seth.urban@example.com"
+            },
+            "service_address": "144 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_OPTION_PRICE_CHANGED",
+              "SOURCE_SPECIES_CHANGED",
+              "SOURCE_TARGET_QUALIFIER_OMITTED"
+            ],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-049",
+          "base": {
+            "option_prices": [
+              350,
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "grind existing stump",
+                "description": "grind existing stump",
+                "price_display": "$350",
+                "price_amount": 350,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "prune two pear trees",
+                "description": "prune two pear trees",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Xiomara Ames",
+              "phone": "812-555-0149",
+              "email": "xiomara.ames@example.com"
+            },
+            "service_address": "149 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "stump_grinding",
+              "tree_trim"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              350,
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "grind existing stump",
+                "description": "grind existing stump",
+                "price_display": "$350",
+                "price_amount": 350,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "prune two pear trees",
+                "description": "prune two pear trees",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Xiomara Ames",
+              "phone": "812-555-0149",
+              "email": "xiomara.ames@example.com"
+            },
+            "service_address": "149 Main St, Madison, IN.",
+            "tree_count": "2 trees",
+            "tree_type": "pear (pruning)",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "stump_grinding",
+              "tree_trim"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-050",
+          "base": {
+            "option_prices": [
+              1000,
+              2400
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "crown reduce sycamore",
+                "description": "crown reduce sycamore",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "take tree down",
+                "description": "take tree down",
+                "price_display": "$2,400",
+                "price_amount": 2400,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Yuri Brown",
+              "phone": "812-555-0150",
+              "email": "yuri.brown@example.com"
+            },
+            "service_address": "150 Main St, Madison, IN.",
+            "tree_count": "",
+            "tree_type": "sycamore",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              2400,
+              1000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "crown reduce sycamore or take tree down",
+                "description": "crown reduce sycamore or take tree down",
+                "price_display": "$2,400",
+                "price_amount": 2400,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "crown reduce sycamore",
+                "description": "crown reduce sycamore",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Yuri Brown",
+              "phone": "812-555-0150",
+              "email": "yuri.brown@example.com"
+            },
+            "service_address": "150 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "sycamore",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-051",
+          "base": {
+            "option_prices": [
+              1000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Remove maple , stump maybe included",
+                "description": "Remove maple , stump maybe included",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Zara Cole",
+              "phone": "812-555-0151",
+              "email": "zara.cole@example.com"
+            },
+            "service_address": "151 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "stump_grinding",
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1000,
+              500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Remove maple",
+                "description": "Remove maple",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "stump maybe included",
+                "description": "stump maybe included",
+                "price_display": "$500",
+                "price_amount": 500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Zara Cole",
+              "phone": "812-555-0151",
+              "email": "zara.cole@example.com"
+            },
+            "service_address": "151 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-053",
+          "base": {
+            "option_prices": [
+              1300,
+              300
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Remove oak",
+                "description": "Remove oak",
+                "price_display": "$1,300",
+                "price_amount": 1300,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Cleanup if customer wants tree",
+                "description": "Cleanup if customer wants tree",
+                "price_display": "$300",
+                "price_amount": 300,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Bea Ellis",
+              "phone": "812-555-0153",
+              "email": "bea.ellis@example.com"
+            },
+            "service_address": "153 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "oak",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1300,
+              300
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "work scope unclear",
+                "description": "work scope unclear",
+                "price_display": "$1,300",
+                "price_amount": 1300,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Cleanup if customer wants tree",
+                "description": "Cleanup if customer wants tree",
+                "price_display": "$300",
+                "price_amount": 300,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Bea Ellis",
+              "phone": "812-555-0153",
+              "email": "bea.ellis@example.com"
+            },
+            "service_address": "153 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "oak",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "brush_cleanup"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-055",
+          "base": {
+            "option_prices": [
+              1200,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove one ash tree only",
+                "description": "remove one ash tree only",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "uncertain",
+                "description": "uncertain",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Dina Gale",
+              "phone": "812-555-0155",
+              "email": "dina.gale@example.com"
+            },
+            "service_address": "155 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+            ],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1200,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove ash",
+                "description": "remove ash",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "remove one ash tree and cleanup",
+                "description": "remove one ash tree and cleanup",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Dina Gale",
+              "phone": "812-555-0155",
+              "email": "dina.gale@example.com"
+            },
+            "service_address": "155 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-057",
+          "base": {
+            "option_prices": [
+              1000,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Maple tree removal",
+                "description": "Remove the maple tree.",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Maple tree removal with debris haul-away",
+                "description": "Remove the maple tree and haul away the resulting debris.",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Faye Ives",
+              "phone": "812-555-0157",
+              "email": "faye.ives@example.com"
+            },
+            "service_address": "157 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "haul_away",
+            "service_kinds": [
+              "tree_removal",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1000,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Maple tree removal",
+                "description": "Remove the maple tree.",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Maple tree removal with debris haul-away",
+                "description": "Remove the maple tree and haul away the resulting debris.",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Faye Ives",
+              "phone": "812-555-0157",
+              "email": "faye.ives@example.com"
+            },
+            "service_address": "157 Main St, Madison, IN.",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "haul_away",
+            "service_kinds": [
+              "tree_removal",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-058",
+          "base": {
+            "option_prices": [
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Trim or remove maple",
+                "description": "Trim or remove maple",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Glen Jett",
+              "phone": "812-555-0158",
+              "email": "glen.jett@example.com"
+            },
+            "service_address": "158 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim",
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              null,
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "and",
+                "description": "and",
+                "price_display": "",
+                "price_amount": null,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Trim or remove maple",
+                "description": "Trim or remove maple",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Glen Jett",
+              "phone": "812-555-0158",
+              "email": "glen.jett@example.com"
+            },
+            "service_address": "158 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim",
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-059",
+          "base": {
+            "option_prices": [
+              1400,
+              null
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "stump work",
+                "description": "Hana Knox, , , . Tree work",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Service Option B",
+                "description": "stump work",
+                "price_display": "",
+                "price_amount": null,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Hana Knox",
+              "phone": "812-555-0159",
+              "email": "hana.knox@example.com"
+            },
+            "service_address": "159 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "stump_grinding"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1400,
+              null
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Service Option A",
+                "description": "Hana Knox, , , . Tree work",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Service Option B",
+                "description": "stump work",
+                "price_display": "",
+                "price_amount": null,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Hana Knox",
+              "phone": "812-555-0159",
+              "email": "hana.knox@example.com"
+            },
+            "service_address": "159 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "stump_grinding"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-060",
+          "base": {
+            "option_prices": [
+              1000,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal",
+                "description": "removal",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "grind stump",
+                "description": "grind stump",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ivan Love",
+              "phone": "812-555-0160",
+              "email": "ivan.love@example.com"
+            },
+            "service_address": "160 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [
+              "SOURCE_OPTION_ACTION_OMITTED"
+            ],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1000,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal",
+                "description": "removal",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "grind stump , unclear whether B includes removal",
+                "description": "grind stump , unclear whether B includes removal",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ivan Love",
+              "phone": "812-555-0160",
+              "email": "ivan.love@example.com"
+            },
+            "service_address": "160 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        }
+      ]
+    },
+    "gpt-5.4-mini": {
+      "complete": true,
+      "behavioral_difference_count": 27,
+      "behavioral_differences": [
+        {
+          "case_id": "tdsvc-001",
+          "base": {
+            "option_prices": [
+              1000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "tree service",
+                "description": "tree service",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ada Mercer",
+              "phone": "812-555-0101",
+              "email": "ada.mercer@example.com"
+            },
+            "service_address": "101 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove one maple by the driveway",
+                "description": "remove one maple by the driveway",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ada Mercer",
+              "phone": "812-555-0101",
+              "email": "ada.mercer@example.com"
+            },
+            "service_address": "101 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-002",
+          "base": {
+            "option_prices": [
+              1800
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Take down two oaks and leave the wood",
+                "description": "Take down two oaks and leave the wood",
+                "price_display": "$1,800",
+                "price_amount": 1800,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ben Norris",
+              "phone": "812-555-0102",
+              "email": "ben.norris@example.com"
+            },
+            "service_address": "102 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "oak",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1800
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "take down two oaks and leave the wood",
+                "description": "take down two oaks and leave the wood",
+                "price_display": "$1,800",
+                "price_amount": 1800,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ben Norris",
+              "phone": "812-555-0102",
+              "email": "ben.norris@example.com"
+            },
+            "service_address": "102 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "oak",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-003",
+          "base": {
+            "option_prices": [
+              null
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "tree service",
+                "description": "tree service",
+                "price_display": "",
+                "price_amount": null,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Cara Doyle",
+              "phone": "812-555-0103",
+              "email": "cara.doyle@example.com"
+            },
+            "service_address": "103 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [],
+            "relationship": "unresolved",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1400
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Cut down dead ash near barn",
+                "description": "Cut down dead ash near barn",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Cara Doyle",
+              "phone": "812-555-0103",
+              "email": "cara.doyle@example.com"
+            },
+            "service_address": "103 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-005",
+          "base": {
+            "option_prices": [
+              2100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove three cedars along fence",
+                "description": "remove three cedars along fence",
+                "price_display": "$2,100",
+                "price_amount": 2100,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ella Grant",
+              "phone": "812-555-0105",
+              "email": "ella.grant@example.com"
+            },
+            "service_address": "105 Main St, Madison, IN",
+            "tree_count": "3 trees",
+            "tree_type": "cedars",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              2100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Remove three cedars along fence",
+                "description": "Remove three cedars along fence",
+                "price_display": "$2,100",
+                "price_amount": 2100,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ella Grant",
+              "phone": "812-555-0105",
+              "email": "ella.grant@example.com"
+            },
+            "service_address": "105 Main St, Madison, IN",
+            "tree_count": "3 trees",
+            "tree_type": "cedars",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-009",
+          "base": {
+            "option_prices": [
+              500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "tree service",
+                "description": "tree service",
+                "price_display": "$500",
+                "price_amount": 500,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ivy Keller",
+              "phone": "812-555-0109",
+              "email": "ivy.keller@example.com"
+            },
+            "service_address": "109 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              null,
+              500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "tree service",
+                "description": "tree service",
+                "price_display": "",
+                "price_amount": null,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Remove hanging limb over garage",
+                "description": "Remove hanging limb over garage",
+                "price_display": "$500",
+                "price_amount": 500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ivy Keller",
+              "phone": "812-555-0109",
+              "email": "ivy.keller@example.com"
+            },
+            "service_address": "109 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [
+              "limb_removal",
+              "tree_removal"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-010",
+          "base": {
+            "option_prices": [
+              450
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal from walnut",
+                "description": "removal from walnut",
+                "price_display": "$450",
+                "price_amount": 450,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Jack Lane",
+              "phone": "812-555-0110",
+              "email": "jack.lane@example.com"
+            },
+            "service_address": "110 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "walnut",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              450
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal from walnut",
+                "description": "removal from walnut",
+                "price_display": "$450",
+                "price_amount": 450,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Jack Lane",
+              "phone": "812-555-0110",
+              "email": "jack.lane@example.com"
+            },
+            "service_address": "110 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "walnut",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-011",
+          "base": {
+            "option_prices": [
+              1200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "cleanup; cut up downed limbs",
+                "description": "cleanup; cut up downed limbs",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Kara Mills",
+              "phone": "812-555-0111",
+              "email": "kara.mills@example.com"
+            },
+            "service_address": "111 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "storm_cleanup",
+            "service_kinds": [
+              "storm_cleanup"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "tree service",
+                "description": "tree service",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Kara Mills",
+              "phone": "812-555-0111",
+              "email": "kara.mills@example.com"
+            },
+            "service_address": "111 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "storm_cleanup",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-013",
+          "base": {
+            "option_prices": [
+              1700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "take one elm down in sections",
+                "description": "take one elm down in sections",
+                "price_display": "$1,700",
+                "price_amount": 1700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Mara Owens",
+              "phone": "812-555-0113",
+              "email": "mara.owens@example.com"
+            },
+            "service_address": "113 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "elm",
+            "primary_service_kind": "",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Take one elm down in sections",
+                "description": "Take one elm down in sections",
+                "price_display": "$1,700",
+                "price_amount": 1700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Mara Owens",
+              "phone": "812-555-0113",
+              "email": "mara.owens@example.com"
+            },
+            "service_address": "113 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "elm",
+            "primary_service_kind": "",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-014",
+          "base": {
+            "option_prices": [
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "deadwood",
+                "description": "deadwood",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Noah Price",
+              "phone": "812-555-0114",
+              "email": "noah.price@example.com"
+            },
+            "service_address": "114 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "maples",
+            "primary_service_kind": "",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "deadwood on two maples",
+                "description": "deadwood on two maples",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Noah Price",
+              "phone": "812-555-0114",
+              "email": "noah.price@example.com"
+            },
+            "service_address": "114 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "maples",
+            "primary_service_kind": "",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-015",
+          "base": {
+            "option_prices": [
+              375
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "branch over driveway",
+                "description": "branch over driveway",
+                "price_display": "$375",
+                "price_amount": 375,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Opal Quinn",
+              "phone": "812-555-0115",
+              "email": "opal.quinn@example.com"
+            },
+            "service_address": "115 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              null,
+              375
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "tree service",
+                "description": "tree service",
+                "price_display": "",
+                "price_amount": null,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Take down branch over driveway",
+                "description": "Take down branch over driveway",
+                "price_display": "$375",
+                "price_amount": 375,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Opal Quinn",
+              "phone": "812-555-0115",
+              "email": "opal.quinn@example.com"
+            },
+            "service_address": "115 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [
+              "limb_removal",
+              "tree_removal"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "none",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-020",
+          "base": {
+            "option_prices": [
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "take down ash",
+                "description": "take down ash",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Uma Vale",
+              "phone": "812-555-0120",
+              "email": "uma.vale@example.com"
+            },
+            "service_address": "120 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [
+              "SOURCE_OPTION_PRICE_CHANGED",
+              "SOURCE_OPTION_ACTION_OMITTED"
+            ],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "take down ash",
+                "description": "take down ash",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Uma Vale",
+              "phone": "812-555-0120",
+              "email": "uma.vale@example.com"
+            },
+            "service_address": "120 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "ash",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [
+              "SOURCE_OPTION_PRICE_CHANGED",
+              "SOURCE_OPTION_ACTION_OMITTED"
+            ],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-022",
+          "base": {
+            "option_prices": [
+              2000,
+              2700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Maple tree removal",
+                "description": "Remove the two maple trees.",
+                "price_display": "$2,000",
+                "price_amount": 2000,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Maple tree removal with stump grinding",
+                "description": "Remove the two maple trees and grind the stumps.",
+                "price_display": "$2,700",
+                "price_amount": 2700,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Will Young",
+              "phone": "812-555-0122",
+              "email": "will.young@example.com"
+            },
+            "service_address": "122 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              2000,
+              2700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Maple tree removal",
+                "description": "Remove the two maple trees.",
+                "price_display": "$2,000",
+                "price_amount": 2000,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Maple tree removal with stump grinding",
+                "description": "Remove the two maple trees and grind the stumps.",
+                "price_display": "$2,700",
+                "price_amount": 2700,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Will Young",
+              "phone": "812-555-0122",
+              "email": "will.young@example.com"
+            },
+            "service_address": "122 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "maples",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-023",
+          "base": {
+            "option_prices": [
+              1100,
+              450
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal only",
+                "description": "removal only",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "stumping extra",
+                "description": "stumping extra",
+                "price_display": "$450",
+                "price_amount": 450,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Xena Zane",
+              "phone": "812-555-0123",
+              "email": "xena.zane@example.com"
+            },
+            "service_address": "123 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal only",
+                "description": "removal only",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Xena Zane",
+              "phone": "812-555-0123",
+              "email": "xena.zane@example.com"
+            },
+            "service_address": "123 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-028",
+          "base": {
+            "option_prices": [
+              950,
+              1100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Pine tree removal",
+                "description": "Remove the pine tree.",
+                "price_display": "$950",
+                "price_amount": 950,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Pine tree removal with brush cleanup",
+                "description": "Remove the pine tree and rake up the brush.",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Cora Evans",
+              "phone": "812-555-0128",
+              "email": "cora.evans@example.com"
+            },
+            "service_address": "128 Main St, Madison, Indiana",
+            "tree_count": "1 tree",
+            "tree_type": "pine",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              950,
+              1100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Pine tree removal",
+                "description": "Remove the pine tree.",
+                "price_display": "$950",
+                "price_amount": 950,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Pine tree removal with brush cleanup",
+                "description": "Remove the pine tree and rake up the brush.",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Cora Evans",
+              "phone": "812-555-0128",
+              "email": "cora.evans@example.com"
+            },
+            "service_address": "128 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "pine",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-030",
+          "base": {
+            "option_prices": [
+              700,
+              925
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Birch tree removal",
+                "description": "Remove the birch tree.",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Birch tree removal with stump grinding",
+                "description": "Remove the birch tree and grind the stump.",
+                "price_display": "$925",
+                "price_amount": 925,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Erin Gray",
+              "phone": "812-555-0130",
+              "email": "erin.gray@example.com"
+            },
+            "service_address": "130 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "birch",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              700,
+              925
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Birch tree removal",
+                "description": "Remove the birch tree.",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Birch tree removal with stump grinding",
+                "description": "Remove the birch tree and grind the stump.",
+                "price_display": "$925",
+                "price_amount": 925,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Erin Gray",
+              "phone": "812-555-0130",
+              "email": "erin.gray@example.com"
+            },
+            "service_address": "130 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "birch",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "incremental_addon",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-034",
+          "base": {
+            "option_prices": [
+              1500,
+              2200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Pine tree removal",
+                "description": "Remove the pine tree.",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Pine tree removal with stump grinding",
+                "description": "Remove the pine tree and grind the stump.",
+                "price_display": "$2,200",
+                "price_amount": 2200,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ian Jones",
+              "phone": "812-555-0134",
+              "email": "ian.jones@example.com"
+            },
+            "service_address": "134 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "pine",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+            ],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1500,
+              2200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Pine tree removal",
+                "description": "Remove the pine tree.",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Pine tree removal with stump grinding",
+                "description": "Remove the pine tree and grind the stump.",
+                "price_display": "$2,200",
+                "price_amount": 2200,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ian Jones",
+              "phone": "812-555-0134",
+              "email": "ian.jones@example.com"
+            },
+            "service_address": "134 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "pine",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_DEBRIS_DISPOSITION_CHANGED"
+            ],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-036",
+          "base": {
+            "option_prices": [
+              1400,
+              1900
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Ash tree removal",
+                "description": "Remove the ash tree.",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Ash tree removal with brush haul-away",
+                "description": "Remove the ash tree and haul away the brush.",
+                "price_display": "$1,900",
+                "price_amount": 1900,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Kyle Lowe",
+              "phone": "812-555-0136",
+              "email": "kyle.lowe@example.com"
+            },
+            "service_address": "136 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "ash",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1400,
+              1900
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Ash tree removal",
+                "description": "Remove the ash tree.",
+                "price_display": "$1,400",
+                "price_amount": 1400,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Ash tree removal with brush haul-away",
+                "description": "Remove the ash tree and haul away the brush.",
+                "price_display": "$1,900",
+                "price_amount": 1900,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Kyle Lowe",
+              "phone": "812-555-0136",
+              "email": "kyle.lowe@example.com"
+            },
+            "service_address": "136 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-037",
+          "base": {
+            "option_prices": [
+              1100,
+              1650
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Elm tree removal",
+                "description": "Remove the elm tree.",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Elm tree removal with debris haul-away",
+                "description": "Remove the elm tree, haul away the resulting debris and site cleanup.",
+                "price_display": "$1,650",
+                "price_amount": 1650,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Lena Moore",
+              "phone": "812-555-0137",
+              "email": "lena.moore@example.com"
+            },
+            "service_address": "137 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "elm",
+            "primary_service_kind": "haul_away",
+            "service_kinds": [
+              "tree_removal",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1100,
+              1650
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Elm tree removal",
+                "description": "Remove the elm tree.",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Elm tree removal with debris haul-away",
+                "description": "Remove the elm tree, haul away the resulting debris and site cleanup.",
+                "price_display": "$1,650",
+                "price_amount": 1650,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Lena Moore",
+              "phone": "812-555-0137",
+              "email": "lena.moore@example.com"
+            },
+            "service_address": "137 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "elm",
+            "primary_service_kind": "haul_away",
+            "service_kinds": [
+              "tree_removal",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-040",
+          "base": {
+            "option_prices": [
+              1800,
+              2700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Maple tree removal",
+                "description": "Remove the two maple trees.",
+                "price_display": "$1,800",
+                "price_amount": 1800,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Maple tree removal with stump grinding and debris haul-away",
+                "description": "Remove the two maple trees, grind the stumps and haul away the debris.",
+                "price_display": "$2,700",
+                "price_amount": 2700,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Omar Page",
+              "phone": "812-555-0140",
+              "email": "omar.page@example.com"
+            },
+            "service_address": "140 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "maples",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1800,
+              2700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Maple tree removal",
+                "description": "Remove the two maple trees.",
+                "price_display": "$1,800",
+                "price_amount": 1800,
+                "sort_order": 1,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Maple tree removal with stump grinding and debris haul-away",
+                "description": "Remove the two maple trees, grind the stumps and haul away the debris.",
+                "price_display": "$2,700",
+                "price_amount": 2700,
+                "sort_order": 2,
+                "service_kind": "tree_removal",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Omar Page",
+              "phone": "812-555-0140",
+              "email": "omar.page@example.com"
+            },
+            "service_address": "140 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "maple",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding",
+              "haul_away"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-044",
+          "base": {
+            "option_prices": [
+              1200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove maple by garage",
+                "description": "remove maple by garage",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Seth Urban",
+              "phone": "812-555-0144",
+              "email": "seth.urban@example.com"
+            },
+            "service_address": "144 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [
+              "SOURCE_OPTION_PRICE_CHANGED",
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_SPECIES_CHANGED",
+              "SOURCE_TARGET_QUALIFIER_OMITTED"
+            ],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1200
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove maple by garage",
+                "description": "remove maple by garage",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Seth Urban",
+              "phone": "812-555-0144",
+              "email": "seth.urban@example.com"
+            },
+            "service_address": "144 Main St, Madison, IN",
+            "tree_count": "2 trees",
+            "tree_type": "maple, pine",
+            "primary_service_kind": "tree_removal",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "base_service",
+            "option_b_price_role": "none",
+            "source_final_codes": [
+              "SOURCE_OPTION_PRICE_CHANGED",
+              "SOURCE_OPTION_ACTION_OMITTED",
+              "SOURCE_TARGET_QUALIFIER_OMITTED"
+            ],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-047",
+          "base": {
+            "option_prices": [
+              400,
+              1100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "limb removal over drive",
+                "description": "limb removal over drive",
+                "price_display": "$400",
+                "price_amount": 400,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "removal over drive b remove different maple",
+                "description": "removal over drive b remove different maple",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Vick Xu",
+              "phone": "812-555-0147",
+              "email": "vick.xu@example.com"
+            },
+            "service_address": "147 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "maple",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [
+              "limb_removal",
+              "tree_removal"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              400,
+              1100
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "limb removal over drive",
+                "description": "limb removal over drive",
+                "price_display": "$400",
+                "price_amount": 400,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "removal over drive b remove different maple",
+                "description": "removal over drive b remove different maple",
+                "price_display": "$1,100",
+                "price_amount": 1100,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Vick Xu",
+              "phone": "812-555-0147",
+              "email": "vick.xu@example.com"
+            },
+            "service_address": "147 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "limb_removal",
+            "service_kinds": [
+              "limb_removal",
+              "tree_removal"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-050",
+          "base": {
+            "option_prices": [
+              1000,
+              2400
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "crown reduce sycamore",
+                "description": "crown reduce sycamore",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "take tree down",
+                "description": "take tree down",
+                "price_display": "$2,400",
+                "price_amount": 2400,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Yuri Brown",
+              "phone": "812-555-0150",
+              "email": "yuri.brown@example.com"
+            },
+            "service_address": "150 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "sycamore",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1000,
+              2400
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "crown reduce sycamore",
+                "description": "crown reduce sycamore",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "take tree down",
+                "description": "take tree down",
+                "price_display": "$2,400",
+                "price_amount": 2400,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Yuri Brown",
+              "phone": "812-555-0150",
+              "email": "yuri.brown@example.com"
+            },
+            "service_address": "150 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "sycamore",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-051",
+          "base": {
+            "option_prices": [
+              1000,
+              500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Remove maple",
+                "description": "Remove maple",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "stump",
+                "description": "stump",
+                "price_display": "$500",
+                "price_amount": 500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Zara Cole",
+              "phone": "812-555-0151",
+              "email": "zara.cole@example.com"
+            },
+            "service_address": "151 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1000
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Remove maple",
+                "description": "Remove maple",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Zara Cole",
+              "phone": "812-555-0151",
+              "email": "zara.cole@example.com"
+            },
+            "service_address": "151 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-053",
+          "base": {
+            "option_prices": [
+              1300,
+              300
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove oak",
+                "description": "remove oak",
+                "price_display": "$1,300",
+                "price_amount": 1300,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "cleanup",
+                "description": "cleanup",
+                "price_display": "$300",
+                "price_amount": 300,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Bea Ellis",
+              "phone": "812-555-0153",
+              "email": "bea.ellis@example.com"
+            },
+            "service_address": "153 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "oak",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1300,
+              300
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove oak",
+                "description": "remove oak",
+                "price_display": "$1,300",
+                "price_amount": 1300,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "cleanup if customer wants tree",
+                "description": "cleanup if customer wants tree",
+                "price_display": "$300",
+                "price_amount": 300,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Bea Ellis",
+              "phone": "812-555-0153",
+              "email": "bea.ellis@example.com"
+            },
+            "service_address": "153 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "oak",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-055",
+          "base": {
+            "option_prices": [
+              1200,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove ash",
+                "description": "remove ash",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "remove ash trees and cleanup",
+                "description": "remove ash trees and cleanup",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Dina Gale",
+              "phone": "812-555-0155",
+              "email": "dina.gale@example.com"
+            },
+            "service_address": "155 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "ash",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1200,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "remove ash",
+                "description": "remove ash",
+                "price_display": "$1,200",
+                "price_amount": 1200,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "remove one ash tree and cleanup",
+                "description": "remove one ash tree and cleanup",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Dina Gale",
+              "phone": "812-555-0155",
+              "email": "dina.gale@example.com"
+            },
+            "service_address": "155 Main St, Madison, Indiana",
+            "tree_count": "1 tree",
+            "tree_type": "ash",
+            "primary_service_kind": "brush_cleanup",
+            "service_kinds": [
+              "tree_removal",
+              "brush_cleanup"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        },
+        {
+          "case_id": "tdsvc-058",
+          "base": {
+            "option_prices": [
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Service Option A",
+                "description": "Trim or remove maple",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Glen Jett",
+              "phone": "812-555-0158",
+              "email": "glen.jett@example.com"
+            },
+            "service_address": "158 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim",
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          },
+          "candidate": {
+            "option_prices": [
+              1500,
+              700
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "Trim or remove maple",
+                "description": "Trim or remove maple",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "Trim or remove maple",
+                "description": "Trim or remove maple",
+                "price_display": "$700",
+                "price_amount": 700,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Glen Jett",
+              "phone": "812-555-0158",
+              "email": "glen.jett@example.com"
+            },
+            "service_address": "158 Main St, Madison, IN",
+            "tree_count": "1 tree",
+            "tree_type": "maple",
+            "primary_service_kind": "tree_trim",
+            "service_kinds": [
+              "tree_trim",
+              "tree_removal"
+            ],
+            "relationship": "unresolved",
+            "option_b_price_role": "ambiguous",
+            "source_final_codes": [],
+            "can_generate_pdf": false
+          }
+        },
+        {
+          "case_id": "tdsvc-060",
+          "base": {
+            "option_prices": [
+              1000,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal",
+                "description": "removal",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "grind stump",
+                "description": "grind stump",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ivan Love",
+              "phone": "812-555-0160",
+              "email": "ivan.love@example.com"
+            },
+            "service_address": "160 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "independent_alternative",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [
+              "SOURCE_OPTION_ACTION_OMITTED"
+            ],
+            "can_generate_pdf": true
+          },
+          "candidate": {
+            "option_prices": [
+              1000,
+              1500
+            ],
+            "options": [
+              {
+                "label": "Option A",
+                "title": "removal",
+                "description": "removal",
+                "price_display": "$1,000",
+                "price_amount": 1000,
+                "sort_order": 1,
+                "service_kind": "",
+                "relationship_type": ""
+              },
+              {
+                "label": "Option B",
+                "title": "removal and stump grinding",
+                "description": "removal and stump grinding",
+                "price_display": "$1,500",
+                "price_amount": 1500,
+                "sort_order": 2,
+                "service_kind": "",
+                "relationship_type": ""
+              }
+            ],
+            "customer": {
+              "name": "Ivan Love",
+              "phone": "812-555-0160",
+              "email": "ivan.love@example.com"
+            },
+            "service_address": "160 Main St, Madison, IN",
+            "tree_count": "",
+            "tree_type": "",
+            "primary_service_kind": "stump_grinding",
+            "service_kinds": [
+              "tree_removal",
+              "stump_grinding"
+            ],
+            "relationship": "base_with_dependent_addon",
+            "option_b_price_role": "explicit_option_total",
+            "source_final_codes": [],
+            "can_generate_pdf": true
+          }
+        }
+      ]
+    }
+  }
+}

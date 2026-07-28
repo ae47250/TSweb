@@ -1,0 +1,41 @@
+{
+  "schema_version": "service-assembler-live-ab-v1",
+  "run_id": "service-assembler-live-ab-2026-07-27-240",
+  "approved_calls": 240,
+  "planned_calls": 240,
+  "fixture": {
+    "path": "C:\\Users\\eiriksson\\Documents\\TSweb-service-assembler-accuracy\\tests\\fixtures\\tree-dude-service-classification-60.json",
+    "count": 60,
+    "sha256": "52c7e9fb9d60b35fdd9ba7e78752175c40dabb3edfe156753acc9f45c6455bbb"
+  },
+  "models": [
+    "gpt-4.1-nano",
+    "gpt-5.4-mini"
+  ],
+  "architectures": {
+    "base": {
+      "root": "C:\\Users\\eiriksson\\Documents\\TSweb",
+      "commit": "d5d5071e477ec04f886db11a73a17bb7d584a2f5",
+      "prompt_sha256": "a5fb95e771fcde24a62315bb97389cf1f4722fd38d39569d315ad07520b6158d",
+      "response_format_sha256": "ef98ea0f1feb395fcd86a41efecb2d3185a4017d6708f34f77c4862c43321088"
+    },
+    "candidate": {
+      "root": "C:\\Users\\eiriksson\\Documents\\TSweb-service-assembler-accuracy",
+      "commit": "b5295ced929dc2fffe4c82df4e308c84ea93b821",
+      "prompt_sha256": "a5fb95e771fcde24a62315bb97389cf1f4722fd38d39569d315ad07520b6158d",
+      "response_format_sha256": "ef98ea0f1feb395fcd86a41efecb2d3185a4017d6708f34f77c4862c43321088"
+    }
+  },
+  "request_settings": {
+    "endpoint": "chat.completions.create",
+    "reasoning_effort": null,
+    "temperature": "provider_default",
+    "sdk_retries": 0,
+    "system_prompt_sha256": "a5fb95e771fcde24a62315bb97389cf1f4722fd38d39569d315ad07520b6158d",
+    "response_format_sha256": "ef98ea0f1feb395fcd86a41efecb2d3185a4017d6708f34f77c4862c43321088"
+  },
+  "execute": true,
+  "finished_at": "2026-07-28T00:40:17.656Z",
+  "comparison_json": "C:\\Users\\eiriksson\\Documents\\TSweb-service-assembler-accuracy\\reports\\service-assembler-live-ab-2026-07-27-240\\comparison.json",
+  "comparison_markdown": "C:\\Users\\eiriksson\\Documents\\TSweb-service-assembler-accuracy\\reports\\service-assembler-live-ab-2026-07-27-240\\comparison.md"
+}

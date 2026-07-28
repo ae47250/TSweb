@@ -1,0 +1,166 @@
+{
+  "total": 60,
+  "can_generate_pdf": 48,
+  "blocked": 12,
+  "ready_rate": 0.8,
+  "by_group": {
+    "straightforward_base": {
+      "total": 15,
+      "ready": 14,
+      "blocking": 1
+    },
+    "clear_dependent_addon": {
+      "total": 15,
+      "ready": 12,
+      "blocking": 3
+    },
+    "explicit_option_totals": {
+      "total": 10,
+      "ready": 10,
+      "blocking": 0
+    },
+    "independent_alternatives": {
+      "total": 10,
+      "ready": 5,
+      "blocking": 5
+    },
+    "ambiguous_review": {
+      "total": 10,
+      "ready": 7,
+      "blocking": 3
+    }
+  },
+  "field_match_rates": {},
+  "accuracy": {
+    "exact_option_prices": {
+      "matched": 41,
+      "total": 58,
+      "rate": 0.7069
+    },
+    "exact_option_count": {
+      "matched": 45,
+      "total": 58,
+      "rate": 0.7759
+    },
+    "primary_service_kind": {
+      "matched": 55,
+      "total": 60,
+      "rate": 0.9167
+    },
+    "service_kind_recall_complete": {
+      "matched": 36,
+      "total": 60,
+      "rate": 0.6
+    },
+    "action_fact_recall_complete": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "option_b_terms_recall_complete": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "option_relationship": {
+      "matched": 42,
+      "total": 60,
+      "rate": 0.7
+    },
+    "option_b_price_role": {
+      "matched": 43,
+      "total": 60,
+      "rate": 0.7167
+    },
+    "contact_equivalence": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "address_equivalence": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    }
+  },
+  "source_final_calibration": {
+    "applicable": 60,
+    "cases_with_codes": 8,
+    "omission_or_change_counts_by_code": {
+      "SOURCE_CONDITION_QUALIFIER_REVIEW": 1,
+      "SOURCE_DEBRIS_DISPOSITION_CHANGED": 3,
+      "SOURCE_OPTION_ACTION_OMITTED": 8,
+      "SOURCE_OPTION_PRICE_CHANGED": 5,
+      "SOURCE_SPECIES_CHANGED": 1,
+      "SOURCE_TARGET_QUALIFIER_OMITTED": 1
+    },
+    "candidate_false_positive_cases": [],
+    "candidate_false_negative_cases": [
+      "tdsvc-001",
+      "tdsvc-003",
+      "tdsvc-004",
+      "tdsvc-009",
+      "tdsvc-010",
+      "tdsvc-012",
+      "tdsvc-013",
+      "tdsvc-014",
+      "tdsvc-015",
+      "tdsvc-023",
+      "tdsvc-025",
+      "tdsvc-030",
+      "tdsvc-033",
+      "tdsvc-036",
+      "tdsvc-037",
+      "tdsvc-039",
+      "tdsvc-041",
+      "tdsvc-042",
+      "tdsvc-043",
+      "tdsvc-046",
+      "tdsvc-050",
+      "tdsvc-051",
+      "tdsvc-052",
+      "tdsvc-053",
+      "tdsvc-054",
+      "tdsvc-055",
+      "tdsvc-056",
+      "tdsvc-057",
+      "tdsvc-059"
+    ]
+  },
+  "readiness_safety": {
+    "factually_correct": 23,
+    "factually_incorrect": 37,
+    "unscored": 0,
+    "unsafe_ready": [
+      "tdsvc-001",
+      "tdsvc-004",
+      "tdsvc-009",
+      "tdsvc-010",
+      "tdsvc-012",
+      "tdsvc-013",
+      "tdsvc-014",
+      "tdsvc-015",
+      "tdsvc-025",
+      "tdsvc-029",
+      "tdsvc-030",
+      "tdsvc-033",
+      "tdsvc-034",
+      "tdsvc-036",
+      "tdsvc-037",
+      "tdsvc-039",
+      "tdsvc-042",
+      "tdsvc-043",
+      "tdsvc-046",
+      "tdsvc-053",
+      "tdsvc-054",
+      "tdsvc-055",
+      "tdsvc-056",
+      "tdsvc-057",
+      "tdsvc-059",
+      "tdsvc-060"
+    ],
+    "correct_but_blocked": [
+      "tdsvc-058"
+    ]
+  }
+}
