@@ -1,0 +1,51 @@
+{
+  "fixture": "reports/shadow-preview-option-comparison-2026-07-13.json",
+  "mode": "cached OpenAI drafts; no live API calls",
+  "base": {
+    "branch": "codex/canonical-service-assembler-shadow",
+    "commit": "d5d5071e477ec04f886db11a73a17bb7d584a2f5"
+  },
+  "candidate": {
+    "branch": "codex/service-assembler-accuracy"
+  },
+  "metrics": {
+    "exact_option_prices": {
+      "base": "35/40",
+      "candidate": "35/40"
+    },
+    "exact_option_count": {
+      "base": "36/40",
+      "candidate": "36/40"
+    },
+    "option_b_action_terms_complete": {
+      "base": "30/40",
+      "candidate": "30/40"
+    },
+    "option_relationship": {
+      "base": "21/40",
+      "candidate": "21/40"
+    },
+    "option_b_price_role": {
+      "base": "35/40",
+      "candidate": "35/40"
+    },
+    "address_town": {
+      "base": "39/40",
+      "candidate": "39/40"
+    },
+    "tree_species": {
+      "base": "39/40",
+      "candidate": "39/40"
+    },
+    "tree_count": {
+      "base": "27/40",
+      "candidate": "27/40"
+    },
+    "pdf_ready": {
+      "base": "35/40",
+      "candidate": "35/40"
+    }
+  },
+  "behavioral_differences": [],
+  "finding": "The candidate causes no final-output regression on the cached 40-case comparison. Contact equivalence is not scored because this fixture does not contain expected contact fields."
+}

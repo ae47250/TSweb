@@ -1,0 +1,29 @@
+{
+  "fixture_version": "2026-07-13",
+  "cases": [
+    {
+      "case_id": "john-w-plural-stumps-haul-away",
+      "raw_td1": "Remove 2 maples, John W. 22 Main street, Madison, 1234567890 wj234@gmail.com option a remove only 1000, option b grind stumps and haul away 1900.",
+      "expected": {
+        "customer_name": "John W.",
+        "phone": "123-456-7890",
+        "email": "wj234@gmail.com",
+        "service_address": "22 Main street, Madison, Indiana",
+        "tree_species": "maple",
+        "tree_quantity": 2,
+        "options": [
+          {
+            "label": "Option A",
+            "price": 1000,
+            "facts": ["remove_tree"]
+          },
+          {
+            "label": "Option B",
+            "price": 1900,
+            "facts": ["remove_tree", "grind_stumps", "haul_away"]
+          }
+        ]
+      }
+    }
+  ]
+}

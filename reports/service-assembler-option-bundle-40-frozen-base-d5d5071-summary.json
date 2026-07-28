@@ -1,0 +1,153 @@
+{
+  "total": 40,
+  "can_generate_pdf": 35,
+  "blocked": 5,
+  "ready_rate": 0.875,
+  "by_group": {
+    "explicit_total": {
+      "total": 20,
+      "ready": 19,
+      "blocking": 1
+    },
+    "incremental_addon": {
+      "total": 20,
+      "ready": 16,
+      "blocking": 4
+    }
+  },
+  "field_match_rates": {
+    "address_town": {
+      "matched": 39,
+      "total": 40,
+      "rate": 0.975
+    },
+    "tree_count": {
+      "matched": 27,
+      "total": 40,
+      "rate": 0.675
+    },
+    "tree_species": {
+      "matched": 39,
+      "total": 40,
+      "rate": 0.975
+    }
+  },
+  "accuracy": {
+    "exact_option_prices": {
+      "matched": 35,
+      "total": 40,
+      "rate": 0.875
+    },
+    "exact_option_count": {
+      "matched": 36,
+      "total": 40,
+      "rate": 0.9
+    },
+    "primary_service_kind": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "service_kind_recall_complete": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "action_fact_recall_complete": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "option_b_terms_recall_complete": {
+      "matched": 30,
+      "total": 40,
+      "rate": 0.75
+    },
+    "option_relationship": {
+      "matched": 21,
+      "total": 40,
+      "rate": 0.525
+    },
+    "option_b_price_role": {
+      "matched": 35,
+      "total": 40,
+      "rate": 0.875
+    },
+    "contact_equivalence": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "address_equivalence": {
+      "matched": 39,
+      "total": 40,
+      "rate": 0.975
+    }
+  },
+  "source_final_calibration": {
+    "applicable": 40,
+    "cases_with_codes": 15,
+    "omission_or_change_counts_by_code": {
+      "SOURCE_DEBRIS_DISPOSITION_CHANGED": 6,
+      "SOURCE_OPTION_ACTION_OMITTED": 5,
+      "SOURCE_OPTION_PRICE_CHANGED": 4,
+      "SOURCE_SERVICE_ADDRESS_CHANGED": 1,
+      "SOURCE_SPECIES_CHANGED": 10,
+      "SOURCE_STUMP_TREATMENT_CHANGED": 2,
+      "SOURCE_TARGET_QUALIFIER_OMITTED": 4,
+      "SOURCE_TREE_QUANTITY_CHANGED": 8
+    },
+    "candidate_false_positive_cases": [
+      "total-13"
+    ],
+    "candidate_false_negative_cases": [
+      "total-02",
+      "total-06",
+      "total-08",
+      "total-10",
+      "total-14",
+      "total-18",
+      "total-19",
+      "total-20",
+      "addon-03",
+      "addon-07",
+      "addon-08",
+      "addon-09",
+      "addon-13",
+      "addon-17",
+      "addon-19"
+    ]
+  },
+  "readiness_safety": {
+    "factually_correct": 11,
+    "factually_incorrect": 29,
+    "unscored": 0,
+    "unsafe_ready": [
+      "total-02",
+      "total-03",
+      "total-06",
+      "total-08",
+      "total-10",
+      "total-11",
+      "total-12",
+      "total-14",
+      "total-17",
+      "total-18",
+      "total-19",
+      "total-20",
+      "addon-03",
+      "addon-05",
+      "addon-07",
+      "addon-08",
+      "addon-11",
+      "addon-12",
+      "addon-13",
+      "addon-15",
+      "addon-16",
+      "addon-17",
+      "addon-18",
+      "addon-19"
+    ],
+    "correct_but_blocked": []
+  }
+}

@@ -262,6 +262,46 @@ test("post-AI reconciliation keeps explicit Option B total scope instead of whol
   assert.doesNotMatch(validation.alphaJson.service_options.items[1].description, /\ba remove\b|\bb remove\b/i);
 });
 
+test("post-AI reconciliation preserves haul-away beside plural stump grinding", () => {
+  const raw =
+    "Remove 2 maples, John W. 22 Main street, Madison, 1234567890 wj234@gmail.com option a remove only 1000, option b grind stumps and haul away 1900.";
+  const aiDraftWithGenericOptionB = {
+    job: {
+      description: "remove two maple trees",
+      tree_details: { tree_count: "2 trees", tree_type: "maple" },
+    },
+    service_options: {
+      items: [
+        {
+          label: "Option A",
+          title: "remove two maple trees only",
+          description: "remove two maple trees only",
+          price: { amount: 1000, display: "$1,000" },
+        },
+        {
+          label: "Option B",
+          title: "tree service",
+          description: "tree service",
+          price: { amount: 1900, display: "$1,900" },
+        },
+      ],
+    },
+  };
+  const normalized = normalizeToAlphaJsonV14(aiDraftWithGenericOptionB, raw);
+
+  const reconciled = reconcileSidecarPrices(normalized, buildOptionPriceCandidateView(raw));
+
+  assert.equal(
+    reconciled.service_options.items[1].description,
+    "remove two maples and grind stumps and haul away",
+  );
+  assert.equal(reconciled.service_options.items[1].price.amount, 1900);
+  assert.equal(
+    reconciled.service_options.items[1].sidecar_price_reconciliation?.action,
+    "confirmed_bundled_total_scope",
+  );
+});
+
 test("post-AI reconciliation restores explicit terminal-for Option B totals", () => {
   const cases = [
     {

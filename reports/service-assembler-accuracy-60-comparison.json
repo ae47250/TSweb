@@ -1,0 +1,57 @@
+{
+  "fixture": "tests/fixtures/tree-dude-service-classification-60.json",
+  "mode": "deterministic route-equivalent offline evaluation",
+  "base": {
+    "branch": "codex/canonical-service-assembler-shadow",
+    "commit": "d5d5071e477ec04f886db11a73a17bb7d584a2f5"
+  },
+  "candidate": {
+    "branch": "codex/service-assembler-accuracy"
+  },
+  "metrics": {
+    "primary_service_kind": {
+      "base": "53/60",
+      "candidate": "55/60"
+    },
+    "exact_option_prices": {
+      "base": "42/58",
+      "candidate": "42/58"
+    },
+    "exact_option_count": {
+      "base": "42/58",
+      "candidate": "42/58"
+    },
+    "option_relationship": {
+      "base": "39/60",
+      "candidate": "39/60"
+    },
+    "option_b_price_role": {
+      "base": "43/60",
+      "candidate": "43/60"
+    },
+    "pdf_ready": {
+      "base": "44/60",
+      "candidate": "44/60"
+    },
+    "unsafe_ready": {
+      "base": 19,
+      "candidate": 18
+    }
+  },
+  "improved_cases": [
+    {
+      "case_id": "tdsvc-010",
+      "phrase": "branch removal from walnut",
+      "base_primary_kind": "tree_removal",
+      "candidate_primary_kind": "limb_removal"
+    },
+    {
+      "case_id": "tdsvc-015",
+      "phrase": "take down branch over driveway",
+      "base_primary_kind": "tree_removal",
+      "candidate_primary_kind": "limb_removal"
+    }
+  ],
+  "regressions": [],
+  "finding": "Only the two intended primary classifications changed. Prices, option counts, relationship scoring, price-role scoring, readiness, and source-final code counts did not regress."
+}

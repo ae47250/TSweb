@@ -25,7 +25,8 @@ const fixtures = readdirSync(FIXTURE_DIR)
   }));
 
 function fileSha256(filePath) {
-  return createHash("sha256").update(readFileSync(filePath)).digest("hex");
+  const normalized = readFileSync(filePath, "utf8").replace(/\r\n/g, "\n");
+  return createHash("sha256").update(normalized).digest("hex");
 }
 
 function approvedNonDefectIds(baseline) {

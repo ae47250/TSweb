@@ -1,0 +1,34 @@
+{
+  "case_id": "john-w-plural-stumps-haul-away",
+  "source_branch": "codex/canonical-service-assembler-shadow",
+  "source_commit": "d5d5071e477ec04f886db11a73a17bb7d584a2f5",
+  "candidate_branch": "codex/service-assembler-accuracy",
+  "scenario": "A generic saved Option B is reconciled against source evidence for two maples, stump grinding, and haul-away.",
+  "reconciliation_layer": {
+    "base_option_b": {
+      "price": 1900,
+      "description": "remove two maples and grind stumps",
+      "haul_away_preserved": false
+    },
+    "candidate_option_b": {
+      "price": 1900,
+      "description": "remove two maples and grind stumps and haul away",
+      "haul_away_preserved": true
+    }
+  },
+  "final_validation_layer": {
+    "base_option_b": {
+      "price": 1900,
+      "description": "Remove the two maple trees, grind the stumps and haul away the debris.",
+      "source_final_codes": [],
+      "can_generate_pdf": true
+    },
+    "candidate_option_b": {
+      "price": 1900,
+      "description": "Remove the two maple trees, grind the stumps and haul away the debris.",
+      "source_final_codes": [],
+      "can_generate_pdf": true
+    },
+    "finding": "The canonical final-option assembler already repairs this fact at final validation on the base branch. The candidate prevents the earlier reconciliation layer from dropping it, removing reliance on that later repair."
+  }
+}

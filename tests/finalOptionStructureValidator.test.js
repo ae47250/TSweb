@@ -820,6 +820,20 @@ test("source-final coverage blocks dropped actions in multi-action Option B pack
   assert.match(coverage.blocking_messages.join(" "), /cleanup/i);
 });
 
+test("known John W. case preserves stump grinding and haul-away through final TD2", () => {
+  const raw =
+    "Remove 2 maples, John W. 22 Main street, Madison, 1234567890 wj234@gmail.com option a remove only 1000, option b grind stumps and haul away 1900.";
+  const validation = validateRaw(raw);
+  const optionB = validation.alphaJson.service_options.items[1];
+  const coverage = sourceCoverage(validation);
+
+  assert.equal(optionB.price.display, "$1,900");
+  assert.match(optionB.description, /grind the stumps/i);
+  assert.match(optionB.description, /haul away/i);
+  assert.equal(coverage.blocking_codes.includes("SOURCE_OPTION_ACTION_OMITTED"), false);
+  assert.equal(coverage.blocking_codes.includes("SOURCE_DEBRIS_DISPOSITION_CHANGED"), false);
+});
+
 test("source-final coverage accepts only a proven incremental price transformation", () => {
   const rawText = "John, option a remove tree 1000, option b grind stump and haul debris extra 500";
   const finalOptions = [

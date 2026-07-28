@@ -15,6 +15,7 @@ import {
 } from "../lib/canonicalServiceAssembler.js";
 
 const REPLAY_PATH = "reports/live-sidecar-fixed-382-2026-07-10T06-14-19-758Z.jsonl";
+const SERVICE_CLASSIFICATION_FIXTURE_PATH = "tests/fixtures/tree-dude-service-classification-60.json";
 
 function readJsonl(filePath) {
   return fs.readFileSync(filePath, "utf8").trim().split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line));
@@ -159,6 +160,28 @@ test("blank service-kind evidence returns structured unsupported details", () =>
     normalized_evidence_text: "",
     ignored_boilerplate: false,
   });
+});
+
+test("branch-removal phrases classify as limb removal before generic tree removal", () => {
+  for (const phrase of ["branch removal from walnut", "take down branch over driveway"]) {
+    const details = inferServiceKindDetails(phrase);
+    assert.equal(details.service_kind, "limb_removal", phrase);
+    assert.equal(details.reason_code, "explicit_limb_removal_words", phrase);
+  }
+});
+
+test("tree removal with a stump add-on keeps tree removal as the primary service", () => {
+  const details = inferServiceKindDetails("tree removal with stumping extra 450");
+  assert.equal(details.service_kind, "tree_removal");
+});
+
+test("60-case service fixture keeps at least 55 primary service-kind matches", () => {
+  const fixtures = JSON.parse(fs.readFileSync(SERVICE_CLASSIFICATION_FIXTURE_PATH, "utf8"));
+  const matches = fixtures.filter((fixture) =>
+    fixture.expected.service_kinds.includes(inferServiceKindDetails(fixture.raw_service_phrase).service_kind));
+
+  assert.equal(fixtures.length, 60);
+  assert.ok(matches.length >= 55, `Expected at least 55/60 primary matches, got ${matches.length}/60.`);
 });
 
 test("assembler input contract rejects benchmark leakage fields", () => {

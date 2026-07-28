@@ -1,0 +1,105 @@
+{
+  "total": 1,
+  "can_generate_pdf": 1,
+  "blocked": 0,
+  "ready_rate": 1,
+  "by_group": {
+    "unknown": {
+      "total": 1,
+      "ready": 1,
+      "blocking": 0
+    }
+  },
+  "field_match_rates": {
+    "email": {
+      "matched": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "name": {
+      "matched": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "phone": {
+      "matched": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "service_address": {
+      "matched": 1,
+      "total": 1,
+      "rate": 1
+    }
+  },
+  "accuracy": {
+    "exact_option_prices": {
+      "matched": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "exact_option_count": {
+      "matched": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "primary_service_kind": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "service_kind_recall_complete": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "action_fact_recall_complete": {
+      "matched": 1,
+      "total": 1,
+      "rate": 1
+    },
+    "option_b_terms_recall_complete": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "option_relationship": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "option_b_price_role": {
+      "matched": 0,
+      "total": 0,
+      "rate": null
+    },
+    "contact_equivalence": {
+      "matched": 0,
+      "total": 1,
+      "rate": 0
+    },
+    "address_equivalence": {
+      "matched": 1,
+      "total": 1,
+      "rate": 1
+    }
+  },
+  "source_final_calibration": {
+    "applicable": 1,
+    "cases_with_codes": 0,
+    "omission_or_change_counts_by_code": {},
+    "candidate_false_positive_cases": [],
+    "candidate_false_negative_cases": [
+      "john-w-plural-stumps-haul-away"
+    ]
+  },
+  "readiness_safety": {
+    "factually_correct": 0,
+    "factually_incorrect": 1,
+    "unscored": 0,
+    "unsafe_ready": [
+      "john-w-plural-stumps-haul-away"
+    ],
+    "correct_but_blocked": []
+  }
+}
