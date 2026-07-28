@@ -530,9 +530,10 @@ export default function HomePage() {
   }
 
   const cards = [...recentCards, ...emptyRecentCards].slice(0, 3);
+  const usesPurpleBackground = stage === "front" || stage === "new";
 
   return (
-    <main>
+    <main className={usesPurpleBackground ? "app-stage-purple" : ""}>
       <section className="banner">
         <h1>Alpha Tree</h1>
         <p>Shadow Version: deployed + more parsers/normalizers</p>

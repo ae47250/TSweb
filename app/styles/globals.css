@@ -15,6 +15,16 @@ main {
   max-width: 980px;
 }
 
+body:has(main.app-stage-purple) {
+  background-color: #CCB0FF;
+}
+
+main.app-stage-purple .front-page > .card,
+main.app-stage-purple .front-future-card,
+main.app-stage-purple .new-quote-card {
+  background-color: #CCB0FF;
+}
+
 .app-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
