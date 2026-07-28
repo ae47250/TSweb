@@ -117,7 +117,11 @@ test("review starts with status while confirm keeps final approval heading", () 
   assert.match(pageSource, /mode="confirm"/);
   assert.doesNotMatch(reviewSource, /AI Review/);
   assert.doesNotMatch(reviewSource, /Check details before confirming estimate/);
-  assert.match(pageSource, /Shadow Version: deployed \+ more parsers\/normalizers/);
+  assert.match(pageSource, /banner-branch-url/);
+  assert.match(pageSource, /https:\/\/tsweb-git-master-version100-ea47243\.vercel\.app/);
+  assert.match(pageSource, /Production version with deployed \+ more parsers\/normalizers/);
+  assert.match(globalCssSource, /\.banner p\s*\{\s*color:\s*#dc2626/);
+  assert.match(globalCssSource, /\.banner-branch-url\s*\{\s*color:\s*inherit;\s*font-size:\s*12px/);
   assert.match(reviewSource, /review-card/);
   assert.match(reviewSource, /Confirm Estimate/);
   assert.match(reviewSource, /Estimate ready to be Confirmed/);
