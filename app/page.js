@@ -536,7 +536,7 @@ export default function HomePage() {
     <main className={usesPurpleBackground ? "app-stage-purple" : ""}>
       <section className="banner">
         <h1>Alpha Tree</h1>
-        <p><a className="banner-branch-url" href="https://tsweb-git-master-version100-ea47243.vercel.app">https://tsweb-git-master-version100-ea47243.vercel.app</a> Production version with more parsers/normalizers</p>
+        <p><a className="banner-branch-url" href="https://tsweb-git-master-version100-ea47243.vercel.app">https://tsweb-git-master-version100-ea47243.vercel.app</a> <span className="banner-title-text">Production version with more parsers/normalizers</span></p>
       </section>
       {notice && <div className="alert alert-success">{notice}</div>}
       {error && <ErrorAlert errors={[error]} />}
