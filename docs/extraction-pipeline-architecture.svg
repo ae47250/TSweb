@@ -1,0 +1,319 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="diagram-title diagram-description">
+  <title id="diagram-title">Tree Dude extraction pipeline architecture</title>
+  <desc id="diagram-description">
+    Customer notes enter the API route coordinator. The coordinator runs an independent
+    option-price sidecar and an OpenAI extraction path governed by a prompt and strict
+    draft schema. The draft adapter passes model facts to the deterministic AlphaJSON
+    normalizer. Sidecar pricing is then reconciled before validation decides blockers,
+    warnings, follow-ups, and PDF readiness. Provider failures bypass the model and use
+    the same deterministic normalization, reconciliation, and validation stages.
+  </desc>
+
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07101f"/>
+      <stop offset="0.55" stop-color="#101a31"/>
+      <stop offset="1" stop-color="#08111f"/>
+    </linearGradient>
+    <linearGradient id="route-card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#183a56"/>
+      <stop offset="1" stop-color="#102a44"/>
+    </linearGradient>
+    <linearGradient id="model-card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#36275b"/>
+      <stop offset="1" stop-color="#241c44"/>
+    </linearGradient>
+    <linearGradient id="deterministic-card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#123d3e"/>
+      <stop offset="1" stop-color="#0b2a32"/>
+    </linearGradient>
+    <linearGradient id="authority-card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#194837"/>
+      <stop offset="1" stop-color="#0d302c"/>
+    </linearGradient>
+    <linearGradient id="output-card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#583e19"/>
+      <stop offset="1" stop-color="#34260f"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000814" flood-opacity="0.42"/>
+    </filter>
+    <filter id="soft-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+    <marker id="arrow-primary" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#d9e7ff"/>
+    </marker>
+    <marker id="arrow-model" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#bda8ff"/>
+    </marker>
+    <marker id="arrow-evidence" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#54d6c7"/>
+    </marker>
+    <marker id="arrow-fallback" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#ff9d84"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="1100" fill="url(#background)"/>
+  <circle cx="1320" cy="120" r="210" fill="#2a7565" opacity="0.08" filter="url(#soft-glow)"/>
+  <circle cx="620" cy="460" r="260" fill="#714ec2" opacity="0.07" filter="url(#soft-glow)"/>
+  <path d="M0 955 C330 870 470 1080 810 988 C1110 905 1325 980 1600 900 L1600 1100 L0 1100 Z" fill="#0c1728" opacity="0.72"/>
+
+  <text x="70" y="72" fill="#f5f8ff" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="34" font-weight="750">
+    Tree Dude Extraction Architecture
+  </text>
+  <text x="70" y="110" fill="#9eafc8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17">
+    Model-assisted fact extraction with deterministic canonicalization, price control, and readiness decisions
+  </text>
+  <rect x="1192" y="52" width="338" height="64" rx="18" fill="#0d2133" stroke="#2a5772"/>
+  <circle cx="1222" cy="84" r="8" fill="#55d6c7"/>
+  <text x="1242" y="80" fill="#d8e8f3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700">
+    CORE ARCHITECTURAL RULE
+  </text>
+  <text x="1242" y="100" fill="#8faabd" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">
+    The model extracts; deterministic code decides.
+  </text>
+
+  <text x="70" y="170" fill="#71849d" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2">
+    REQUEST &amp; COORDINATION
+  </text>
+  <text x="714" y="170" fill="#8d7cc4" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2">
+    MODEL EXTRACTION BOUNDARY
+  </text>
+  <text x="1146" y="170" fill="#65a99d" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2">
+    DETERMINISTIC AUTHORITY
+  </text>
+
+  <!-- Request input -->
+  <g filter="url(#shadow)">
+    <rect x="70" y="225" width="190" height="92" rx="24" fill="#111e31" stroke="#31445f" stroke-width="1.5"/>
+  </g>
+  <circle cx="106" cy="270" r="20" fill="#1f3953"/>
+  <path d="M98 260 H114 M98 268 H114 M98 276 H109" stroke="#9bc9ef" stroke-width="2.2" stroke-linecap="round"/>
+  <text x="139" y="260" fill="#eef5ff" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="700">
+    Customer note
+  </text>
+  <text x="139" y="283" fill="#8fa3bc" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">
+    raw text + intake
+  </text>
+
+  <!-- Route coordinator -->
+  <g filter="url(#shadow)">
+    <rect x="320" y="205" width="330" height="180" rx="24" fill="url(#route-card)" stroke="#3d7ba4" stroke-width="1.5"/>
+  </g>
+  <rect x="344" y="229" width="44" height="28" rx="14" fill="#1f5677"/>
+  <text x="366" y="248" text-anchor="middle" fill="#ccecff" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800">01</text>
+  <text x="404" y="249" fill="#f3f9ff" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="750">
+    app/api/openai/route.js
+  </text>
+  <text x="344" y="286" fill="#b8d7ea" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700">
+    Main request coordinator
+  </text>
+  <text x="344" y="315" fill="#91adc0" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">Validates input, runs optional pre-normalizers,</text>
+  <text x="344" y="335" fill="#91adc0" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">calls OpenAI, and applies the same safe fallback</text>
+  <text x="344" y="355" fill="#91adc0" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">pipeline when the provider is unavailable.</text>
+
+  <!-- Price sidecar -->
+  <g filter="url(#shadow)">
+    <rect x="320" y="485" width="330" height="222" rx="24" fill="url(#deterministic-card)" stroke="#318e85" stroke-width="1.5"/>
+  </g>
+  <rect x="344" y="509" width="44" height="28" rx="14" fill="#17685f"/>
+  <text x="366" y="528" text-anchor="middle" fill="#c9fff7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800">02</text>
+  <text x="404" y="529" fill="#effffb" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16.5" font-weight="750">
+    lib/optionPriceNormalizer.js
+  </text>
+  <text x="344" y="566" fill="#a8ded6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700">
+    Independent raw-note price evidence
+  </text>
+  <text x="344" y="595" fill="#8ab8b3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">Finds money-like spans, excludes contact and</text>
+  <text x="344" y="615" fill="#8ab8b3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">address numbers, pairs scope with prices, and</text>
+  <text x="344" y="635" fill="#8ab8b3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">classifies add-ons, totals, and ambiguity.</text>
+  <rect x="344" y="660" width="274" height="27" rx="13.5" fill="#0b292a" stroke="#245b58"/>
+  <text x="481" y="678" text-anchor="middle" fill="#74cfc4" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5" font-weight="650">
+    Source of truth: untouched customer note
+  </text>
+
+  <!-- Model boundary container -->
+  <g filter="url(#shadow)">
+    <rect x="714" y="205" width="360" height="600" rx="28" fill="#12162a" stroke="#4c3d78" stroke-width="1.5"/>
+  </g>
+  <rect x="742" y="232" width="304" height="105" rx="18" fill="url(#model-card)" stroke="#655394"/>
+  <text x="764" y="261" fill="#f2ecff" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15.5" font-weight="750">
+    lib/openaiPrompt.js
+  </text>
+  <text x="764" y="286" fill="#c1b2ee" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="700">
+    Model job instructions
+  </text>
+  <text x="764" y="310" fill="#9387bd" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5">
+    Extract facts and uncertainty; never approve.
+  </text>
+
+  <rect x="742" y="357" width="304" height="105" rx="18" fill="url(#model-card)" stroke="#655394"/>
+  <text x="764" y="386" fill="#f2ecff" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15.5" font-weight="750">
+    lib/openaiDraftSchema.js
+  </text>
+  <text x="764" y="411" fill="#c1b2ee" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="700">
+    Strict draft contract + safe parser
+  </text>
+  <text x="764" y="435" fill="#9387bd" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5">
+    Requires shape; sanitizes untrusted output.
+  </text>
+
+  <rect x="775" y="490" width="238" height="68" rx="34" fill="#4b397b" stroke="#8069b8"/>
+  <circle cx="809" cy="524" r="13" fill="#6f58aa"/>
+  <path d="M802 524 L807 529 L817 518" fill="none" stroke="#e9e1ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="837" y="518" fill="#f7f2ff" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="750">
+    OpenAI extraction
+  </text>
+  <text x="837" y="539" fill="#baade0" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5">
+    advisory draft only
+  </text>
+
+  <rect x="742" y="591" width="304" height="180" rx="18" fill="url(#model-card)" stroke="#655394"/>
+  <text x="764" y="620" fill="#f2ecff" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15.5" font-weight="750">
+    lib/openaiDraftAdapter.js
+  </text>
+  <text x="764" y="645" fill="#c1b2ee" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="700">
+    Draft translation boundary
+  </text>
+  <text x="764" y="674" fill="#9387bd" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5">Maps extracted facts into the normalizer's</text>
+  <text x="764" y="693" fill="#9387bd" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5">input shape and carries evidence, uncertainty,</text>
+  <text x="764" y="712" fill="#9387bd" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5">and explicit price-review warnings forward.</text>
+  <rect x="764" y="733" width="257" height="22" rx="11" fill="#231d3b"/>
+  <text x="892" y="748" text-anchor="middle" fill="#a99bd0" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5" font-weight="650">
+    Not canonical AlphaJSON
+  </text>
+
+  <!-- Canonical normalizer -->
+  <g filter="url(#shadow)">
+    <rect x="1146" y="205" width="384" height="190" rx="24" fill="url(#authority-card)" stroke="#48a37f" stroke-width="1.8"/>
+  </g>
+  <rect x="1170" y="229" width="44" height="28" rx="14" fill="#237453"/>
+  <text x="1192" y="248" text-anchor="middle" fill="#d8ffeb" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800">03</text>
+  <text x="1230" y="249" fill="#f0fff7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16.5" font-weight="750">
+    lib/normalizeAlphaJson.js
+  </text>
+  <text x="1170" y="286" fill="#ace0c6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700">
+    Canonical AlphaJSON authority
+  </text>
+  <text x="1170" y="315" fill="#8fbba7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">Applies field precedence and conservative extraction.</text>
+  <text x="1170" y="335" fill="#8fbba7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">Orders options, reconciles evidence, and creates safe</text>
+  <text x="1170" y="355" fill="#8fbba7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">customer-facing summaries.</text>
+  <rect x="1170" y="367" width="336" height="8" rx="4" fill="#3c9c77"/>
+
+  <!-- Price reconciliation -->
+  <g filter="url(#shadow)">
+    <rect x="1146" y="475" width="384" height="180" rx="24" fill="url(#deterministic-card)" stroke="#318e85" stroke-width="1.5"/>
+  </g>
+  <rect x="1170" y="499" width="44" height="28" rx="14" fill="#17685f"/>
+  <text x="1192" y="518" text-anchor="middle" fill="#c9fff7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800">04</text>
+  <text x="1230" y="519" fill="#effffb" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16.5" font-weight="750">
+    lib/priceReconciliation.js
+  </text>
+  <text x="1170" y="556" fill="#a8ded6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700">
+    Price acceptance and quarantine
+  </text>
+  <text x="1170" y="585" fill="#8ab8b3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">Compares TD2 options with sidecar evidence.</text>
+  <text x="1170" y="605" fill="#8ab8b3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">Builds safe bundles, rejects invented prices, and</text>
+  <text x="1170" y="625" fill="#8ab8b3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">records an auditable decision for every candidate.</text>
+
+  <!-- Validation -->
+  <g filter="url(#shadow)">
+    <rect x="1146" y="735" width="384" height="180" rx="24" fill="url(#authority-card)" stroke="#48a37f" stroke-width="1.8"/>
+  </g>
+  <rect x="1170" y="759" width="44" height="28" rx="14" fill="#237453"/>
+  <text x="1192" y="778" text-anchor="middle" fill="#d8ffeb" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="800">05</text>
+  <text x="1230" y="779" fill="#f0fff7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16.5" font-weight="750">
+    lib/validateJson.js
+  </text>
+  <text x="1170" y="816" fill="#ace0c6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700">
+    Readiness decision
+  </text>
+  <text x="1170" y="845" fill="#8fbba7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">Produces blockers, warnings, and structured follow-ups.</text>
+  <text x="1170" y="865" fill="#8fbba7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">Computes the semantic approval hash and the only</text>
+  <text x="1170" y="885" fill="#8fbba7" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12.5">authoritative can_generate_pdf decision.</text>
+
+  <!-- Output -->
+  <g filter="url(#shadow)">
+    <rect x="1146" y="982" width="384" height="78" rx="22" fill="url(#output-card)" stroke="#b48237" stroke-width="1.5"/>
+  </g>
+  <circle cx="1182" cy="1021" r="15" fill="#8e6525"/>
+  <path d="M1175 1021 L1180 1026 L1189 1016" fill="none" stroke="#fff1cf" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1210" y="1015" fill="#fff4da" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14.5" font-weight="750">
+    Validated API result
+  </text>
+  <text x="1210" y="1038" fill="#c9ad77" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5">
+    AlphaJSON + review state + PDF readiness
+  </text>
+
+  <!-- Main flow arrows -->
+  <path d="M260 271 H304" fill="none" stroke="#d9e7ff" stroke-width="3" marker-end="url(#arrow-primary)"/>
+  <path d="M650 270 H682 V524 H759" fill="none" stroke="#bda8ff" stroke-width="2.5" marker-end="url(#arrow-model)"/>
+  <text x="674" y="452" fill="#9d8ccc" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5" text-anchor="end">
+    structured extraction
+  </text>
+  <path d="M894 337 V349" fill="none" stroke="#7d6ba9" stroke-width="2"/>
+  <path d="M894 462 V478" fill="none" stroke="#bda8ff" stroke-width="2.5" marker-end="url(#arrow-model)"/>
+  <path d="M894 558 V579" fill="none" stroke="#bda8ff" stroke-width="2.5" marker-end="url(#arrow-model)"/>
+  <path d="M1046 682 H1100 V300 H1130" fill="none" stroke="#d9e7ff" stroke-width="3" marker-end="url(#arrow-primary)"/>
+  <text x="1090" y="414" fill="#aabbd0" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5" text-anchor="end">
+    normalizer input
+  </text>
+  <path d="M1338 395 V459" fill="none" stroke="#d9e7ff" stroke-width="3" marker-end="url(#arrow-primary)"/>
+  <path d="M1338 655 V719" fill="none" stroke="#d9e7ff" stroke-width="3" marker-end="url(#arrow-primary)"/>
+  <path d="M1338 915 V966" fill="none" stroke="#d9e7ff" stroke-width="3" marker-end="url(#arrow-primary)"/>
+
+  <!-- Sidecar branch and reconciliation evidence -->
+  <path d="M482 385 V469" fill="none" stroke="#54d6c7" stroke-width="2.5" marker-end="url(#arrow-evidence)"/>
+  <text x="494" y="431" fill="#67bfb6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5">
+    raw note
+  </text>
+  <path d="M650 682 H682 V790 H1115 V565 H1130" fill="none" stroke="#54d6c7" stroke-width="3" marker-end="url(#arrow-evidence)"/>
+  <text x="900" y="783" fill="#67bfb6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5" text-anchor="middle">
+    candidate prices, pairings, add-on interpretations, totals
+  </text>
+
+  <!-- Safe fallback -->
+  <path d="M566 205 V188 H1112 V264 H1130" fill="none" stroke="#ff9d84" stroke-width="2.3" stroke-dasharray="8 7" marker-end="url(#arrow-fallback)"/>
+  <rect x="741" y="176" width="257" height="24" rx="12" fill="#2a2029" stroke="#6f443d"/>
+  <text x="869" y="192" text-anchor="middle" fill="#e6a391" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5" font-weight="650">
+    no API key / mock / provider failure
+  </text>
+
+  <!-- Legend -->
+  <g>
+    <rect x="70" y="824" width="930" height="174" rx="24" fill="#0c1728" stroke="#263852"/>
+    <text x="96" y="856" fill="#dbe8fa" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="750">
+      HOW TO READ THIS DIAGRAM
+    </text>
+
+    <line x1="96" y1="890" x2="148" y2="890" stroke="#d9e7ff" stroke-width="3" marker-end="url(#arrow-primary)"/>
+    <text x="166" y="895" fill="#9fb0c8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12">
+      Primary application data flow
+    </text>
+
+    <line x1="382" y1="890" x2="434" y2="890" stroke="#bda8ff" stroke-width="3" marker-end="url(#arrow-model)"/>
+    <text x="452" y="895" fill="#9f92c2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12">
+      Advisory model extraction
+    </text>
+
+    <line x1="687" y1="890" x2="739" y2="890" stroke="#54d6c7" stroke-width="3" marker-end="url(#arrow-evidence)"/>
+    <text x="757" y="895" fill="#77b9b2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12">
+      Independent deterministic evidence
+    </text>
+
+    <line x1="96" y1="936" x2="148" y2="936" stroke="#ff9d84" stroke-width="2.5" stroke-dasharray="8 7" marker-end="url(#arrow-fallback)"/>
+    <text x="166" y="941" fill="#c88b7c" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12">
+      Safe local fallback uses the same authority path
+    </text>
+
+    <rect x="484" y="922" width="484" height="48" rx="14" fill="#102236" stroke="#294762"/>
+    <text x="726" y="943" text-anchor="middle" fill="#d6e6f5" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11.5" font-weight="700">
+      Trust boundary
+    </text>
+    <text x="726" y="960" text-anchor="middle" fill="#8197ae" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5">
+      Draft output is always parsed, adapted, normalized, reconciled, and validated.
+    </text>
+  </g>
+</svg>
