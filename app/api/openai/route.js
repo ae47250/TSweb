@@ -18,7 +18,11 @@ import {
 } from "../../../lib/textCleanupNormalizer.js";
 
 function finalizeAlphaJsonWithDecisions(alphaJson, contactNormalizationResult) {
-  return attachPipelineDecisionEnvelopes(alphaJson, contactNormalizationResult);
+  return attachPipelineDecisionEnvelopes(
+    alphaJson,
+    contactNormalizationResult,
+    alphaJson?.raw_input?.customer_text || "",
+  );
 }
 
 export const runtime = "nodejs";
