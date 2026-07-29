@@ -10,11 +10,16 @@ import { normalizeContactFields } from "../../../lib/contactNormalizer.js";
 import { applyContactNormalizationOverlay } from "../../../lib/contactNormalizationOverlay.js";
 import { buildOptionPriceCandidateView } from "../../../lib/optionPriceNormalizer.js";
 import { reconcileSidecarPrices } from "../../../lib/priceReconciliation.js";
+import { attachPipelineDecisionEnvelopes } from "../../../lib/attachPipelineDecisionEnvelopes.js";
 import {
   buildEvidenceBackedTextCleanupResult,
   buildPreNormalizerParserInput,
   textCleanupNormalizer,
 } from "../../../lib/textCleanupNormalizer.js";
+
+function finalizeAlphaJsonWithDecisions(alphaJson, contactNormalizationResult) {
+  return attachPipelineDecisionEnvelopes(alphaJson, contactNormalizationResult);
+}
 
 export const runtime = "nodejs";
 
@@ -192,12 +197,15 @@ export async function POST(request) {
 
   if (!process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true") {
     const rawOpenAiDraftJson = {};
-    const alphaJson = reconcileSidecarPrices(
-      applyContactNormalizationOverlay(
-        normalizeToAlphaJsonV14({}, customerText, intake),
-        contactNormalizationResult,
+    const alphaJson = finalizeAlphaJsonWithDecisions(
+      reconcileSidecarPrices(
+        applyContactNormalizationOverlay(
+          normalizeToAlphaJsonV14({}, customerText, intake),
+          contactNormalizationResult,
+        ),
+        optionPriceCandidateView,
       ),
-      optionPriceCandidateView,
+      contactNormalizationResult,
     );
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
@@ -243,12 +251,15 @@ export async function POST(request) {
     const rawOpenAiDraftJson = JSON.parse(response.choices[0]?.message?.content || "{}");
     const parsedDraft = parseOpenAiDraft(rawOpenAiDraftJson);
     const normalizerInput = openAiDraftToNormalizerInput(parsedDraft.draft, { rawInput: customerText, intake });
-    const alphaJson = reconcileSidecarPrices(
-      applyContactNormalizationOverlay(
-        normalizeToAlphaJsonV14(normalizerInput, customerText, intake),
-        contactNormalizationResult,
+    const alphaJson = finalizeAlphaJsonWithDecisions(
+      reconcileSidecarPrices(
+        applyContactNormalizationOverlay(
+          normalizeToAlphaJsonV14(normalizerInput, customerText, intake),
+          contactNormalizationResult,
+        ),
+        optionPriceCandidateView,
       ),
-      optionPriceCandidateView,
+      contactNormalizationResult,
     );
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
@@ -275,12 +286,15 @@ export async function POST(request) {
     });
   } catch (error) {
     const rawOpenAiDraftJson = {};
-    const alphaJson = reconcileSidecarPrices(
-      applyContactNormalizationOverlay(
-        normalizeToAlphaJsonV14({}, customerText, intake),
-        contactNormalizationResult,
+    const alphaJson = finalizeAlphaJsonWithDecisions(
+      reconcileSidecarPrices(
+        applyContactNormalizationOverlay(
+          normalizeToAlphaJsonV14({}, customerText, intake),
+          contactNormalizationResult,
+        ),
+        optionPriceCandidateView,
       ),
-      optionPriceCandidateView,
+      contactNormalizationResult,
     );
     const validation = validateAlphaJson(alphaJson);
     logOpenAiCase({
