@@ -5,6 +5,7 @@ import { createDownloadFile } from "../../../lib/documentFiles.js";
 import { saveEstimate } from "../../../lib/estimateStore.js";
 import { checkRateLimit } from "../../../lib/rateLimiter.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../../lib/reviewOverrides.js";
+import { normalizeReviewerDecisionLog } from "../../../lib/reviewerDecisionLog.js";
 import { validateAlphaJsonRoutePayload } from "../../../lib/validateRoutePayload.js";
 
 export const runtime = "nodejs";
@@ -60,6 +61,7 @@ export async function POST(request) {
   alphaJson.review.approved_final_option_render_binding = alphaJson.validation?.final_option_render_binding || null;
   alphaJson.review.overrides = reviewOverrides;
   alphaJson.review.override_warnings = overrideStatus.acceptedOverrideWarnings;
+  alphaJson.review.reviewer_decision_log = normalizeReviewerDecisionLog(body.decisionLog);
   alphaJson.review.contractor_warnings = [
     ...overrideStatus.acceptedOverrideWarnings,
     ...(validation.warnings || []).map((warning) => ({

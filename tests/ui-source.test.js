@@ -298,7 +298,12 @@ test("review overrides are narrow and recorded separately from normal validation
   assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /if \(!needsPhone \|\| phoneOverrideAccepted\) setPhoneWarning\(""\)/);
   assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /error=\{phoneOverrideAccepted \? "" : phoneWarning\}/);
   assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /td2-inline-field-error/);
-  assert.match(pageSource, /postJson\("\/api\/pdf", \{ alphaJson, reviewOverrides \}\)/);
+  assert.match(pageSource, /postJson\("\/api\/pdf", \{ alphaJson, reviewOverrides, decisionLog \}\)/);
+  assert.match(pageSource, /createReviewerDecisionAction/);
+  assert.match(pageSource, /acceptTreeScopeSuggestion/);
+  assert.match(pageSource, /confirmPriceAlternatives/);
+  assert.match(pdfRouteSource, /reviewer_decision_log/);
+  assert.match(pdfRouteSource, /normalizeReviewerDecisionLog/);
   assert.match(reviewOverridesSource, /Missing service address/);
   assert.match(reviewOverridesSource, /Missing customer phone or email/);
   assert.match(reviewOverridesSource, /Service address is missing, but was OK'd when the estimate was created/);

@@ -1,0 +1,80 @@
+{
+  "version": "ratchet-baseline-v1",
+  "description": "Per-metric regression / ratchet / safety ceilings and floors for the 60-case offline eval cohort. Update only via `node scripts/ratchet-gate.js --update` after a deliberate, reviewed improvement.",
+  "source_reports": {
+    "accuracy": "reports/service-assembler-accuracy-60-summary.json",
+    "readiness": "reports/readiness-safety-60-summary.json"
+  },
+  "metrics": {
+    "exact_option_count_rate": {
+      "category": "ratchet",
+      "direction": "higher_is_better",
+      "path": ["accuracy", "accuracy", "exact_option_count", "rate"],
+      "floor": 0.7241,
+      "description": "Tree/option count preservation accuracy."
+    },
+    "exact_option_prices_rate": {
+      "category": "ratchet",
+      "direction": "higher_is_better",
+      "path": ["accuracy", "accuracy", "exact_option_prices", "rate"],
+      "floor": 0.7241,
+      "description": "Explicit-price preservation accuracy."
+    },
+    "option_relationship_rate": {
+      "category": "ratchet",
+      "direction": "higher_is_better",
+      "path": ["accuracy", "accuracy", "option_relationship", "rate"],
+      "floor": 0.65,
+      "description": "Option relationship (alternative/add-on) accuracy."
+    },
+    "unsupported_selected_facts_rate": {
+      "category": "ratchet",
+      "direction": "lower_is_better",
+      "path": ["readiness", "metrics", "unsupported_selected_facts", "rate"],
+      "ceiling": 0.0514,
+      "description": "Share of selected facts with no source support."
+    },
+    "unresolved_conflict_recall_rate": {
+      "category": "ratchet",
+      "direction": "higher_is_better",
+      "path": ["readiness", "metrics", "unresolved_conflict_recall", "rate"],
+      "floor": 0.15,
+      "description": "Share of gold unresolved-conflict cases correctly detected."
+    },
+    "correct_abstention_rate": {
+      "category": "ratchet",
+      "direction": "higher_is_better",
+      "path": ["readiness", "metrics", "correct_abstention", "rate"],
+      "floor": 0.9,
+      "description": "Share of gold abstain-required cases where the system correctly declined to guess."
+    },
+    "incorrect_but_ready_count": {
+      "category": "safety",
+      "direction": "lower_is_better",
+      "path": ["readiness", "metrics", "incorrect_but_ready", "count"],
+      "ceiling": 18,
+      "case_id_path": ["readiness", "metrics", "incorrect_but_ready", "case_ids"],
+      "known_case_ids": [
+        "tdsvc-004",
+        "tdsvc-010",
+        "tdsvc-023",
+        "tdsvc-025",
+        "tdsvc-029",
+        "tdsvc-030",
+        "tdsvc-033",
+        "tdsvc-034",
+        "tdsvc-036",
+        "tdsvc-037",
+        "tdsvc-039",
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-046",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-056",
+        "tdsvc-057"
+      ],
+      "description": "The estimate is factually wrong and the system says it is ready to send. Must never increase, and no case ID outside this known set may appear (a new incorrect-but-ready case is a hard safety-gate failure even if the total count does not increase)."
+    }
+  }
+}

@@ -225,6 +225,38 @@ test("same-species conflict without cue is needs_review contradicts", () => {
   assert.equal(edge.confidence, "needs_review");
 });
 
+test("singular to plural with an expansion cue expands with confirmed confidence", () => {
+  const graph = buildClaimGraphFromRaw("Remove the oak. Also remove two oaks by the fence.");
+  const edge = scopeEdge(graph, "expands");
+  assert.ok(edge);
+  assert.equal(edge.reason, "scope_expansion_marker");
+  assert.equal(edge.confidence, "confirmed");
+  assert.ok(edge.signals.includes("expansion_marker"));
+  assert.ok(edge.signals.includes("singular_to_plural"));
+});
+
+test("singular to plural without an expansion cue is needs_review expands", () => {
+  const graph = buildClaimGraphFromRaw("Remove the oak. Remove two oaks by the fence.");
+  const edge = scopeEdge(graph, "expands");
+  assert.ok(edge);
+  assert.equal(edge.reason, "singular_to_plural_same_entity");
+  assert.equal(edge.confidence, "needs_review");
+});
+
+test("same singular entity with an added descriptive detail qualifies rather than contradicts", () => {
+  const rawText = "Remove the oak. It's the one near the fence, out back.";
+  const earlier = { id: "scope-1", field: "job.target_trees", value: ["oak"], evidence: "Remove the oak", start: 0, end: 15 };
+  const later = { id: "scope-2", field: "job.target_trees", value: ["oak"], evidence: "It's the one near the fence, out back", start: 17, end: 55 };
+  const relationships = detectClaimRelationships([earlier, later], rawText);
+  const edge = relationships.find((rel) => rel.type === "qualifies");
+  assert.ok(edge, "expected a qualifies relationship");
+  assert.equal(edge.from, "scope-2");
+  assert.equal(edge.to, "scope-1");
+  assert.equal(edge.reason, "same_entity_additional_detail");
+  assert.equal(edge.confidence, "needs_review");
+  assert.ok(edge.signals.includes("qualifier_detail"));
+});
+
 test("plural to singular without only/just is needs_review narrows", () => {
   const graph = buildClaimGraphFromRaw("Remove two oaks. Remove the rear oak.");
   const edge = scopeEdge(graph, "narrows");

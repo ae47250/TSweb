@@ -293,7 +293,7 @@ test("post-AI reconciliation preserves haul-away beside plural stump grinding", 
 
   assert.equal(
     reconciled.service_options.items[1].description,
-    "remove two maples and grind stumps and haul away",
+    "remove two maple trees and grind stumps and haul away",
   );
   assert.equal(reconciled.service_options.items[1].price.amount, 1900);
   assert.equal(

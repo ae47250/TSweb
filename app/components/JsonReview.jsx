@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { buildCustomerJobSummary, normalizeEditedServiceAddress, normalizeServiceAddress, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
 import { LOCAL_INDIANA_TOWNS } from "../../lib/localTowns.js";
+import { getReviewDecisionExceptions } from "../../lib/reviewDecisionExceptions.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../lib/reviewOverrides.js";
+import {
+  PhoneDuplicateBadge,
+  PriceAlternativesCard,
+  TreeScopeCorrectionCard,
+} from "./DecisionExceptionCards.jsx";
 
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -323,7 +329,8 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
     || status.needsContactOverride
     || status.needsPhoneOverride
     || status.needsEmailOverride
-    || status.needsScopeOverride;
+    || status.needsScopeOverride
+    || status.needsReadinessOverride;
   if (!hasOverrideControls && warningItems.length < 1) return null;
 
   function toggle(key) {
@@ -381,6 +388,23 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
               <p className="override-warning-note">
                 Prices are clear, but work scope needs Tree Dude approval.
               </p>
+            </div>
+          )}
+          {status.needsReadinessOverride && (
+            <div className="override-warning-item">
+              <label className="override-check-row">
+                <input
+                  type="checkbox"
+                  checked={Boolean(overrides.acknowledgedReadinessRisk)}
+                  onChange={() => toggle("acknowledgedReadinessRisk")}
+                />
+                <span>Create Estimate despite readiness safety flags</span>
+              </label>
+              {status.readinessWarning?.findings?.length > 0 && (
+                <ul className="internal-warning-list">
+                  {status.readinessWarning.findings.map((finding) => <li key={finding}>{finding}</li>)}
+                </ul>
+              )}
             </div>
           )}
         </div>
@@ -945,6 +969,7 @@ export default function JsonReview({
   intake = {},
   mode = "review",
   reviewOverrides = {},
+  priceAlternativesConfirmed = false,
   onReviewOverridesChange,
   onTreeCountOverrideChange,
   onOptionDescriptionChange,
@@ -952,6 +977,12 @@ export default function JsonReview({
   onAddOption,
   onCustomerFieldChange,
   onJobDescriptionChange,
+  onAcceptTreeScopeSuggestion,
+  onKeepBothTreeScope,
+  onEnterTreeScope,
+  onConfirmPriceAlternatives,
+  onEditPriceAlternatives,
+  onMarkBusinessChange,
   onApprove,
   onEdit,
   busy = false,
@@ -959,6 +990,7 @@ export default function JsonReview({
   if (!alphaJson) return null;
 
   const normalizedOverrides = normalizeReviewOverrides(reviewOverrides);
+  const exceptions = getReviewDecisionExceptions(alphaJson);
   const options = alphaJson.service_options?.items || [];
   const structuredJobSummary = buildCustomerJobSummary(alphaJson);
   const jobNotes = structuredJobSummary || cleanJobNotesForReview(sourceNotes, alphaJson);
@@ -1087,11 +1119,24 @@ export default function JsonReview({
               <p className={customerPhoneAvailable ? "customer-phone-line customer-phone-available" : "customer-phone-line"}>
                 {customerPhone}
               </p>
+              {!isFinalConfirm && exceptions.phone && (
+                <PhoneDuplicateBadge exception={exceptions.phone} />
+              )}
             </div>
           </div>
           <div className="summary-card review-job-notes-card">
             <h3>Job Notes</h3>
             <p className="job-summary-text">{jobNotes}</p>
+            {!isFinalConfirm && exceptions.treeScope && (
+              <TreeScopeCorrectionCard
+                exception={exceptions.treeScope}
+                busy={busy}
+                onAccept={onAcceptTreeScopeSuggestion}
+                onKeepBoth={onKeepBothTreeScope}
+                onEnterScope={onEnterTreeScope}
+                onMarkBusinessChange={onMarkBusinessChange}
+              />
+            )}
             {showTreeCountOverride && (
               <ManualTreeCountOverrideControl
                 treeCountOverride={treeCountOverride}
@@ -1131,6 +1176,15 @@ export default function JsonReview({
         </section>
       )}
       <h3>Customer Options</h3>
+      {!isFinalConfirm && exceptions.priceAlternatives && (
+        <PriceAlternativesCard
+          exception={exceptions.priceAlternatives}
+          confirmed={priceAlternativesConfirmed}
+          busy={busy}
+          onConfirmBoth={onConfirmPriceAlternatives}
+          onEditOptions={onEditPriceAlternatives}
+        />
+      )}
       <div className="quote-options-grid">
         {options.length > 0 ? options.map((option, index) => (
           <article

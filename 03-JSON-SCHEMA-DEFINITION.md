@@ -405,6 +405,56 @@ This schema defines the **exact structure** that OpenAI must produce when conver
         "long_customer_name": { "type": "boolean" },
         "customer_name_truncated_for_display": { "type": "boolean" }
       }
+    },
+
+    "reviewer_decisions": {
+      "type": "array",
+      "description": "Append-only ledger of reviewer edits during review. Distinguishes extraction corrections from business scope changes, formatting, and missing-info overrides.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "estimateId",
+          "field",
+          "action",
+          "before",
+          "after",
+          "timestamp",
+          "extractionVersion",
+          "resolutionPolicyVersion"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "estimateId": { "type": "string" },
+          "field": { "type": "string" },
+          "action": {
+            "type": "string",
+            "enum": [
+              "accept_candidate",
+              "reject_candidate",
+              "correct_extraction",
+              "resolve_conflict",
+              "business_scope_change",
+              "formatting_change",
+              "override_missing",
+              "enter_new_value"
+            ]
+          },
+          "before": {},
+          "after": {},
+          "candidateIds": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "conflictId": { "type": "string" },
+          "reasonCode": { "type": "string" },
+          "reviewerNote": { "type": "string" },
+          "actorId": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "extractionVersion": { "type": "string" },
+          "resolutionPolicyVersion": { "type": "string" }
+        }
+      }
     }
   }
 }
@@ -588,7 +638,8 @@ OpenAI MUST set `blocking_errors[]` and `tree_dude_follow_ups[]` if ANY of these
     "option_count": 3,
     "over_normal_option_limit": false,
     "likely_two_page_pdf": false
-  }
+  },
+  "reviewer_decisions": []
 }
 ```
 
