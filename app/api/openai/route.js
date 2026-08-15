@@ -11,6 +11,8 @@ import { applyContactNormalizationOverlay } from "../../../lib/contactNormalizat
 import { buildOptionPriceCandidateView } from "../../../lib/optionPriceNormalizer.js";
 import { reconcileSidecarPrices } from "../../../lib/priceReconciliation.js";
 import { attachPipelineDecisionEnvelopes } from "../../../lib/attachPipelineDecisionEnvelopes.js";
+import { requireContractorSession } from "../../../lib/contractorAuth.js";
+import { isStrictDeliveryStage, openAiLocalFallbackAllowed } from "../../../lib/productionReadiness.js";
 import {
   buildEvidenceBackedTextCleanupResult,
   buildPreNormalizerParserInput,
@@ -146,6 +148,8 @@ function logOpenAiCase({ level = "info", caseId, model, reasoningEffort, usage, 
 }
 
 export async function POST(request) {
+  const auth = requireContractorSession(request, { csrf: true });
+  if (!auth.ok) return auth.response;
   const body = await readJson(request);
   const customerText = body.customer_text || body.customerText || "";
   const intake = body.intake || body.structured_input || body.structuredInput || {};
@@ -199,7 +203,11 @@ export async function POST(request) {
     });
   }
 
-  if (!process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true") {
+  const localFallbackRequested = !process.env.OPENAI_API_KEY || process.env.MOCK_OPENAI_RESPONSES === "true";
+  if (localFallbackRequested) {
+    if (!openAiLocalFallbackAllowed()) {
+      return json({ error: "OpenAI configuration is required for staging and production." }, { status: 503 });
+    }
     const rawOpenAiDraftJson = {};
     const alphaJson = finalizeAlphaJsonWithDecisions(
       reconcileSidecarPrices(
@@ -211,7 +219,7 @@ export async function POST(request) {
       ),
       contactNormalizationResult,
     );
-    const validation = validateAlphaJson(alphaJson);
+    const validation = validateAlphaJson(alphaJson, { enforceFieldResolution: true });
     logOpenAiCase({
       caseId,
       model: "local-draft-parser",
@@ -265,7 +273,7 @@ export async function POST(request) {
       ),
       contactNormalizationResult,
     );
-    const validation = validateAlphaJson(alphaJson);
+    const validation = validateAlphaJson(alphaJson, { enforceFieldResolution: true });
     logOpenAiCase({
       caseId,
       model,
@@ -289,6 +297,18 @@ export async function POST(request) {
       }),
     });
   } catch (error) {
+    if (isStrictDeliveryStage()) {
+      logOpenAiCase({
+        level: "error",
+        caseId,
+        model,
+        reasoningEffort,
+        usage: null,
+        outcome: "provider_error",
+        errorMessage: error.message,
+      });
+      return json({ error: "OpenAI is unavailable; no local parser fallback is permitted in staging or production." }, { status: 503 });
+    }
     const rawOpenAiDraftJson = {};
     const alphaJson = finalizeAlphaJsonWithDecisions(
       reconcileSidecarPrices(
@@ -300,7 +320,7 @@ export async function POST(request) {
       ),
       contactNormalizationResult,
     );
-    const validation = validateAlphaJson(alphaJson);
+    const validation = validateAlphaJson(alphaJson, { enforceFieldResolution: true });
     logOpenAiCase({
       level: "error",
       caseId,
