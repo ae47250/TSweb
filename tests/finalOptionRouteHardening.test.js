@@ -196,7 +196,7 @@ test("route validation blocks stale final-option structural approval", async () 
 test("PDF route delegates validation to the trusted route payload path", () => {
   const pdfRouteSource = readFileSync("app/api/pdf/route.js", "utf8");
 
-  assert.match(pdfRouteSource, /validateAlphaJsonRoutePayload/);
+  assert.match(pdfRouteSource, /resolveCustomerPipeline/);
   assert.match(pdfRouteSource, /approved_final_option_render_binding/);
   assert.doesNotMatch(pdfRouteSource, /preserveRouteValidationEvidence/);
   assert.doesNotMatch(pdfRouteSource, /normalizeToAlphaJsonV14/);
