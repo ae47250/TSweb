@@ -1,0 +1,329 @@
+{
+  "report_version": "readiness-safety-release-gate-report-v1",
+  "generated_at": "2026-08-15T17:13:55.004Z",
+  "policy_version": "readiness-safety-release-policy-v1",
+  "safety_evaluator_version": "readiness-safety-v0.2",
+  "blocking_flag_default": "unset",
+  "status": "PASS",
+  "thresholds": {
+    "false_ready_catch_rate": {
+      "minimum": 0.6666666666666666,
+      "minimum_caught": 12,
+      "denominator": 18
+    },
+    "unresolved_conflict_recall": {
+      "minimum": 0.5,
+      "minimum_caught": 10,
+      "denominator": 20
+    },
+    "clean_case_quiet_rate": {
+      "minimum": 0.9
+    },
+    "full_600_false_block_rate": {
+      "maximum": 0.01,
+      "maximum_new_blocks": 6,
+      "denominator": 600
+    },
+    "regression_new_false_blocks": {
+      "maximum": 0
+    }
+  },
+  "regression_cohort": {
+    "total": 60,
+    "false_ready": {
+      "caught": 18,
+      "total": 18,
+      "rate": 1,
+      "caught_case_ids": [
+        "tdsvc-004",
+        "tdsvc-010",
+        "tdsvc-023",
+        "tdsvc-025",
+        "tdsvc-029",
+        "tdsvc-030",
+        "tdsvc-033",
+        "tdsvc-034",
+        "tdsvc-036",
+        "tdsvc-037",
+        "tdsvc-039",
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-046",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-056",
+        "tdsvc-057"
+      ],
+      "missed_case_ids": []
+    },
+    "unresolved_conflict_recall": {
+      "caught": 20,
+      "total": 20,
+      "rate": 1,
+      "caught_case_ids": [
+        "tdsvc-041",
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-044",
+        "tdsvc-045",
+        "tdsvc-046",
+        "tdsvc-047",
+        "tdsvc-048",
+        "tdsvc-049",
+        "tdsvc-050",
+        "tdsvc-051",
+        "tdsvc-052",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-056",
+        "tdsvc-057",
+        "tdsvc-058",
+        "tdsvc-059",
+        "tdsvc-060"
+      ],
+      "missed_case_ids": []
+    },
+    "clean_case_quiet": {
+      "quiet": 24,
+      "total": 26,
+      "rate": 0.9230769230769231,
+      "quiet_case_ids": [
+        "tdsvc-001",
+        "tdsvc-002",
+        "tdsvc-003",
+        "tdsvc-005",
+        "tdsvc-006",
+        "tdsvc-007",
+        "tdsvc-009",
+        "tdsvc-011",
+        "tdsvc-012",
+        "tdsvc-015",
+        "tdsvc-016",
+        "tdsvc-017",
+        "tdsvc-019",
+        "tdsvc-021",
+        "tdsvc-022",
+        "tdsvc-024",
+        "tdsvc-026",
+        "tdsvc-027",
+        "tdsvc-028",
+        "tdsvc-031",
+        "tdsvc-032",
+        "tdsvc-035",
+        "tdsvc-038",
+        "tdsvc-040"
+      ],
+      "noisy_case_ids": [
+        "tdsvc-047",
+        "tdsvc-049"
+      ]
+    },
+    "newly_blocked_case_ids": [
+      "tdsvc-004",
+      "tdsvc-010",
+      "tdsvc-023",
+      "tdsvc-025",
+      "tdsvc-030",
+      "tdsvc-033",
+      "tdsvc-034",
+      "tdsvc-039",
+      "tdsvc-042",
+      "tdsvc-043",
+      "tdsvc-046",
+      "tdsvc-053",
+      "tdsvc-054",
+      "tdsvc-056",
+      "tdsvc-057"
+    ],
+    "newly_blocked_clean_case_ids": [],
+    "frozen_hard_block_case_ids": [
+      "tdsvc-008",
+      "tdsvc-013",
+      "tdsvc-014",
+      "tdsvc-018",
+      "tdsvc-020",
+      "tdsvc-041",
+      "tdsvc-044",
+      "tdsvc-045",
+      "tdsvc-048",
+      "tdsvc-050",
+      "tdsvc-051",
+      "tdsvc-052",
+      "tdsvc-055",
+      "tdsvc-058",
+      "tdsvc-059",
+      "tdsvc-060"
+    ],
+    "hard_blocks_present": [
+      "tdsvc-008",
+      "tdsvc-013",
+      "tdsvc-014",
+      "tdsvc-018",
+      "tdsvc-020",
+      "tdsvc-041",
+      "tdsvc-044",
+      "tdsvc-045",
+      "tdsvc-048",
+      "tdsvc-050",
+      "tdsvc-051",
+      "tdsvc-052",
+      "tdsvc-055",
+      "tdsvc-058",
+      "tdsvc-059",
+      "tdsvc-060"
+    ],
+    "missing_hard_blocks": []
+  },
+  "false_block_denominator": {
+    "denominator": 600,
+    "new_false_blocks": 0,
+    "false_block_rate": 0,
+    "new_false_block_case_ids": [],
+    "cohorts": [
+      {
+        "name": "easy",
+        "total": 150,
+        "expected_ready": 150,
+        "new_false_blocks": 0,
+        "new_false_block_case_ids": []
+      },
+      {
+        "name": "medium",
+        "total": 150,
+        "expected_ready": 150,
+        "new_false_blocks": 0,
+        "new_false_block_case_ids": []
+      },
+      {
+        "name": "medium-messy",
+        "total": 150,
+        "expected_ready": 150,
+        "new_false_blocks": 0,
+        "new_false_block_case_ids": []
+      },
+      {
+        "name": "very-messy",
+        "total": 150,
+        "expected_ready": 119,
+        "new_false_blocks": 0,
+        "new_false_block_case_ids": []
+      }
+    ]
+  },
+  "invariant_counts_and_case_ids": {
+    "regression": {
+      "counts": {
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE": 26,
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON": 16,
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED": 43,
+        "INFERRED_SCOPE_AFFECTS_PRICE_UNAPPROVED": 2,
+        "CONFLICTING_SUPPORTED_CANDIDATES": 3
+      },
+      "case_ids": {
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE": [
+          "tdsvc-004",
+          "tdsvc-010",
+          "tdsvc-018",
+          "tdsvc-020",
+          "tdsvc-029",
+          "tdsvc-030",
+          "tdsvc-034",
+          "tdsvc-036",
+          "tdsvc-037",
+          "tdsvc-044",
+          "tdsvc-045",
+          "tdsvc-048",
+          "tdsvc-049",
+          "tdsvc-052",
+          "tdsvc-055",
+          "tdsvc-060"
+        ],
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON": [
+          "tdsvc-018",
+          "tdsvc-020",
+          "tdsvc-044",
+          "tdsvc-045",
+          "tdsvc-048",
+          "tdsvc-049",
+          "tdsvc-052",
+          "tdsvc-055",
+          "tdsvc-060"
+        ],
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED": [
+          "tdsvc-023",
+          "tdsvc-025",
+          "tdsvc-039",
+          "tdsvc-041",
+          "tdsvc-042",
+          "tdsvc-043",
+          "tdsvc-044",
+          "tdsvc-045",
+          "tdsvc-046",
+          "tdsvc-048",
+          "tdsvc-050",
+          "tdsvc-051",
+          "tdsvc-052",
+          "tdsvc-053",
+          "tdsvc-054",
+          "tdsvc-056",
+          "tdsvc-057",
+          "tdsvc-058",
+          "tdsvc-059"
+        ],
+        "INFERRED_SCOPE_AFFECTS_PRICE_UNAPPROVED": [
+          "tdsvc-033",
+          "tdsvc-037"
+        ],
+        "CONFLICTING_SUPPORTED_CANDIDATES": [
+          "tdsvc-041",
+          "tdsvc-047",
+          "tdsvc-050"
+        ]
+      }
+    },
+    "false_block_denominator": {
+      "counts": {
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE": 3,
+        "INFERRED_SCOPE_AFFECTS_PRICE_UNAPPROVED": 9,
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED": 9
+      },
+      "case_ids": {
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE": [
+          "case_0500",
+          "case_0890",
+          "case_1468"
+        ],
+        "INFERRED_SCOPE_AFFECTS_PRICE_UNAPPROVED": [
+          "case_0249",
+          "case_0559",
+          "case_0578",
+          "case_0600",
+          "case_0818",
+          "case_1310",
+          "case_1598",
+          "case_1700",
+          "case_1929"
+        ],
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED": [
+          "case_0590",
+          "case_0628",
+          "case_0659",
+          "case_1010",
+          "case_1048",
+          "case_1069",
+          "case_1090",
+          "case_1179",
+          "case_1228"
+        ]
+      }
+    }
+  },
+  "ratchet": {
+    "exit_code": 0,
+    "passed": true,
+    "stdout": "Ratchet gate results:\n  [PASS] (ratchet) exact_option_count_rate: 0.7241 >= floor 0.7241\n  [PASS] (ratchet) exact_option_prices_rate: 0.7241 >= floor 0.7241\n  [PASS] (ratchet) option_relationship_rate: 0.6500 >= floor 0.6500\n  [PASS] (ratchet) unsupported_selected_facts_rate: 0.0514 <= ceiling 0.0514\n  [PASS] (ratchet) unresolved_conflict_recall_rate: 0.1500 >= floor 0.1500\n  [PASS] (ratchet) correct_abstention_rate: 0.9000 >= floor 0.9000\n  [PASS] (safety) incorrect_but_ready_count: 18.0000 <= ceiling 18.0000\n\nAll ratchet and safety gates passed.",
+    "stderr": ""
+  },
+  "failures": []
+}

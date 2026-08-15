@@ -1,0 +1,85 @@
+{
+  "report_version": "customer-pipeline-stress-gate-report-v2",
+  "generated_at": "2026-08-15T17:14:07.594Z",
+  "status": "PASS",
+  "active_pipeline": "resolution",
+  "readiness_blocking_enabled": true,
+  "cohort_count": 7,
+  "case_count": 1050,
+  "false_block_denominator": 600,
+  "false_block_count": 0,
+  "unsafe_ready_count": 0,
+  "cohorts": [
+    {
+      "tier": "easy",
+      "case_count": 150,
+      "ready_count": 150,
+      "unsafe_ready_count": 0,
+      "unsafe_ready_case_ids": [],
+      "false_block_count": 0,
+      "false_block_case_ids": [],
+      "unexpected_parity_count": 0
+    },
+    {
+      "tier": "hard-knownfail",
+      "case_count": 150,
+      "ready_count": 1,
+      "unsafe_ready_count": 0,
+      "unsafe_ready_case_ids": [],
+      "false_block_count": 0,
+      "false_block_case_ids": [],
+      "unexpected_parity_count": 79
+    },
+    {
+      "tier": "medium",
+      "case_count": 150,
+      "ready_count": 150,
+      "unsafe_ready_count": 0,
+      "unsafe_ready_case_ids": [],
+      "false_block_count": 0,
+      "false_block_case_ids": [],
+      "unexpected_parity_count": 0
+    },
+    {
+      "tier": "medium-messy",
+      "case_count": 150,
+      "ready_count": 150,
+      "unsafe_ready_count": 0,
+      "unsafe_ready_case_ids": [],
+      "false_block_count": 0,
+      "false_block_case_ids": [],
+      "unexpected_parity_count": 0
+    },
+    {
+      "tier": "uber-messy",
+      "case_count": 150,
+      "ready_count": 0,
+      "unsafe_ready_count": 0,
+      "unsafe_ready_case_ids": [],
+      "false_block_count": 0,
+      "false_block_case_ids": [],
+      "unexpected_parity_count": 150
+    },
+    {
+      "tier": "uber-plus-messy",
+      "case_count": 150,
+      "ready_count": 36,
+      "unsafe_ready_count": 0,
+      "unsafe_ready_case_ids": [],
+      "false_block_count": 0,
+      "false_block_case_ids": [],
+      "unexpected_parity_count": 114
+    },
+    {
+      "tier": "very-messy",
+      "case_count": 150,
+      "ready_count": 119,
+      "unsafe_ready_count": 0,
+      "unsafe_ready_case_ids": [],
+      "false_block_count": 0,
+      "false_block_case_ids": [],
+      "unexpected_parity_count": 31
+    }
+  ],
+  "failures": []
+}
