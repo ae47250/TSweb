@@ -31,18 +31,13 @@ test("attachPipelineDecisionEnvelopes includes tree_count when missing", () => {
   assert.ok(next.normalization.decisions.tree_count.candidates.length >= 1);
 });
 
-test("attachPipelineDecisionEnvelopes preserves normalize tree_count envelope", () => {
+test("attachPipelineDecisionEnvelopes reapplies the corrected tree-count winner", () => {
   const contact = normalizeContactFields({ rawText: NOTES, intake: {} });
   const view = buildOptionPriceCandidateView(NOTES);
   const alphaJson = reconcileSidecarPrices(normalizeToAlphaJsonV14({}, NOTES, {}), view);
-  const beforeId = alphaJson.normalization.decisions.tree_count?.resolution?.selectedCandidateId;
-  assert.ok(beforeId);
-
   const next = attachPipelineDecisionEnvelopes(alphaJson, contact, NOTES);
-  assert.equal(
-    next.normalization.decisions.tree_count.resolution.selectedCandidateId,
-    beforeId,
-  );
+  assert.equal(next.job.tree_details.tree_count, "1 tree");
+  assert.equal(next.normalization.decisions.tree_count.resolution.reasonCode, "explicit_correction");
 });
 
 test("tree_count envelope survives validateAlphaJsonRoutePayload round-trip", () => {
