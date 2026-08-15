@@ -21,9 +21,18 @@ test("collectRawTreeCountClaimQuotes preserves count and correction claims", () 
   assert.ok(claims.some((claim) => claim.value === "1 tree"));
 });
 
-test("tree count envelope keeps current winner while preserving competing claims", () => {
+test("collectRawTreeCountClaimQuotes ignores address numbers before tree wording", () => {
+  const claims = collectRawTreeCountClaimQuotes(
+    "Test Customer at 1256 Mill Street Madison IN tree removal. Remove one tree.",
+  );
+
+  assert.equal(claims.some((claim) => claim.value === "1256 trees"), false);
+  assert.ok(claims.some((claim) => claim.value === "1 tree"));
+});
+
+test("tree count envelope applies the correction winner while preserving competing claims", () => {
   const alphaJson = normalizeToAlphaJsonV14({}, CORRECTION_NOTES, {});
-  assert.equal(alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
 
   const envelope = alphaJson.normalization.decisions.tree_count;
   assert.ok(envelope);
@@ -32,10 +41,9 @@ test("tree count envelope keeps current winner while preserving competing claims
   assert.ok(envelope.candidates.length >= 2);
 
   const selected = envelope.candidates.find((candidate) => candidate.id === envelope.resolution.selectedCandidateId);
-  assert.equal(selected?.value, "2 trees");
+  assert.equal(selected?.value, "1 tree");
   assert.ok(envelope.candidates.some((candidate) =>
-    candidate.status !== "selected" &&
-    (/rear oak/i.test(candidate.evidence?.[0]?.quote || "") || candidate.value === "1 tree"),
+    candidate.status !== "selected" && candidate.value === "2 trees",
   ));
 });
 
