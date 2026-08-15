@@ -11,16 +11,25 @@
     "metrics:alpha": "node scripts/record-alpha-metrics.js",
     "eval:offline": "node scripts/eval-offline-dataset.js",
     "ratchet:check": "node scripts/ratchet-gate.js",
-    "ratchet:update": "node scripts/ratchet-gate.js --update"
+    "ratchet:update": "node scripts/ratchet-gate.js --update",
+    "readiness:gate": "node scripts/readiness-safety-release-gate.js",
+    "readiness:preflight": "node scripts/production-readiness-preflight.js --stage local",
+    "staging:canary": "node scripts/production-readiness-preflight.js --stage staging",
+    "customer:gate": "node scripts/customer-pipeline-release-gate.js --check --target resolution",
+    "customer:gate:assembler": "node scripts/customer-pipeline-release-gate.js --check --target assembler",
+    "stress:gate": "node scripts/stress-release-gate.js --check",
+    "rollback:verify": "node scripts/verify-customer-pipeline-rollback.js",
+    "customer:load": "node scripts/customer-pipeline-load-test.js --iterations 1 --fail-on-regression",
+    "customer:observability": "node scripts/check-customer-pipeline-observability.js"
   },
   "dependencies": {
-    "@sparticuz/chromium": "latest",
-    "@vercel/blob": "^2.5.0",
-    "next": "latest",
-    "openai": "^4.0.0",
-    "puppeteer-core": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "zod": "^3.22.0"
+    "@sparticuz/chromium": "149.0.0",
+    "@vercel/blob": "2.5.0",
+    "next": "16.2.9",
+    "openai": "4.104.0",
+    "puppeteer-core": "25.2.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "zod": "3.25.76"
   }
 }

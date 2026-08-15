@@ -1,0 +1,88 @@
+name: TSweb quality gates
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master-Version100
+      - main
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Run application tests
+        run: node --test tests/*.test.js
+
+      - name: Run seven-metric ratchet gate
+        run: node scripts/ratchet-gate.js
+
+      - name: Run readiness safety gate without writing reports
+        run: node scripts/readiness-safety-release-gate.js --check
+
+      - name: Run production resolution stress release gate
+        run: node scripts/stress-release-gate.js --check
+
+      - name: Run customer pipeline release gate without writing reports
+        run: node scripts/customer-pipeline-release-gate.js --check --target resolution
+
+      - name: Run customer pipeline load and latency gate
+        run: node scripts/customer-pipeline-load-test.js --iterations 1 --fail-on-regression
+
+      - name: Generate sanitized telemetry stream for observability gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          telemetry_log="$RUNNER_TEMP/customer-pipeline-telemetry.jsonl"
+          node --input-type=module - > "$telemetry_log" <<'NODE'
+          import { readFileSync } from "node:fs";
+          import { resolve } from "node:path";
+          import { resolveCustomerPipeline } from "./lib/customerPipeline.js";
+
+          const fixture = JSON.parse(readFileSync(resolve("tests/fixtures/tree-dude-service-classification-60.json"), "utf8"));
+          const rows = Array.isArray(fixture) ? fixture : fixture.cases || [];
+          const env = {
+            TSWEB_DEPLOYMENT_STAGE: "production",
+            CUSTOMER_DELIVERY_ENABLED: "true",
+            CUSTOMER_RESOLUTION_ROLLOUT: "full",
+            CUSTOMER_RESOLUTION_RELEASE_APPROVED: "true",
+            CUSTOMER_ASSEMBLER_ROLLOUT: "off",
+            CUSTOMER_ASSEMBLER_RELEASE_APPROVED: "false",
+            ENABLE_READINESS_SAFETY_BLOCKING: "true",
+            CUSTOMER_PIPELINE_TELEMETRY: "true",
+          };
+
+          for (const row of rows) {
+            resolveCustomerPipeline({
+              alphaJson: row.raw_draft || {},
+              customer_text: row.raw_customer_input || row.raw_note || row.text || "",
+            }, {
+              documentId: row.case_id || row.id || "observability-case",
+              env,
+              telemetry: true,
+            });
+          }
+          NODE
+          node scripts/check-customer-pipeline-observability.js --input "$telemetry_log"
+
+      - name: Verify fail-closed rollback
+        run: node scripts/verify-customer-pipeline-rollback.js
+
+      - name: Build the production application
+        run: corepack pnpm build
+
+      - name: Check patch whitespace
+        run: git diff --check
