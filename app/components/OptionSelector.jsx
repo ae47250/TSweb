@@ -15,7 +15,7 @@ export default function OptionSelector({ options = [], selectedOption, onSelect 
           >
             <strong>{option.label}: {option.title}</strong>
             <br />
-            <span>{option.price?.display}</span>
+            <span>{option.priceDisplay || option.price?.display}</span>
             <br />
             <span className="text-muted">{option.description}</span>
             {selected && <div>Selected</div>}
