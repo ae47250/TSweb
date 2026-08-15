@@ -1,0 +1,56 @@
+{
+  "policy_version": "customer-pipeline-release-policy-v2",
+  "customer_rollout_default": "off",
+  "resolution_rollout_flag": "CUSTOMER_RESOLUTION_ROLLOUT",
+  "assembler_rollout_flag": "CUSTOMER_ASSEMBLER_ROLLOUT",
+  "release_approval_flags": {
+    "resolution": "CUSTOMER_RESOLUTION_RELEASE_APPROVED",
+    "assembler": "CUSTOMER_ASSEMBLER_RELEASE_APPROVED"
+  },
+  "limited_rollout_percent": 5,
+  "minimum_limited_observation_hours": 24,
+  "minimum_limited_deliveries": 100,
+  "locked_baseline": {
+    "path": "tests/fixtures/tree-dude-service-classification-60.json",
+    "case_ids_path": "config/customer-pipeline-locked-case-ids.json",
+    "count": 60
+  },
+  "reports": {
+    "assembler": "reports/canonical-service-assembler-release-gates.json",
+    "readiness": "reports/readiness-safety-release-gate-report.json",
+    "ratchet": "reports/ratchet-baseline.json"
+  },
+  "assembler_heldout_labels": {
+    "path": "reports/canonical-service-assembler-heldout-labels.json",
+    "minimum_cases": 50,
+    "required_reviewers": 2,
+    "require_adjudication": true,
+    "require_frozen_checksum": true
+  },
+  "production_stress": {
+    "fixture_pattern": "tests/fixtures/alpha-*-cases.json",
+    "false_block_denominator_tiers": ["easy", "medium", "medium-messy", "very-messy"],
+    "expected_ready_key": "can_generate_pdf",
+    "maximum_false_blocks_600": 6,
+    "maximum_unsafe_ready": 0
+  },
+  "required_assembler_gates": [
+    "zero PDF-ready duplicate semantic items",
+    "zero PDF-ready amount-to-service-kind mismatches",
+    "zero PDF-ready title/description action conflicts",
+    "zero fabricated scope facts in PDF-ready estimates",
+    "zero unresolved structural errors that remain PDF-ready",
+    "no regression from best baseline in price correctness",
+    "no valid prices dropped",
+    "deterministic and idempotent construction",
+    "validated semantic hash equals renderer-input semantic hash",
+    "all uncertain relationships remain blocked or require explicit TD resolution",
+    "held-out results satisfy the same gates"
+  ],
+  "historical_suite": {
+    "authoritative_command": "node --test tests/*.test.js",
+    "historical_label": "619/622",
+    "current_checkout_count": 678,
+    "rebaseline_requires_case_id_diff": true
+  }
+}
