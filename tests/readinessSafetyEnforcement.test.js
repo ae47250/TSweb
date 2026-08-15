@@ -1,50 +1,85 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../lib/reviewOverrides.js";
+import { createReadinessDecision } from "../lib/readinessReview.js";
 
-// This suite proves the readiness-safety hard-block/override plumbing works in
-// isolation. Enforcement itself stays behind `readinessSafetyPdfBlockingEnabled`
-// (lib/validateJson.js) until invariants are retuned against the broader test
-// corpus (see the TODO there); this locks in the override contract so flipping
-// that flag later only requires deleting the flag, not rebuilding this path.
-
-test("normalizeReviewOverrides recognizes acknowledgedReadinessRisk", () => {
+test("normalizeReviewOverrides does not expose a global readiness acknowledgement", () => {
   const normalized = normalizeReviewOverrides({ acknowledgedReadinessRisk: true });
-  assert.equal(normalized.acknowledgedReadinessRisk, true);
-  assert.equal(normalizeReviewOverrides({}).acknowledgedReadinessRisk, false);
+  assert.equal("acknowledgedReadinessRisk" in normalized, false);
 });
 
 test("readiness check blocking messages require an explicit reviewer override", () => {
+  const finding = {
+    finding_id: "finding-price-1",
+    field: "service_options.prices",
+    option_id: "Option A",
+    enforceable: true,
+    evidence: { amount: 1800 },
+  };
+  const error = `Readiness check [${finding.finding_id}]: High-confidence price needs review.`;
   const validation = {
-    blocking_errors: ["Readiness check: High-confidence price $1,800 has not been accepted, rejected, or explicitly reviewed."],
+    blocking_errors: [error],
+    readiness_safety: { enforced_findings: [finding] },
+    readiness_safety_pdf_blocking_enabled: true,
+    readiness_safety_blocking_errors: [error],
   };
   const status = getBlockingOverrideStatus(validation, {}, {});
   assert.equal(status.canProceed, false);
   assert.equal(status.needsReadinessOverride, true);
   assert.ok(status.readinessWarning);
-  assert.deepEqual(status.readinessWarning.findings, [
-    "High-confidence price $1,800 has not been accepted, rejected, or explicitly reviewed.",
-  ]);
+  assert.equal(status.readinessWarning.findings[0].findingId, finding.finding_id);
 });
 
-test("accepting the readiness override clears the readiness blocking message", () => {
-  const validation = {
-    blocking_errors: ["Readiness check: Two or more supported candidates conflict on critical field job.tree_details.tree_count."],
+test("a matching structured decision clears only its readiness finding", () => {
+  const finding = {
+    finding_id: "finding-tree-1",
+    field: "job.tree_details.tree_count",
+    candidate_ids: [],
+    enforceable: true,
+    evidence: { quote: "one tree" },
   };
-  const status = getBlockingOverrideStatus(validation, { acknowledgedReadinessRisk: true }, {});
+  const error = `Readiness check [${finding.finding_id}]: Tree count needs review.`;
+  const validation = {
+    blocking_errors: [error],
+    readiness_safety: { enforced_findings: [finding] },
+    readiness_safety_pdf_blocking_enabled: true,
+    readiness_safety_blocking_errors: [error],
+  };
+  const decision = createReadinessDecision({
+    findingId: finding.finding_id,
+    field: finding.field,
+    action: "keep_original",
+    value: "1 tree",
+    reasonCode: "formatting",
+  });
+  const status = getBlockingOverrideStatus(validation, { readinessDecisions: [decision] }, {
+    job: { tree_details: { tree_count: "1 tree" } },
+  });
   assert.equal(status.canProceed, true);
-  assert.equal(status.remainingBlockingErrors.length, 0);
-  assert.equal(status.acceptedOverrideWarnings.some((warning) => warning.key === "acknowledgedReadinessRisk"), true);
+  assert.deepEqual(status.clearedReadinessFindingIds, [finding.finding_id]);
 });
 
-test("readiness override does not accidentally clear unrelated blocking errors", () => {
+test("a global acknowledgement cannot clear readiness or unrelated errors", () => {
+  const finding = {
+    finding_id: "finding-1",
+    field: "customer.phone",
+    candidate_ids: [],
+    enforceable: true,
+    reason: "Phone needs review.",
+    evidence: { quote: "phone" },
+  };
+  const readinessError = `Readiness check [${finding.finding_id}]: Phone needs review.`;
   const validation = {
     blocking_errors: [
-      "Readiness check: Some readiness finding.",
+      readinessError,
       "Option A is missing a clear price.",
     ],
+    readiness_safety: { enforced_findings: [finding] },
+    readiness_safety_pdf_blocking_enabled: true,
+    readiness_safety_blocking_errors: [readinessError],
   };
   const status = getBlockingOverrideStatus(validation, { acknowledgedReadinessRisk: true }, {});
   assert.equal(status.canProceed, false);
-  assert.deepEqual(status.remainingBlockingErrors, ["Option A is missing a clear price."]);
+  assert.ok(status.remainingBlockingErrors.includes(readinessError));
+  assert.ok(status.remainingBlockingErrors.includes("Option A is missing a clear price."));
 });
