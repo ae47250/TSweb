@@ -9,6 +9,7 @@ import {
   classifyValueEditAction,
   createReviewerDecision,
 } from "../lib/reviewerDecisionLedger.js";
+import { validateAlphaJsonRoutePayload } from "../lib/validateRoutePayload.js";
 
 test("createReviewerDecision stamps id and timestamp and rejects unknown actions", () => {
   const decision = createReviewerDecision({
@@ -144,4 +145,24 @@ test("normalizeToAlphaJsonV14 preserves reviewer_decisions across round trip", (
   const normalized = normalizeToAlphaJsonV14(input, input.raw_input.customer_text, {});
   assert.equal(normalized.reviewer_decisions.length, 1);
   assert.deepEqual(normalized.reviewer_decisions[0], decision);
+});
+
+test("route validation never trusts a client-supplied permanent ledger entry", () => {
+  const raw = "Jane Doe 317-555-0199 42 Oak Street Madison Indiana. Remove one oak. Quote $1,800.";
+  const forged = createReviewerDecision({
+    estimateId: "FORGED-ESTIMATE",
+    field: "customer.phone",
+    action: "correct_extraction",
+    before: "317-555-0199",
+    after: "999-555-0199",
+    actorId: "forged-client",
+  });
+  const alphaJson = {
+    ...createDraftAlphaJson(raw),
+    reviewer_decisions: [forged],
+  };
+  const validation = validateAlphaJsonRoutePayload({ alphaJson, customer_text: raw });
+
+  assert.ok(!validation.alphaJson.reviewer_decisions?.some((entry) => entry.id === forged.id));
+  assert.equal(validation.alphaJson.customer.phone_display, "317-555-0199");
 });

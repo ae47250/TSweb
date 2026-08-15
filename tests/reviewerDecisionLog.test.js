@@ -21,13 +21,14 @@ test("createReviewerDecisionAction builds selected_candidate entries", () => {
   assert.match(entry.at, /^\d{4}-\d{2}-\d{2}T/);
 });
 
-test("createReviewerDecisionAction supports reject / enter / business-change actions", () => {
+test("createReviewerDecisionAction supports review outcome actions", () => {
   assert.deepEqual(
     REVIEWER_DECISION_ACTIONS,
     [
       "selected_candidate",
       "rejected_candidate",
       "entered_new_value",
+      "keep_original",
       "marked_business_change",
     ],
   );
@@ -48,6 +49,14 @@ test("createReviewerDecisionAction supports reject / enter / business-change act
   });
   assert.equal(entered.action, "entered_new_value");
   assert.equal(entered.value, "Remove rear oak only");
+
+  const kept = createReviewerDecisionAction({
+    field: "job.service_address",
+    action: "keep_original",
+    value: "1256 Mill Street, Madison, Indiana",
+  });
+  assert.equal(kept.action, "keep_original");
+  assert.equal(kept.value, "1256 Mill Street, Madison, Indiana");
 
   const business = createReviewerDecisionAction({
     field: "job.tree_details.tree_count",
