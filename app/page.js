@@ -20,16 +20,10 @@ import {
   classifyValueEditAction,
   createReviewerDecision,
 } from "../lib/reviewerDecisionLedger.js";
+import { contractorFetch, contractorPostJson } from "../lib/contractorClient.js";
 
 async function postJson(url, body) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || "Request failed");
-  return data;
+  return contractorPostJson(url, body);
 }
 
 const REQUIRED_PHONE_DIGITS = 10;
@@ -205,7 +199,7 @@ export default function HomePage() {
 
   async function refreshRecentCards() {
     try {
-      const response = await fetch("/api/estimates");
+      const response = await contractorFetch("/api/estimates");
       const data = await response.json();
       if (response.ok) setRecentCards(Array.isArray(data.items) ? data.items : []);
     } catch {
@@ -330,18 +324,18 @@ export default function HomePage() {
     const rejectedIds = exception.alternative?.id && exception.alternative.id !== exception.suggested.id
       ? [exception.alternative.id]
       : [];
-    await applyTreeCountOverride(exception.suggested.value, {
-      action: "accept_candidate",
-      candidateIds: [exception.suggested.id].filter(Boolean),
-      reasonCode: exception.reasonCode,
-    });
-    recordDecisionAction({
+    const entry = recordDecisionAction({
       field: exception.field,
       action: "selected_candidate",
       candidateId: exception.suggested.id,
       value: exception.suggested.value,
       note: "Reviewer selected suggested tree scope",
     });
+    await applyTreeCountOverride(exception.suggested.value, {
+      action: "accept_candidate",
+      candidateIds: [exception.suggested.id].filter(Boolean),
+      reasonCode: exception.reasonCode,
+    }, entry ? [...decisionLog, entry] : decisionLog);
     if (rejectedIds.length) {
       stampRejectedCandidates(exception.field, rejectedIds, TREE_SCOPE_POLICY_VERSION);
       recordDecisionAction({
@@ -359,42 +353,49 @@ export default function HomePage() {
     const keepValue = exception.combinedValue || exception.alternative?.value || exception.earlier?.value;
     if (!keepValue) return;
     const candidateIds = [exception.alternative?.id, exception.suggested?.id].filter(Boolean);
-    await applyTreeCountOverride(keepValue, {
-      action: "resolve_conflict",
-      candidateIds,
-      conflictId: exception.field,
-      reasonCode: exception.reasonCode,
-    });
+    const entries = [];
     if (exception.alternative?.id) {
-      recordDecisionAction({
+      const entry = recordDecisionAction({
         field: exception.field,
         action: "selected_candidate",
         candidateId: exception.alternative.id,
         value: keepValue,
         note: "Reviewer kept earlier / both scope",
       });
+      if (entry) entries.push(entry);
     }
     if (exception.suggested?.id && exception.suggested.id !== exception.alternative?.id) {
-      recordDecisionAction({
+      const entry = recordDecisionAction({
         field: exception.field,
         action: "rejected_candidate",
         candidateId: exception.suggested.id,
         value: exception.suggested.value,
         note: "Reviewer rejected suggested narrowing",
       });
+      if (entry) entries.push(entry);
     }
+    await applyTreeCountOverride(keepValue, {
+      action: "resolve_conflict",
+      candidateIds,
+      conflictId: exception.field,
+      reasonCode: exception.reasonCode,
+    }, entries.length ? [...decisionLog, ...entries] : decisionLog);
   }
 
   async function enterAlternateTreeScope(text) {
     const nextValue = String(text || "").replace(/\s+/g, " ").trim();
     if (!nextValue) return;
-    await applyTreeCountOverride(nextValue, { action: "enter_new_value" });
-    recordDecisionAction({
+    const entry = recordDecisionAction({
       field: "job.tree_details.tree_count",
       action: "entered_new_value",
       value: nextValue,
       note: "Reviewer entered a new value",
     });
+    await applyTreeCountOverride(
+      nextValue,
+      { action: "enter_new_value" },
+      entry ? [...decisionLog, entry] : decisionLog,
+    );
   }
 
   function stampRejectedCandidates(field, candidateIds, resolutionPolicyVersion) {
@@ -414,28 +415,47 @@ export default function HomePage() {
     });
   }
 
-  function confirmPriceAlternatives(exception) {
+  async function confirmPriceAlternatives(exception) {
     if (!exception) return;
-    const candidateIds = (exception.candidates || []).map((candidate) => candidate.id).filter(Boolean);
-    setAlphaJson((current) => stampLedgerDecision(structuredClone(current || {}), {
+    const candidates = (exception.candidates || []).filter((candidate) => candidate?.id);
+    const candidateIds = candidates.map((candidate) => candidate.id);
+    const entries = candidates.map((candidate) => createReviewerDecisionAction({
+      field: exception.field,
+      action: "selected_candidate",
+      candidateId: candidate.id,
+      value: {
+        amount: candidate.amount,
+        display: candidate.display,
+        description: candidate.description,
+      },
+      note: "Reviewer selected candidate price option",
+    }));
+    const nextDecisionLog = [...decisionLog, ...entries];
+    const nextAlphaJson = stampLedgerDecision(structuredClone(alphaJson || {}), {
       field: exception.field,
       action: "accept_candidate",
       before: null,
       after: candidateIds,
       candidateIds,
       resolutionPolicyVersion: PRICE_POLICY_VERSION,
-    }));
-    for (const candidate of exception.candidates || []) {
-      recordDecisionAction({
-        field: exception.field,
-        action: "selected_candidate",
-        candidateId: candidate.id,
-        value: candidate.display,
-        note: "Reviewer selected candidate price option",
-      });
+    });
+
+    setBusy(true);
+    setError("");
+    setDecisionLog(nextDecisionLog);
+    try {
+      await validateEditedAlphaJson(
+        nextAlphaJson,
+        quoteContact,
+        "Estimate options confirmed.",
+        nextDecisionLog,
+      );
+      setPriceAlternativesConfirmed(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
     }
-    setPriceAlternativesConfirmed(true);
-    setNotice("Estimate options confirmed.");
   }
 
   function editPriceAlternatives() {
@@ -464,7 +484,7 @@ export default function HomePage() {
     }
   }
 
-  async function applyTreeCountOverride(treeCountOverride, ledgerMeta = {}) {
+  async function applyTreeCountOverride(treeCountOverride, ledgerMeta = {}, nextDecisionLog = decisionLog) {
     setBusy(true);
     setError("");
     try {
@@ -486,10 +506,22 @@ export default function HomePage() {
         reasonCode: ledgerMeta.reasonCode,
         resolutionPolicyVersion: TREE_SCOPE_POLICY_VERSION,
       });
+      let requestDecisionLog = nextDecisionLog;
+      if (ledgerMeta.recordDecision) {
+        const entry = createReviewerDecisionAction({
+          field: "job.tree_details.tree_count",
+          action: "entered_new_value",
+          value: treeCountOverride,
+          note: "Reviewer entered a tree-count resolution",
+        });
+        requestDecisionLog = [...nextDecisionLog, entry];
+        setDecisionLog(requestDecisionLog);
+      }
       const validated = await postJson("/api/validate", {
         alphaJson: nextAlphaJson,
         customer_text: submittedText,
         intake: nextContact,
+        decisionLog: requestDecisionLog,
       });
       setQuoteContact(nextContact);
       setAlphaJson(validated.alphaJson);
@@ -502,11 +534,17 @@ export default function HomePage() {
     }
   }
 
-  async function validateEditedAlphaJson(nextAlphaJson, nextContact = quoteContact, successMessage = "Review updated.") {
+  async function validateEditedAlphaJson(
+    nextAlphaJson,
+    nextContact = quoteContact,
+    successMessage = "Review updated.",
+    nextDecisionLog = decisionLog,
+  ) {
     const validated = await postJson("/api/validate", {
       alphaJson: nextAlphaJson,
       customer_text: submittedText,
       intake: nextContact,
+      decisionLog: nextDecisionLog,
     });
     setAlphaJson(validated.alphaJson);
     setValidation(validated);
@@ -515,7 +553,24 @@ export default function HomePage() {
     return validated;
   }
 
-  async function applyCustomerFieldEdit(field, value) {
+  async function applyReadinessDecision(decision) {
+    if (!decision?.findingId || !decision?.field || !decision?.reasonCode) return;
+    try {
+      const entry = createReviewerDecisionAction(decision);
+      const nextDecisionLog = [...decisionLog, entry];
+      setDecisionLog(nextDecisionLog);
+      await validateEditedAlphaJson(
+        structuredClone(alphaJson || {}),
+        quoteContact,
+        "Readiness finding reviewed.",
+        nextDecisionLog,
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function applyCustomerFieldEdit(field, value, nextDecisionLog = decisionLog) {
     const nextValue = String(value || "").replace(/\s+/g, " ").trim();
     if (!nextValue) return;
     if (field === "phone" && phoneDigitCount(nextValue) !== REQUIRED_PHONE_DIGITS) {
@@ -577,12 +632,83 @@ export default function HomePage() {
       }
 
       setQuoteContact(nextContact);
-      await validateEditedAlphaJson(nextAlphaJson, nextContact, "Required info updated.");
+      await validateEditedAlphaJson(nextAlphaJson, nextContact, "Required info updated.", nextDecisionLog);
     } catch (err) {
       setError(err.message);
     } finally {
       setBusy(false);
     }
+  }
+
+  async function selectPhoneCandidate(candidate) {
+    if (!candidate?.value) return;
+    const entry = recordDecisionAction({
+      field: "customer.phone",
+      action: "selected_candidate",
+      candidateId: candidate.id,
+      value: candidate.value,
+      note: "Reviewer selected phone candidate",
+    });
+    await applyCustomerFieldEdit("phone", candidate.value, entry ? [...decisionLog, entry] : decisionLog);
+  }
+
+  async function keepOriginalPhone(value) {
+    if (!value) return;
+    const entry = recordDecisionAction({
+      field: "customer.phone",
+      action: "keep_original",
+      value,
+      note: "Reviewer kept the current phone number",
+    });
+    await applyCustomerFieldEdit("phone", value, entry ? [...decisionLog, entry] : decisionLog);
+  }
+
+  async function overridePhone(value) {
+    if (!value) return;
+    const entry = recordDecisionAction({
+      field: "customer.phone",
+      action: "entered_new_value",
+      value,
+      note: "Reviewer entered a phone override",
+    });
+    await applyCustomerFieldEdit("phone", value, entry ? [...decisionLog, entry] : decisionLog);
+  }
+
+  async function selectAddressCandidate(candidate, reasonCode = "") {
+    if (!candidate?.value) return;
+    const entry = recordDecisionAction({
+      field: "job.service_address",
+      action: "selected_candidate",
+      candidateId: candidate.id,
+      value: candidate.value,
+      reasonCode,
+      note: "Reviewer selected service-address candidate",
+    });
+    await applyCustomerFieldEdit("address", candidate.value, entry ? [...decisionLog, entry] : decisionLog);
+  }
+
+  async function keepOriginalAddress(value, reasonCode = "") {
+    if (!value) return;
+    const entry = recordDecisionAction({
+      field: "job.service_address",
+      action: "keep_original",
+      value,
+      reasonCode,
+      note: "Reviewer kept the original service address",
+    });
+    await applyCustomerFieldEdit("address", value, entry ? [...decisionLog, entry] : decisionLog);
+  }
+
+  async function overrideAddress(value, reasonCode = "") {
+    if (!value) return;
+    const entry = recordDecisionAction({
+      field: "job.service_address",
+      action: "entered_new_value",
+      value,
+      reasonCode,
+      note: "Reviewer entered a service-address override",
+    });
+    await applyCustomerFieldEdit("address", value, entry ? [...decisionLog, entry] : decisionLog);
   }
 
   async function applyJobDescriptionEdit(description) {
@@ -720,6 +846,13 @@ export default function HomePage() {
       });
 
       await validateEditedAlphaJson(nextAlphaJson, quoteContact, "Option price updated.");
+      recordDecisionAction({
+        field: "service_options.prices",
+        action: "entered_new_value",
+        optionId: items[optionIndex].label || String(optionIndex),
+        value: normalizedPrice.amount,
+        note: "Reviewer edited an option price",
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -881,6 +1014,13 @@ export default function HomePage() {
               onConfirmPriceAlternatives={confirmPriceAlternatives}
               onEditPriceAlternatives={editPriceAlternatives}
               onMarkBusinessChange={markBusinessChange}
+              onSelectPhoneCandidate={selectPhoneCandidate}
+              onKeepOriginalPhone={keepOriginalPhone}
+              onOverridePhone={overridePhone}
+              onSelectAddressCandidate={selectAddressCandidate}
+              onKeepOriginalAddress={keepOriginalAddress}
+              onOverrideAddress={overrideAddress}
+              onReadinessDecision={applyReadinessDecision}
               intake={quoteContact}
               sourceNotes={submittedText}
               onApprove={() => setStage("confirm")}

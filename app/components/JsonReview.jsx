@@ -6,10 +6,13 @@ import { LOCAL_INDIANA_TOWNS } from "../../lib/localTowns.js";
 import { getReviewDecisionExceptions } from "../../lib/reviewDecisionExceptions.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../lib/reviewOverrides.js";
 import {
+  AddressDecisionCard,
   PhoneDuplicateBadge,
+  PhoneDecisionCard,
   PriceAlternativesCard,
   TreeScopeCorrectionCard,
 } from "./DecisionExceptionCards.jsx";
+import ReadinessFindingCards from "./ReadinessFindingCards.jsx";
 
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -329,8 +332,7 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
     || status.needsContactOverride
     || status.needsPhoneOverride
     || status.needsEmailOverride
-    || status.needsScopeOverride
-    || status.needsReadinessOverride;
+    || status.needsScopeOverride;
   if (!hasOverrideControls && warningItems.length < 1) return null;
 
   function toggle(key) {
@@ -388,23 +390,6 @@ function OverrideWarningCard({ status, overrides, warningItems = [], onChange })
               <p className="override-warning-note">
                 Prices are clear, but work scope needs Tree Dude approval.
               </p>
-            </div>
-          )}
-          {status.needsReadinessOverride && (
-            <div className="override-warning-item">
-              <label className="override-check-row">
-                <input
-                  type="checkbox"
-                  checked={Boolean(overrides.acknowledgedReadinessRisk)}
-                  onChange={() => toggle("acknowledgedReadinessRisk")}
-                />
-                <span>Create Estimate despite readiness safety flags</span>
-              </label>
-              {status.readinessWarning?.findings?.length > 0 && (
-                <ul className="internal-warning-list">
-                  {status.readinessWarning.findings.map((finding) => <li key={finding}>{finding}</li>)}
-                </ul>
-              )}
             </div>
           )}
         </div>
@@ -534,7 +519,7 @@ function TreeCountResolutionCard({ validation, busy = false, onApply }) {
     const nextCount = event.target.value;
     setSelectedCount(nextCount);
     if (!nextCount) return;
-    onApply(nextCount);
+    onApply(nextCount, { recordDecision: true });
   }
 
   return (
@@ -584,7 +569,7 @@ function ManualTreeCountOverrideControl({ treeCountOverride, busy = false, onApp
     if (!nextCount) return;
     setChangeOpen(false);
     setSelectedCount("");
-    onApply?.(nextCount);
+    onApply?.(nextCount, { recordDecision: true });
   }
 
   return (
@@ -983,6 +968,13 @@ export default function JsonReview({
   onConfirmPriceAlternatives,
   onEditPriceAlternatives,
   onMarkBusinessChange,
+  onSelectPhoneCandidate,
+  onKeepOriginalPhone,
+  onOverridePhone,
+  onSelectAddressCandidate,
+  onKeepOriginalAddress,
+  onOverrideAddress,
+  onReadinessDecision,
   onApprove,
   onEdit,
   busy = false,
@@ -1119,8 +1111,17 @@ export default function JsonReview({
               <p className={customerPhoneAvailable ? "customer-phone-line customer-phone-available" : "customer-phone-line"}>
                 {customerPhone}
               </p>
+              {!isFinalConfirm && exceptions.phoneProvenance && (
+                <PhoneDuplicateBadge exception={exceptions.phoneProvenance} />
+              )}
               {!isFinalConfirm && exceptions.phone && (
-                <PhoneDuplicateBadge exception={exceptions.phone} />
+                <PhoneDecisionCard
+                  exception={exceptions.phone}
+                  busy={busy}
+                  onSelectCandidate={onSelectPhoneCandidate}
+                  onKeepOriginal={onKeepOriginalPhone}
+                  onOverride={onOverridePhone}
+                />
               )}
             </div>
           </div>
@@ -1145,6 +1146,15 @@ export default function JsonReview({
               />
             )}
           </div>
+          {!isFinalConfirm && exceptions.address && (
+            <AddressDecisionCard
+              exception={exceptions.address}
+              busy={busy}
+              onSelectCandidate={onSelectAddressCandidate}
+              onKeepOriginal={onKeepOriginalAddress}
+              onOverride={onOverrideAddress}
+            />
+          )}
         </div>
       )}
       {!isFinalConfirm && (
@@ -1252,6 +1262,14 @@ export default function JsonReview({
           overrides={normalizedOverrides}
           warningItems={warningItems}
           onChange={onReviewOverridesChange}
+        />
+      )}
+      {!isFinalConfirm && (
+        <ReadinessFindingCards
+          alphaJson={alphaJson}
+          validation={validation}
+          busy={busy}
+          onDecision={onReadinessDecision}
         />
       )}
       {!isFinalConfirm && (

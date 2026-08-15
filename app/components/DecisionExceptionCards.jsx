@@ -33,6 +33,172 @@ export function PhoneDuplicateBadge({ exception }) {
   );
 }
 
+export function PhoneDecisionCard({ exception, busy = false, onSelectCandidate, onKeepOriginal, onOverride }) {
+  const [enteringOverride, setEnteringOverride] = useState(false);
+  const [overrideValue, setOverrideValue] = useState("");
+  if (!exception) return null;
+
+  function handleOverride(event) {
+    event.preventDefault();
+    const value = String(overrideValue || "").replace(/\s+/g, " ").trim();
+    if (!value) return;
+    onOverride?.(value);
+    setEnteringOverride(false);
+    setOverrideValue("");
+  }
+
+  return (
+    <section className="summary-card override-warning-card decision-exception-card" aria-label="Phone decision">
+      <h3>Customer phone</h3>
+      <p className="decision-exception-flag">Choose the phone number that should appear on the estimate.</p>
+      {exception.currentValue && <p className="decision-exception-meta">Current: {exception.currentValue}</p>}
+      <div className="decision-exception-price-list">
+        {(exception.candidates || []).map((candidate) => (
+          <article key={candidate.id || candidate.value} className="decision-exception-price-item">
+            <strong>{candidate.value}</strong>
+            {candidate.quote && <p>&ldquo;{candidate.quote}&rdquo;</p>}
+            {candidate.reasonCodes?.length > 0 && <small>{candidate.reasonCodes.join(", ")}</small>}
+            <button
+              type="button"
+              className="btn-primary"
+              disabled={busy}
+              onClick={() => onSelectCandidate?.(candidate)}
+            >
+              Use this number
+            </button>
+          </article>
+        ))}
+      </div>
+      <div className="decision-exception-actions">
+        <button type="button" className="btn-secondary" disabled={busy} onClick={() => onKeepOriginal?.(exception.currentValue)}>
+          Keep current number
+        </button>
+        <button type="button" className="btn-secondary" disabled={busy} onClick={() => setEnteringOverride((open) => !open)}>
+          Enter another number
+        </button>
+      </div>
+      {enteringOverride && (
+        <form className="decision-exception-enter-scope" onSubmit={handleOverride}>
+          <label htmlFor="phoneDecisionOverride">
+            Phone number
+            <input
+              id="phoneDecisionOverride"
+              type="tel"
+              value={overrideValue}
+              disabled={busy}
+              onChange={(event) => setOverrideValue(event.target.value)}
+              placeholder="e.g. 812-555-0199"
+            />
+          </label>
+          <button type="submit" className="btn-primary" disabled={busy || !overrideValue.trim()}>Apply number</button>
+        </form>
+      )}
+    </section>
+  );
+}
+
+export function AddressDecisionCard({ exception, busy = false, onSelectCandidate, onKeepOriginal, onOverride }) {
+  const [enteringOverride, setEnteringOverride] = useState(false);
+  const [overrideValue, setOverrideValue] = useState("");
+  const [reasonCode, setReasonCode] = useState("");
+  if (!exception) return null;
+
+  const canResolve = Boolean(reasonCode);
+
+  function handleOverride(event) {
+    event.preventDefault();
+    const value = String(overrideValue || "").replace(/\s+/g, " ").trim();
+    if (!value) return;
+    if (!canResolve) return;
+    onOverride?.(value, reasonCode);
+    setEnteringOverride(false);
+    setOverrideValue("");
+  }
+
+  return (
+    <section
+      className="summary-card override-warning-card decision-exception-card"
+      aria-label="Service address decision"
+      data-testid="address-decision-card"
+    >
+      <h3>Service address</h3>
+      <p className="decision-exception-flag">Review the address candidates separately from customer contact details.</p>
+      {exception.reasonText && <p className="decision-exception-meta">Reason: {exception.reasonText}</p>}
+      {exception.originalValue && <p className="decision-exception-meta">Current: {exception.originalValue}</p>}
+      <label className="decision-exception-meta" htmlFor="addressDecisionReason">
+        Why is this address being resolved?
+        <select
+          id="addressDecisionReason"
+          value={reasonCode}
+          disabled={busy}
+          onChange={(event) => setReasonCode(event.target.value)}
+        >
+          <option value="">Select a reason</option>
+          <option value="app_wrong">The app is wrong</option>
+          <option value="customer_update">The customer changed it</option>
+          <option value="reviewer_correction">Reviewer correction</option>
+          <option value="application_error">Application error</option>
+          <option value="formatting">Formatting only</option>
+        </select>
+      </label>
+      <div className="decision-exception-price-list">
+        {(exception.candidates || []).map((candidate) => (
+          <article key={candidate.id || candidate.value} className="decision-exception-price-item">
+            <strong>{candidate.value}</strong>
+            {candidate.quote && <p>&ldquo;{candidate.quote}&rdquo;</p>}
+            {candidate.reasonCodes?.length > 0 && <small>{candidate.reasonCodes.join(", ")}</small>}
+            <button
+              type="button"
+              className="btn-primary"
+              data-testid={`accept-address-${candidate.id || "candidate"}`}
+              disabled={busy || !canResolve}
+              onClick={() => onSelectCandidate?.(candidate, reasonCode)}
+            >
+              Accept this address
+            </button>
+          </article>
+        ))}
+      </div>
+      <div className="decision-exception-actions">
+        <button
+          type="button"
+          className="btn-secondary"
+          data-testid="keep-original-address"
+          disabled={busy || !canResolve}
+          onClick={() => onKeepOriginal?.(exception.originalValue, reasonCode)}
+        >
+          Keep original
+        </button>
+        <button
+          type="button"
+          className="btn-secondary"
+          data-testid="override-address"
+          disabled={busy}
+          onClick={() => setEnteringOverride((open) => !open)}
+        >
+          Override address
+        </button>
+      </div>
+      {enteringOverride && (
+        <form className="decision-exception-enter-scope" onSubmit={handleOverride}>
+          <label htmlFor="addressDecisionOverride">
+            Service address
+            <input
+              id="addressDecisionOverride"
+              type="text"
+              value={overrideValue}
+              disabled={busy}
+              onChange={(event) => setOverrideValue(event.target.value)}
+              placeholder="e.g. 42 Oak Street, Madison Indiana"
+            />
+          </label>
+          <button type="submit" className="btn-primary" disabled={busy || !canResolve || !overrideValue.trim()}>Apply address</button>
+        </form>
+      )}
+    </section>
+  );
+}
+
 /**
  * Correction card for tree-count / scope conflicts.
  */
