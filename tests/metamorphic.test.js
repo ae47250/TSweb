@@ -98,31 +98,20 @@ test("adding an irrelevant road number leaves the tree count unchanged", () => {
   assert.deepEqual(optionPrices(withRoad), optionPrices(base));
 });
 
-// The following cases document real pipeline gaps surfaced by metamorphic
-// probing. They are intentionally `test.todo` (not asserted as passing) so the
-// suite documents expected behavior without blocking the build on pre-existing
-// gaps that are out of scope for this pass.
-
-test.todo("the final tree count should reflect an explicit later correction, not the superseded earlier scope", () => {
+test("the final tree count reflects an explicit later correction, not the superseded earlier scope", () => {
   const corrected = normalize(`${BASE_NOTES} Actually, only remove the rear oak.`);
-  // GAP: the claim graph correctly records scope-2 supersedes scope-1 (see the
-  // passing test above), but tree_count winner selection does not yet consult
-  // the claim graph, so the final tree_count still reflects the earlier,
-  // superseded "two oaks" claim instead of the corrected "rear oak" claim.
-  assert.notEqual(corrected.job.tree_details.tree_count, "2 trees");
+  assert.equal(corrected.job.tree_details.tree_count, "1 tree");
+  assert.match(corrected.job.description, /one oak/i);
+  assert.ok(corrected.service_options.items.every((option) => !/two oaks|two oak trees/i.test(option.description)));
 });
 
-test.todo("adding an unrelated phone number must not change tree count or work scope", () => {
+test("adding an unrelated phone number must not change tree count or work scope", () => {
   const withExtraPhone = normalize(`${BASE_NOTES} Neighbor number is 812-555-0222.`);
   assert.equal(withExtraPhone.job.tree_details.tree_count, base.job.tree_details.tree_count);
-  // BUG: the second phone's area code ("812") is currently mis-parsed as a third
-  // $812 option price. Expected: options are unaffected by an unrelated phone number.
   assert.deepEqual(optionPrices(withExtraPhone), optionPrices(base));
 });
 
-test.todo("duplicating the same price sentence must not create a duplicate customer option", () => {
+test("duplicating the same price sentence must not create a duplicate customer option", () => {
   const duplicated = normalize(`${BASE_NOTES} Quote $1,800 without stump grinding or $2,200 with stump grinding.`);
-  // BUG: the pipeline currently creates 4 options (2 duplicated pairs) instead of
-  // deduplicating the repeated sentence back down to the original 2 alternatives.
   assert.deepEqual(optionPrices(duplicated), optionPrices(base));
 });
