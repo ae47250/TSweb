@@ -304,9 +304,9 @@ test("cross-field claims do not create relationships", () => {
   assert.equal(graph.relationships.length, 0);
 });
 
-test("normalize attaches claim_graph without changing tree_count winner", () => {
+test("normalize applies the claim_graph tree_count winner", () => {
   const alphaJson = normalizeToAlphaJsonV14({}, CORRECTION_NOTES, {});
-  assert.equal(alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
   const graph = alphaJson.normalization.claim_graph;
   assert.ok(graph);
   assert.equal(validateClaimGraph(graph).ok, true);

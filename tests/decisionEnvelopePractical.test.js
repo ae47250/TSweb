@@ -176,8 +176,9 @@ test("openai mock pipeline smoke with pre-normalizers and debug returns decision
   assertEnvelopeOk(alphaJson.normalization.decisions.tree_count, "route tree");
   assert.equal(selectedValue(alphaJson.normalization.decisions.phone), "812-555-9999");
   assert.equal(alphaJson.customer.phone_display || alphaJson.customer.phone_primary, "812-555-9999");
-  assert.equal(alphaJson.job.tree_details.tree_count, "2 trees");
-  assert.ok(alphaJson.normalization.decisions.tree_count.candidates.length >= 2);
+  assert.equal(alphaJson.job.tree_details.tree_count, "1 tree");
+  assert.ok(alphaJson.normalization.decisions.tree_count.candidates.length >= 1);
+  assert.equal(alphaJson.normalization.decisions.tree_count.resolution.reasonCode, "explicit_correction");
   assert.ok(debug.debugPipeline?.decisionEnvelopes);
   assert.equal(
     debug.debugPipeline.decisionEnvelopes.tree_count.resolution.selectedCandidateId,
@@ -222,7 +223,7 @@ test("validate route restamps forged decisions and keeps tree envelope", () => {
   assertEnvelopeOk(decisions.tree_count, "validated tree");
   assert.notEqual(decisions.prices.resolution.policyVersion, "forged@9");
   assert.equal(decisions.prices.resolution.policyVersion, "price_policy@1");
-  assert.equal(validation.alphaJson.job.tree_details.tree_count, "2 trees");
+  assert.equal(validation.alphaJson.job.tree_details.tree_count, "1 tree");
   assert.ok(decisions.tree_count.candidates.length >= 2);
 });
 
