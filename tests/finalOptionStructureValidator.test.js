@@ -468,38 +468,43 @@ test("hoho30 case 28 is ready only with cleanup preserved in the stump option", 
   assert.match(descriptions, /22-foot drive opening/i);
   assert.match(descriptions, /grind the stump/i);
   assert.match(descriptions, /clean up the work area/i);
-  assert.match(validation.warnings.join(" "), /condition/i);
+  const conditionResults = coverage.results.filter((result) => result.fact === "condition_qualifiers" && result.option_label);
+  assert.equal(conditionResults.length, 2);
+  assert.ok(conditionResults.every((result) => result.status === "ok"));
   assert.deepEqual(validation.structural_error_codes, []);
 });
 
-test("hoho30 case 22 warns and highlights non-canonical TD2 output that drops source facts", () => {
+test("hoho30 case 22 uses canonical options that preserve source facts", () => {
   const raw = "Alexander, 463-241-1556, alexander.phillipsir@gmail.com, ash at 410 Walnut by fence lot messy wants tree out, opt a tree down leave debris 5400 opt b tree down stump grinding brush cleanup rake up 6400";
   const validation = validateRaw(raw);
   const coverage = sourceCoverage(validation);
+  const options = validation.alphaJson.service_options.items;
+  const optionText = options.map((option) => `${option.title} ${option.description}`).join(" ");
 
   assert.equal(validation.can_generate_pdf, true);
   assert.equal(validation.alphaJson.validation.source_final_fact_coverage_pdf_blocking_enabled, false);
-  assert.equal(validation.alphaJson.service_options.items.some((option) => option.source === "canonical_final_option_model_shadow" || option.canonical_option), false);
-  assert.ok(coverage.blocking_codes.includes("SOURCE_OPTION_ACTION_OMITTED"));
-  assert.ok(coverage.blocking_codes.includes("SOURCE_SPECIES_CHANGED"));
-  assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
-  assert.match(validation.warnings.join(" "), /ash/i);
-  assert.match(validation.warnings.join(" "), /by fence/i);
-  assert.ok(validation.alphaJson.service_options.items.some((option) => option.review_flags?.source_fact_clarification));
+  assert.equal(options.every((option) => option.source === "canonical_final_option_model_shadow" && option.canonical_option), true);
+  assert.deepEqual(coverage.blocking_codes, []);
+  assert.match(optionText, /ash/i);
+  assert.match(optionText, /by the fence/i);
+  assert.match(optionText, /leave the debris on site/i);
+  assert.match(optionText, /stump grinding/i);
+  assert.match(optionText, /clean up the brush/i);
+  assert.equal(options.some((option) => option.review_flags?.source_fact_clarification), false);
 });
 
-test("hoho30 case 30 warns and highlights non-canonical TD2 output that drops source facts", () => {
+test("hoho30 case 30 retains genuine source blockers while staying non-canonical", () => {
   const raw = "Timothy L., 317-262-9640, timothy.workfb@outlook.com, locust at 410 Walnut by fence hard lean by line, option a: 4100 drop tree leave brsh, option b: 5250 remove it grind 2 stumps plus haul brush plus cleanup";
   const validation = validateRaw(raw);
   const coverage = sourceCoverage(validation);
+  const blockingCodes = [...coverage.blocking_codes].sort();
 
   assert.equal(validation.can_generate_pdf, true);
   assert.equal(validation.alphaJson.validation.source_final_fact_coverage_pdf_blocking_enabled, false);
   assert.equal(validation.alphaJson.service_options.items.some((option) => option.source === "canonical_final_option_model_shadow" || option.canonical_option), false);
-  assert.ok(coverage.blocking_codes.includes("SOURCE_SPECIES_CHANGED"));
-  assert.ok(coverage.blocking_codes.includes("SOURCE_STUMP_QUANTITY_CHANGED"));
-  assert.ok(coverage.blocking_codes.includes("SOURCE_TARGET_QUALIFIER_OMITTED"));
-  assert.match(validation.warnings.join(" "), /locust/i);
+  assert.deepEqual(blockingCodes, ["SOURCE_STUMP_QUANTITY_CHANGED", "SOURCE_TARGET_QUALIFIER_OMITTED"].sort());
+  assert.equal(coverage.blocking_codes.includes("SOURCE_SPECIES_CHANGED"), false);
+  assert.equal(coverage.blocking_codes.includes("SOURCE_OPTION_ACTION_OMITTED"), false);
   assert.match(validation.warnings.join(" "), /two stumps/i);
   assert.match(validation.warnings.join(" "), /by fence/i);
   assert.ok(validation.alphaJson.service_options.items.some((option) => option.review_flags?.source_fact_clarification));

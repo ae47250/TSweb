@@ -196,7 +196,13 @@ test("field-language explicit A/B totals keep leave-on-site scope on A and do no
     const alphaJson = forceCanonical(item.raw);
     assert.equal(alphaJson.service_options?.canonical_service_assembler_applied, true, item.raw);
     assert.deepEqual(optionPrices(alphaJson), item.prices, item.raw);
-    assert.equal(firstRole(alphaJson), "EXPLICIT_OPTION_TOTAL", item.raw);
+    const alternatives = alphaJson.normalization?.sidecar_price_reconciliation?.alternatives || [];
+    if (alternatives.length) {
+      assert.equal(firstRole(alphaJson), "", item.raw);
+      assert.deepEqual(alternatives[0].option_amounts, item.prices, item.raw);
+    } else {
+      assert.equal(firstRole(alphaJson), "EXPLICIT_OPTION_TOTAL", item.raw);
+    }
 
     const [optionA, optionB] = alphaJson.service_options.items;
     const optionAText = optionText(optionA);

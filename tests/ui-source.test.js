@@ -250,7 +250,7 @@ test("customer route requires compact e-signature consent and contractor panel d
   const consentText = /I agree to receive and sign this estimate electronically/;
   assert.match(customerRouteSource, consentText);
   assert.match(customerRouteSource, /checkboxAccepted/);
-  assert.match(customerRouteSource, /buildCustomerJobSummary/);
+  assert.match(customerRouteSource, /record\.customerView/);
   assert.match(customerRouteSource, /workDescription/);
   assert.doesNotMatch(pdfGeneratorSource, consentText);
   assert.doesNotMatch(pdfGeneratorSource, /checkboxAccepted/);
@@ -265,9 +265,11 @@ test("customer-facing estimate documents use cleaned job notes without internal 
   assert.match(customerDocumentSource, /renderTreeDudeDocument/);
   assert.match(customerDocumentSource, /Contractor Copy/);
   assert.match(customerDocumentSource, /These warnings are for the contractor copy only/);
-  assert.match(customerDocumentSource, /Preview Email to Contractor/);
-  assert.match(pdfRouteSource, /renderCustomerDocument\(alphaJson, \{ mobile: false \}\)/);
-  assert.match(pdfRouteSource, /renderCustomerDocument\(alphaJson, \{ mobile: true \}\)/);
+  assert.doesNotMatch(customerDocumentSource, /Preview Email to Contractor/);
+  assert.doesNotMatch(customerDocumentSource, /Submit to Contractor/);
+  assert.doesNotMatch(customerDocumentSource, /Mock mode/);
+  assert.match(pdfRouteSource, /renderCustomerDocument\(pipeline\.customerView, \{ mobile: false \}\)/);
+  assert.match(pdfRouteSource, /renderCustomerDocument\(pipeline\.customerView, \{ mobile: true \}\)/);
   assert.match(pdfRouteSource, /renderTreeDudeDocument/);
   assert.match(pdfRouteSource, /contractorWarnings\.length > 0/);
   assert.match(pdfRouteSource, /if \(treeDude\) recordPayload\.pdf_url_tree_dude/);
@@ -298,7 +300,12 @@ test("review overrides are narrow and recorded separately from normal validation
   assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /if \(!needsPhone \|\| phoneOverrideAccepted\) setPhoneWarning\(""\)/);
   assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /error=\{phoneOverrideAccepted \? "" : phoneWarning\}/);
   assert.match(readFileSync("app/components/JsonReview.jsx", "utf8"), /td2-inline-field-error/);
-  assert.match(pageSource, /postJson\("\/api\/pdf", \{ alphaJson, reviewOverrides \}\)/);
+  assert.match(pageSource, /postJson\("\/api\/pdf", \{ alphaJson, reviewOverrides, decisionLog \}\)/);
+  assert.match(pageSource, /createReviewerDecisionAction/);
+  assert.match(pageSource, /acceptTreeScopeSuggestion/);
+  assert.match(pageSource, /confirmPriceAlternatives/);
+  assert.match(pdfRouteSource, /reviewer_decision_log/);
+  assert.match(pdfRouteSource, /normalizeReviewerDecisionLog/);
   assert.match(reviewOverridesSource, /Missing service address/);
   assert.match(reviewOverridesSource, /Missing customer phone or email/);
   assert.match(reviewOverridesSource, /Service address is missing, but was OK'd when the estimate was created/);
@@ -381,6 +388,9 @@ test("OpenAI route can use reasoning effort without affecting non-reasoning mode
   assert.match(openaiRouteSource, /gpt-5/);
   assert.match(openaiRouteSource, /gpt-4\.1-nano/);
   assert.match(envExampleSource, /OPENAI_REASONING_EFFORT=/);
+  assert.match(envExampleSource, /MOCK_OPENAI_RESPONSES=true/);
+  assert.match(openaiRouteSource, /OpenAI configuration is required for staging and production/);
+  assert.match(openaiRouteSource, /no local parser fallback is permitted in staging or production/);
 });
 
 test("OpenAI route logs production case metrics without raw customer text", () => {

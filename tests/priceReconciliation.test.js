@@ -170,6 +170,23 @@ test("post-AI reconciliation treats clear lower scoped second price as increment
   );
 });
 
+test("post-AI reconciliation treats stumping wording as an incremental add-on", () => {
+  const raw =
+    "Xena Zane, 812-555-0123, xena.zane@example.com, 123 Main St, Madison, IN. Option A tree removal only $1100. Stumping extra $450.";
+  const reconciled = reconcileSidecarPrices(
+    normalizeToAlphaJsonV14({}, raw),
+    buildOptionPriceCandidateView(raw),
+  );
+  const validation = validateAlphaJson(reconciled);
+
+  assert.deepEqual(prices(validation), ["$1,100", "$1,550"]);
+  assert.equal(validation.blocking_errors.length, 0);
+  assert.equal(
+    validation.alphaJson.normalization.sidecar_price_reconciliation.add_on_interpretations[0].price_role,
+    INCREMENTAL_ADDON_PRICE,
+  );
+});
+
 test("post-AI reconciliation computes stump grinding as expanded option total", () => {
   const raw =
     "Megan Taylor contact 317-918-5139 / mtaylor@icloud.com. Address 804 Farm Ln, Bloomington, IN. Work requested: remove cedar leaning toward garage. Estimate tree removal 2100 stump grinding 600.";
@@ -293,7 +310,7 @@ test("post-AI reconciliation preserves haul-away beside plural stump grinding", 
 
   assert.equal(
     reconciled.service_options.items[1].description,
-    "remove two maples and grind stumps and haul away",
+    "remove two maple trees and grind stumps and haul away",
   );
   assert.equal(reconciled.service_options.items[1].price.amount, 1900);
   assert.equal(

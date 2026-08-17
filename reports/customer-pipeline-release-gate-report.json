@@ -1,0 +1,50 @@
+{
+  "report_version": "customer-pipeline-release-gate-report-v2",
+  "generated_at": "2026-08-15T17:14:19.369Z",
+  "policy_version": "customer-pipeline-release-policy-v2",
+  "target": "resolution",
+  "status": "PASS",
+  "customer_rollout_default": "off",
+  "locked_baseline": {
+    "path": "tests/fixtures/tree-dude-service-classification-60.json",
+    "case_ids_path": "config/customer-pipeline-locked-case-ids.json",
+    "count": 60
+  },
+  "historical_suite": {
+    "authoritative_command": "node --test tests/*.test.js",
+    "historical_label": "619/622",
+    "current_checkout_count": 678,
+    "rebaseline_requires_case_id_diff": true
+  },
+  "assembler": {
+    "evaluated": false,
+    "all_gates_pass": false,
+    "blocked_status": "",
+    "failures": []
+  },
+  "ratchet": {
+    "passed": true,
+    "exit_code": 0,
+    "stdout": "Ratchet gate results:\n  [PASS] (ratchet) exact_option_count_rate: 0.7241 >= floor 0.7241\n  [PASS] (ratchet) exact_option_prices_rate: 0.7241 >= floor 0.7241\n  [PASS] (ratchet) option_relationship_rate: 0.6500 >= floor 0.6500\n  [PASS] (ratchet) unsupported_selected_facts_rate: 0.0514 <= ceiling 0.0514\n  [PASS] (ratchet) unresolved_conflict_recall_rate: 0.1500 >= floor 0.1500\n  [PASS] (ratchet) correct_abstention_rate: 0.9000 >= floor 0.9000\n  [PASS] (safety) incorrect_but_ready_count: 18.0000 <= ceiling 18.0000\n\nAll ratchet and safety gates passed.",
+    "stderr": ""
+  },
+  "readiness": {
+    "passed": true,
+    "exit_code": 0,
+    "stdout": "Readiness safety release gate: PASS\n  False-ready catch: 18/18\n  Unresolved recall: 20/20\n  Clean quiet: 24/26\n  600-case new false blocks: 0/600\n  Report: reports/readiness-safety-release-gate-report.json (not written in --check mode)",
+    "stderr": ""
+  },
+  "stress": {
+    "passed": true,
+    "exit_code": 0,
+    "stdout": "Production resolution stress release gate: PASS\n  Unsafe ready: 0\n  600-case false blocks: 0/600\n  easy: unsafe=0, false_blocks=0\n  hard-knownfail: unsafe=0, false_blocks=0\n  medium: unsafe=0, false_blocks=0\n  medium-messy: unsafe=0, false_blocks=0\n  uber-messy: unsafe=0, false_blocks=0\n  uber-plus-messy: unsafe=0, false_blocks=0\n  very-messy: unsafe=0, false_blocks=0",
+    "stderr": ""
+  },
+  "preflight": {
+    "passed": true,
+    "exit_code": 0,
+    "stdout": "Production readiness preflight (local): PASS\n  environment template: 43 variables declared\n  release policy: customer-pipeline-release-policy-v2\n  observability policy: customer-pipeline-observability-policy-v2\n  assembler: DEFERRED (held-out label file is missing)\n  delivery contracts: inspected 10 trusted-boundary surfaces\n  local round trips: customer links, contractor sessions, telemetry schema, and redaction checked\n  canary matrix: allowlisted selection, excluded document, and resolution rollback checked\n  live monitoring: not attempted; no deployed service or alert receiver is claimed",
+    "stderr": ""
+  },
+  "failures": []
+}

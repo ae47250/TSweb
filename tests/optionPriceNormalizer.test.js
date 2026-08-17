@@ -104,6 +104,29 @@ test("bare A B C labels after options cue produce option-price pairing clues", (
   assert.match(clues.option_price_pairings[1].description_raw, /hawl away brush\/logs/);
 });
 
+test("A/B shorthand binds both nearby prices to independent scoped options", () => {
+  const clues = cluesFor(
+    "Maria Wells -- remove four oak trees -- service address 1046 Ridge Road, Hanover, IN -- A/B $2250 / 3250",
+  );
+
+  assert.deepEqual(clues.option_price_pairings.map((item) => item.label), ["Option A", "Option B"]);
+  assert.deepEqual(clues.option_price_pairings.map((item) => item.price_display), ["$2,250", "$3,250"]);
+  assert.ok(clues.option_price_pairings.every((item) => item.amount_confidence === "high"));
+  assert.ok(clues.option_price_pairings.every((item) => item.pairing_confidence === "high"));
+  assert.ok(clues.add_on_price_interpretations.length === 0);
+  assert.match(clues.option_price_pairings[0].description_raw, /remove four oak trees/i);
+});
+
+test("explicit three-price shorthand keeps stump treatment as its own option", () => {
+  const clues = cluesFor(
+    "old estimate scribble: drop $850 haul brush 1850 stump 2,300",
+  );
+
+  assert.deepEqual(clues.money_like_numbers.map((item) => item.price_display), ["$850", "$1,850", "$2,300"]);
+  assert.deepEqual(clues.option_price_pairings.map((item) => item.description_raw), ["drop", "haul brush", "stump"]);
+  assert.equal(clues.add_on_price_interpretations.length, 0);
+});
+
 test("unlabeled service and add-on prices receive implicit sidecar pairings", () => {
   const clues = cluesFor("prices tree removal 2000 stump grinding 650");
 
@@ -493,4 +516,63 @@ test("cleaned reading aid does not create price candidates", () => {
   assert.equal(clues.source_of_truth, "raw_customer_note");
   assert.equal(clues.cleaned_reading_aid.cleaned_text, cleanedText);
   assert.match(view.rendered_view, /secondary reading aid only/i);
+});
+
+test("A/B slash prices keep the unmarked second amount as an independent high-confidence option", () => {
+  const raw = "remove four oak trees -- service address 1046 Ridge Road, Hanover, IN -- A/B $2250 / 3250";
+  const clues = cluesFor(raw);
+
+  assert.deepEqual(clues.money_like_numbers.map((item) => item.price_display), ["$2,250", "$3,250"]);
+  assert.ok(clues.money_like_numbers.every((item) => item.amount_confidence === "high"));
+  assert.deepEqual(clues.option_price_pairings.map((item) => item.label), ["Option A", "Option B"]);
+  assert.deepEqual(clues.option_price_pairings.map((item) => item.price_display), ["$2,250", "$3,250"]);
+  assert.deepEqual(clues.add_on_price_interpretations, []);
+});
+
+test("hall-off typo is price context and does not turn slash alternatives into an add-on", () => {
+  const clues = cluesFor("remove four walnut trees -- cut only 1050 / cut and hall off 1550");
+
+  assert.deepEqual(clues.money_like_numbers.map((item) => item.price_display), ["$1,050", "$1,550"]);
+  assert.match(clues.option_price_pairings[0].description_raw, /remove four walnut trees.*cut only/i);
+  assert.doesNotMatch(clues.option_price_pairings[0].description_raw, /service\s+address|address\s+at/i);
+  assert.equal(clues.option_price_pairings[1].description_raw, "cut and haul off");
+  assert.deepEqual(clues.add_on_price_interpretations, []);
+});
+
+test("drop-plus-haul wording keeps two prices independent", () => {
+  const clues = cluesFor("four maple trees removal. 2550 to drop it plus $3150 to haul off brush");
+
+  assert.deepEqual(clues.money_like_numbers.map((item) => item.price_display), ["$2,550", "$3,150"]);
+  assert.ok(clues.option_price_pairings.every((item) => item.pairing_confidence === "high"));
+  assert.deepEqual(clues.add_on_price_interpretations, []);
+});
+
+test("complete bare-label option sets keep full labels as independent alternatives", () => {
+  const clues = cluesFor(
+    "A drop only 1,900 B drop stack wood $2,200 C haul brush 3150 D full cleanup 3,900 E cleanup plus stump grind $4,350",
+  );
+
+  assert.deepEqual(clues.option_price_pairings.map((item) => item.label), [
+    "Option A",
+    "Option B",
+    "Option C",
+    "Option D",
+    "Option E",
+  ]);
+  assert.ok(clues.option_price_pairings.every((item) => item.pairing_confidence === "high"));
+  assert.deepEqual(clues.add_on_price_interpretations, []);
+});
+
+test("distinct labeled service families remain independent alternatives without an or cue", () => {
+  const cases = [
+    "Vick Xu, Option A limb removal over drive 400. Option B remove different maple 1100.",
+    "Xiomara Ames, Option A grind existing stump 350. Option B prune two pear trees 700.",
+  ];
+
+  for (const raw of cases) {
+    const clues = cluesFor(raw);
+    assert.deepEqual(clues.option_price_pairings.map((item) => item.label), ["Option A", "Option B"], raw);
+    assert.deepEqual(clues.add_on_price_interpretations, [], raw);
+    assert.deepEqual(clues.alternatives.map((item) => item.option_price_ids), [["price_1", "price_2"]], raw);
+  }
 });

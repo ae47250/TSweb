@@ -4,12 +4,14 @@ import { useState } from "react";
 import LegalDisclaimer from "../../components/LegalDisclaimer.jsx";
 import OptionSelector from "../../components/OptionSelector.jsx";
 import SignatureBlock from "../../components/SignatureBlock.jsx";
-import { buildCustomerJobSummary } from "../../../lib/normalizeAlphaJson.js";
 
-async function postJson(url, body) {
+async function postJson(url, body, accessToken = "") {
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
     body: JSON.stringify(body),
   });
   const data = await response.json();
@@ -18,35 +20,31 @@ async function postJson(url, body) {
 }
 
 export default function EstimateClient({ record }) {
-  const manual = record.manualAcceptance || null;
-  const [selectedOption, setSelectedOption] = useState(record.selected_option || manual?.selectedOptionLabel || "");
-  const [signature, setSignature] = useState(record.signature_name || manual?.signatureName || "");
+  const [selectedOption, setSelectedOption] = useState(record.selectedOption || "");
+  const [signature, setSignature] = useState(record.signatureName || "");
   const [checkboxAccepted, setCheckboxAccepted] = useState(record.checkboxAccepted || false);
   const [submitted, setSubmitted] = useState(record.status === "signed" || record.status === "accepted_manually");
-  const [signedFile, setSignedFile] = useState(record.signed?.full || record.accepted?.full || null);
-  const [signedAtDisplay, setSignedAtDisplay] = useState(record.signedAtDisplay || record.signedResult?.signedAtDisplay || manual?.acceptedAtDisplay || "");
+  const [signedFile, setSignedFile] = useState(record.signedFile || null);
+  const [signedAtDisplay, setSignedAtDisplay] = useState(record.signedAtDisplay || "");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const alphaJson = record.alphaJson;
-  const workDescription = buildCustomerJobSummary(alphaJson);
+  const customerView = record.customerView;
   const signatureValid = signature.trim().length >= 2 && signature.trim().length <= 50;
   const ready = Boolean(selectedOption && checkboxAccepted && signatureValid);
-  const selected = (alphaJson.service_options?.items || []).find((option) => option.label === selectedOption);
+  const selected = (customerView.options || []).find((option) => option.label === selectedOption);
 
   async function submitSignature() {
     setBusy(true);
     setError("");
     setNotice("");
     try {
-      const upload = await postJson("/api/upload", { alphaJson, selectedOption, signature, checkboxAccepted });
-      const notify = await postJson("/api/notify", {
-        documentId: upload.documentId,
-        alphaJson,
+      const upload = await postJson("/api/upload", {
+        documentId: record.documentId,
         selectedOption,
         signature,
-        signedAtDisplay: upload.signedAtDisplay,
-      });
+        checkboxAccepted,
+      }, record.accessToken);
       setSignedFile(upload.signed);
       setSignedAtDisplay(upload.signedAtDisplay);
       setSubmitted(true);
@@ -62,7 +60,7 @@ export default function EstimateClient({ record }) {
     <main className="estimate-page">
       <section className="banner">
         <h1>Alpha Tree Service Estimate</h1>
-        <p>{alphaJson.document?.number}</p>
+        <p>{customerView.document?.number}</p>
       </section>
       {notice && <div className="alert alert-success">{notice}</div>}
       {error && <div className="alert alert-error">{error}</div>}
@@ -70,23 +68,23 @@ export default function EstimateClient({ record }) {
         <h2>Customer</h2>
         <div className="review-grid">
           <div>
-            <h3>{alphaJson.customer?.name || "Customer"}</h3>
-            <p>{alphaJson.customer?.phone_display}</p>
+            <h3>{customerView.customer?.name || "Customer"}</h3>
+            <p>{customerView.customer?.phone}</p>
           </div>
           <div>
             <h3>Service Address</h3>
-            <p>{alphaJson.job?.service_address?.display}</p>
+            <p>{customerView.serviceAddress}</p>
           </div>
         </div>
         <h3>Work Description</h3>
-        <p>{workDescription}</p>
+        <p>{customerView.workDescription}</p>
       </section>
 
       <section className="card">
         {submitted ? (
           <>
             <h2>{record.status === "accepted_manually" ? "Your accepted estimate has been received." : "Your signed estimate has been received."}</h2>
-            <p>Selected option: <strong>{selectedOption}</strong>{selected?.price?.display ? `, ${selected.price.display}` : ""}</p>
+            <p>Selected option: <strong>{selectedOption}</strong>{selected?.priceDisplay ? `, ${selected.priceDisplay}` : ""}</p>
             {signature && <p>Signature: <strong>{signature}</strong></p>}
             {signedAtDisplay && <p>{record.status === "accepted_manually" ? "Accepted" : "Signed"}: <strong>{signedAtDisplay}</strong></p>}
             {signedFile && (
@@ -100,7 +98,7 @@ export default function EstimateClient({ record }) {
         ) : (
           <>
             <h2>Choose and Sign</h2>
-            <OptionSelector options={alphaJson.service_options?.items || []} selectedOption={selectedOption} onSelect={setSelectedOption} />
+            <OptionSelector options={customerView.options || []} selectedOption={selectedOption} onSelect={setSelectedOption} />
             <LegalDisclaimer />
             <label className="checkbox-line">
               <input

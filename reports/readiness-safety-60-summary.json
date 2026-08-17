@@ -1,0 +1,884 @@
+{
+  "version": "readiness-safety-report-v0.1",
+  "total": 60,
+  "can_generate_pdf": 44,
+  "blocked": 16,
+  "metrics": {
+    "incorrect_but_ready": {
+      "case_ids": [
+        "tdsvc-004",
+        "tdsvc-010",
+        "tdsvc-023",
+        "tdsvc-025",
+        "tdsvc-029",
+        "tdsvc-030",
+        "tdsvc-033",
+        "tdsvc-034",
+        "tdsvc-036",
+        "tdsvc-037",
+        "tdsvc-039",
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-046",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-056",
+        "tdsvc-057"
+      ],
+      "count": 18,
+      "caught_by_shadow_invariants": [
+        "tdsvc-023",
+        "tdsvc-029",
+        "tdsvc-034",
+        "tdsvc-043",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-057"
+      ],
+      "caught_by_shadow_count": 7,
+      "catch_rate": 0.3889
+    },
+    "correct_but_blocked": {
+      "case_ids": [
+        "tdsvc-058"
+      ],
+      "count": 1,
+      "projected_if_shadow_enforced": [
+        "tdsvc-058"
+      ],
+      "projected_count_if_shadow_enforced": 1,
+      "newly_blocked_if_shadow_enforced": [],
+      "newly_blocked_count": 0
+    },
+    "reviewer_overrides": {
+      "cases_with_overrides": [],
+      "count": 0,
+      "override_key_counts": {}
+    },
+    "unresolved_conflict_recall": {
+      "matched": 3,
+      "total": 20,
+      "rate": 0.15,
+      "gold_case_ids": [
+        "tdsvc-041",
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-044",
+        "tdsvc-045",
+        "tdsvc-046",
+        "tdsvc-047",
+        "tdsvc-048",
+        "tdsvc-049",
+        "tdsvc-050",
+        "tdsvc-051",
+        "tdsvc-052",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-056",
+        "tdsvc-057",
+        "tdsvc-058",
+        "tdsvc-059",
+        "tdsvc-060"
+      ],
+      "detected_case_ids": [
+        "tdsvc-041",
+        "tdsvc-050",
+        "tdsvc-056"
+      ],
+      "missed_case_ids": [
+        "tdsvc-042",
+        "tdsvc-043",
+        "tdsvc-044",
+        "tdsvc-045",
+        "tdsvc-046",
+        "tdsvc-047",
+        "tdsvc-048",
+        "tdsvc-049",
+        "tdsvc-051",
+        "tdsvc-052",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-057",
+        "tdsvc-058",
+        "tdsvc-059",
+        "tdsvc-060"
+      ]
+    },
+    "correct_abstention": {
+      "matched": 9,
+      "total": 10,
+      "rate": 0.9,
+      "gold_case_ids": [
+        "tdsvc-051",
+        "tdsvc-052",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-056",
+        "tdsvc-057",
+        "tdsvc-058",
+        "tdsvc-059",
+        "tdsvc-060"
+      ],
+      "abstained_case_ids": [
+        "tdsvc-051",
+        "tdsvc-052",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-055",
+        "tdsvc-057",
+        "tdsvc-058",
+        "tdsvc-059",
+        "tdsvc-060"
+      ],
+      "guessed_case_ids": [
+        "tdsvc-056"
+      ]
+    },
+    "unsupported_selected_facts": {
+      "unsupported": 20,
+      "checked": 389,
+      "rate": 0.0514,
+      "cases_with_unsupported": [
+        "tdsvc-018",
+        "tdsvc-020",
+        "tdsvc-029",
+        "tdsvc-034",
+        "tdsvc-044",
+        "tdsvc-045",
+        "tdsvc-048",
+        "tdsvc-052",
+        "tdsvc-055",
+        "tdsvc-060"
+      ]
+    }
+  },
+  "shadow_invariants": {
+    "cases_would_block_pdf": [
+      "tdsvc-018",
+      "tdsvc-020",
+      "tdsvc-023",
+      "tdsvc-029",
+      "tdsvc-034",
+      "tdsvc-041",
+      "tdsvc-043",
+      "tdsvc-044",
+      "tdsvc-045",
+      "tdsvc-048",
+      "tdsvc-050",
+      "tdsvc-051",
+      "tdsvc-052",
+      "tdsvc-053",
+      "tdsvc-054",
+      "tdsvc-055",
+      "tdsvc-057",
+      "tdsvc-058",
+      "tdsvc-060"
+    ],
+    "would_block_count": 19,
+    "trip_counts_by_code": {
+      "CONFLICTING_SUPPORTED_CANDIDATES": 2,
+      "HIGH_CONFIDENCE_PRICE_UNRESOLVED": 9,
+      "INFERRED_SCOPE_AFFECTS_PRICE_UNAPPROVED": 1,
+      "SOURCE_FACT_OMITTED_WITHOUT_REASON": 9,
+      "UNSUPPORTED_CUSTOMER_FACING_VALUE": 10
+    },
+    "case_ids_by_code": {
+      "CONFLICTING_SUPPORTED_CANDIDATES": [
+        "tdsvc-041",
+        "tdsvc-050"
+      ],
+      "HIGH_CONFIDENCE_PRICE_UNRESOLVED": [
+        "tdsvc-023",
+        "tdsvc-041",
+        "tdsvc-043",
+        "tdsvc-050",
+        "tdsvc-051",
+        "tdsvc-053",
+        "tdsvc-054",
+        "tdsvc-057",
+        "tdsvc-058"
+      ],
+      "INFERRED_SCOPE_AFFECTS_PRICE_UNAPPROVED": [
+        "tdsvc-045"
+      ],
+      "SOURCE_FACT_OMITTED_WITHOUT_REASON": [
+        "tdsvc-018",
+        "tdsvc-020",
+        "tdsvc-034",
+        "tdsvc-044",
+        "tdsvc-045",
+        "tdsvc-048",
+        "tdsvc-052",
+        "tdsvc-055",
+        "tdsvc-060"
+      ],
+      "UNSUPPORTED_CUSTOMER_FACING_VALUE": [
+        "tdsvc-018",
+        "tdsvc-020",
+        "tdsvc-029",
+        "tdsvc-034",
+        "tdsvc-044",
+        "tdsvc-045",
+        "tdsvc-048",
+        "tdsvc-052",
+        "tdsvc-055",
+        "tdsvc-060"
+      ]
+    }
+  },
+  "per_case": [
+    {
+      "case_id": "tdsvc-001",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-002",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-003",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-004",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-005",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-006",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-007",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-008",
+      "category": "straightforward_base",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-009",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-010",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-011",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-012",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-013",
+      "category": "straightforward_base",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-014",
+      "category": "straightforward_base",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-015",
+      "category": "straightforward_base",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-016",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-017",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-018",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 4
+    },
+    {
+      "case_id": "tdsvc-019",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-020",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 4
+    },
+    {
+      "case_id": "tdsvc-021",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-022",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-023",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 1
+    },
+    {
+      "case_id": "tdsvc-024",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-025",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-026",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-027",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-028",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-029",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE"
+      ],
+      "finding_count": 2
+    },
+    {
+      "case_id": "tdsvc-030",
+      "category": "clear_dependent_addon",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-031",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-032",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-033",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-034",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 3
+    },
+    {
+      "case_id": "tdsvc-035",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-036",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-037",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-038",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-039",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-040",
+      "category": "explicit_option_totals",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": false,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-041",
+      "category": "independent_alternatives",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "CONFLICTING_SUPPORTED_CANDIDATES",
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 2
+    },
+    {
+      "case_id": "tdsvc-042",
+      "category": "independent_alternatives",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-043",
+      "category": "independent_alternatives",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 2
+    },
+    {
+      "case_id": "tdsvc-044",
+      "category": "independent_alternatives",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 7
+    },
+    {
+      "case_id": "tdsvc-045",
+      "category": "independent_alternatives",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "INFERRED_SCOPE_AFFECTS_PRICE_UNAPPROVED",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 5
+    },
+    {
+      "case_id": "tdsvc-046",
+      "category": "independent_alternatives",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-047",
+      "category": "independent_alternatives",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": true,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-048",
+      "category": "independent_alternatives",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 4
+    },
+    {
+      "case_id": "tdsvc-049",
+      "category": "independent_alternatives",
+      "can_generate_pdf": true,
+      "factually_correct": true,
+      "review_required_expected": true,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-050",
+      "category": "independent_alternatives",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "CONFLICTING_SUPPORTED_CANDIDATES",
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 2
+    },
+    {
+      "case_id": "tdsvc-051",
+      "category": "ambiguous_review",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 1
+    },
+    {
+      "case_id": "tdsvc-052",
+      "category": "ambiguous_review",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 2
+    },
+    {
+      "case_id": "tdsvc-053",
+      "category": "ambiguous_review",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 3
+    },
+    {
+      "case_id": "tdsvc-054",
+      "category": "ambiguous_review",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 1
+    },
+    {
+      "case_id": "tdsvc-055",
+      "category": "ambiguous_review",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 2
+    },
+    {
+      "case_id": "tdsvc-056",
+      "category": "ambiguous_review",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-057",
+      "category": "ambiguous_review",
+      "can_generate_pdf": true,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 1
+    },
+    {
+      "case_id": "tdsvc-058",
+      "category": "ambiguous_review",
+      "can_generate_pdf": false,
+      "factually_correct": true,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "HIGH_CONFIDENCE_PRICE_UNRESOLVED"
+      ],
+      "finding_count": 2
+    },
+    {
+      "case_id": "tdsvc-059",
+      "category": "ambiguous_review",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": false,
+      "invariant_codes": [],
+      "finding_count": 0
+    },
+    {
+      "case_id": "tdsvc-060",
+      "category": "ambiguous_review",
+      "can_generate_pdf": false,
+      "factually_correct": false,
+      "review_required_expected": true,
+      "would_block_pdf": true,
+      "invariant_codes": [
+        "UNSUPPORTED_CUSTOMER_FACING_VALUE",
+        "SOURCE_FACT_OMITTED_WITHOUT_REASON"
+      ],
+      "finding_count": 3
+    }
+  ]
+}

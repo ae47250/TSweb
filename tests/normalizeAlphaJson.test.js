@@ -3221,3 +3221,29 @@ test("numeric option labels sort as A/B and preserve mixed letter labels", () =>
   assert.match(options[0].description, /remove one oak tree only/i);
   assert.match(options[1].description, /remove.*haul/i);
 });
+
+test("service-address separators do not leak into fallback option wording", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "812.555.2121 Brooke Hansen said -- remove four trees -- service address at 6957 Liberty Road in Madison Indiana -- cut/leave $1,650 haul/cleanup 2,300",
+  ));
+  const optionText = validation.alphaJson.service_options.items
+    .map((option) => `${option.title} ${option.description}`)
+    .join(" ");
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.doesNotMatch(optionText, /service\s+address|address\s+at|Madison|Indiana/i);
+  assert.deepEqual(validation.alphaJson.service_options.items.map((option) => option.price.display), ["$1,650", "$2,300"]);
+});
+
+test("three-price notes preserve a trailing explicit stump treatment", () => {
+  const validation = validateAlphaJson(normalizeToAlphaJsonV14(
+    {},
+    "Beth Wells said call/text 812.555.2018. at 5044 Liberty Road in Hanover Indiana. tow spruce trees removal. notes: old estimate scribble. drop $850 haul brush 1850 stump 2,300",
+  ));
+  const options = validation.alphaJson.service_options.items;
+
+  assert.equal(validation.can_generate_pdf, true);
+  assert.deepEqual(options.map((option) => option.price.display), ["$850", "$1,850", "$2,300"]);
+  assert.match(options.at(-1).description, /stump/i);
+});

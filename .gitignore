@@ -9,6 +9,9 @@ coverage/
 out/
 data/estimates/
 
+# Generated Graphify architecture-scan cache.
+graphify-out/cache/
+
 # Generated review and smoke-test artifacts.
 reports/LIVEapi-*
 reports/internal-100-each-*

@@ -3,7 +3,16 @@
 import { useEffect, useState } from "react";
 import { buildCustomerJobSummary, normalizeEditedServiceAddress, normalizeServiceAddress, normalizeTreeServiceText } from "../../lib/normalizeAlphaJson.js";
 import { LOCAL_INDIANA_TOWNS } from "../../lib/localTowns.js";
+import { getReviewDecisionExceptions } from "../../lib/reviewDecisionExceptions.js";
 import { getBlockingOverrideStatus, normalizeReviewOverrides } from "../../lib/reviewOverrides.js";
+import {
+  AddressDecisionCard,
+  PhoneDuplicateBadge,
+  PhoneDecisionCard,
+  PriceAlternativesCard,
+  TreeScopeCorrectionCard,
+} from "./DecisionExceptionCards.jsx";
+import ReadinessFindingCards from "./ReadinessFindingCards.jsx";
 
 function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -510,7 +519,7 @@ function TreeCountResolutionCard({ validation, busy = false, onApply }) {
     const nextCount = event.target.value;
     setSelectedCount(nextCount);
     if (!nextCount) return;
-    onApply(nextCount);
+    onApply(nextCount, { recordDecision: true });
   }
 
   return (
@@ -560,7 +569,7 @@ function ManualTreeCountOverrideControl({ treeCountOverride, busy = false, onApp
     if (!nextCount) return;
     setChangeOpen(false);
     setSelectedCount("");
-    onApply?.(nextCount);
+    onApply?.(nextCount, { recordDecision: true });
   }
 
   return (
@@ -945,6 +954,7 @@ export default function JsonReview({
   intake = {},
   mode = "review",
   reviewOverrides = {},
+  priceAlternativesConfirmed = false,
   onReviewOverridesChange,
   onTreeCountOverrideChange,
   onOptionDescriptionChange,
@@ -952,6 +962,19 @@ export default function JsonReview({
   onAddOption,
   onCustomerFieldChange,
   onJobDescriptionChange,
+  onAcceptTreeScopeSuggestion,
+  onKeepBothTreeScope,
+  onEnterTreeScope,
+  onConfirmPriceAlternatives,
+  onEditPriceAlternatives,
+  onMarkBusinessChange,
+  onSelectPhoneCandidate,
+  onKeepOriginalPhone,
+  onOverridePhone,
+  onSelectAddressCandidate,
+  onKeepOriginalAddress,
+  onOverrideAddress,
+  onReadinessDecision,
   onApprove,
   onEdit,
   busy = false,
@@ -959,6 +982,7 @@ export default function JsonReview({
   if (!alphaJson) return null;
 
   const normalizedOverrides = normalizeReviewOverrides(reviewOverrides);
+  const exceptions = getReviewDecisionExceptions(alphaJson);
   const options = alphaJson.service_options?.items || [];
   const structuredJobSummary = buildCustomerJobSummary(alphaJson);
   const jobNotes = structuredJobSummary || cleanJobNotesForReview(sourceNotes, alphaJson);
@@ -1087,11 +1111,33 @@ export default function JsonReview({
               <p className={customerPhoneAvailable ? "customer-phone-line customer-phone-available" : "customer-phone-line"}>
                 {customerPhone}
               </p>
+              {!isFinalConfirm && exceptions.phoneProvenance && (
+                <PhoneDuplicateBadge exception={exceptions.phoneProvenance} />
+              )}
+              {!isFinalConfirm && exceptions.phone && (
+                <PhoneDecisionCard
+                  exception={exceptions.phone}
+                  busy={busy}
+                  onSelectCandidate={onSelectPhoneCandidate}
+                  onKeepOriginal={onKeepOriginalPhone}
+                  onOverride={onOverridePhone}
+                />
+              )}
             </div>
           </div>
           <div className="summary-card review-job-notes-card">
             <h3>Job Notes</h3>
             <p className="job-summary-text">{jobNotes}</p>
+            {!isFinalConfirm && exceptions.treeScope && (
+              <TreeScopeCorrectionCard
+                exception={exceptions.treeScope}
+                busy={busy}
+                onAccept={onAcceptTreeScopeSuggestion}
+                onKeepBoth={onKeepBothTreeScope}
+                onEnterScope={onEnterTreeScope}
+                onMarkBusinessChange={onMarkBusinessChange}
+              />
+            )}
             {showTreeCountOverride && (
               <ManualTreeCountOverrideControl
                 treeCountOverride={treeCountOverride}
@@ -1100,6 +1146,15 @@ export default function JsonReview({
               />
             )}
           </div>
+          {!isFinalConfirm && exceptions.address && (
+            <AddressDecisionCard
+              exception={exceptions.address}
+              busy={busy}
+              onSelectCandidate={onSelectAddressCandidate}
+              onKeepOriginal={onKeepOriginalAddress}
+              onOverride={onOverrideAddress}
+            />
+          )}
         </div>
       )}
       {!isFinalConfirm && (
@@ -1131,6 +1186,15 @@ export default function JsonReview({
         </section>
       )}
       <h3>Customer Options</h3>
+      {!isFinalConfirm && exceptions.priceAlternatives && (
+        <PriceAlternativesCard
+          exception={exceptions.priceAlternatives}
+          confirmed={priceAlternativesConfirmed}
+          busy={busy}
+          onConfirmBoth={onConfirmPriceAlternatives}
+          onEditOptions={onEditPriceAlternatives}
+        />
+      )}
       <div className="quote-options-grid">
         {options.length > 0 ? options.map((option, index) => (
           <article
@@ -1198,6 +1262,14 @@ export default function JsonReview({
           overrides={normalizedOverrides}
           warningItems={warningItems}
           onChange={onReviewOverridesChange}
+        />
+      )}
+      {!isFinalConfirm && (
+        <ReadinessFindingCards
+          alphaJson={alphaJson}
+          validation={validation}
+          busy={busy}
+          onDecision={onReadinessDecision}
         />
       )}
       {!isFinalConfirm && (

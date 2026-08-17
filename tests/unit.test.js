@@ -62,7 +62,7 @@ test("review overrides allow only accepted address and contact blocking issues",
 
   assert.equal(getBlockingOverrideStatus(addressAndContactValidation, {}, alphaJsonMissingContact).canProceed, false);
   assert.equal(getBlockingOverrideStatus(addressAndContactValidation, { missingAddress: true }, alphaJsonMissingContact).canProceed, false);
-  assert.equal(getBlockingOverrideStatus(addressAndContactValidation, { missingAddress: true, missingPhone: true }, alphaJsonMissingContact).canProceed, true);
+  assert.equal(getBlockingOverrideStatus(addressAndContactValidation, { missingAddress: true, missingPhone: true }, alphaJsonMissingContact).canProceed, false);
 
   const unrelatedValidation = {
     can_generate_pdf: false,
@@ -71,7 +71,7 @@ test("review overrides allow only accepted address and contact blocking issues",
 
   const status = getBlockingOverrideStatus(unrelatedValidation, { missingAddress: true, missingContact: true }, alphaJsonMissingContact);
   assert.equal(status.canProceed, false);
-  assert.deepEqual(status.remainingBlockingErrors, ["Missing priced service option."]);
+  assert.deepEqual(status.remainingBlockingErrors, ["Missing service address.", "Missing priced service option."]);
 });
 
 test("missing one send channel does not block quote confirmation", () => {

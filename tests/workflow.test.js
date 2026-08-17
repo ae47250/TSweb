@@ -37,6 +37,31 @@ test("mock notification targets Pingram phone and tree dude email without sendin
   assert.equal(result.sentEmail, false);
   assert.equal(result.intendedRecipients.phone, "502-310-6952");
   assert.equal(result.intendedRecipients.email, "huagalli@hotmail.com");
+  assert.equal(
+    result.payload.email.payload.email.html,
+    "John Smith accepted Option A - $2,000. View signed estimate: /e/EST-20260629-001<br><br>Service address: 805 2nd Street",
+  );
+});
+
+test("notification email escapes customer-controlled markup and preserves safe links", async () => {
+  const result = await notifyContractor({
+    documentId: "EST-20260629-001",
+    customerName: '<img src=x onerror="alert(1)">',
+    address: '<b>805 <a href="https://attacker.example">2nd Street</a></b>',
+    selectedOption: '<a href="https://attacker.example" title="Injected">Option A</a>',
+    price: "$2,000 & more",
+    signedAtDisplay: '<script data-test="injected">bad</script>',
+    estimateUrl: "https://example.com/e/EST-20260629-001?foo=1&bar=2",
+  });
+  const html = result.payload.email.payload.email.html;
+
+  assert.match(html, /&lt;img src=x onerror=&quot;alert\(1\)&quot;&gt;/);
+  assert.match(html, /&lt;a href=&quot;https:\/\/attacker\.example&quot; title=&quot;Injected&quot;&gt;Option A&lt;\/a&gt;/);
+  assert.match(html, /&lt;script data-test=&quot;injected&quot;&gt;bad&lt;\/script&gt;/);
+  assert.match(html, /Service address: &lt;b&gt;805 &lt;a href=&quot;https:\/\/attacker\.example&quot;&gt;2nd Street&lt;\/a&gt;&lt;\/b&gt;/);
+  assert.match(html, /https:\/\/example\.com\/e\/EST-20260629-001\?foo=1&amp;bar=2/);
+  assert.match(html, /<br><br>/);
+  assert.doesNotMatch(html, /<(?:img|a|b|script)\b/i);
 });
 
 test("mock customer estimate notification uses Pingram without sending", async () => {

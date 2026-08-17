@@ -11,6 +11,7 @@ let normalizeContactFields;
 let applyContactNormalizationOverlay;
 let buildOptionPriceCandidateView;
 let reconcileSidecarPrices;
+let attachPipelineDecisionEnvelopes;
 
 async function loadPipeline(pipelineRoot) {
   const moduleUrl = (relativePath) => pathToFileURL(resolve(pipelineRoot, relativePath)).href;
@@ -23,6 +24,7 @@ async function loadPipeline(pipelineRoot) {
   ({ applyContactNormalizationOverlay } = await import(moduleUrl("lib/contactNormalizationOverlay.js")));
   ({ buildOptionPriceCandidateView } = await import(moduleUrl("lib/optionPriceNormalizer.js")));
   ({ reconcileSidecarPrices } = await import(moduleUrl("lib/priceReconciliation.js")));
+  ({ attachPipelineDecisionEnvelopes } = await import(moduleUrl("lib/attachPipelineDecisionEnvelopes.js")));
 }
 
 function parseArgs(argv) {
@@ -110,12 +112,17 @@ function runOfflinePipeline(draft, customerText, intake) {
       intake,
     });
   }
-  const alphaJson = reconcileSidecarPrices(
+  let alphaJson = reconcileSidecarPrices(
     applyContactNormalizationOverlay(
       normalizeToAlphaJsonV14(normalizerInput, customerText, intake),
       contactNormalizationResult,
     ),
     optionPriceCandidateView,
+  );
+  alphaJson = attachPipelineDecisionEnvelopes(
+    alphaJson,
+    contactNormalizationResult,
+    customerText,
   );
   return validateAlphaJson(alphaJson);
 }
@@ -582,6 +589,215 @@ function metricSummary(results, metricName) {
   };
 }
 
+function readinessSafetyFromRow(row) {
+  return row.readiness_safety ||
+    row.validation?.readiness_safety ||
+    row.alphaJson?.validation?.readiness_safety ||
+    {};
+}
+
+function expectedReviewRequired(row) {
+  const expected = row.expected || {};
+  if (typeof expected.review_required === "boolean") return expected.review_required;
+  return ["ambiguous_review", "independent_alternatives"].includes(row.category || row.group || "");
+}
+
+function expectedCorrectAbstention(row) {
+  const expected = row.expected || {};
+  if (expected.relationship === "unresolved") return true;
+  if (expected.option_b_price_role === "ambiguous") return true;
+  return (row.category || "") === "ambiguous_review";
+}
+
+function conflictDetected(row) {
+  const readiness = readinessSafetyFromRow(row);
+  if ((readiness.invariant_codes || []).includes("CONFLICTING_SUPPORTED_CANDIDATES")) return true;
+  const decisions = row.alphaJson?.normalization?.decisions || {};
+  return Object.values(decisions).some((envelope) =>
+    envelope?.resolution?.reasonCode === "conflicting_supported_candidates" ||
+    (
+      (envelope?.resolution?.status === "unresolved" || envelope?.resolution?.status === "requires_review") &&
+      asArray(envelope?.candidates).filter((candidate) =>
+        ["explicit", "normalized_explicit"].includes(candidate.support) &&
+        ["eligible", "selected"].includes(candidate.status),
+      ).length >= 2
+    ),
+  );
+}
+
+function pipelineAbstained(row) {
+  if (!row.can_generate_pdf) return true;
+  const readiness = readinessSafetyFromRow(row);
+  const codes = new Set(readiness.invariant_codes || []);
+  if (
+    codes.has("CONFLICTING_SUPPORTED_CANDIDATES") ||
+    codes.has("HIGH_CONFIDENCE_PRICE_UNRESOLVED") ||
+    codes.has("INFERRED_SCOPE_AFFECTS_PRICE_UNAPPROVED")
+  ) {
+    return true;
+  }
+  const decisions = row.alphaJson?.normalization?.decisions || {};
+  return Object.values(decisions).some((envelope) =>
+    envelope?.resolution?.status === "abstained" ||
+    envelope?.resolution?.status === "requires_review" ||
+    envelope?.resolution?.status === "unresolved",
+  );
+}
+
+function reviewerOverrideSignals(row) {
+  const review = row.alphaJson?.review || {};
+  const overrides = review.overrides || {};
+  const overrideKeys = Object.entries(overrides)
+    .filter(([, enabled]) => Boolean(enabled))
+    .map(([key]) => key);
+  const optionFlags = asArray(row.alphaJson?.service_options?.items).flatMap((option) => {
+    const flags = option?.review_flags || {};
+    const keys = [];
+    if (flags.source_to_final_verified_override) keys.push("source_to_final_verified_override");
+    if (flags.description_server_verified_td_edit) keys.push("description_server_verified_td_edit");
+    if (flags.scope_approved_by_reviewer) keys.push("scope_approved_by_reviewer");
+    return keys;
+  });
+  const overrideWarnings = asArray(review.override_warnings);
+  return {
+    used: overrideKeys.length > 0 || optionFlags.length > 0 || overrideWarnings.length > 0,
+    override_keys: unique([...overrideKeys, ...optionFlags]),
+    override_warning_count: overrideWarnings.length,
+  };
+}
+
+function unsupportedSelectedFacts(row) {
+  const coverage = sourceFinalCoverage(row.validation || row);
+  const results = asArray(coverage.results).filter((result) =>
+    ["option_label", "price", "work_actions", "species", "tree_quantity", "stump_quantity", "stump_treatment", "debris_disposition", "target_qualifiers", "customer_phone", "customer_email", "service_address"].includes(result?.fact) &&
+    result?.source_value,
+  );
+  const unsupported = results.filter((result) =>
+    ["missing", "changed"].includes(result.status) && !result.override_recorded,
+  );
+  return {
+    checked: results.length,
+    unsupported: unsupported.length,
+    codes: unique(unsupported.map((result) => result.code)),
+  };
+}
+
+function rateFromCounts(matched, total) {
+  return {
+    matched,
+    total,
+    rate: total ? Number((matched / total).toFixed(4)) : null,
+  };
+}
+
+function summarizeReadinessSafety(results) {
+  const factuallyCorrect = results.filter((row) => row.accuracy?.factually_correct === true);
+  const factuallyIncorrect = results.filter((row) => row.accuracy?.factually_correct === false);
+  const unscored = results.filter((row) => row.accuracy?.factually_correct == null);
+
+  const unsafeReady = factuallyIncorrect.filter((row) => row.can_generate_pdf);
+  const correctButBlocked = factuallyCorrect.filter((row) => !row.can_generate_pdf);
+
+  const projectedWouldBlock = results.filter((row) => readinessSafetyFromRow(row).would_block_pdf);
+  const unsafeReadyCaughtByShadow = unsafeReady.filter((row) => readinessSafetyFromRow(row).would_block_pdf);
+  const correctReadyThatShadowWouldBlock = factuallyCorrect.filter((row) =>
+    row.can_generate_pdf && readinessSafetyFromRow(row).would_block_pdf,
+  );
+  const projectedCorrectButBlocked = factuallyCorrect.filter((row) =>
+    !row.can_generate_pdf || readinessSafetyFromRow(row).would_block_pdf,
+  );
+
+  const invariantTripCounts = {};
+  const invariantCaseIds = {};
+  for (const row of results) {
+    for (const code of readinessSafetyFromRow(row).invariant_codes || []) {
+      invariantTripCounts[code] = (invariantTripCounts[code] || 0) + 1;
+      invariantCaseIds[code] ||= [];
+      invariantCaseIds[code].push(row.case_id);
+    }
+  }
+
+  const conflictGold = results.filter(expectedReviewRequired);
+  const conflictRecallHits = conflictGold.filter(conflictDetected);
+
+  const abstentionGold = results.filter(expectedCorrectAbstention);
+  const correctAbstentionHits = abstentionGold.filter(pipelineAbstained);
+
+  const overrideRows = results.map((row) => ({ row, signals: reviewerOverrideSignals(row) }));
+  const overridesUsed = overrideRows.filter((entry) => entry.signals.used);
+
+  const unsupportedRows = results.map((row) => ({ row, stats: unsupportedSelectedFacts(row) }));
+  const unsupportedChecked = unsupportedRows.reduce((sum, entry) => sum + entry.stats.checked, 0);
+  const unsupportedCount = unsupportedRows.reduce((sum, entry) => sum + entry.stats.unsupported, 0);
+
+  return {
+    factually_correct: factuallyCorrect.length,
+    factually_incorrect: factuallyIncorrect.length,
+    unscored: unscored.length,
+    incorrect_but_ready: {
+      case_ids: unsafeReady.map((row) => row.case_id),
+      count: unsafeReady.length,
+      caught_by_shadow_invariants: unsafeReadyCaughtByShadow.map((row) => row.case_id),
+      caught_by_shadow_count: unsafeReadyCaughtByShadow.length,
+      catch_rate: unsafeReady.length
+        ? Number((unsafeReadyCaughtByShadow.length / unsafeReady.length).toFixed(4))
+        : null,
+    },
+    correct_but_blocked: {
+      case_ids: correctButBlocked.map((row) => row.case_id),
+      count: correctButBlocked.length,
+      projected_if_shadow_enforced: projectedCorrectButBlocked.map((row) => row.case_id),
+      projected_count_if_shadow_enforced: projectedCorrectButBlocked.length,
+      newly_blocked_if_shadow_enforced: correctReadyThatShadowWouldBlock.map((row) => row.case_id),
+      newly_blocked_count: correctReadyThatShadowWouldBlock.length,
+    },
+    // Backward-compatible aliases used by existing reports.
+    unsafe_ready: unsafeReady.map((row) => row.case_id),
+    reviewer_overrides: {
+      cases_with_overrides: overridesUsed.map((entry) => entry.row.case_id),
+      count: overridesUsed.length,
+      override_key_counts: overridesUsed.reduce((counts, entry) => {
+        for (const key of entry.signals.override_keys) {
+          counts[key] = (counts[key] || 0) + 1;
+        }
+        return counts;
+      }, {}),
+    },
+    unresolved_conflict_recall: {
+      ...rateFromCounts(conflictRecallHits.length, conflictGold.length),
+      gold_case_ids: conflictGold.map((row) => row.case_id),
+      detected_case_ids: conflictRecallHits.map((row) => row.case_id),
+      missed_case_ids: conflictGold
+        .filter((row) => !conflictDetected(row))
+        .map((row) => row.case_id),
+    },
+    correct_abstention: {
+      ...rateFromCounts(correctAbstentionHits.length, abstentionGold.length),
+      gold_case_ids: abstentionGold.map((row) => row.case_id),
+      abstained_case_ids: correctAbstentionHits.map((row) => row.case_id),
+      guessed_case_ids: abstentionGold
+        .filter((row) => !pipelineAbstained(row))
+        .map((row) => row.case_id),
+    },
+    unsupported_selected_facts: {
+      unsupported: unsupportedCount,
+      checked: unsupportedChecked,
+      rate: unsupportedChecked ? Number((unsupportedCount / unsupportedChecked).toFixed(4)) : null,
+      cases_with_unsupported: unsupportedRows
+        .filter((entry) => entry.stats.unsupported > 0)
+        .map((entry) => entry.row.case_id),
+    },
+    shadow_invariants: {
+      cases_would_block_pdf: projectedWouldBlock.map((row) => row.case_id),
+      would_block_count: projectedWouldBlock.length,
+      trip_counts_by_code: Object.fromEntries(Object.entries(invariantTripCounts).sort()),
+      case_ids_by_code: Object.fromEntries(
+        Object.keys(invariantCaseIds).sort().map((code) => [code, invariantCaseIds[code]]),
+      ),
+    },
+  };
+}
+
 function summarizeRun(results) {
   const total = results.length;
   const ready = results.filter((row) => row.can_generate_pdf).length;
@@ -609,8 +825,8 @@ function summarizeRun(results) {
 
   const factuallyCorrect = results.filter((row) => row.accuracy?.factually_correct === true);
   const factuallyIncorrect = results.filter((row) => row.accuracy?.factually_correct === false);
-  const unscored = results.filter((row) => row.accuracy?.factually_correct == null);
   const sourceFinalFlagged = results.filter((row) => (row.source_final?.codes || []).length > 0);
+  const readinessSafety = summarizeReadinessSafety(results);
 
   return {
     total,
@@ -651,13 +867,38 @@ function summarizeRun(results) {
         .filter((row) => !(row.source_final?.codes || []).length)
         .map((row) => row.case_id),
     },
-    readiness_safety: {
-      factually_correct: factuallyCorrect.length,
-      factually_incorrect: factuallyIncorrect.length,
-      unscored: unscored.length,
-      unsafe_ready: factuallyIncorrect.filter((row) => row.can_generate_pdf).map((row) => row.case_id),
-      correct_but_blocked: factuallyCorrect.filter((row) => !row.can_generate_pdf).map((row) => row.case_id),
+    readiness_safety: readinessSafety,
+  };
+}
+
+function buildReadinessSafetyReport(results, summary) {
+  return {
+    version: "readiness-safety-report-v0.1",
+    total: results.length,
+    can_generate_pdf: summary.can_generate_pdf,
+    blocked: summary.blocked,
+    metrics: {
+      incorrect_but_ready: summary.readiness_safety.incorrect_but_ready,
+      correct_but_blocked: summary.readiness_safety.correct_but_blocked,
+      reviewer_overrides: summary.readiness_safety.reviewer_overrides,
+      unresolved_conflict_recall: summary.readiness_safety.unresolved_conflict_recall,
+      correct_abstention: summary.readiness_safety.correct_abstention,
+      unsupported_selected_facts: summary.readiness_safety.unsupported_selected_facts,
     },
+    shadow_invariants: summary.readiness_safety.shadow_invariants,
+    per_case: results.map((row) => {
+      const readiness = readinessSafetyFromRow(row);
+      return {
+        case_id: row.case_id,
+        category: row.category || row.group || "",
+        can_generate_pdf: row.can_generate_pdf,
+        factually_correct: row.accuracy?.factually_correct ?? null,
+        review_required_expected: expectedReviewRequired(row),
+        would_block_pdf: Boolean(readiness.would_block_pdf),
+        invariant_codes: readiness.invariant_codes || [],
+        finding_count: asArray(readiness.findings).length,
+      };
+    }),
   };
 }
 
@@ -666,11 +907,15 @@ async function main() {
   const inputPath = args.input;
   const outputPath = args.output || "reports/offline-eval-current-pipeline.jsonl";
   const summaryPath = args.summary || outputPath.replace(/\.jsonl$/i, "-summary.json");
+  const readinessSummaryPath = args["readiness-summary"] ||
+    (String(inputPath).includes("tree-dude-service-classification-60")
+      ? "reports/readiness-safety-60-summary.json"
+      : "");
   const limit = args.limit ? Number(args.limit) : null;
   const pipelineRoot = resolve(args["pipeline-root"] || process.cwd());
 
   if (!inputPath) {
-    console.error("Usage: node scripts/eval-offline-dataset.js --input path/to/input.json-or-jsonl --output reports/offline-eval-current-pipeline.jsonl [--pipeline-root path]");
+    console.error("Usage: node scripts/eval-offline-dataset.js --input path/to/input.json-or-jsonl --output reports/offline-eval-current-pipeline.jsonl [--summary path] [--readiness-summary path] [--pipeline-root path]");
     process.exit(1);
   }
 
@@ -698,6 +943,9 @@ async function main() {
 
     const validation = runOfflinePipeline(draft, customerText, intake);
     const actual = actualSummary(validation);
+    const readinessSafety = validation.readiness_safety ||
+      validation.alphaJson?.validation?.readiness_safety ||
+      {};
     const result = {
       case_id: row.case_id || row.caseId || row.id || index + 1,
       id: row.id || "",
@@ -724,6 +972,7 @@ async function main() {
       field_matches: {},
       accuracy: {},
       source_final: {},
+      readiness_safety: readinessSafety,
       alphaJson: validation.alphaJson,
       validation,
     };
@@ -733,14 +982,30 @@ async function main() {
     results.push(result);
   });
 
+  const summary = summarizeRun(results);
   mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(outputPath, `${results.map((row) => JSON.stringify(row)).join("\n")}\n`);
-  writeFileSync(summaryPath, `${JSON.stringify(summarizeRun(results), null, 2)}\n`);
+  writeFileSync(summaryPath, `${JSON.stringify(summary, null, 2)}\n`);
+
+  if (readinessSummaryPath) {
+    mkdirSync(dirname(readinessSummaryPath), { recursive: true });
+    writeFileSync(
+      readinessSummaryPath,
+      `${JSON.stringify(buildReadinessSafetyReport(results, summary), null, 2)}\n`,
+    );
+  }
 
   console.log(`Offline eval rows: ${results.length}`);
   console.log(`Pipeline root: ${pipelineRoot}`);
   console.log(`Output: ${outputPath}`);
   console.log(`Summary: ${summaryPath}`);
+  if (readinessSummaryPath) console.log(`Readiness summary: ${readinessSummaryPath}`);
+  console.log(`Unsafe ready: ${summary.readiness_safety.incorrect_but_ready.count}`);
+  console.log(`Shadow would-block: ${summary.readiness_safety.shadow_invariants.would_block_count}`);
+  console.log(
+    `Unsafe ready caught by shadow: ${summary.readiness_safety.incorrect_but_ready.caught_by_shadow_count}` +
+    ` / ${summary.readiness_safety.incorrect_but_ready.count}`,
+  );
 }
 
 main().catch((error) => {

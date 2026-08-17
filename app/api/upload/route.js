@@ -2,20 +2,60 @@ import { readJson, json } from "../../../lib/api.js";
 import { renderCustomerDocument } from "../../../lib/customerDocument.js";
 import { hasBlobConfig, saveSignedPdf, saveSignedResult } from "../../../lib/blobStore.js";
 import { createDownloadFile } from "../../../lib/documentFiles.js";
-import { getEstimate, saveEstimate } from "../../../lib/estimateStore.js";
+import { saveEstimate } from "../../../lib/estimateStore.js";
 import { SIGNATURE_MAX_LENGTH, SIGNATURE_MIN_LENGTH } from "../../../config/constants.js";
+import { loadTrustedEstimateBoundary } from "../../../lib/trustedEstimateBoundary.js";
+import { emitCustomerPipelineDelivery } from "../../../lib/customerPipeline.js";
+import {
+  customerAccessTokenFromRequest,
+  verifyCustomerAccessToken,
+} from "../../../lib/customerAccess.js";
+import { isStrictDeliveryStage, productionConfigurationErrors } from "../../../lib/productionReadiness.js";
+import { notifyContractor } from "../../../lib/notifications.js";
 
 export const runtime = "nodejs";
 
 export async function POST(request) {
+  const configurationErrors = productionConfigurationErrors();
+  if (configurationErrors.length) {
+    return json({ error: "Production delivery configuration is incomplete.", configurationErrors }, { status: 503 });
+  }
   const body = await readJson(request);
-  const alphaJson = body.alphaJson;
+  const documentId = body.documentId || body.alphaJson?.document?.number || "";
   const selectedOption = body.selectedOption || "";
   const signature = String(body.signature || "").trim();
   const checkboxAccepted = body.checkboxAccepted === true;
 
-  if (!alphaJson?.document?.number) {
-    return json({ error: "Missing document ID." }, { status: 400 });
+  const trusted = await loadTrustedEstimateBoundary(documentId);
+  if (!trusted.ok) return json({ error: trusted.error, blocking_errors: trusted.blocking_errors }, { status: trusted.status });
+  const { alphaJson, customerView, record: existing } = trusted;
+  if (!verifyCustomerAccessToken(
+    customerAccessTokenFromRequest(request),
+    documentId,
+    existing.customerAccessVersion,
+  )) {
+    return json({ error: "This customer estimate link is invalid or expired." }, { status: 401 });
+  }
+  if (["signed", "accepted_manually"].includes(existing.status)) {
+    const sameSignature = existing.status === "signed" &&
+      existing.selected_option === selectedOption &&
+      existing.signature_name === signature &&
+      existing.checkboxAccepted === true;
+    if (sameSignature) {
+      return json({
+        documentId: existing.documentId,
+        status: existing.status,
+        selectedOption: existing.selected_option,
+        signatureName: existing.signature_name,
+        signedAt: existing.signedAt,
+        signedAtDisplay: existing.signedAtDisplay,
+        checkboxAccepted: true,
+        signed: existing.signed?.full,
+        contractorNotification: existing.contractorNotification,
+        idempotentReplay: true,
+      });
+    }
+    return json({ error: "This estimate already has a recorded acceptance and cannot be signed again." }, { status: 409 });
   }
   if (!selectedOption) {
     return json({ error: "Please select an option and sign." }, { status: 400 });
@@ -28,10 +68,13 @@ export async function POST(request) {
   }
 
   const selected = (alphaJson.service_options?.items || []).find((option) => option.label === selectedOption) || {};
+  if (!selected.label) {
+    return json({ error: "Please select a valid option from the trusted estimate." }, { status: 400 });
+  }
   const signedAt = new Date();
   const signedAtDisplay = signedAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
-  const signedFullHtml = renderCustomerDocument(alphaJson, { selectedOption, signature, signedAtDisplay, mobile: false });
-  const signedMobileHtml = renderCustomerDocument(alphaJson, { selectedOption, signature, signedAtDisplay, mobile: true });
+  const signedFullHtml = renderCustomerDocument(customerView, { selectedOption, signature, signedAtDisplay, mobile: false });
+  const signedMobileHtml = renderCustomerDocument(customerView, { selectedOption, signature, signedAtDisplay, mobile: true });
   const [signedFull, signedMobile] = await Promise.all([
     createDownloadFile(signedFullHtml, { documentId: alphaJson.document.number, variant: "full", mobile: false, signed: true }),
     createDownloadFile(signedMobileHtml, { documentId: alphaJson.document.number, variant: "mobile", mobile: true, signed: true }),
@@ -56,8 +99,13 @@ export async function POST(request) {
   const signedPdfBlob = signedFull.format === "pdf" && signedFull.pdfBase64
     ? await saveSignedPdf(alphaJson.document.number, Buffer.from(signedFull.pdfBase64, "base64"))
     : { stored: false, reason: "Signed PDF was not generated; HTML fallback is available." };
-  const existing = await getEstimate(alphaJson.document.number) || {};
-  const record = await saveEstimate({
+  if (isStrictDeliveryStage() && (!signedBlob.stored || !signedPdfBlob.stored)) {
+    return json({
+      error: "The signed estimate could not be durably stored. No acceptance status was recorded.",
+      storageErrors: [signedBlob, signedPdfBlob].filter((result) => !result.stored).map((result) => result.reason),
+    }, { status: 503 });
+  }
+  let record = await saveEstimate({
     ...existing,
     documentId: alphaJson.document.number,
     alphaJson,
@@ -75,6 +123,30 @@ export async function POST(request) {
     },
     pdf_url_signed: signedFull.downloadUrl,
   });
+  let contractorNotification = null;
+  try {
+    contractorNotification = await notifyContractor({
+      documentId: alphaJson.document.number,
+      customerName: signedResult.customerName,
+      address: signedResult.serviceAddress,
+      selectedOption,
+      price: signedResult.selectedOptionPrice,
+      signedAtDisplay,
+      estimateUrl: existing.customerEstimateUrl,
+    });
+    record = await saveEstimate({ ...record, contractorNotification: { status: "sent", result: contractorNotification } });
+  } catch (error) {
+    contractorNotification = { status: "pending", error: error.message || "Contractor notification failed." };
+    record = await saveEstimate({ ...record, contractorNotification });
+  }
+  await emitCustomerPipelineDelivery({
+    documentId: alphaJson.document.number,
+    policy: trusted.policy,
+    validation: trusted.validation,
+    parity: trusted.parity,
+    surface: "customer_signature",
+    decisions: alphaJson.review?.readiness_decisions || alphaJson.review?.reviewer_decision_log || [],
+  });
 
   return json({
     documentId: record.documentId,
@@ -88,6 +160,7 @@ export async function POST(request) {
     stored: true,
     signedBlob,
     signedPdfBlob,
+    contractorNotification,
     mockedStorage: !hasBlobConfig(),
-  });
+  }, { status: contractorNotification?.status === "pending" ? 202 : 200 });
 }

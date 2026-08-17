@@ -1,0 +1,53 @@
+{
+  "policy_version": "customer-pipeline-observability-policy-v2",
+  "minimum_event_count": 1,
+  "minimum_correction_samples": 20,
+  "correction_rate_drop_fraction": 0.2,
+  "maximum_false_ready_escapes": 0,
+  "required_event_version": "customer-pipeline-telemetry-v2",
+  "required_event_fields": [
+    "event",
+    "telemetry_version",
+    "rollout_mode",
+    "active_pipeline",
+    "readiness_blocking_enabled",
+    "outcome",
+    "blocking_count",
+    "blocking_codes",
+    "safety_finding_count",
+    "safety_invariant_codes",
+    "semantic_error_count",
+    "semantic_error_codes",
+    "reviewer_override_count",
+    "correction_eligible_count",
+    "correction_applied_count",
+    "reviewer_reason_counts",
+    "parity_equal",
+    "parity_classification",
+    "parity_difference_codes",
+    "parity_difference_count",
+    "false_ready_escape",
+    "correction_applied",
+    "occurred_at"
+  ],
+  "forbidden_event_fields": [
+    "customer_text",
+    "raw_input",
+    "raw_customer_input",
+    "document_id",
+    "documentId",
+    "customer_name",
+    "customerName",
+    "phone",
+    "email",
+    "address",
+    "service_address",
+    "evidence",
+    "reviewer_notes"
+  ],
+  "live_probe": {
+    "method": "GET",
+    "requires_explicit_health_urls": true,
+    "timeout_ms": 5000
+  }
+}
