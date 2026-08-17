@@ -217,6 +217,26 @@ test("production delivery fails closed instead of falling back to legacy", () =>
   assert.match(result.validation.blocking_errors.join(" "), /Customer delivery is disabled/);
 });
 
+test("production NODE_ENV with a missing or unknown stage cannot activate customer delivery", () => {
+  for (const stage of [undefined, "prodction"]) {
+    const policy = customerPipelinePolicy({
+      documentId: "EST-ROLL-STAGE-001",
+      env: env({
+        NODE_ENV: "production",
+        TSWEB_DEPLOYMENT_STAGE: stage,
+        CUSTOMER_DELIVERY_ENABLED: "true",
+        CUSTOMER_RESOLUTION_ROLLOUT: "full",
+        CUSTOMER_RESOLUTION_RELEASE_APPROVED: "true",
+        ENABLE_READINESS_SAFETY_BLOCKING: "true",
+      }),
+    });
+
+    assert.equal(policy.deployment_stage, "unknown");
+    assert.equal(policy.delivery_enabled, false);
+    assert.equal(policy.delivery_blocked, true);
+  }
+});
+
 test("customer estimate view exposes only allowlisted customer fields and binding hashes", () => {
   const result = resolveCustomerPipeline({ alphaJson: {}, customer_text: RAW }, {
     documentId: "EST-ROLL-008",

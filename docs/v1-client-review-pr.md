@@ -6,12 +6,12 @@
 
 ## Status
 
-Repository status: `READY_FOR_CLIENT_REVIEW`  
+Repository status: `READY_FOR_CLIENT_REVIEW`
 Production status: `NOT_PRODUCTION_APPROVED`
 
 This is the single review document for the V1 handoff. It brings together the implementation summary, client acceptance checklist, operations and rollback notes, and scope audit.
 
-This preparation did not include a commit, push, pull request, deployment, flag enablement, or entry of client secrets.
+This package is intended to accompany the current pull request and is for client review only. It is not a deployment authorization, production release, or customer-delivery approval. No deployment, flag enablement, customer delivery, or client secrets are included.
 
 ## What is included in this V1 pass
 
@@ -22,8 +22,10 @@ This preparation did not include a commit, push, pull request, deployment, flag 
 - Fail-closed trusted boundaries around stored estimates, customer links, PDFs, downloads, notifications, and manual acceptance.
 - Readiness safety thresholds; locked 60-case, full 600-case, regression, ratchet, latency, telemetry, and rollback checks.
 - Configuration contracts for Blob storage, PDF rendering, signing, authentication, notifications, telemetry, and alerts.
+- Fail-closed deployment-stage validation so a production environment cannot silently use development fallbacks.
 - A controlled rollout policy with safe defaults.
 - Explicit V1 exclusion of the assembler. Its rollout and builder flags remain off because the required independently reviewed held-out labels are not available.
+- The assembler's record-level evaluation JSONL is excluded from this client package. The retained metrics summary is internal context only and is not V1 acceptance evidence.
 
 ## Engineering evidence
 
@@ -31,7 +33,7 @@ The latest local evidence in this workspace is:
 
 | Check | Result |
 | --- | --- |
-| `node --test tests/*.test.js` | 678/678 passed |
+| `node --test tests/*.test.js` | 683/683 passed |
 | `node scripts/readiness-safety-release-gate.js --check` | Passed; false-ready catch 18/18, unresolved-conflict recall 20/20, and no new 600-case false blocks |
 | `node scripts/stress-release-gate.js --check` | Passed; 0 unsafe-ready cases and 0 false blocks in the 600-case gate |
 | `node scripts/customer-pipeline-release-gate.js --check --target resolution` | Passed for the local resolution target |
@@ -48,11 +50,11 @@ The six false-ready cases that were previously missed and are now covered are:
 
 The current policy thresholds were not loosened to get this result.
 
-The generated reports are engineering evidence. Before sharing them outside the client-controlled review environment, check for fixture or source text and redact or replace any customer-like values.
+The assembler's record-level evaluation JSONL is intentionally excluded because the assembler is not part of V1. The retained metrics-only summary is internal context and is not V1 acceptance evidence. Other generated reports are engineering evidence; before sharing them outside the client-controlled review environment, check for fixture or source text and redact or replace any customer-like values.
 
 ## Strict fallback behavior
 
-Staging and production require `OPENAI_API_KEY` and `MOCK_OPENAI_RESPONSES=false`. If the provider credentials are missing or the provider fails, the extraction route stops with an error instead of quietly returning a local-parser result.
+Staging and production require an explicit valid `TSWEB_DEPLOYMENT_STAGE`, `OPENAI_API_KEY`, and `MOCK_OPENAI_RESPONSES=false`. A production environment with a missing, unknown, or conflicting deployment stage fails closed instead of silently using development fallbacks. If provider credentials are missing or the provider fails, the extraction route stops with an error instead of quietly returning a local-parser result.
 
 Hard-coded Tree Dude contact details are available only during local development. Staging and production require configured sender and recipient identities.
 
@@ -349,13 +351,13 @@ Strict provider and identity fallback hardening is also part of V1 because the c
 
 The assembler remains excluded from customer-facing V1 behavior until the required 50+ independently reviewed, adjudicated, frozen, checksum-protected labels are available.
 
-The generated gate and source-fact reports are evidence, not application behavior. Review them for fixture or source text and sanitize any customer-like values before attaching them to the client review.
+The generated gate and source-fact reports are evidence, not application behavior or automatic client attachments. Review them for fixture or source text and sanitize any customer-like values before attaching them to the client review. The assembler record-level report is intentionally excluded, and its retained metrics summary is internal context only.
 
 ### Changes outside the V1 application scope
 
 #### Generated architecture-scan cache
 
-- `graphify-out/cache/stat-index.json` is a generated Graphify cache from an architecture scan. It is tooling output, not application behavior, customer evidence, or a release artifact. Leave it out of the client release commit unless the client specifically requests Graphify artifacts.
+- Generated Graphify cache artifacts under `graphify-out/cache/` are tooling output, not application behavior, customer evidence, or release artifacts. They are excluded from this client package unless the client specifically requests Graphify artifacts.
 
 #### Legacy documentation deletions requiring explicit review
 
@@ -392,11 +394,12 @@ The client can review and approve the V1 code and local evidence now. Production
 ```text
 ## Summary
 - Complete the V1 correction, review, safety, trusted-delivery, and rollout handoff documentation.
-- Add strict staging and production fail-closed behavior for provider and identity fallbacks.
+- Harden strict staging and production fail-closed behavior for deployment-stage, provider, and identity fallbacks.
 - Keep the assembler excluded and rollout controls off by default.
+- This is a client-review package only; it does not approve deployment, production delivery, or flag enablement.
 
 ## Validation
-- 678/678 tests passed.
+- 683/683 tests passed.
 - Readiness, stress, resolution, ratchet, rollback, local preflight, and isolated load gates passed.
 - Staging preflight remains blocked until client infrastructure and credentials are configured.
 
